@@ -4,7 +4,7 @@
 
 Client application to display hardware implementation details for GPUs supporting the new [Vulkan(tm)](https://www.khronos.org/vulkan]) API by Khronos.
 
-The hardware reports can be submitted to a public [online database](http://http://vulkan.gpuinfo.org/) that allows comparing different devices, browsing available features, extensions, formats, etc.
+The hardware reports can be submitted to a public [online database](http://vulkan.gpuinfo.org/) that allows comparing different devices, browsing available features, extensions, formats, etc.
 
 <img src="/images/screen01.png" width="320px">
 
