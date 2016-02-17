@@ -59,5 +59,5 @@ bool TreeProxyFilter::hasAcceptedChildren(int sourceRow, const QModelIndex &sour
 	{
 		return false;
 	}
-
+    return true;
 }

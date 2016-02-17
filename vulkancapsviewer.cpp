@@ -446,8 +446,8 @@ void vulkanCapsViewer::getGPUs()
 	vkRes = vkEnumeratePhysicalDevices(vkInstance, &numGPUs, NULL);
 	if (vkRes != VK_SUCCESS) 
 	{
-		// TODO : Error handling
-		return;
+        QMessageBox::warning(this, tr("Error"), "Could not enumarted device count!");
+        return;
 	}
 	std::vector<VkPhysicalDevice> vulkanDevices;
 	vulkanDevices.resize(numGPUs);
@@ -455,8 +455,8 @@ void vulkanCapsViewer::getGPUs()
 	vkRes = vkEnumeratePhysicalDevices(vkInstance, &numGPUs, &vulkanDevices.front());
 	if (vkRes != VK_SUCCESS) 
 	{
-		// TODO : Error handling
-		return;
+        QMessageBox::warning(this, tr("Error"), "Could not enumarted physical devices!");
+        return;
 	}
 
 	vulkanGPUs.resize(numGPUs);
@@ -537,6 +537,7 @@ void vulkanCapsViewer::displayDevice(int index)
 void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 {
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceProperties;
+    treeWidget->clear();
 	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
 	for (auto& prop : device->properties)
 	{
@@ -565,6 +566,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
 {
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceMemory;
+    treeWidget->clear();
     QTreeWidgetItem *memTypeItem = addTreeItem(treeWidget->invisibleRootItem(), "Memory types", to_string(device->memoryProperties.memoryTypeCount));
     for (uint32_t i = 0; i < device->memoryProperties.memoryTypeCount; i++)
 	{
@@ -596,7 +598,8 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
 {
-	QStandardItem *rootItem = models.limits.invisibleRootItem();
+    models.limits.clear();
+    QStandardItem *rootItem = models.limits.invisibleRootItem();
 	for (auto const &limit : device->limits)
 	{
 		QList<QStandardItem *> rowItems;
@@ -609,7 +612,8 @@ void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
-	QStandardItem *rootItem = models.features.invisibleRootItem();
+    models.features.clear();
+    QStandardItem *rootItem = models.features.invisibleRootItem();
 	for (auto const &feature : device->features)
 	{
 		QList<QStandardItem *> rowItems;
@@ -623,6 +627,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
 {
+    tree->clear();
 	for (auto& globalLayer : instanceInfo.globalLayers) 
 	{
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
@@ -643,6 +648,7 @@ void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
 void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
 {
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
+    treeWidget->clear();
 	ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
 	for (auto& layer : device->getLayers())
 	{
@@ -673,6 +679,7 @@ void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)
 
 void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 {
+    models.formats.clear();
 	QStandardItem *rootItem = models.formats.invisibleRootItem();
 	for (auto const &format : device->formats)
 	{
@@ -766,6 +773,7 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceExtensions;
+    treeWidget->clear();
 	treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
     ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
 	for (auto& extension : device->extensions)
@@ -780,6 +788,7 @@ void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
     ui.tabWidgetDevice->setTabText(6, "Queues (" + QString::number(device->queues.size()) + ")");
 	QTreeWidget *treeWidget = ui.treeWidgetQueues;
+    treeWidget->clear();
 	for (auto& queue : device->queues)
 	{
 		QTreeWidgetItem *queueItem = new QTreeWidgetItem(treeWidget);
