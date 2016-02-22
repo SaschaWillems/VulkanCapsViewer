@@ -343,11 +343,9 @@ bool vulkanCapsViewer::initVulkan()
 		instanceInfo.globalLayers.push_back(layer);
 	}
 
-	displayGlobalLayers(ui.treeWidgetGlobalLayers);
 
 	// Global extensions
 	getGlobalExtensions();
-	displayGlobalExtensions();
 
 	// Create vulkan Instance
     vkRes = vkCreateInstance(&instanceCreateInfo, nullptr, &vkInstance);
@@ -369,6 +367,9 @@ bool vulkanCapsViewer::initVulkan()
 #ifdef ANDROID
     loadVulkanFunctions(vkInstance);
 #endif
+
+    displayGlobalLayers(ui.treeWidgetGlobalLayers);
+    displayGlobalExtensions();
 
 	return true;
 }
@@ -401,13 +402,16 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	}
 
 	// Enable all available extensions
+    /*
 	std::vector<const char*> enabledExtensions;
 	for (auto& ext : GPU->extensions)
 	{
 		enabledExtensions.push_back(ext.extensionName);
 	}
+    */
 
 	// Init device
+
 	VkDeviceCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 	info.pNext = NULL;
@@ -415,10 +419,9 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     info.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
 	info.pEnabledFeatures = NULL;
 	info.ppEnabledLayerNames = NULL;
-	info.enabledLayerCount = 0;
-	//info.enabledExtensionNameCount = enabledExtensions.size();
-	//info.ppEnabledExtensionNames = enabledExtensions.data();
-	info.enabledExtensionCount = 0;
+    info.enabledLayerCount = 0;
+//    info.enabledExtensionCount = enabledExtensions.size();
+//    info.ppEnabledExtensionNames = enabledExtensions.data();
 
 	vkRes = vkCreateDevice(GPU->device, &info, nullptr, &GPU->dev);
 
@@ -426,7 +429,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	{
 		QString error = "Could not create a Vulkan device!\nError: " + QString::fromStdString(vulkanResources::resultString(vkRes));
 		QMessageBox::warning(this, tr("Error"), error);
-		return;
+        exit(EXIT_FAILURE);
 	}
 
 	GPU->readSupportedFormats();
@@ -547,11 +550,22 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
             QTreeWidgetItem *propItem;
             propItem = addTreeItem(treeItem, prop.first, (prop.second == "1") ? "true" : "false");
             propItem->setForeground(1, (prop.second == "1") ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            continue;
         }
-        else
+
+        // Driver version number (raw api value) is only used internally
+        if (prop.first == "driverversionraw")
         {
-            addTreeItem(treeItem, prop.first, prop.second);
+            continue;
         }
+
+        if (prop.first == "driverversion")
+        {
+            addTreeItem(treeItem, prop.first, device->getDriverVersion());
+            continue;
+        }
+
+        addTreeItem(treeItem, prop.first, prop.second);
 	}
 
     // Operating system

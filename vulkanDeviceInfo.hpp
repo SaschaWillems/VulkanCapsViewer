@@ -190,6 +190,34 @@ public:
         }
 	}
 
+    /// <summary>
+    ///	Convert raw driver version read via api depending on
+    /// vendor conventions
+    /// </summary>
+    std::string getDriverVersion()
+    {
+        // NVIDIA
+        if (props.vendorID == 4318)
+        {
+            // 10 bits = major version (up to r1023)
+            // 8 bits = minor version (up to 255)
+            // 8 bits = secondary branch version/build version (up to 255)
+            // 6 bits = tertiary branch/build version (up to 63)
+
+            uint32_t major = (props.driverVersion >> 22) & 0x3ff;
+            uint32_t minor = (props.driverVersion >> 14) & 0x0ff;
+            uint32_t secondaryBranch = (props.driverVersion >> 6) & 0x0ff;
+            uint32_t tertiaryBranch = (props.driverVersion) & 0x003f;
+
+            return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(secondaryBranch) + "." + std::to_string(tertiaryBranch);
+        }
+        else
+        {
+            // todo : Add mappings for other vendors
+           return vulkanResources::versionToString(props.driverVersion);
+        }
+    }
+
 	/// <summary>
 	///	Request physical device properties
 	/// </summary>
@@ -200,7 +228,9 @@ public:
 		properties.clear();
 
 		properties["devicename"] = props.deviceName;
-		properties["driverversion"] = vulkanResources::versionToString(props.driverVersion);
+        properties["driverversionraw"] = to_string(props.driverVersion);
+        properties["driverversion"] = getDriverVersion();
+
 		properties["apiversion"] = vulkanResources::versionToString(props.apiVersion);
         properties["vendorid"] = to_string(props.vendorID);
         properties["deviceid"] = to_string(props.deviceID);
