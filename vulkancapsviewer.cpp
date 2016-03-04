@@ -63,6 +63,8 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 {
 	ui.setupUi(this);
 
+    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " (beta)");
+
 	// Connect slots
     connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)));
     connect(ui.toolButtonUpload, SIGNAL(pressed()), this, SLOT(slotUploadReport()));
@@ -158,7 +160,7 @@ void vulkanCapsViewer::slotRefresh()
 void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
-	aboutText << "<p>Vulkan hardware capability viewer (vulkanCapsViewer)<br/><br/>"
+    aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
         "Copyright (c) 2016 by <a href='http://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API version " + vulkanApiVersion.toStdString() + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"

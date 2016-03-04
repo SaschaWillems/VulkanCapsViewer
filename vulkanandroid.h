@@ -11,6 +11,7 @@
 #define VULKANANDROID_HPP
 
 #include "vulkan/vulkan.h"
+#include <sstream>
 
 #ifdef ANDROID
 
@@ -32,6 +33,18 @@ extern PFN_vkGetPhysicalDeviceMemoryProperties vkGetPhysicalDeviceMemoryProperti
 
 bool loadVulkanLibrary();
 void loadVulkanFunctions(VkInstance instance);
+
+namespace std
+{
+    // to_tring is missing from std in recent NDK versions...q
+    template <typename T>
+    std::string to_string(T value)
+    {
+        std::ostringstream os;
+        os << value;
+        return os.str();
+    }
+}
 
 #endif
 

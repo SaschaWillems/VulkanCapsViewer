@@ -40,7 +40,7 @@ public:
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
 private:
-    std::string version = "1.0";
+    std::string version = "1.1";
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
 	VkInstance vkInstance;
