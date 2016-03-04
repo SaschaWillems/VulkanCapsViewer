@@ -213,7 +213,7 @@ public:
         }
         else
         {
-            // todo : Add mappings for other vendors
+           // todo : Add mappings for other vendors
            return vulkanResources::versionToString(props.driverVersion);
         }
     }

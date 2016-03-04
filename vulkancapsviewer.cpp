@@ -553,12 +553,6 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
             continue;
         }
 
-        // Driver version number (raw api value) is only used internally
-        if (prop.first == "driverversionraw")
-        {
-            continue;
-        }
-
         if (prop.first == "driverversion")
         {
             addTreeItem(treeItem, prop.first, device->getDriverVersion());
