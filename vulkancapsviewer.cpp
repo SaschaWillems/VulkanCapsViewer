@@ -397,10 +397,12 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 	for (uint32_t i = 0; i < GPU->queues.size(); ++i)
 	{
+        float queuePriorities[1] = { 0.0f };
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
 		queueCreateInfo.queueFamilyIndex = i;
 		queueCreateInfo.queueCount = 1;
-		queueCreateInfos.push_back(queueCreateInfo);
+        queueCreateInfo.pQueuePriorities = queuePriorities;
+        queueCreateInfos.push_back(queueCreateInfo);
 	}
 
 	// Enable all available extensions
