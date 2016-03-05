@@ -25,5 +25,5 @@ It also includes a CMakeLists.txt for use with https://cmake.org/.
 Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](http://vulkan.gpuinfo.org/download.php).
 
 # Dependencies
-- Vulkan SDK (not available yet)
+- [Vulkan SDK](https://vulkan.lunarg.com/)
 - [Qt 5.5](https://qt-project.org/) - Older versions may not work due to missing functionality
