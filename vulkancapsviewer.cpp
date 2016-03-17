@@ -45,6 +45,8 @@
 #include <sys/utsname.h>
 #endif
 
+#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 6)
+
 /// <summary>
 ///	Returns operating system name
 /// </summary>
@@ -162,7 +164,8 @@ void vulkanCapsViewer::slotAbout()
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
         "Copyright (c) 2016 by <a href='http://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
-        "Build against Vulkan API version " + vulkanApiVersion.toStdString() + "<br/><br/>"
+        "Build against Vulkan API " + vulkanApiVersion.toStdString() +
+        " header version " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"
 		"For usage and distribution details refer to the readme<br/><br/><br/>"
 		"<a href='http://www.gpuinfo.org'>http://www.gpuinfo.org</a><br><br>";
@@ -315,9 +318,7 @@ bool vulkanCapsViewer::initVulkan()
     appInfo.applicationVersion = 1;
     appInfo.pEngineName = "VulkanCapsViewer";
     appInfo.engineVersion = 1;
-    // This is a workaround for drivers that don't support SDK 1.0.3 at launch
-    // Once all drivers are up-to-date, use VK_API_VERSION insteand
-    appInfo.apiVersion = VK_MAKE_VERSION(1, 0, 1);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
 
 	// Create Vulkan instance
     VkInstanceCreateInfo instanceCreateInfo = {};

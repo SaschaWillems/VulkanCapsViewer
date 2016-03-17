@@ -222,6 +222,7 @@ public:
         properties["driverversion"] = getDriverVersion();
 
 		properties["apiversion"] = vulkanResources::versionToString(props.apiVersion);
+		properties["headerversion"] = std::to_string(VK_HEADER_VERSION);
         properties["vendorid"] = std::to_string(props.vendorID);
         properties["deviceid"] = std::to_string(props.deviceID);
 		properties["devicetype"] = vulkanResources::physicalDeviceTypeString(props.deviceType);

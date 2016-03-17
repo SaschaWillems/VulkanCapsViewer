@@ -1,5 +1,5 @@
-#ifndef __vulkan_h_
-#define __vulkan_h_ 1
+#ifndef VULKAN_H_
+#define VULKAN_H_ 1
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,12 +40,18 @@ extern "C" {
 #define VK_MAKE_VERSION(major, minor, patch) \
     (((major) << 22) | ((minor) << 12) | (patch))
 
-// Vulkan API version supported by this file
-#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 3)
+// DEPRECATED: This define has been removed. Specific version defines (e.g. VK_API_VERSION_1_0), or the VK_MAKE_VERSION macro, should be used instead.
+//#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 0)
+
+// Vulkan 1.0 version number
+#define VK_API_VERSION_1_0 VK_MAKE_VERSION(1, 0, 0)
 
 #define VK_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
 #define VK_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3ff)
 #define VK_VERSION_PATCH(version) ((uint32_t)(version) & 0xfff)
+// Version of this file
+#define VK_HEADER_VERSION 6
+
 
 #define VK_NULL_HANDLE 0
         
@@ -142,6 +148,7 @@ typedef enum VkResult {
     VK_ERROR_OUT_OF_DATE_KHR = -1000001004,
     VK_ERROR_INCOMPATIBLE_DISPLAY_KHR = -1000003001,
     VK_ERROR_VALIDATION_FAILED_EXT = -1000011001,
+    VK_ERROR_INVALID_SHADER_NV = -1000012000,
     VK_RESULT_BEGIN_RANGE = VK_ERROR_FORMAT_NOT_SUPPORTED,
     VK_RESULT_END_RANGE = VK_INCOMPLETE,
     VK_RESULT_RANGE_SIZE = (VK_INCOMPLETE - VK_ERROR_FORMAT_NOT_SUPPORTED + 1),
@@ -209,7 +216,7 @@ typedef enum VkStructureType {
     VK_STRUCTURE_TYPE_MIR_SURFACE_CREATE_INFO_KHR = 1000007000,
     VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR = 1000008000,
     VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR = 1000009000,
-    VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT = 1000011000,
+    VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT = 1000011000,
     VK_STRUCTURE_TYPE_BEGIN_RANGE = VK_STRUCTURE_TYPE_APPLICATION_INFO,
     VK_STRUCTURE_TYPE_END_RANGE = VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO,
     VK_STRUCTURE_TYPE_RANGE_SIZE = (VK_STRUCTURE_TYPE_LOADER_DEVICE_CREATE_INFO - VK_STRUCTURE_TYPE_APPLICATION_INFO + 1),
@@ -679,6 +686,7 @@ typedef enum VkDynamicState {
 typedef enum VkFilter {
     VK_FILTER_NEAREST = 0,
     VK_FILTER_LINEAR = 1,
+    VK_FILTER_CUBIC_IMG = 1000015000,
     VK_FILTER_BEGIN_RANGE = VK_FILTER_NEAREST,
     VK_FILTER_END_RANGE = VK_FILTER_LINEAR,
     VK_FILTER_RANGE_SIZE = (VK_FILTER_LINEAR - VK_FILTER_NEAREST + 1),
@@ -701,8 +709,8 @@ typedef enum VkSamplerAddressMode {
     VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER = 3,
     VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE = 4,
     VK_SAMPLER_ADDRESS_MODE_BEGIN_RANGE = VK_SAMPLER_ADDRESS_MODE_REPEAT,
-    VK_SAMPLER_ADDRESS_MODE_END_RANGE = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
-    VK_SAMPLER_ADDRESS_MODE_RANGE_SIZE = (VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE - VK_SAMPLER_ADDRESS_MODE_REPEAT + 1),
+    VK_SAMPLER_ADDRESS_MODE_END_RANGE = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+    VK_SAMPLER_ADDRESS_MODE_RANGE_SIZE = (VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER - VK_SAMPLER_ADDRESS_MODE_REPEAT + 1),
     VK_SAMPLER_ADDRESS_MODE_MAX_ENUM = 0x7FFFFFFF
 } VkSamplerAddressMode;
 
@@ -808,6 +816,7 @@ typedef enum VkFormatFeatureFlagBits {
     VK_FORMAT_FEATURE_BLIT_SRC_BIT = 0x00000400,
     VK_FORMAT_FEATURE_BLIT_DST_BIT = 0x00000800,
     VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT = 0x00001000,
+    VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG = 0x00002000,
 } VkFormatFeatureFlagBits;
 typedef VkFlags VkFormatFeatureFlags;
 
@@ -979,7 +988,7 @@ typedef enum VkShaderStageFlagBits {
     VK_SHADER_STAGE_GEOMETRY_BIT = 0x00000008,
     VK_SHADER_STAGE_FRAGMENT_BIT = 0x00000010,
     VK_SHADER_STAGE_COMPUTE_BIT = 0x00000020,
-    VK_SHADER_STAGE_ALL_GRAPHICS = 0x1F,
+    VK_SHADER_STAGE_ALL_GRAPHICS = 0x0000001F,
     VK_SHADER_STAGE_ALL = 0x7FFFFFFF,
 } VkShaderStageFlagBits;
 typedef VkFlags VkPipelineVertexInputStateCreateFlags;
@@ -992,7 +1001,7 @@ typedef enum VkCullModeFlagBits {
     VK_CULL_MODE_NONE = 0,
     VK_CULL_MODE_FRONT_BIT = 0x00000001,
     VK_CULL_MODE_BACK_BIT = 0x00000002,
-    VK_CULL_MODE_FRONT_AND_BACK = 0x3,
+    VK_CULL_MODE_FRONT_AND_BACK = 0x00000003,
 } VkCullModeFlagBits;
 typedef VkFlags VkCullModeFlags;
 typedef VkFlags VkPipelineMultisampleStateCreateFlags;
@@ -1083,7 +1092,7 @@ typedef VkFlags VkCommandBufferResetFlags;
 typedef enum VkStencilFaceFlagBits {
     VK_STENCIL_FACE_FRONT_BIT = 0x00000001,
     VK_STENCIL_FACE_BACK_BIT = 0x00000002,
-    VK_STENCIL_FRONT_AND_BACK = 0x3,
+    VK_STENCIL_FRONT_AND_BACK = 0x00000003,
 } VkStencilFaceFlagBits;
 typedef VkFlags VkStencilFaceFlags;
 
@@ -3326,8 +3335,8 @@ typedef enum VkDisplayPlaneAlphaFlagBitsKHR {
     VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_BIT_KHR = 0x00000004,
     VK_DISPLAY_PLANE_ALPHA_PER_PIXEL_PREMULTIPLIED_BIT_KHR = 0x00000008,
 } VkDisplayPlaneAlphaFlagBitsKHR;
-typedef VkFlags VkDisplayModeCreateFlagsKHR;
 typedef VkFlags VkDisplayPlaneAlphaFlagsKHR;
+typedef VkFlags VkDisplayModeCreateFlagsKHR;
 typedef VkFlags VkDisplaySurfaceCreateFlagsKHR;
 
 typedef struct VkDisplayPropertiesKHR {
@@ -3667,11 +3676,17 @@ VKAPI_ATTR VkBool32 VKAPI_CALL vkGetPhysicalDeviceWin32PresentationSupportKHR(
 #endif
 #endif /* VK_USE_PLATFORM_WIN32_KHR */
 
+#define VK_KHR_sampler_mirror_clamp_to_edge 1
+#define VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_SPEC_VERSION 1
+#define VK_KHR_SAMPLER_MIRROR_CLAMP_TO_EDGE_EXTENSION_NAME "VK_KHR_sampler_mirror_clamp_to_edge"
+
+
 #define VK_EXT_debug_report 1
 VK_DEFINE_NON_DISPATCHABLE_HANDLE(VkDebugReportCallbackEXT)
 
-#define VK_EXT_DEBUG_REPORT_SPEC_VERSION  1
+#define VK_EXT_DEBUG_REPORT_SPEC_VERSION  2
 #define VK_EXT_DEBUG_REPORT_EXTENSION_NAME "VK_EXT_debug_report"
+#define VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT
 
 
 typedef enum VkDebugReportObjectTypeEXT {
@@ -3767,6 +3782,16 @@ VKAPI_ATTR void VKAPI_CALL vkDebugReportMessageEXT(
     const char*                                 pLayerPrefix,
     const char*                                 pMessage);
 #endif
+
+#define VK_NV_glsl_shader 1
+#define VK_NV_GLSL_SHADER_SPEC_VERSION    1
+#define VK_NV_GLSL_SHADER_EXTENSION_NAME  "VK_NV_glsl_shader"
+
+
+#define VK_IMG_filter_cubic 1
+#define VK_IMG_FILTER_CUBIC_SPEC_VERSION  1
+#define VK_IMG_FILTER_CUBIC_EXTENSION_NAME "VK_IMG_filter_cubic"
+
 
 #ifdef __cplusplus
 }
