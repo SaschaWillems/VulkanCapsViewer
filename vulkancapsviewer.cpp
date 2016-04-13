@@ -45,7 +45,7 @@
 #include <sys/utsname.h>
 #endif
 
-#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 6)
+#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 3)
 
 /// <summary>
 ///	Returns operating system name
