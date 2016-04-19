@@ -588,13 +588,15 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
 		memTypeInfoItem->setText(0, QString::number(i));
         addTreeItem(memTypeInfoItem, "Heap index", to_string(memType.heapIndex));
 		QTreeWidgetItem *memTypeFlags = addTreeItem(memTypeInfoItem, "Property flags", "");
-        // TODO : only list supported flags
         addTreeItem(memTypeFlags, "DEVICE_LOCAL", (memType.propertyFlags & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) ? "true" : "false");
         addTreeItem(memTypeFlags, "HOST_VISIBLE_BIT", (memType.propertyFlags & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) ? "true" : "false");
         addTreeItem(memTypeFlags, "HOST_COHERENT_BIT", (memType.propertyFlags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) ? "true" : "false");
         addTreeItem(memTypeFlags, "HOST_CACHED_BIT", (memType.propertyFlags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) ? "true" : "false");
         addTreeItem(memTypeFlags, "LAZILY_ALLOCATED_BIT", (memType.propertyFlags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) ? "true" : "false");
+        memTypeFlags->setExpanded(true);
+        memTypeInfoItem->setExpanded(true);
 	}
+    memTypeItem->setExpanded(true);
     QTreeWidgetItem *heapTypeItem = addTreeItem(treeWidget->invisibleRootItem(), "Memory heaps", to_string(device->memoryProperties.memoryHeapCount));
     for (uint32_t i = 0; i < device->memoryProperties.memoryHeapCount; i++)
 	{
@@ -602,10 +604,13 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
 		VkMemoryHeap heapType = device->memoryProperties.memoryHeaps[i];
 		memTypeInfoItem->setText(0, QString::number(i));
         addTreeItem(memTypeInfoItem, "Device size", to_string(heapType.size));
-		QTreeWidgetItem *memTypeFlags = addTreeItem(memTypeInfoItem, "Flags", "");
+        QTreeWidgetItem *memTypeFlags = addTreeItem(memTypeInfoItem, "Flags", "");
         addTreeItem(memTypeFlags, "HEAP_DEVICE_LOCAL", (heapType.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) ? "true" : "false");
-	}
-	for (int i = 0; i < treeWidget->columnCount(); i++)
+        memTypeFlags->setExpanded(true);
+        memTypeInfoItem->setExpanded(true);
+    }
+    heapTypeItem->setExpanded(true);
+    for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
