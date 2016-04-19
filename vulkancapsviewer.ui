@@ -339,8 +339,7 @@ QToolButton::hover {
             </sizepolicy>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
-font: 75 11pt;</string>
+            <string notr="true">color: rgb(255, 255, 255);</string>
            </property>
            <property name="text">
             <string>Report for </string>
@@ -362,8 +361,7 @@ font: 75 11pt;</string>
             </size>
            </property>
            <property name="styleSheet">
-            <string notr="true">color: rgb(255, 255, 255);
-font: 75 10pt;</string>
+            <string notr="true">color: rgb(255, 255, 255);</string>
            </property>
           </widget>
          </item>
@@ -372,8 +370,7 @@ font: 75 10pt;</string>
        <item>
         <widget class="QLabel" name="labelDevicePresent">
          <property name="styleSheet">
-          <string notr="true">font: 10pt;
-color: rgb(255, 255, 255);</string>
+          <string notr="true">color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
           <string>Connecting to database...</string>
@@ -388,9 +385,6 @@ color: rgb(255, 255, 255);</string>
     </item>
     <item>
      <widget class="QTabWidget" name="tabWidget">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
       </property>
@@ -451,7 +445,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetDeviceProperties">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -522,7 +516,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeView" name="treeViewDeviceFeatures">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -583,7 +577,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeView" name="treeViewDeviceLimits">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -606,7 +600,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetDeviceExtensions">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -671,7 +665,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeView" name="treeViewFormats">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -697,7 +691,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetDeviceLayers">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -748,7 +742,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetQueues">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -784,7 +778,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetDeviceMemory">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -852,7 +846,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetGlobalLayers">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
@@ -906,7 +900,7 @@ color: rgb(255, 255, 255);</string>
             <item>
              <widget class="QTreeWidget" name="treeWidgetGlobalExtenssions">
               <property name="styleSheet">
-               <string notr="true">QTreeView::item { height: 24px;}</string>
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
               </property>
               <property name="editTriggers">
                <set>QAbstractItemView::NoEditTriggers</set>
