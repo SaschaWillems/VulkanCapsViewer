@@ -40,13 +40,13 @@ public:
 
 	static const char *physicalDeviceTypeString(VkPhysicalDeviceType type)
 	{
-		switch (type)
+            switch (type)
 		{
 #define STR(r) case VK_PHYSICAL_DEVICE_TYPE_ ##r: return #r
-			STR(OTHER);
-			STR(INTEGRATED_GPU);
-			STR(DISCRETE_GPU);
-			STR(VIRTUAL_GPU);
+                STR(OTHER);
+                STR(INTEGRATED_GPU);
+                STR(DISCRETE_GPU);
+                STR(VIRTUAL_GPU);
 #undef STR
 default: return "UNKNOWN_DEVICE";
 		}
@@ -54,31 +54,31 @@ default: return "UNKNOWN_DEVICE";
 
 	static const char *resultString(VkResult result)
 	{
-		switch (result)
-		{
+            switch (result)
+            {
 #define STR(r) case VK_ ##r: return #r
-			STR(SUCCESS);
-			STR(NOT_READY);
-			STR(TIMEOUT);
-			STR(EVENT_SET);
-			STR(EVENT_RESET);
-			STR(ERROR_INITIALIZATION_FAILED);
-			STR(ERROR_OUT_OF_HOST_MEMORY);
-			STR(ERROR_OUT_OF_DEVICE_MEMORY);
-			STR(ERROR_DEVICE_LOST);
-			STR(ERROR_LAYER_NOT_PRESENT);
-			STR(ERROR_EXTENSION_NOT_PRESENT);
-			STR(ERROR_MEMORY_MAP_FAILED);
-			STR(ERROR_INCOMPATIBLE_DRIVER);
+                STR(SUCCESS);
+                STR(NOT_READY);
+                STR(TIMEOUT);
+                STR(EVENT_SET);
+                STR(EVENT_RESET);
+                STR(ERROR_INITIALIZATION_FAILED);
+                STR(ERROR_OUT_OF_HOST_MEMORY);
+                STR(ERROR_OUT_OF_DEVICE_MEMORY);
+                STR(ERROR_DEVICE_LOST);
+                STR(ERROR_LAYER_NOT_PRESENT);
+                STR(ERROR_EXTENSION_NOT_PRESENT);
+                STR(ERROR_MEMORY_MAP_FAILED);
+                STR(ERROR_INCOMPATIBLE_DRIVER);
 #undef STR
 		default: return "UNKNOWN_RESULT";
-		}
+            }
 	}
 
 	static std::string formatString(VkFormat format)
 	{
-		switch (format)
-		{
+            switch (format)
+            {
 #define STR(r) case VK_FORMAT_ ##r: return #r
                 STR(UNDEFINED);
                 STR(R4G4_UNORM_PACK8);
@@ -266,12 +266,44 @@ default: return "UNKNOWN_DEVICE";
                 STR(ASTC_12x12_UNORM_BLOCK);
                 STR(ASTC_12x12_SRGB_BLOCK);
 #undef STR
-			default: 
-				std::stringstream ss;
-				ss << "UNKNOWN_FORMAT (0x" << std::setfill('0') << std::setw(8) << std::hex << format << ")";
-				std::string s = ss.str();
-				return s;
-		}
-	}
+                default:
+                        std::stringstream ss;
+                        ss << "UNKNOWN_FORMAT (0x" << std::setfill('0') << std::setw(8) << std::hex << format << ")";
+                        std::string s = ss.str();
+                        return s;
+            }
+        }
 
+        static std::string presentModeKHRString(VkPresentModeKHR presentMode)
+        {
+            switch (presentMode)
+            {
+#define STR(r) case VK_PRESENT_MODE_ ##r: return #r
+                STR(IMMEDIATE_KHR);
+                STR(MAILBOX_KHR);
+                STR(FIFO_KHR);
+                STR(FIFO_RELAXED_KHR);
+#undef STR
+                default:
+                    std::stringstream ss;
+                    ss << "UNKNOWN_PRESENT_MODE (0x" << std::setfill('0') << std::setw(8) << std::hex << presentMode << ")";
+                    std::string s = ss.str();
+                    return s;
+            }
+        }
+
+        static std::string colorSpaceKHRString(VkColorSpaceKHR colorSpace)
+        {
+            switch (colorSpace)
+            {
+#define STR(r) case VK_COLORSPACE_ ##r: return #r
+                STR(SRGB_NONLINEAR_KHR);
+#undef STR
+                default:
+                    std::stringstream ss;
+                    ss << "UNKNOWN_COLOR_SPACE (0x" << std::setfill('0') << std::setw(8) << std::hex << colorSpace << ")";
+                    std::string s = ss.str();
+                    return s;
+            }
+        }
 };
