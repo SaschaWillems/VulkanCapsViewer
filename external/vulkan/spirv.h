@@ -51,11 +51,11 @@
 typedef unsigned int SpvId;
 
 #define SPV_VERSION 0x10000
-#define SPV_REVISION 4
+#define SPV_REVISION 5
 
 static const unsigned int SpvMagicNumber = 0x07230203;
 static const unsigned int SpvVersion = 0x00010000;
-static const unsigned int SpvRevision = 4;
+static const unsigned int SpvRevision = 5;
 static const unsigned int SpvOpCodeMask = 0xffff;
 static const unsigned int SpvWordCountShift = 16;
 
@@ -224,6 +224,7 @@ typedef enum SpvImageChannelOrder_ {
     SpvImageChannelOrdersRGBx = 16,
     SpvImageChannelOrdersRGBA = 17,
     SpvImageChannelOrdersBGRA = 18,
+    SpvImageChannelOrderABGR = 19,
 } SpvImageChannelOrder;
 
 typedef enum SpvImageChannelDataType_ {
