@@ -432,7 +432,7 @@ QToolButton::hover {
            <enum>QTabWidget::Rounded</enum>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>6</number>
           </property>
           <property name="tabBarAutoHide">
            <bool>false</bool>
@@ -736,7 +736,7 @@ QToolButton::hover {
           </widget>
           <widget class="QWidget" name="tab_12">
            <attribute name="title">
-            <string>Queues</string>
+            <string>Queue families</string>
            </attribute>
            <layout class="QVBoxLayout" name="verticalLayout_15">
             <item>

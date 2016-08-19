@@ -357,7 +357,7 @@ bool vulkanCapsViewer::initVulkan()
     enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
     enabledExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
     enabledExtensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
     // todo : wayland etc.
 #endif
@@ -408,7 +408,7 @@ bool vulkanCapsViewer::initVulkan()
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo.window = reinterpret_cast<anativewindow>(window);
         vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
-#elif defined(VK_USE_PLATFORM_XLIB_KHR)
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
         VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo.connection = QX11Info::connection();
@@ -435,7 +435,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->device = device;
 	GPU->readLayers();
 	GPU->readExtensions();
-	GPU->readQueues();
+    GPU->readQueueFamilies();
 	GPU->readPhyiscalProperties();
 	GPU->readPhyiscalFeatures();
 	GPU->readPhyiscalLimits();
@@ -444,7 +444,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-	for (uint32_t i = 0; i < GPU->queues.size(); ++i)
+    for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)
 	{
         float queuePriorities[1] = { 0.0f };
 		VkDeviceQueueCreateInfo queueCreateInfo = {};
@@ -854,27 +854,28 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(6, "Queues (" + QString::number(device->queues.size()) + ")");
+    ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
 	QTreeWidget *treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
-	for (auto& queue : device->queues)
+    for (auto& queueFamily : device->queueFamilies)
 	{
 		QTreeWidgetItem *queueItem = new QTreeWidgetItem(treeWidget);
-		queueItem->setText(0, QString::fromStdString("Queue"));
+        queueItem->setText(0, QString::fromStdString("Queue family"));
 		// Support flags
 		QTreeWidgetItem *queueSupportItem = addTreeItem(queueItem, "Flags", "");
-		addTreeItem(queueSupportItem, "GRAPHICS_BIT", (queue.queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "true" : "false");
-		addTreeItem(queueSupportItem, "COMPUTE_BIT", (queue.queueFlags & VK_QUEUE_COMPUTE_BIT) ? "true" : "false");
-		addTreeItem(queueSupportItem, "TRANSFER_BIT", (queue.queueFlags & VK_QUEUE_TRANSFER_BIT) ? "true" : "false");
-		addTreeItem(queueSupportItem, "SPARSE_BINDING_BIT", (queue.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "true" : "false");
+        addTreeItem(queueSupportItem, "GRAPHICS_BIT", (queueFamily.properties.queueFlags & VK_QUEUE_GRAPHICS_BIT) ? "true" : "false");
+        addTreeItem(queueSupportItem, "COMPUTE_BIT", (queueFamily.properties.queueFlags & VK_QUEUE_COMPUTE_BIT) ? "true" : "false");
+        addTreeItem(queueSupportItem, "TRANSFER_BIT", (queueFamily.properties.queueFlags & VK_QUEUE_TRANSFER_BIT) ? "true" : "false");
+        addTreeItem(queueSupportItem, "SPARSE_BINDING_BIT", (queueFamily.properties.queueFlags & VK_QUEUE_SPARSE_BINDING_BIT) ? "true" : "false");
 		queueSupportItem->setExpanded(true);
 		// Queue properties		
-        addTreeItem(queueItem, "queueCount", to_string(queue.queueCount));
-        addTreeItem(queueItem, "CotimestampValidBitsunt", to_string(queue.timestampValidBits));
-        addTreeItem(queueItem, "minImageTransferGranularity.width", to_string(queue.minImageTransferGranularity.width));
-        addTreeItem(queueItem, "minImageTransferGranularity.height", to_string(queue.minImageTransferGranularity.height));
-        addTreeItem(queueItem, "minImageTransferGranularity.depth", to_string(queue.minImageTransferGranularity.depth));
-		queueItem->setExpanded(true);
+        addTreeItem(queueItem, "queueCount", to_string(queueFamily.properties.queueCount));
+        addTreeItem(queueItem, "timestampValidBits", to_string(queueFamily.properties.timestampValidBits));
+        addTreeItem(queueItem, "minImageTransferGranularity.width", to_string(queueFamily.properties.minImageTransferGranularity.width));
+        addTreeItem(queueItem, "minImageTransferGranularity.height", to_string(queueFamily.properties.minImageTransferGranularity.height));
+        addTreeItem(queueItem, "minImageTransferGranularity.depth", to_string(queueFamily.properties.minImageTransferGranularity.depth));
+        addTreeItem(queueItem, "Supports presentation", (queueFamily.supportsPresent) ? "true" : "false");
+        queueItem->setExpanded(true);
 	}
 	for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);

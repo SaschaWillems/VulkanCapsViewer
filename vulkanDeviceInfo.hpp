@@ -50,6 +50,12 @@ struct OSInfo
 	std::string architecture;
 };
 
+struct VulkanQueueFamilyInfo
+{
+    VkQueueFamilyProperties properties;
+    VkBool32 supportsPresent;
+};
+
 class VulkanDeviceInfo
 {
 private:
@@ -69,7 +75,7 @@ public:
 	VkPhysicalDeviceFeatures deviceFeatures;
 
 	std::vector<VkExtensionProperties> extensions;
-	std::vector<VkQueueFamilyProperties> queues;
+    std::vector<VulkanQueueFamilyInfo> queueFamilies;
 
 	int32_t supportedFormatCount;
 	std::vector<VulkanFormatInfo> formats;
@@ -167,9 +173,9 @@ public:
 	}
 
 	/// <summary>
-    ///	Get list of available device queues
+    ///	Get list of available device queue families
 	/// </summary>
-	void readQueues()
+    void readQueueFamilies()
 	{
 		assert(device != NULL);
 		uint32_t queueCount;
@@ -177,9 +183,22 @@ public:
 		assert(queueCount > 0);
 		std::vector<VkQueueFamilyProperties> qs(queueCount);
 		vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, &qs.front());
+        uint32_t index = 0;
 		for (auto& q : qs)
         {
-			queues.push_back(q);
+            VulkanQueueFamilyInfo queueFamilyInfo{};
+            queueFamilyInfo.properties = q;
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+            queueFamilyInfo.supportsPresent = vkGetPhysicalDeviceWin32PresentationSupportKHR(device, index);
+#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
+            // On Android all physical devices and queue families must support present
+            queueFamilyInfo.supportsPresent = true;
+#elif defined(VK_USE_PLATFORM_XCB_KHR)
+            // todo
+//            queueFamilyInfo.supportsPresent = PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR(device, index);
+#endif
+            queueFamilies.push_back(queueFamilyInfo);
+            index++;
         }
 	}
 
@@ -525,17 +544,19 @@ public:
 
 		// Queues
 		QJsonArray jsonQueues;
-		for (auto& queue : queues)
+        for (auto& queueFamily : queueFamilies)
 		{
 			QJsonObject jsonQueue;
-			jsonQueue["flags"] = QString::number(queue.queueFlags);
-			jsonQueue["count"] = QString::number(queue.queueCount);
-			jsonQueue["timestampValidBits"] = QString::number(queue.timestampValidBits);
-			jsonQueue["minImageTransferGranularity.width"] = QString::number(queue.minImageTransferGranularity.width);
-			jsonQueue["minImageTransferGranularity.height"] = QString::number(queue.minImageTransferGranularity.height);
-			jsonQueue["minImageTransferGranularity.depth"] = QString::number(queue.minImageTransferGranularity.depth);
-			jsonQueues.append(jsonQueue);
+            jsonQueue["flags"] = QString::number(queueFamily.properties.queueFlags);
+            jsonQueue["count"] = QString::number(queueFamily.properties.queueCount);
+            jsonQueue["timestampValidBits"] = QString::number(queueFamily.properties.timestampValidBits);
+            jsonQueue["minImageTransferGranularity.width"] = QString::number(queueFamily.properties.minImageTransferGranularity.width);
+            jsonQueue["minImageTransferGranularity.height"] = QString::number(queueFamily.properties.minImageTransferGranularity.height);
+            jsonQueue["minImageTransferGranularity.depth"] = QString::number(queueFamily.properties.minImageTransferGranularity.depth);
+            jsonQueue["supportsPresent"] = QString::number(queueFamily.supportsPresent);
+            jsonQueues.append(jsonQueue);
 		}
+        //todo: rename
 		root["queues"] = jsonQueues;
 
 		// Memory properties
