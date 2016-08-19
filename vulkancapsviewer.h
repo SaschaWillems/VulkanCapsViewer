@@ -13,6 +13,7 @@
 
 #include "vulkanDeviceInfo.hpp"
 #include "vulkanLayerInfo.hpp"
+#include "vulkansurfaceinfo.hpp"
 #include "vulkandatabase.h"
 #include "vulkanandroid.h"
 
@@ -36,7 +37,8 @@ public:
 	std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
-	void checkReportDatabaseState();
+    VulkanSurfaceInfo surfaceInfo;
+    void checkReportDatabaseState();
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
 private:
@@ -44,6 +46,7 @@ private:
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
 	VkInstance vkInstance;
+    VkSurfaceKHR surface;
 	VulkanDatabase databaseConnection;
 	Ui::vulkanCapsViewerClass ui;
 	settings appSettings;
@@ -70,7 +73,8 @@ private:
 	void displayDeviceFormats(VulkanDeviceInfo *device);
 	void displayDeviceExtensions(VulkanDeviceInfo *device);
 	void displayDeviceQueues(VulkanDeviceInfo *device);
-	void displayGlobalLayers(QTreeWidget *tree);
+    void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
+    void displayGlobalLayers(QTreeWidget *tree);
 	void displayGlobalExtensions();
 	void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
 private Q_SLOTS:

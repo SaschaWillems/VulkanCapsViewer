@@ -39,6 +39,7 @@
 #include "vulkanresources.h"
 #include "vulkanLayerInfo.hpp"
 #include "vulkanFormatInfo.hpp"
+#include "vulkanSurfaceInfo.hpp"
 
 #include "vulkanandroid.h"
 
@@ -72,6 +73,8 @@ public:
 
 	int32_t supportedFormatCount;
 	std::vector<VulkanFormatInfo> formats;
+
+    VulkanSurfaceInfo surfaceInfo;
 
 	OSInfo os;
 
@@ -432,6 +435,15 @@ public:
 		assert(device != NULL);
         vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
 	}
+
+    /// <summary>
+    ///	Read OS dependent surface information
+    /// </summary>
+    void readSurfaceInfo(VkSurfaceKHR surface)
+    {
+        assert(device != NULL);
+        surfaceInfo.get(device, surface);
+    }
 
     /// <summary>
     ///	Save report to JSON file

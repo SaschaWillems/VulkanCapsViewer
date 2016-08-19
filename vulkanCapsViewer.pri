@@ -10,7 +10,8 @@ HEADERS += ./settings.h \
     ./vulkandatabase.h \
     ./settingsDialog.h \
     $$PWD/external/vulkan/vulkan.h \
-    $$PWD/vulkanandroid.h
+    $$PWD/vulkanandroid.h \
+    $$PWD/vulkansurfaceinfo.hpp
 SOURCES += ./main.cpp \
     ./settings.cpp \
     ./settingsDialog.cpp \

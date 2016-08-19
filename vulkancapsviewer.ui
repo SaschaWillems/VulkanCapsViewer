@@ -806,6 +806,42 @@ QToolButton::hover {
             </item>
            </layout>
           </widget>
+          <widget class="QWidget" name="tab_4">
+           <attribute name="title">
+            <string>Surface</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QTreeWidget" name="treeWidgetDeviceSurface">
+              <property name="styleSheet">
+               <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <attribute name="headerDefaultSectionSize">
+               <number>200</number>
+              </attribute>
+              <attribute name="headerStretchLastSection">
+               <bool>true</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string>key</string>
+               </property>
+              </column>
+              <column>
+               <property name="text">
+                <string>value</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
        </layout>

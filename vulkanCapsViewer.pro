@@ -15,14 +15,21 @@ INCLUDEPATH += ./GeneratedFiles \
 INCLUDEPATH += "./external"
 win32 {
     DEFINES += WIN64
+    DEFINES += VK_USE_PLATFORM_WIN32_KHR
     LIBS += "$$PWD/libs/vulkan/vulkan-1.lib"
     LIBS += Advapi32.lib
 }
 linux:!android {
     LIBS += "$$PWD/libs/vulkan/libvulkan.so"
+    x11 {
+        DEFINES += VK_USE_PLATFORM_XLIB_KHR
+    }
+    #todo: other linux targets
 }
 android {
     DEFINES += VK_NO_PROTOTYPES
+    DEFINES += VK_USE_PLATFORM_ANDROID_KHR
+    QT += androidextras
     CONFIG += mobility
     MOBILITY =
 }
