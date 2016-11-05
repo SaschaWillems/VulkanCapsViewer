@@ -46,6 +46,9 @@
 #endif
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 #include <QtAndroid>
+#include <QAndroidJniEnvironment>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
 #endif
 
 #define VK_API_VERSION VK_MAKE_VERSION(1, 0, 3)
@@ -397,17 +400,49 @@ bool vulkanCapsViewer::initVulkan()
         surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
         vkCreateWin32SurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-        // Get a window from the activity
-        QAndroidJniObject activity = QtAndroid::androidActivity();
-        QAndroidJniObject window;
-        if (activity.isValid())
+
+    // Get a native window via JNI
+    // Qt doesn't offer access to this, so we have to do this manually
+    // Note: Purely based on countless hours of trial-and-error, need to check on other devices
+    // todo: cleanup, error checking
+
+    // Get window
+    QAndroidJniObject activity = QtAndroid::androidActivity();
+    QAndroidJniObject window;
+    if (activity.isValid())
+    {
+        window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+    }
+
+    if (window.isValid())
+    {
+
+        // Get a surface texture
+        QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
+        qDebug() << surfaceTexture.isValid();
+
+        // Get a surface based on the texture
+        QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
+        qDebug() << surface.isValid();
+
+        if (surfaceTexture.isValid())
         {
-            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+            // Create a native window from our surface that can be used to create the Vulkan surface
+            QAndroidJniEnvironment qjniEnv;
+            nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
         }
+
+        qDebug() << (int)nativeWindow;
+
+    }
+
+    if (nativeWindow)
+    {
         VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-        surfaceCreateInfo.window = reinterpret_cast<anativewindow>(window);
+        surfaceCreateInfo.window = nativeWindow;
         vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
+    }
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
         VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;

@@ -42,7 +42,7 @@ public:
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
 private:
-    std::string version = "1.1";
+    std::string version = "1.2";
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
 	VkInstance vkInstance;
@@ -60,6 +60,9 @@ private:
 		QStandardItemModel features;
 		QStandardItemModel formats;
 	} models;
+#ifdef ANDROID
+    ANativeWindow* nativeWindow = nullptr;
+#endif
 	bool initVulkan();
 	void getGlobalExtensions();
 	void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);

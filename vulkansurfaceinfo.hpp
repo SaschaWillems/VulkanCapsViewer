@@ -27,6 +27,8 @@
 #include <vector>
 #include "vulkan/vulkan.h"
 
+#include "vulkanandroid.h"
+
 struct VulkanSurfaceInfo
 {
     VkSurfaceCapabilitiesKHR capabilities;
