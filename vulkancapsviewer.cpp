@@ -927,6 +927,14 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 
     VkSurfaceCapabilitiesKHR surfaceCaps = device.surfaceInfo.capabilities;
 
+    addTreeItem(surfaceCapsItem, "minImageCount", to_string(surfaceCaps.minImageCount));
+    addTreeItem(surfaceCapsItem, "maxImageCount", to_string(surfaceCaps.maxImageCount));
+
+    addTreeItem(surfaceCapsItem, "maxImageArrayLayers", to_string(surfaceCaps.maxImageArrayLayers));
+
+    addTreeItem(surfaceCapsItem, "minImageExtent", to_string(surfaceCaps.minImageExtent.width) + " x " + to_string(surfaceCaps.minImageExtent.height));
+    addTreeItem(surfaceCapsItem, "maxImageExtent", to_string(surfaceCaps.maxImageExtent.width) + " x " + to_string(surfaceCaps.maxImageExtent.height));
+
     // Usage flags
     flagsItem = addTreeItem(surfaceCapsItem, "Supported usage flags", "");
     if (surfaceCaps.supportedUsageFlags == 0)
@@ -944,6 +952,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         addFlagTreeItem(flagsItem, "TRANSIENT_ATTACHMENT_BIT", (VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT & surfaceCaps.supportedUsageFlags));
         addFlagTreeItem(flagsItem, "USAGE_INPUT_ATTACHMENT_BIT", (VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT & surfaceCaps.supportedUsageFlags));
     }
+    flagsItem->setExpanded(true);
 
     // Transform flags
     flagsItem = addTreeItem(surfaceCapsItem, "Supported transforms", "");
@@ -963,6 +972,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         addFlagTreeItem(flagsItem, "HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR", (VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR & surfaceCaps.supportedTransforms));
         addFlagTreeItem(flagsItem, "INHERIT_BIT_KHR", (VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR & surfaceCaps.supportedTransforms));
     }
+    flagsItem->setExpanded(true);
 
     // Composite alpha
     flagsItem = addTreeItem(surfaceCapsItem, "Composite alpha flags", "");
@@ -977,6 +987,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         addFlagTreeItem(flagsItem, "POST_MULTIPLIED_BIT", (VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR & surfaceCaps.supportedCompositeAlpha));
         addFlagTreeItem(flagsItem, "INHERIT_BIT", (VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR & surfaceCaps.supportedCompositeAlpha));
     }
+    flagsItem->setExpanded(true);
 
     // Surface modes
     QTreeWidgetItem *modesItem = addTreeItem(treeWidget->invisibleRootItem(), "Present modes", "");
@@ -991,6 +1002,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     {
         addTreeItem(modesItem, "none", "");
     }
+    modesItem->setExpanded(true);
 
     // Surface formats
     QTreeWidgetItem *formatsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface formats", "");
@@ -1002,6 +1014,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
             QTreeWidgetItem *formatItem = addTreeItem(formatsItem, std::to_string(index), "");
             addTreeItem(formatItem, "Format", (vulkanResources::formatString(surfaceFormat.format)));
             addTreeItem(formatItem, "Color space", (vulkanResources::colorSpaceKHRString(surfaceFormat.colorSpace)));
+            formatItem->setExpanded(true);
             index++;
         }
     }
@@ -1009,6 +1022,9 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     {
         addTreeItem(formatsItem, "none", "");
     }
+    formatsItem->setExpanded(true);
+
+    surfaceCapsItem->setExpanded(true);
 
     // todo: move to function
     for (int i = 0; i < treeWidget->columnCount(); i++)
