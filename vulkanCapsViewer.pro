@@ -21,9 +21,10 @@ win32 {
 }
 linux:!android {
     LIBS += "$$PWD/libs/vulkan/libvulkan.so"
-    x11 {
+    QT += x11extras
+    #x11 {
         DEFINES += VK_USE_PLATFORM_XCB_KHR
-    }
+    #}
     #todo: other linux targets
 }
 android {

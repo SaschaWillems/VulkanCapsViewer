@@ -39,7 +39,7 @@
 #include "vulkanresources.h"
 #include "vulkanLayerInfo.hpp"
 #include "vulkanFormatInfo.hpp"
-#include "vulkanSurfaceInfo.hpp"
+#include "vulkansurfaceinfo.hpp"
 
 #include "vulkanandroid.h"
 

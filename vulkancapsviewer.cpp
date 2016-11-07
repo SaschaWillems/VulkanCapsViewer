@@ -43,6 +43,7 @@
 #endif 
 #ifdef __linux__
 #include <sys/utsname.h>
+#include <QtX11Extras/QX11Info>
 #endif
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 #include <QtAndroid>
@@ -393,12 +394,13 @@ bool vulkanCapsViewer::initVulkan()
 #endif
 
     // Create a surface
+    VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
         VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
         surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-        vkCreateWin32SurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+        surfaceResult = vkCreateWin32SurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
 
     // Get a native window via JNI
@@ -441,17 +443,18 @@ bool vulkanCapsViewer::initVulkan()
         VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo.window = nativeWindow;
-        vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
+        surfaceResult = vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
     }
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
         VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
         surfaceCreateInfo.connection = QX11Info::connection();
         surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-        vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+        surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #endif
 
-    // todo: surface error checking
+    // todo: Proper surface error checking
+    assert(surfaceResult == VK_SUCCESS);
 
     displayGlobalLayers(ui.treeWidgetGlobalLayers);
     displayGlobalExtensions();
