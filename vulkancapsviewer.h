@@ -37,7 +37,6 @@ public:
 	std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
-    VulkanSurfaceInfo surfaceInfo;
     void checkReportDatabaseState();
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();

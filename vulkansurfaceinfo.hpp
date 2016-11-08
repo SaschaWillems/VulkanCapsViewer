@@ -31,13 +31,14 @@
 
 struct VulkanSurfaceInfo
 {
+    bool validSurface = false;
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkPresentModeKHR> presentModes;
     std::vector<VkSurfaceFormatKHR> formats;
 
     void get(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
-        //todo: error checling
+        //todo: error checking
         VkResult vkRes;
         vkRes = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
 

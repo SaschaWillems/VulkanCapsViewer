@@ -395,6 +395,7 @@ bool vulkanCapsViewer::initVulkan()
 
     // Create a surface
     VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
+    surface = VK_NULL_HANDLE;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
         VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
         surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
@@ -453,9 +454,6 @@ bool vulkanCapsViewer::initVulkan()
         surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #endif
 
-    // todo: Proper surface error checking
-    assert(surfaceResult == VK_SUCCESS);
-
     displayGlobalLayers(ui.treeWidgetGlobalLayers);
     displayGlobalExtensions();
 
@@ -479,7 +477,6 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->readPhyiscalLimits();
 	GPU->readPhyiscalMemoryProperties();
     GPU->readSurfaceInfo(surface);
-
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)
@@ -923,6 +920,14 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 {
     QTreeWidget *treeWidget = ui.treeWidgetDeviceSurface;
     treeWidget->clear();
+
+    if (!device.surfaceInfo.validSurface)
+    {
+        QTreeWidgetItem *errorItem = addTreeItem(treeWidget->invisibleRootItem(), "Could not get a valid surface, no surface information available!", "");
+        errorItem->setTextColor(0, QColor::fromRgb(255, 0, 0));
+        treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+        return;
+    }
 
     // Surface capabilities
     QTreeWidgetItem *surfaceCapsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface Capabilities", "");

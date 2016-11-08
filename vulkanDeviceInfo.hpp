@@ -461,6 +461,7 @@ public:
     void readSurfaceInfo(VkSurfaceKHR surface)
     {
         assert(device != NULL);
+        surfaceInfo.validSurface = (surface != VK_NULL_HANDLE);
         surfaceInfo.get(device, surface);
     }
 
@@ -587,33 +588,37 @@ public:
 
         // Surface capabilities
         QJsonObject jsonSurfaceCaps;
-        jsonSurfaceCaps["minImageCount"] = QString::number(surfaceInfo.capabilities.minImageCount);
-        jsonSurfaceCaps["maxImageCount"] = QString::number(surfaceInfo.capabilities.maxImageCount);
-        jsonSurfaceCaps["maxImageArrayLayers"] = QString::number(surfaceInfo.capabilities.maxImageArrayLayers);
-        jsonSurfaceCaps["minImageExtent.width"] = QString::number(surfaceInfo.capabilities.minImageExtent.width);
-        jsonSurfaceCaps["minImageExtent.height"] = QString::number(surfaceInfo.capabilities.minImageExtent.height);
-        jsonSurfaceCaps["maxImageExtent.width"] = QString::number(surfaceInfo.capabilities.maxImageExtent.width);
-        jsonSurfaceCaps["maxImageExtent.height"] = QString::number(surfaceInfo.capabilities.maxImageExtent.height);
-        jsonSurfaceCaps["supportedUsageFlags"] = QString::number(surfaceInfo.capabilities.supportedUsageFlags);
-        jsonSurfaceCaps["supportedTransforms"] = QString::number(surfaceInfo.capabilities.supportedTransforms);
-        jsonSurfaceCaps["supportedCompositeAlpha"] = QString::number(surfaceInfo.capabilities.supportedCompositeAlpha);
-        QJsonArray presentModes;
-        for (uint32_t i = 0; i < surfaceInfo.presentModes.size(); i++)
+        jsonSurfaceCaps["validSurface"] = surfaceInfo.validSurface;
+        if (surfaceInfo.validSurface)
         {
-            QJsonObject presentMode;
-            presentMode["presentMode"] = QString::number(surfaceInfo.presentModes[i]);
-            presentModes.append(presentMode);
+            jsonSurfaceCaps["minImageCount"] = QString::number(surfaceInfo.capabilities.minImageCount);
+            jsonSurfaceCaps["maxImageCount"] = QString::number(surfaceInfo.capabilities.maxImageCount);
+            jsonSurfaceCaps["maxImageArrayLayers"] = QString::number(surfaceInfo.capabilities.maxImageArrayLayers);
+            jsonSurfaceCaps["minImageExtent.width"] = QString::number(surfaceInfo.capabilities.minImageExtent.width);
+            jsonSurfaceCaps["minImageExtent.height"] = QString::number(surfaceInfo.capabilities.minImageExtent.height);
+            jsonSurfaceCaps["maxImageExtent.width"] = QString::number(surfaceInfo.capabilities.maxImageExtent.width);
+            jsonSurfaceCaps["maxImageExtent.height"] = QString::number(surfaceInfo.capabilities.maxImageExtent.height);
+            jsonSurfaceCaps["supportedUsageFlags"] = QString::number(surfaceInfo.capabilities.supportedUsageFlags);
+            jsonSurfaceCaps["supportedTransforms"] = QString::number(surfaceInfo.capabilities.supportedTransforms);
+            jsonSurfaceCaps["supportedCompositeAlpha"] = QString::number(surfaceInfo.capabilities.supportedCompositeAlpha);
+            QJsonArray presentModes;
+            for (uint32_t i = 0; i < surfaceInfo.presentModes.size(); i++)
+            {
+                QJsonObject presentMode;
+                presentMode["presentMode"] = QString::number(surfaceInfo.presentModes[i]);
+                presentModes.append(presentMode);
+            }
+            jsonSurfaceCaps["presentModes"] = presentModes;
+            QJsonArray surfaceFormats;
+            for (uint32_t i = 0; i < surfaceInfo.formats.size(); i++)
+            {
+                QJsonObject surfaceFormat;
+                surfaceFormat["format"] = QString::number(surfaceInfo.formats[i].format);
+                surfaceFormat["colorSpace"] = QString::number(surfaceInfo.formats[i].colorSpace);
+                surfaceFormats.append(surfaceFormat);
+            }
+            jsonSurfaceCaps["surfaceFormats"] = surfaceFormats;
         }
-        jsonSurfaceCaps["presentModes"] = presentModes;
-        QJsonArray surfaceFormats;
-        for (uint32_t i = 0; i < surfaceInfo.formats.size(); i++)
-        {
-            QJsonObject surfaceFormat;
-            surfaceFormat["format"] = QString::number(surfaceInfo.formats[i].format);
-            surfaceFormat["colorSpace"] = QString::number(surfaceInfo.formats[i].colorSpace);
-            surfaceFormats.append(surfaceFormat);
-        }
-        jsonSurfaceCaps["surfaceFormats"] = surfaceFormats;
         root["surfacecapabilites"] = jsonSurfaceCaps;
 
 		// Environment
