@@ -608,7 +608,7 @@ public:
                 presentMode["presentMode"] = QString::number(surfaceInfo.presentModes[i]);
                 presentModes.append(presentMode);
             }
-            jsonSurfaceCaps["presentModes"] = presentModes;
+            jsonSurfaceCaps["presentmodes"] = presentModes;
             QJsonArray surfaceFormats;
             for (uint32_t i = 0; i < surfaceInfo.formats.size(); i++)
             {
@@ -617,7 +617,7 @@ public:
                 surfaceFormat["colorSpace"] = QString::number(surfaceInfo.formats[i].colorSpace);
                 surfaceFormats.append(surfaceFormat);
             }
-            jsonSurfaceCaps["surfaceFormats"] = surfaceFormats;
+            jsonSurfaceCaps["surfaceformats"] = surfaceFormats;
         }
         root["surfacecapabilites"] = jsonSurfaceCaps;
 
