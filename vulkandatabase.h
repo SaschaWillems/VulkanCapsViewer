@@ -54,6 +54,9 @@ private:
 	string httpPost(string url, string data);
 	string encodeUrl(string url);
 public:
+    static bool dbLogin;
+    static QString dbUser;
+    static QString dbPass;
 	int getReportId(VulkanDeviceInfo device);
 	bool checkReportPresent(VulkanDeviceInfo device);
 	vector<string> fetchDevices();

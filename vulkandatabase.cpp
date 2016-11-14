@@ -23,15 +23,15 @@
 #include "vulkandatabase.h"
 #include <QNetworkProxy>
 #include <sstream>
+#include <string>
 #include <QMessageBox>
 #include <QEventLoop>
 #include <QHttpMultiPart>
 #include <QXmlStreamReader>
 
-// TODO : Only during development
-#define loginUser ""
-#define loginPass ""
-//#define loginRequired
+bool VulkanDatabase::dbLogin = false;
+QString VulkanDatabase::dbUser = "";
+QString VulkanDatabase::dbPass = "";
 
 VulkanDatabase::VulkanDatabase()
 {
@@ -51,10 +51,11 @@ bool VulkanDatabase::checkServerConnection()
 
 	QUrl qurl(QString::fromStdString(getBaseUrl() + "/services/serverstate.php"));
 
-#ifdef loginRequired
-	qurl.setUserName(loginUser);
-	qurl.setPassword(loginPass);
-#endif
+    if (dbLogin)
+    {
+        qurl.setUserName(dbUser);
+        qurl.setPassword(dbPass);
+    }
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
 
@@ -76,10 +77,11 @@ string VulkanDatabase::httpGet(string url)
 
 	QUrl qurl(QString::fromStdString(url));
 
-#ifdef loginRequired
-	qurl.setUserName(loginUser);
-	qurl.setPassword(loginPass);
-#endif
+    if (dbLogin)
+    {
+        qurl.setUserName(dbUser);
+        qurl.setPassword(dbPass);
+    }
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
 
@@ -122,10 +124,11 @@ string VulkanDatabase::httpPost(string url, string data)
 
 	QUrl qurl(QString::fromStdString(url));
 
-#ifdef loginRequired
-	qurl.setUserName(loginUser);
-	qurl.setPassword(loginPass);
-#endif
+    if (dbLogin)
+    {
+        qurl.setUserName(dbUser);
+        qurl.setPassword(dbPass);
+    }
 
 	QNetworkRequest request(qurl);
 	QNetworkReply *reply = manager->post(request, multiPart);
@@ -318,7 +321,7 @@ vector<reportInfo> VulkanDatabase::fetchDeviceReports(string device)
 string VulkanDatabase::getBaseUrl()
 {
 #ifdef DEVDATABASE
-	return "http://vulkan.gpuinfo.org/devdatabase/";
+    return "http://vulkan.gpuinfo.org/dev/";
 #else
 	return "http://vulkan.gpuinfo.org/";
 #endif
