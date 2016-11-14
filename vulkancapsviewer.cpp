@@ -72,7 +72,12 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 {
 	ui.setupUi(this);
 
+
+#ifdef DEVDATABASE
+    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " (beta) - Connected to DEVELOPMENT DATABASE!");
+#else
     setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " (beta)");
+#endif
 
 	// Connect slots
     connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)));
