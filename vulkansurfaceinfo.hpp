@@ -35,6 +35,7 @@ struct VulkanSurfaceInfo
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkPresentModeKHR> presentModes;
     std::vector<VkSurfaceFormatKHR> formats;
+    std::string surfaceExtension;
 
     void get(VkPhysicalDevice device, VkSurfaceKHR surface)
     {

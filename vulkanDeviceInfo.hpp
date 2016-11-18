@@ -458,10 +458,11 @@ public:
     /// <summary>
     ///	Read OS dependent surface information
     /// </summary>
-    void readSurfaceInfo(VkSurfaceKHR surface)
+    void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension)
     {
         assert(device != NULL);
         surfaceInfo.validSurface = (surface != VK_NULL_HANDLE);
+        surfaceInfo.surfaceExtension = surfaceExtension;
         surfaceInfo.get(device, surface);
     }
 
@@ -588,9 +589,10 @@ public:
 
         // Surface capabilities
         QJsonObject jsonSurfaceCaps;
-        jsonSurfaceCaps["validSurface"] = surfaceInfo.validSurface;
+        jsonSurfaceCaps["validSurface"] = QString::number(surfaceInfo.validSurface);
         if (surfaceInfo.validSurface)
         {
+            jsonSurfaceCaps["surfaceExtension"] = QString::fromStdString(surfaceInfo.surfaceExtension);
             jsonSurfaceCaps["minImageCount"] = QString::number(surfaceInfo.capabilities.minImageCount);
             jsonSurfaceCaps["maxImageCount"] = QString::number(surfaceInfo.capabilities.maxImageCount);
             jsonSurfaceCaps["maxImageArrayLayers"] = QString::number(surfaceInfo.capabilities.maxImageArrayLayers);

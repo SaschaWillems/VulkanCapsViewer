@@ -20,6 +20,7 @@
 
 #include "vulkancapsviewer.h"
 #include "vulkanresources.h"
+#include "vulkansurfaceinfo.hpp"
 #include <typeinfo>
 #include <QMessageBox>
 #include <QFileDialog>
@@ -38,13 +39,19 @@
 #include <assert.h>
 #include <settingsDialog.h>
 #include "submitDialog.h"
+
 #ifdef _WIN32
 #include <Windows.h>
 #endif 
+
 #ifdef __linux__
 #include <sys/utsname.h>
+#endif
+
+#ifdef VK_USE_PLATFORM_XCB_KHR
 #include <QtX11Extras/QX11Info>
 #endif
+
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
 #include <QtAndroid>
 #include <QAndroidJniEnvironment>
@@ -359,18 +366,19 @@ bool vulkanCapsViewer::initVulkan()
 	}
 
 
-    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
+    surfaceExtension = "";
 
     // Platform specific surface extensions
 #if defined(_WIN32)
-    enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+    surfaceExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-    enabledExtensions.push_back(VK_KHR_ANDROID_SURFACE_EXTENSION_NAME);
+    surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-    enabledExtensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
+    surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
     // todo : wayland etc.
 #endif
 
+    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, surfaceExtension.c_str() };
     instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
     instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
 
@@ -399,6 +407,7 @@ bool vulkanCapsViewer::initVulkan()
 #endif
 
     // Create a surface
+    // todo: only if surfaceExtensions != ""
     VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
     surface = VK_NULL_HANDLE;
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
@@ -481,7 +490,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->readPhyiscalFeatures();
 	GPU->readPhyiscalLimits();
 	GPU->readPhyiscalMemoryProperties();
-    GPU->readSurfaceInfo(surface);
+    GPU->readSurfaceInfo(surface, surfaceExtension);
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)

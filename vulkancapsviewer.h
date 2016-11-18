@@ -46,7 +46,8 @@ private:
 	int selectedDeviceIndex = 0;
 	VkInstance vkInstance;
     VkSurfaceKHR surface;
-	VulkanDatabase databaseConnection;
+    std::string surfaceExtension;
+    VulkanDatabase databaseConnection;
 	Ui::vulkanCapsViewerClass ui;
 	settings appSettings;
 	struct {
