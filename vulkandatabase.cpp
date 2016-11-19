@@ -179,7 +179,7 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 	stringstream urlss;
 	urlss << getBaseUrl() << "/services/getreportid.php?"
 		<< "devicename=" << device.props.deviceName
-		<< "&driverversion=" << vulkanResources::versionToString(device.props.driverVersion)
+        << "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
 		<< "&osarchitecture=" << device.os.architecture;
