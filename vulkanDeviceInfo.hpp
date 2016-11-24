@@ -34,12 +34,17 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QFile>
+#include <QDebug>
 
 #include "vulkan/vulkan.h"
 #include "vulkanresources.h"
 #include "vulkanLayerInfo.hpp"
 #include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
+
+#ifdef __linux__
+#include <sys/system_properties.h>
+#endif
 
 #include "vulkanandroid.h"
 
@@ -255,6 +260,18 @@ public:
         properties["residencyStandard3DBlockShape"] = std::to_string(props.sparseProperties.residencyStandard3DBlockShape);
         properties["residencyAlignedMipSize"] = std::to_string(props.sparseProperties.residencyAlignedMipSize);
         properties["residencyNonResidentStrict"] = std::to_string(props.sparseProperties.residencyNonResidentStrict);
+
+#if defined(__ANDROID__)
+        char prodModel[PROP_VALUE_MAX+1];
+        char prodManufacturer[PROP_VALUE_MAX+1];
+        int lenModel = __system_property_get("ro.product.model", prodModel);
+        int lenManufacturer = __system_property_get("ro.product.manufacturer", prodManufacturer);
+        properties["productModel"] = (lenModel > 0) ? prodModel : "";
+        properties["productManufacturer"] = (lenManufacturer > 0) ? prodManufacturer : "";
+#else
+        properties["productModel"] = "";
+        properties["productManufacturer"] = "";
+#endif
 	}
 	
 
