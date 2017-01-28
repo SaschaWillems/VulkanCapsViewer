@@ -867,6 +867,8 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 					ADD_FLAG(VK_FORMAT_FEATURE_BLIT_DST_BIT);
                     ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
                     ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG);
+                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_SRC_BIT_KHR);
+                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_DST_BIT_KHR);
                 }
 
 				rowItems[0]->appendRow(flagItems);
