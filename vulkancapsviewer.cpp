@@ -81,9 +81,9 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
 
 #ifdef DEVDATABASE
-    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " (beta) - Connected to DEVELOPMENT DATABASE!");
+    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " - Connected to DEVELOPMENT DATABASE!");
 #else
-    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " (beta)");
+    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version));
 #endif
 
 	// Connect slots
