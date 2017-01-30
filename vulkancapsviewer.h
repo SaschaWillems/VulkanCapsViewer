@@ -34,14 +34,15 @@ class vulkanCapsViewer : public QMainWindow
 	Q_OBJECT
 
 public:
-	std::vector<VulkanDeviceInfo> vulkanGPUs;
+    static const std::string version;
+    std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
     void checkReportDatabaseState();
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
+    void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
 private:
-    std::string version = "1.3";
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
 	VkInstance vkInstance;
@@ -79,7 +80,6 @@ private:
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
     void displayGlobalLayers(QTreeWidget *tree);
 	void displayGlobalExtensions();
-	void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
 private Q_SLOTS:
 	void slotClose();
 	void slotBrowseDatabase();

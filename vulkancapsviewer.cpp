@@ -74,6 +74,8 @@ OSInfo getOperatingSystem()
 	return osInfo;
 }
 
+const std::string vulkanCapsViewer::version = "1.3";
+
 vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	: QMainWindow(parent)
 {
