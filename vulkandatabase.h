@@ -66,7 +66,6 @@ public:
 	string fetchReport(int reportId);
 	string postReport(string xml);
 	string postReportForUpdate(string xml);
-	string fetchCapsList();
 	VulkanDatabase();
 	~VulkanDatabase();
 };

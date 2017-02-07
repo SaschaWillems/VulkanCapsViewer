@@ -182,7 +182,8 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
         << "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
-		<< "&osarchitecture=" << device.os.architecture;
+        << "&osarchitecture=" << device.os.architecture
+        << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
@@ -198,18 +199,6 @@ bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device)
 }
 
 /// <summary>
-/// Fechtes the OpenGL capability xml list from the web server
-/// </summary>
-/// <returns>xml string</returns>
-string VulkanDatabase::fetchCapsList()
-{
-	string capsXml;
-	stringstream urlss;
-	capsXml = httpGet("http://www.delphigl.de/glcapsviewer/files/capslist.xml");
-	return capsXml;
-}
-
-/// <summary>
 /// Fechtes an xml with all report data from the online database
 /// </summary>
 /// <param name="reportId">id of the report to get the report xml for</param>
@@ -218,7 +207,7 @@ string VulkanDatabase::fetchReport(int reportId)
 {
 	string reportXml;
 	stringstream urlss;
-	urlss << getBaseUrl() << "services/ggetreport.php?id=" << reportId;
+    urlss << getBaseUrl() << "services/getreport.php?id=" << reportId;
 	reportXml = httpGet(urlss.str());
 	return reportXml;
 }
