@@ -71,6 +71,7 @@ public:
 	std::map<std::string, std::string> properties;
 	std::map<std::string, std::string> limits;
 	std::map<std::string, VkBool32> features;
+    std::map<std::string, std::string> platformdetails;
 
 	VkPhysicalDevice device;
 	VkDevice dev;
@@ -260,21 +261,8 @@ public:
         properties["residencyStandard3DBlockShape"] = std::to_string(props.sparseProperties.residencyStandard3DBlockShape);
         properties["residencyAlignedMipSize"] = std::to_string(props.sparseProperties.residencyAlignedMipSize);
         properties["residencyNonResidentStrict"] = std::to_string(props.sparseProperties.residencyNonResidentStrict);
-
-#if defined(__ANDROID__)
-        char prodModel[PROP_VALUE_MAX+1];
-        char prodManufacturer[PROP_VALUE_MAX+1];
-        int lenModel = __system_property_get("ro.product.model", prodModel);
-        int lenManufacturer = __system_property_get("ro.product.manufacturer", prodManufacturer);
-        properties["productModel"] = (lenModel > 0) ? prodModel : "";
-        properties["productManufacturer"] = (lenManufacturer > 0) ? prodManufacturer : "";
-#else
-        properties["productModel"] = "";
-        properties["productManufacturer"] = "";
-#endif
 	}
 	
-
 	/// <summary>
 	///	Request physical device features
 	/// </summary>
@@ -483,6 +471,33 @@ public:
         surfaceInfo.get(device, surface);
     }
 
+#if defined(__ANDROID__)
+    std::string getSystemProperty(char* propname)
+    {
+        char prop[PROP_VALUE_MAX+1];
+        int len = __system_property_get(propname, prop);
+        if (len > 0) {
+            return std::string(prop);
+        } else {
+            return "";
+        }
+    }
+#endif
+
+    /// <summary>
+    ///	Read platform specific detail info
+    /// </summary>
+    void readPlatformDetails()
+    {
+        // Android specific build info
+#if defined(__ANDROID__)
+        platforminfo["android.ProductModel"] = getSystemProperty("ro.product.model");
+        platforminfo["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
+        platforminfo["android.BuildID"] = getSystemProperty("ro.build.id");
+        platforminfo["android.BuildVersionIncremental"] = getSystemProperty("ro.build.version.incremental");
+#endif
+    }
+
     /// <summary>
     ///	Save report to JSON file
     /// </summary>
@@ -639,6 +654,14 @@ public:
             jsonSurfaceCaps["surfaceformats"] = surfaceFormats;
         }
         root["surfacecapabilites"] = jsonSurfaceCaps;
+
+        // Platform specific details
+        QJsonObject jsonPlatformDetail;
+        for (auto& detail : platformdetails)
+        {
+            jsonPlatformDetail[QString::fromStdString(detail.first)] = QString::fromStdString(detail.second);
+        }
+        root["platformdetails"] = jsonPlatformDetail;
 
 		// Environment
 		QJsonObject jsonEnv;

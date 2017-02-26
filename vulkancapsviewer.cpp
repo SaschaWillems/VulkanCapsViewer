@@ -493,6 +493,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->readPhyiscalLimits();
 	GPU->readPhyiscalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
+    GPU->readPlatformDetails();
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)
