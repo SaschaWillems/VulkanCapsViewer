@@ -80,6 +80,10 @@ public:
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
 
+    struct {
+
+    } extProperties;
+
 	std::vector<VkExtensionProperties> extensions;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
 
