@@ -302,23 +302,33 @@ public:
             // VK_KHX_multiview
             if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMultiviewPropertiesKHX multiViewProps{};
-                multiViewProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHX;
+                VkPhysicalDeviceMultiviewPropertiesKHX extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHX;
                 deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &multiViewProps;
+                deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(multiViewProps.maxMultiviewViewCount), VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(multiViewProps.maxMultiviewInstanceIndex), VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount), VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex), VK_KHX_MULTIVIEW_EXTENSION_NAME));
             }
             // VK_KHR_push_descriptor
             if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDevicePushDescriptorPropertiesKHR pushDescProps{};
-                pushDescProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
+                VkPhysicalDevicePushDescriptorPropertiesKHR extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
                 deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &pushDescProps;
+                deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxPushDescriptors", QString::number(pushDescProps.maxPushDescriptors), VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME));
+                properties2.push_back(Property2("maxPushDescriptors", QString::number(extProps.maxPushDescriptors), VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME));
+            }
+            // VK_EXT_discard_rectangles
+            if (extensionSupported(VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceDiscardRectanglePropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("maxDiscardRectangles", QString::number(extProps.maxDiscardRectangles), VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME));
             }
         }
 	}
