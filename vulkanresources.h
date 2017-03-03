@@ -298,18 +298,6 @@ default: return "UNKNOWN_DEVICE";
             {
 #define STR(r) case VK_COLOR_SPACE_ ##r: return #r
                 STR(SRGB_NONLINEAR_KHR);                
-                STR(DISPLAY_P3_LINEAR_EXT);
-                STR(DISPLAY_P3_NONLINEAR_EXT);
-                STR(SCRGB_LINEAR_EXT);
-                STR(SCRGB_NONLINEAR_EXT);
-                STR(DCI_P3_LINEAR_EXT);
-                STR(DCI_P3_NONLINEAR_EXT);
-                STR(BT709_LINEAR_EXT);
-                STR(BT709_NONLINEAR_EXT);
-                STR(BT2020_LINEAR_EXT);
-                STR(BT2020_NONLINEAR_EXT);
-                STR(ADOBERGB_LINEAR_EXT);
-                STR(ADOBERGB_NONLINEAR_EXT);
 #undef STR
                 default:
                     std::stringstream ss;
