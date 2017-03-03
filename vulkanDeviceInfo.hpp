@@ -310,6 +310,16 @@ public:
                 properties2.push_back(Property2("maxMultiviewViewCount", QString::number(multiViewProps.maxMultiviewViewCount), VK_KHX_MULTIVIEW_EXTENSION_NAME));
                 properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(multiViewProps.maxMultiviewInstanceIndex), VK_KHX_MULTIVIEW_EXTENSION_NAME));
             }
+            // VK_KHR_push_descriptor
+            if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDevicePushDescriptorPropertiesKHR pushDescProps{};
+                pushDescProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &pushDescProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("maxPushDescriptors", QString::number(pushDescProps.maxPushDescriptors), VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME));
+            }
         }
 	}
 	
