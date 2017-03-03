@@ -62,6 +62,13 @@ struct VulkanQueueFamilyInfo
     VkBool32 supportsPresent;
 };
 
+struct Feature2 {
+    std::string name;
+    VkBool32 supported;
+    const char* extension;
+    Feature2(std::string n, VkBool32 supp, const char* ext) : name(n), supported(supp), extension(ext) {}
+};
+
 class VulkanDeviceInfo
 {
 private:
@@ -73,6 +80,8 @@ public:
 	std::map<std::string, std::string> limits;
 	std::map<std::string, VkBool32> features;
     std::map<std::string, std::string> platformdetails;
+
+    std::vector<Feature2> features2;
 
 	VkPhysicalDevice device;
 	VkDevice dev;
@@ -344,21 +353,6 @@ public:
 		features["sparseResidencyAliased"] = deviceFeatures.sparseResidencyAliased;
 		features["variableMultisampleRate"] = deviceFeatures.variableMultisampleRate;
 		features["inheritedQueries"] = deviceFeatures.inheritedQueries;
-
-        // Extensions
-        /*
-        if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
-            VkPhysicalDeviceFeatures2KHR features2{};
-            VkPhysicalDeviceMultiviewFeaturesKHX multiViewFeatures{};
-            multiViewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
-            features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-            features2.pNext = &multiViewFeatures;
-            pfnGetPhysicalDeviceFeatures2KHR(device, &features2);
-            features["mv"] = multiViewFeatures.multiview;
-            features["mv_geom"] = multiViewFeatures.multiviewGeometryShader;
-            features["mv_tess"] = multiViewFeatures.multiviewTessellationShader;
-        }
-        */
 	}
 
 	/// <summary>

@@ -753,15 +753,37 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
     models.features.clear();
     QStandardItem *rootItem = models.features.invisibleRootItem();
-	for (auto const &feature : device->features)
-	{
+
+    // Basic features
+    for (auto const &feature : device->features) {
 		QList<QStandardItem *> rowItems;
 		rowItems << new QStandardItem(QString::fromStdString(feature.first));
 		rowItems << new QStandardItem((feature.second) ? "true" : "false");
 		rowItems[1]->setForeground((feature.second) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
 		rootItem->appendRow(rowItems);
 	}
-	ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    // Specific features via VK_KHR_get_physical_device_properties2
+    if (device->features2.size() > 0) {
+        QStandardItem *extItem;
+        const char* currExtName("");
+        for (auto const &feature : device->features2) {
+            if (strcmp(feature.extension, currExtName) != 0) {
+                // New parent item for each extension
+                currExtName = feature.extension;
+                extItem = new QStandardItem(QString::fromLatin1(currExtName));
+                rootItem->appendRow(extItem);
+            }
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(QString::fromStdString(feature.name));
+            rowItems << new QStandardItem((feature.supported) ? "true" : "false");
+            rowItems[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            extItem->appendRow(rowItems);
+        }
+    }
+
+    ui.treeViewDeviceFeatures->expandAll();
+    ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
