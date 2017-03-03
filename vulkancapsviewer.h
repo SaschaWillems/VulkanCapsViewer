@@ -27,6 +27,9 @@ struct vulkanInstanceInfo
 struct vulkanGlobalInfo
 {
 	std::vector<VkExtensionProperties> extensions;
+    struct Features {
+        bool deviceProperties2;
+    } features;
 };
 
 class vulkanCapsViewer : public QMainWindow

@@ -133,7 +133,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	filterProxies.formats.setSourceModel(&models.formats);
 	connect(ui.filterLineEditFormats, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFormats(QString)));
 
-	getGPUs();
+    getGPUs();
 }
 
 vulkanCapsViewer::~vulkanCapsViewer()
@@ -381,11 +381,22 @@ bool vulkanCapsViewer::initVulkan()
 #endif
 
     std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, surfaceExtension.c_str() };
-    instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
-    instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
 
-	// Global extensions
+    // Global extensions
 	getGlobalExtensions();
+
+    // Check support for new property and feature queries
+    globalInfo.features.deviceProperties2 = false;
+    for (auto& ext : globalInfo.extensions) {
+        if (strcmp(ext.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
+            globalInfo.features.deviceProperties2 = true;
+            enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+            break;
+        }
+    }
+
+    instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
+    instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
 
 	// Create vulkan Instance
     vkRes = vkCreateInstance(&instanceCreateInfo, nullptr, &vkInstance);
@@ -407,6 +418,15 @@ bool vulkanCapsViewer::initVulkan()
 #ifdef ANDROID
     loadVulkanFunctions(vkInstance);
 #endif
+
+    // Function pointers for new features/properties
+    if (globalInfo.features.deviceProperties2) {
+        pfnGetPhysicalDeviceFeatures2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2KHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceFeatures2KHR"));
+        if (!pfnGetPhysicalDeviceFeatures2KHR) {
+            globalInfo.features.deviceProperties2 = false;
+            QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFeatures2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
+        }
+    }
 
     // Create a surface
     // todo: only if surfaceExtensions != ""

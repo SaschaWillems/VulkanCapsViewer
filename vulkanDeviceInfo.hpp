@@ -41,6 +41,7 @@
 #include "vulkanLayerInfo.hpp"
 #include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
+#include "vulkanpfn.h"
 
 #ifdef __linux__
 #include <sys/system_properties.h>
@@ -80,9 +81,8 @@ public:
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
 
-    struct {
-
-    } extProperties;
+    VkPhysicalDeviceProperties2KHR deviceProperties2;
+    VkPhysicalDeviceFeatures2KHR deviceFeatures2;
 
 	std::vector<VkExtensionProperties> extensions;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
@@ -119,6 +119,19 @@ public:
 		} while (vkRes == VK_INCOMPLETE);
 		assert(!vkRes);
 	}
+
+    /// <summary>
+    ///	Checks if the given extension is supported on this device
+    /// </summary>
+    bool extensionSupported(const char* extensionName)
+    {
+        for (auto& ext : extensions) {
+            if (std::strcmp(ext.extensionName, extensionName) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 	/// <summary>
 	///	Get list of available device layers
@@ -331,6 +344,21 @@ public:
 		features["sparseResidencyAliased"] = deviceFeatures.sparseResidencyAliased;
 		features["variableMultisampleRate"] = deviceFeatures.variableMultisampleRate;
 		features["inheritedQueries"] = deviceFeatures.inheritedQueries;
+
+        // Extensions
+        /*
+        if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
+            VkPhysicalDeviceFeatures2KHR features2{};
+            VkPhysicalDeviceMultiviewFeaturesKHX multiViewFeatures{};
+            multiViewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
+            features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+            features2.pNext = &multiViewFeatures;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &features2);
+            features["mv"] = multiViewFeatures.multiview;
+            features["mv_geom"] = multiViewFeatures.multiviewGeometryShader;
+            features["mv_tess"] = multiViewFeatures.multiviewTessellationShader;
+        }
+        */
 	}
 
 	/// <summary>

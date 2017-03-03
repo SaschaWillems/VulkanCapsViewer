@@ -11,7 +11,8 @@ HEADERS += ./settings.h \
     ./settingsDialog.h \
     $$PWD/external/vulkan/vulkan.h \
     $$PWD/vulkanandroid.h \
-    $$PWD/vulkansurfaceinfo.hpp
+    $$PWD/vulkansurfaceinfo.hpp \
+    $$PWD/vulkanpfn.h
 SOURCES += ./main.cpp \
     ./settings.cpp \
     ./settingsDialog.cpp \
@@ -19,6 +20,7 @@ SOURCES += ./main.cpp \
     ./treeproxyfilter.cpp \
     ./vulkancapsviewer.cpp \
     ./vulkandatabase.cpp \
-    $$PWD/vulkanandroid.cpp
+    $$PWD/vulkanandroid.cpp \
+    $$PWD/vulkanpfn.cpp
 FORMS += ./vulkancapsviewer.ui
 RESOURCES += vulkancapsviewer.qrc

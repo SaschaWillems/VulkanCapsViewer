@@ -1,0 +1,8 @@
+#ifndef VULKANPFN_H
+#define VULKANPFN_H
+
+#endif // VULKANPFN_H
+
+#include "vulkan/vulkan.h"
+
+extern PFN_vkGetPhysicalDeviceFeatures2KHR pfnGetPhysicalDeviceFeatures2KHR;
