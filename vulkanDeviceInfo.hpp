@@ -296,6 +296,21 @@ public:
         properties["residencyStandard3DBlockShape"] = std::to_string(props.sparseProperties.residencyStandard3DBlockShape);
         properties["residencyAlignedMipSize"] = std::to_string(props.sparseProperties.residencyAlignedMipSize);
         properties["residencyNonResidentStrict"] = std::to_string(props.sparseProperties.residencyNonResidentStrict);
+
+        // VK_KHR_get_physical_device_properties2
+        if (pfnGetPhysicalDeviceFeatures2KHR) {
+            // VK_KHX_multiview
+            if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceMultiviewPropertiesKHX multiViewProps{};
+                multiViewProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHX;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &multiViewProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(multiViewProps.maxMultiviewViewCount), VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(multiViewProps.maxMultiviewInstanceIndex), VK_KHX_MULTIVIEW_EXTENSION_NAME));
+            }
+        }
 	}
 	
 	/// <summary>
@@ -362,6 +377,22 @@ public:
 		features["sparseResidencyAliased"] = deviceFeatures.sparseResidencyAliased;
 		features["variableMultisampleRate"] = deviceFeatures.variableMultisampleRate;
 		features["inheritedQueries"] = deviceFeatures.inheritedQueries;
+
+        // VK_KHR_get_physical_device_properties2
+        if (pfnGetPhysicalDeviceFeatures2KHR) {
+            // VK_KHX_multiview
+            if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceMultiviewFeaturesKHX multiViewFeatures{};
+                multiViewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &multiViewFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("multiview", multiViewFeatures.multiview, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewGeometryShader", multiViewFeatures.multiviewGeometryShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewTessellationShader", multiViewFeatures.multiviewTessellationShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+            }
+        }
 	}
 
 	/// <summary>
