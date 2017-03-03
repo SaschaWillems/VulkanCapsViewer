@@ -426,6 +426,11 @@ bool vulkanCapsViewer::initVulkan()
             globalInfo.features.deviceProperties2 = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFeatures2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
+        pfnGetPhysicalDeviceProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceProperties2KHR"));
+        if (!pfnGetPhysicalDeviceFeatures2KHR) {
+            globalInfo.features.deviceProperties2 = false;
+            QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
+        }
     }
 
     // Create a surface
@@ -668,6 +673,8 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceProperties;
     treeWidget->clear();
 	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
+
+    // Basic properties
 	for (auto& prop : device->properties)
 	{
 
@@ -692,6 +699,24 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     stringstream ss;
     ss << device->os.name << " " << device->os.version << " (" << device->os.architecture << ")";
     addTreeItem(treeItem, "operatingsystem", ss.str());
+
+    // Specific properties via VK_KHR_get_physical_device_properties2
+    if (device->properties2.size() > 0) {
+        QTreeWidgetItem *extItem;
+        const char* currExtName("");
+        for (auto const &property : device->properties2) {
+            if (strcmp(property.extension, currExtName) != 0) {
+                // New parent item for each extension
+                currExtName = property.extension;
+                extItem = new QTreeWidgetItem(treeItem);
+                extItem->setText(0, QString::fromLatin1(currExtName));
+                treeItem->addChild(extItem);
+            }
+            addTreeItem(extItem, property.name, property.value);
+        }
+    }
+
+    ui.treeWidgetDeviceProperties->expandAll();
 
     for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);

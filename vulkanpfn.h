@@ -6,3 +6,4 @@
 #include "vulkan/vulkan.h"
 
 extern PFN_vkGetPhysicalDeviceFeatures2KHR pfnGetPhysicalDeviceFeatures2KHR;
+extern PFN_vkGetPhysicalDeviceProperties2KHR pfnGetPhysicalDeviceProperties2KHR;

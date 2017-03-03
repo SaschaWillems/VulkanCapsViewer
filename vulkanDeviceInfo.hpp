@@ -69,6 +69,13 @@ struct Feature2 {
     Feature2(std::string n, VkBool32 supp, const char* ext) : name(n), supported(supp), extension(ext) {}
 };
 
+struct Property2 {
+    std::string name;
+    std::string value;
+    const char* extension;
+    Property2(std::string n, QString val, const char* ext) : name(n), value(val.toStdString()), extension(ext) {}
+};
+
 class VulkanDeviceInfo
 {
 private:
@@ -81,7 +88,9 @@ public:
 	std::map<std::string, VkBool32> features;
     std::map<std::string, std::string> platformdetails;
 
+    // VK_KHR_get_physical_device_properties2
     std::vector<Feature2> features2;
+    std::vector<Property2> properties2;
 
 	VkPhysicalDevice device;
 	VkDevice dev;
