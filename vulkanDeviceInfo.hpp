@@ -759,6 +759,30 @@ public:
 		jsonEnv["reportversion"] = QString::fromStdString(reportVersion);
 		root["environment"] = jsonEnv;
 
+        // VK_KHR_get_physical_device_properties2
+        // Device properties 2
+        QJsonArray jsonProperties2;
+        for (auto& property2 : properties2) {
+            QJsonObject jsonProperty2;
+            jsonProperty2["name"] = QString::fromStdString(property2.name);
+            jsonProperty2["extension"] = QString::fromLatin1(property2.extension);
+            jsonProperty2["value"] = QString::fromStdString(property2.value);
+            jsonProperties2.append(jsonProperty2);
+        }
+        root["deviceproperties2"] = jsonProperties2;
+
+        // Device features 2
+        QJsonArray jsonFeatures2;
+        for (auto& feature2 : features2) {
+            QJsonObject jsonFeature2;
+            jsonFeature2["name"] = QString::fromStdString(feature2.name);
+            jsonFeature2["extension"] = QString::fromLatin1(feature2.extension);
+            jsonFeature2["supported"] = QString::number(feature2.supported);
+            jsonFeatures2.append(jsonFeature2);
+        }
+        root["devicefeatures2"] = jsonFeatures2;
+
+        // Save to file
 		QJsonDocument doc(root);
 		QFile jsonFile(QString::fromStdString(fileName));
 		jsonFile.open(QFile::WriteOnly);
