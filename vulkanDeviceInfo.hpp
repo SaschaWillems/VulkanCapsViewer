@@ -330,6 +330,16 @@ public:
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("maxDiscardRectangles", QString::number(extProps.maxDiscardRectangles), VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME));
             }
+            // VK_NVX_multiview_per_view_attributes
+            if (extensionSupported(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("perViewPositionAllComponents", QString::number(extProps.perViewPositionAllComponents), VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME));
+            }
         }
 	}
 	
