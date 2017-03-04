@@ -210,7 +210,8 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 /// </summary>
 void vulkanCapsViewer::slotSaveReport()
 {
-	QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), "vulkanreport.json", tr("json (*.json)"));
+    VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), QString::fromStdString(device.properties["devicename"] + ".json"), tr("json (*.json)"));
 	if (!fileName.isEmpty())
 	{
 		exportReportAsJSON(fileName.toStdString(), "", "");
