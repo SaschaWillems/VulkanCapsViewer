@@ -17,6 +17,7 @@
 
 // Function pointer prototypes
 // Not complete, just the functions used in the caps viewer!
+extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkCreateInstance vkCreateInstance;
 extern PFN_vkCreateDevice vkCreateDevice;
 extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;

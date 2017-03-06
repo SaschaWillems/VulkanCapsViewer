@@ -144,7 +144,7 @@ public:
     bool extensionSupported(const char* extensionName)
     {
         for (auto& ext : extensions) {
-            if (std::strcmp(ext.extensionName, extensionName) == 0) {
+            if (strcmp(ext.extensionName, extensionName) == 0) {
                 return true;
             }
         }
@@ -587,10 +587,10 @@ public:
     {
         // Android specific build info
 #if defined(__ANDROID__)
-        platforminfo["android.ProductModel"] = getSystemProperty("ro.product.model");
-        platforminfo["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
-        platforminfo["android.BuildID"] = getSystemProperty("ro.build.id");
-        platforminfo["android.BuildVersionIncremental"] = getSystemProperty("ro.build.version.incremental");
+        platformdetails["android.ProductModel"] = getSystemProperty("ro.product.model");
+        platformdetails["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
+        platformdetails["android.BuildID"] = getSystemProperty("ro.build.id");
+        platformdetails["android.BuildVersionIncremental"] = getSystemProperty("ro.build.version.incremental");
 #endif
     }
 

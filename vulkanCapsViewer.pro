@@ -33,6 +33,7 @@ android {
     QT += androidextras
     CONFIG += mobility
     MOBILITY =
+    LIBS += -landroid
 }
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/release
