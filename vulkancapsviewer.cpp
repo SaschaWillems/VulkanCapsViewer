@@ -701,6 +701,16 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     ss << device->os.name << " " << device->os.version << " (" << device->os.architecture << ")";
     addTreeItem(treeItem, "operatingsystem", ss.str());
 
+    // Platform specific info
+    if (device->platformdetails.size() > 0) {
+        QTreeWidgetItem *platformItem = new QTreeWidgetItem(treeItem);
+        platformItem->setText(0, "Platform details");
+        treeItem->addChild(platformItem);
+        for (auto& detail : device->platformdetails) {
+            addTreeItem(platformItem, detail.first, detail.second);
+        }
+    }
+
     // Specific properties via VK_KHR_get_physical_device_properties2
     if (device->properties2.size() > 0) {
         QTreeWidgetItem *extItem;
@@ -715,7 +725,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
             }
             addTreeItem(extItem, property.name, property.value);
         }
-    }
+    }    
 
     ui.treeWidgetDeviceProperties->expandAll();
 
