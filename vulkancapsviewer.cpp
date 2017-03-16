@@ -676,26 +676,25 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
 
     // Basic properties
-	for (auto& prop : device->properties)
-	{
-
-        if (prop.first.find("residency") == 0)
-        {
-            QTreeWidgetItem *propItem;
-            propItem = addTreeItem(treeItem, prop.first, (prop.second == "1") ? "true" : "false");
-            propItem->setForeground(1, (prop.second == "1") ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-            continue;
-        }
-
-        if (prop.first == "driverversion")
-        {
+    for (auto& prop : device->properties) {
+        if (prop.first == "driverversion") {
             addTreeItem(treeItem, prop.first, device->getDriverVersion());
             continue;
         }
-
         addTreeItem(treeItem, prop.first, prop.second);
 	}
 
+    // Sparse properties
+    QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
+    parentItem->setText(0, "sparseProperties");
+    treeItem->addChild(parentItem);
+    for (auto& prop : device->sparseProperties) {
+        QTreeWidgetItem *propItem;
+        propItem = addTreeItem(parentItem, prop.first, prop.second ? "true" : "false");
+        propItem->setForeground(1, prop.second ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    }
+
+    // Pipeline cache UUID
     QString pipelineCacheUUID = "[";
     for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
         pipelineCacheUUID += (QString::number(device->props.pipelineCacheUUID[i]));

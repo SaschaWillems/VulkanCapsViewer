@@ -25,10 +25,12 @@
 #include <vector>
 #include <assert.h>
 #include <string>
+#include <unordered_map>
 #include <map>
 #include <list>
 #include <iostream>
 #include <fstream>
+#include <utility>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -76,6 +78,7 @@ struct Property2 {
     Property2(std::string n, QString val, const char* ext) : name(n), value(val.toStdString()), extension(ext) {}
 };
 
+
 class VulkanDeviceInfo
 {
 private:
@@ -84,6 +87,8 @@ public:
 	uint32_t id;
 
 	std::map<std::string, std::string> properties;
+    std::unordered_map<std::string, VkBool32> sparseProperties;
+
 	std::map<std::string, std::string> limits;
 	std::map<std::string, VkBool32> features;
     std::map<std::string, std::string> platformdetails;
@@ -290,12 +295,12 @@ public:
         properties["deviceid"] = std::to_string(props.deviceID);
 		properties["devicetype"] = vulkanResources::physicalDeviceTypeString(props.deviceType);
 
-        // Sparse residency
-        properties["residencyStandard2DBlockShape"] = std::to_string(props.sparseProperties.residencyStandard2DBlockShape);
-        properties["residencyStandard2DMSBlockShape"] = std::to_string(props.sparseProperties.residencyStandard2DMultisampleBlockShape);
-        properties["residencyStandard3DBlockShape"] = std::to_string(props.sparseProperties.residencyStandard3DBlockShape);
-        properties["residencyAlignedMipSize"] = std::to_string(props.sparseProperties.residencyAlignedMipSize);
-        properties["residencyNonResidentStrict"] = std::to_string(props.sparseProperties.residencyNonResidentStrict);
+        // Sparse residency properties
+        sparseProperties["residencyStandard2DBlockShape"] = props.sparseProperties.residencyStandard2DBlockShape;
+        sparseProperties["residencyStandard2DMultisampleBlockShape"] = props.sparseProperties.residencyStandard2DMultisampleBlockShape;
+        sparseProperties["residencyStandard3DBlockShape"] = props.sparseProperties.residencyStandard3DBlockShape;
+        sparseProperties["residencyAlignedMipSize"] = props.sparseProperties.residencyAlignedMipSize;
+        sparseProperties["residencyNonResidentStrict"] = props.sparseProperties.residencyNonResidentStrict;
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceFeatures2KHR) {
@@ -603,10 +608,15 @@ public:
 
 		// Device properties
 		QJsonObject jsonProperties;
-		for (auto& prop : properties)
-		{
+        for (auto& prop : properties) {
 			jsonProperties[QString::fromStdString(prop.first)] = QString::fromStdString(prop.second);
-		}
+        }
+        // Sparse residency properties
+        QJsonObject jsonSparseProperties;
+        for (auto& prop : sparseProperties) {
+            jsonSparseProperties[QString::fromStdString(prop.first)] = (int)prop.second;
+        }
+        jsonProperties["sparseProperties"] = jsonSparseProperties;
         // Pipeline cache UUID
         QJsonArray jsonPipelineCache;
         for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
