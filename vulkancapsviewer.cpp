@@ -696,6 +696,13 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         addTreeItem(treeItem, prop.first, prop.second);
 	}
 
+    QString pipelineCacheUUID = "[";
+    for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
+        pipelineCacheUUID += (QString::number(device->props.pipelineCacheUUID[i]));
+        pipelineCacheUUID += (i < VK_UUID_SIZE-1) ? "," : "]";
+    }
+    addTreeItem(treeItem, "pipelineCacheUUID", pipelineCacheUUID.toStdString());
+
     // Operating system
     stringstream ss;
     ss << device->os.name << " " << device->os.version << " (" << device->os.architecture << ")";

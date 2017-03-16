@@ -607,6 +607,14 @@ public:
 		{
 			jsonProperties[QString::fromStdString(prop.first)] = QString::fromStdString(prop.second);
 		}
+        // Pipeline cache UUID
+        QJsonArray jsonPipelineCache;
+        for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
+            QJsonValue jsonVal;
+            jsonVal = props.pipelineCacheUUID[i];
+            jsonPipelineCache.append(jsonVal);
+        }
+        jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
 		root["deviceproperties"] = jsonProperties;
 
 		// Device features
@@ -796,7 +804,7 @@ public:
 		QJsonDocument doc(root);
 		QFile jsonFile(QString::fromStdString(fileName));
 		jsonFile.open(QFile::WriteOnly);
-        jsonFile.write(doc.toJson(QJsonDocument::Compact));
+        jsonFile.write(doc.toJson(QJsonDocument::Indented));
 	}
 
 };
