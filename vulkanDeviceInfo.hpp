@@ -625,6 +625,13 @@ public:
             jsonPipelineCache.append(jsonVal);
         }
         jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
+        // Device limits
+        QJsonObject jsonLimits;
+        for (auto& limit : limits) {
+            jsonLimits[QString::fromStdString(limit.first)] = QString::fromStdString(limit.second);
+        }
+        jsonProperties["limits"] = jsonLimits;
+
 		root["deviceproperties"] = jsonProperties;
 
 		// Device features
@@ -634,14 +641,6 @@ public:
 			jsonFeatures[QString::fromStdString(feature.first)] = QString::number(feature.second);
 		}
 		root["devicefeatures"] = jsonFeatures;
-
-		// Device limits
-		QJsonObject jsonLimits;
-		for (auto& limit : limits)
-		{
-			jsonLimits[QString::fromStdString(limit.first)] = QString::fromStdString(limit.second);
-		}
-		root["devicelimits"] = jsonLimits;
 
 		// Extensions
 		QJsonArray jsonExtensions;
