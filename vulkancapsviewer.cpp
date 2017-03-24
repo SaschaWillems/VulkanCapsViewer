@@ -211,7 +211,7 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 void vulkanCapsViewer::slotSaveReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), QString::fromStdString(device.properties["devicename"] + ".json"), tr("json (*.json)"));
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), device.properties["devicename"].toString() + ".json", tr("json (*.json)"));
 	if (!fileName.isEmpty())
 	{
 		exportReportAsJSON(fileName.toStdString(), "", "");
@@ -626,6 +626,20 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, std::string key, std::stri
 	return newItem;
 }
 
+QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterator iter, bool asBool = false)
+{
+    QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
+    newItem->setText(0, iter.key());
+    if (asBool) {
+        newItem->setText(1, (iter.value().toBool()) ? "true" : "false");
+        newItem->setTextColor(1, (iter.value().toBool()) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    } else {
+        newItem->setText(1, iter.value().toString());
+    }
+    parent->addChild(newItem);
+    return newItem;
+}
+
 QTreeWidgetItem *addTreeItemVkBool32(QTreeWidgetItem *parent, std::string key, VkBool32 value)
 {
 	QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
@@ -676,22 +690,20 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
 
     // Basic properties
-    for (auto& prop : device->properties) {
-        if (prop.first == "driverversion") {
-            addTreeItem(treeItem, prop.first, device->getDriverVersion());
+    for(QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
+        if (iter.key() == "driverversion") {
+            addTreeItem(treeItem, iter.key().toStdString(), device->getDriverVersion());
             continue;
         }
-        addTreeItem(treeItem, prop.first, prop.second);
-	}
+        addTreeItem(treeItem, iter);
+    }
 
     // Sparse properties
     QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
     parentItem->setText(0, "sparseProperties");
     treeItem->addChild(parentItem);
-    for (auto& prop : device->sparseProperties) {
-        QTreeWidgetItem *propItem;
-        propItem = addTreeItem(parentItem, prop.first, prop.second ? "true" : "false");
-        propItem->setForeground(1, prop.second ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
+        addTreeItem(parentItem, iter, true);
     }
 
     // Pipeline cache UUID
@@ -781,13 +793,24 @@ void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
 {
     models.limits.clear();
     QStandardItem *rootItem = models.limits.invisibleRootItem();
-	for (auto const &limit : device->limits)
-	{
-		QList<QStandardItem *> rowItems;
-		rowItems << new QStandardItem(QString::fromStdString(limit.first));
-		rowItems << new QStandardItem(QString::fromStdString(limit.second));
-		rootItem->appendRow(rowItems);
-	}
+    for(QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
+        QList<QStandardItem *> rowItems;
+        rowItems << new QStandardItem(iter.key());
+        if (iter.value().canConvert(QVariant::List)) {
+            QList<QVariant> list = iter.value().toList();
+            QString listStr = "[";
+            for (int i = 0; i < list.size(); i++) {
+                listStr += list[i].toString();
+                if (i < list.size() - 1)
+                    listStr += ", ";
+            }
+            listStr += "]";
+            rowItems << new QStandardItem(listStr);
+        } else {
+            rowItems << new QStandardItem(iter.value().toString());
+        }
+        rootItem->appendRow(rowItems);
+    }
 	ui.treeViewDeviceLimits->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
@@ -797,11 +820,11 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     QStandardItem *rootItem = models.features.invisibleRootItem();
 
     // Basic features
-    for (auto const &feature : device->features) {
-		QList<QStandardItem *> rowItems;
-		rowItems << new QStandardItem(QString::fromStdString(feature.first));
-		rowItems << new QStandardItem((feature.second) ? "true" : "false");
-		rowItems[1]->setForeground((feature.second) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
+        QList<QStandardItem *> rowItems;
+        rowItems << new QStandardItem(iter.key());
+        rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+        rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
 		rootItem->appendRow(rowItems);
 	}
 

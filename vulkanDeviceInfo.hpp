@@ -86,11 +86,11 @@ private:
 public:
 	uint32_t id;
 
-	std::map<std::string, std::string> properties;
-    std::unordered_map<std::string, VkBool32> sparseProperties;
+    QVariantMap properties;
+    QVariantMap sparseProperties;
 
-	std::map<std::string, std::string> limits;
-	std::map<std::string, VkBool32> features;
+    QVariantMap limits;
+    QVariantMap features;
     std::map<std::string, std::string> platformdetails;
 
     // VK_KHR_get_physical_device_properties2
@@ -283,19 +283,21 @@ public:
 	{
 		assert(device != NULL);
 		vkGetPhysicalDeviceProperties(device, &props);
-		properties.clear();
 
-		properties["devicename"] = props.deviceName;
-        properties["driverversionraw"] = std::to_string(props.driverVersion);
-        properties["driverversion"] = getDriverVersion();
-
-		properties["apiversion"] = vulkanResources::versionToString(props.apiVersion);
-		properties["headerversion"] = std::to_string(VK_HEADER_VERSION);
-        properties["vendorid"] = std::to_string(props.vendorID);
-        properties["deviceid"] = std::to_string(props.deviceID);
-		properties["devicetype"] = vulkanResources::physicalDeviceTypeString(props.deviceType);
+        properties.clear();
+        properties["deviceName"] = props.deviceName;
+        properties["driverVersion"] = props.driverVersion;
+        properties["driverVersionText"] = QString::fromStdString(getDriverVersion());
+        properties["apiVersion"] = props.apiVersion;
+        properties["apiVersionText"] = QString::fromStdString(vulkanResources::versionToString(props.apiVersion));
+        properties["headerversion"] = VK_HEADER_VERSION;
+        properties["vendorID"] = props.vendorID;
+        properties["deviceID"] = props.deviceID;
+        properties["deviceType"] = props.deviceType;
+        properties["deviceTypeText"] = QString::fromStdString(vulkanResources::physicalDeviceTypeString(props.deviceType));
 
         // Sparse residency properties
+        sparseProperties.clear();
         sparseProperties["residencyStandard2DBlockShape"] = props.sparseProperties.residencyStandard2DBlockShape;
         sparseProperties["residencyStandard2DMultisampleBlockShape"] = props.sparseProperties.residencyStandard2DMultisampleBlockShape;
         sparseProperties["residencyStandard3DBlockShape"] = props.sparseProperties.residencyStandard3DBlockShape;
@@ -436,120 +438,112 @@ public:
 	void readPhyiscalLimits()
 	{
 		limits.clear();
-        limits["maxImageDimension1D"] = std::to_string(props.limits.maxImageDimension1D);
-        limits["maxImageDimension2D"] = std::to_string(props.limits.maxImageDimension2D);
-        limits["maxImageDimension3D"] = std::to_string(props.limits.maxImageDimension3D);
-        limits["maxImageDimensionCube"] = std::to_string(props.limits.maxImageDimensionCube);
-        limits["maxImageArrayLayers"] = std::to_string(props.limits.maxImageArrayLayers);
-        limits["maxTexelBufferElements"] = std::to_string(props.limits.maxTexelBufferElements);
-        limits["maxUniformBufferRange"] = std::to_string(props.limits.maxUniformBufferRange);
-        limits["maxStorageBufferRange"] = std::to_string(props.limits.maxStorageBufferRange);
-        limits["maxPushConstantsSize"] = std::to_string(props.limits.maxPushConstantsSize);
-        limits["maxMemoryAllocationCount"] = std::to_string(props.limits.maxMemoryAllocationCount);
-        limits["maxSamplerAllocationCount"] = std::to_string(props.limits.maxSamplerAllocationCount);
-        limits["bufferImageGranularity"] = std::to_string(props.limits.bufferImageGranularity);
-        limits["sparseAddressSpaceSize"] = std::to_string(props.limits.sparseAddressSpaceSize);
-        limits["maxBoundDescriptorSets"] = std::to_string(props.limits.maxBoundDescriptorSets);
-        limits["maxPerStageDescriptorSamplers"] = std::to_string(props.limits.maxPerStageDescriptorSamplers);
-        limits["maxPerStageDescriptorUniformBuffers"] = std::to_string(props.limits.maxPerStageDescriptorUniformBuffers);
-        limits["maxPerStageDescriptorStorageBuffers"] = std::to_string(props.limits.maxPerStageDescriptorStorageBuffers);
-        limits["maxPerStageDescriptorSampledImages"] = std::to_string(props.limits.maxPerStageDescriptorSampledImages);
-        limits["maxPerStageDescriptorStorageImages"] = std::to_string(props.limits.maxPerStageDescriptorStorageImages);
-        limits["maxPerStageDescriptorInputAttachments"] = std::to_string(props.limits.maxPerStageDescriptorInputAttachments);
-        limits["maxPerStageResources"] = std::to_string(props.limits.maxPerStageResources);
-        limits["maxDescriptorSetSamplers"] = std::to_string(props.limits.maxDescriptorSetSamplers);
-        limits["maxDescriptorSetUniformBuffers"] = std::to_string(props.limits.maxDescriptorSetUniformBuffers);
-        limits["maxDescriptorSetUniformBuffersDynamic"] = std::to_string(props.limits.maxDescriptorSetUniformBuffersDynamic);
-        limits["maxDescriptorSetStorageBuffers"] = std::to_string(props.limits.maxDescriptorSetStorageBuffers);
-        limits["maxDescriptorSetStorageBuffersDynamic"] = std::to_string(props.limits.maxDescriptorSetStorageBuffersDynamic);
-        limits["maxDescriptorSetSampledImages"] = std::to_string(props.limits.maxDescriptorSetSampledImages);
-        limits["maxDescriptorSetStorageImages"] = std::to_string(props.limits.maxDescriptorSetStorageImages);
-        limits["maxDescriptorSetInputAttachments"] = std::to_string(props.limits.maxDescriptorSetInputAttachments);
-        limits["maxVertexInputAttributes"] = std::to_string(props.limits.maxVertexInputAttributes);
-        limits["maxVertexInputBindings"] = std::to_string(props.limits.maxVertexInputBindings);
-        limits["maxVertexInputAttributeOffset"] = std::to_string(props.limits.maxVertexInputAttributeOffset);
-        limits["maxVertexInputBindingStride"] = std::to_string(props.limits.maxVertexInputBindingStride);
-        limits["maxVertexOutputComponents"] = std::to_string(props.limits.maxVertexOutputComponents);
-        limits["maxTessellationGenerationLevel"] = std::to_string(props.limits.maxTessellationGenerationLevel);
-        limits["maxTessellationPatchSize"] = std::to_string(props.limits.maxTessellationPatchSize);
-        limits["maxTessellationControlPerVertexInputComponents"] = std::to_string(props.limits.maxTessellationControlPerVertexInputComponents);
-        limits["maxTessellationControlPerVertexOutputComponents"] = std::to_string(props.limits.maxTessellationControlPerVertexOutputComponents);
-        limits["maxTessellationControlPerPatchOutputComponents"] = std::to_string(props.limits.maxTessellationControlPerPatchOutputComponents);
-        limits["maxTessellationControlTotalOutputComponents"] = std::to_string(props.limits.maxTessellationControlTotalOutputComponents);
-        limits["maxTessellationEvaluationInputComponents"] = std::to_string(props.limits.maxTessellationEvaluationInputComponents);
-        limits["maxTessellationEvaluationOutputComponents"] = std::to_string(props.limits.maxTessellationEvaluationOutputComponents);
-        limits["maxGeometryShaderInvocations"] = std::to_string(props.limits.maxGeometryShaderInvocations);
-        limits["maxGeometryInputComponents"] = std::to_string(props.limits.maxGeometryInputComponents);
-        limits["maxGeometryOutputComponents"] = std::to_string(props.limits.maxGeometryOutputComponents);
-        limits["maxGeometryOutputVertices"] = std::to_string(props.limits.maxGeometryOutputVertices);
-        limits["maxGeometryTotalOutputComponents"] = std::to_string(props.limits.maxGeometryTotalOutputComponents);
-        limits["maxFragmentInputComponents"] = std::to_string(props.limits.maxFragmentInputComponents);
-        limits["maxFragmentOutputAttachments"] = std::to_string(props.limits.maxFragmentOutputAttachments);
-        limits["maxFragmentDualSrcAttachments"] = std::to_string(props.limits.maxFragmentDualSrcAttachments);
-        limits["maxFragmentCombinedOutputResources"] = std::to_string(props.limits.maxFragmentCombinedOutputResources);
-        limits["maxComputeSharedMemorySize"] = std::to_string(props.limits.maxComputeSharedMemorySize);
-        limits["maxComputeWorkGroupCount[0]"] = std::to_string(props.limits.maxComputeWorkGroupCount[0]);
-        limits["maxComputeWorkGroupCount[1]"] = std::to_string(props.limits.maxComputeWorkGroupCount[1]);
-        limits["maxComputeWorkGroupCount[2]"] = std::to_string(props.limits.maxComputeWorkGroupCount[2]);
-        limits["maxComputeWorkGroupInvocations"] = std::to_string(props.limits.maxComputeWorkGroupInvocations);
-        limits["maxComputeWorkGroupSize[0]"] = std::to_string(props.limits.maxComputeWorkGroupSize[0]);
-        limits["maxComputeWorkGroupSize[1]"] = std::to_string(props.limits.maxComputeWorkGroupSize[1]);
-        limits["maxComputeWorkGroupSize[2]"] = std::to_string(props.limits.maxComputeWorkGroupSize[2]);
-        limits["subPixelPrecisionBits"] = std::to_string(props.limits.subPixelPrecisionBits);
-        limits["subTexelPrecisionBits"] = std::to_string(props.limits.subTexelPrecisionBits);
-        limits["mipmapPrecisionBits"] = std::to_string(props.limits.mipmapPrecisionBits);
-        limits["maxDrawIndexedIndexValue"] = std::to_string(props.limits.maxDrawIndexedIndexValue);
-        limits["maxDrawIndirectCount"] = std::to_string(props.limits.maxDrawIndirectCount);
-        limits["maxSamplerLodBias"] = std::to_string(props.limits.maxSamplerLodBias);
-        limits["maxSamplerAnisotropy"] = std::to_string(props.limits.maxSamplerAnisotropy);
-        limits["maxViewports"] = std::to_string(props.limits.maxViewports);
-        limits["maxViewportDimensions[0]"] = std::to_string(props.limits.maxViewportDimensions[0]);
-        limits["maxViewportDimensions[1]"] = std::to_string(props.limits.maxViewportDimensions[1]);
-        limits["viewportBoundsRange[0]"] = std::to_string(props.limits.viewportBoundsRange[0]);
-        limits["viewportBoundsRange[1]"] = std::to_string(props.limits.viewportBoundsRange[1]);
-        limits["viewportSubPixelBits"] = std::to_string(props.limits.viewportSubPixelBits);
-        limits["minMemoryMapAlignment"] = std::to_string(props.limits.minMemoryMapAlignment);
-        limits["minTexelBufferOffsetAlignment"] = std::to_string(props.limits.minTexelBufferOffsetAlignment);
-        limits["minUniformBufferOffsetAlignment"] = std::to_string(props.limits.minUniformBufferOffsetAlignment);
-        limits["minStorageBufferOffsetAlignment"] = std::to_string(props.limits.minStorageBufferOffsetAlignment);
-        limits["minTexelOffset"] = std::to_string(props.limits.minTexelOffset);
-        limits["maxTexelOffset"] = std::to_string(props.limits.maxTexelOffset);
-        limits["minTexelGatherOffset"] = std::to_string(props.limits.minTexelGatherOffset);
-        limits["maxTexelGatherOffset"] = std::to_string(props.limits.maxTexelGatherOffset);
-        limits["minInterpolationOffset"] = std::to_string(props.limits.minInterpolationOffset);
-        limits["maxInterpolationOffset"] = std::to_string(props.limits.maxInterpolationOffset);
-        limits["subPixelInterpolationOffsetBits"] = std::to_string(props.limits.subPixelInterpolationOffsetBits);
-        limits["maxFramebufferWidth"] = std::to_string(props.limits.maxFramebufferWidth);
-        limits["maxFramebufferHeight"] = std::to_string(props.limits.maxFramebufferHeight);
-        limits["maxFramebufferLayers"] = std::to_string(props.limits.maxFramebufferLayers);
-        limits["framebufferColorSampleCounts"] = std::to_string(props.limits.framebufferColorSampleCounts);
-        limits["framebufferDepthSampleCounts"] = std::to_string(props.limits.framebufferDepthSampleCounts);
-        limits["framebufferStencilSampleCounts"] = std::to_string(props.limits.framebufferStencilSampleCounts);
-        limits["framebufferNoAttachmentsSampleCounts"] = std::to_string(props.limits.framebufferNoAttachmentsSampleCounts);
-        limits["maxColorAttachments"] = std::to_string(props.limits.maxColorAttachments);
-        limits["sampledImageColorSampleCounts"] = std::to_string(props.limits.sampledImageColorSampleCounts);
-        limits["sampledImageIntegerSampleCounts"] = std::to_string(props.limits.sampledImageIntegerSampleCounts);
-        limits["sampledImageDepthSampleCounts"] = std::to_string(props.limits.sampledImageDepthSampleCounts);
-        limits["sampledImageStencilSampleCounts"] = std::to_string(props.limits.sampledImageStencilSampleCounts);
-        limits["storageImageSampleCounts"] = std::to_string(props.limits.storageImageSampleCounts);
-        limits["maxSampleMaskWords"] = std::to_string(props.limits.maxSampleMaskWords);
-        limits["timestampComputeAndGraphics"] = std::to_string(props.limits.timestampComputeAndGraphics);
-        limits["timestampPeriod"] = std::to_string(props.limits.timestampPeriod);
-        limits["maxClipDistances"] = std::to_string(props.limits.maxClipDistances);
-        limits["maxCullDistances"] = std::to_string(props.limits.maxCullDistances);
-        limits["maxCombinedClipAndCullDistances"] = std::to_string(props.limits.maxCombinedClipAndCullDistances);
-        limits["discreteQueuePriorities"] = std::to_string(props.limits.discreteQueuePriorities);
-        limits["pointSizeRange[0]"] = std::to_string(props.limits.pointSizeRange[0]);
-        limits["pointSizeRange[1]"] = std::to_string(props.limits.pointSizeRange[1]);
-        limits["lineWidthRange[0]"] = std::to_string(props.limits.lineWidthRange[0]);
-        limits["lineWidthRange[1]"] = std::to_string(props.limits.lineWidthRange[1]);
-        limits["pointSizeGranularity"] = std::to_string(props.limits.pointSizeGranularity);
-        limits["lineWidthGranularity"] = std::to_string(props.limits.lineWidthGranularity);
-        limits["strictLines"] = std::to_string(props.limits.strictLines);
-        limits["standardSampleLocations"] = std::to_string(props.limits.standardSampleLocations);
-        limits["optimalBufferCopyOffsetAlignment"] = std::to_string(props.limits.optimalBufferCopyOffsetAlignment);
-        limits["optimalBufferCopyRowPitchAlignment"] = std::to_string(props.limits.optimalBufferCopyRowPitchAlignment);
-        limits["nonCoherentAtomSize"] = std::to_string(props.limits.nonCoherentAtomSize);
+        limits["maxImageDimension1D"] = props.limits.maxImageDimension1D;
+        limits["maxImageDimension2D"] = props.limits.maxImageDimension2D;
+        limits["maxImageDimension3D"] = props.limits.maxImageDimension3D;
+        limits["maxImageDimensionCube"] = props.limits.maxImageDimensionCube;
+        limits["maxImageArrayLayers"] = props.limits.maxImageArrayLayers;
+        limits["maxTexelBufferElements"] = props.limits.maxTexelBufferElements;
+        limits["maxUniformBufferRange"] = props.limits.maxUniformBufferRange;
+        limits["maxStorageBufferRange"] = props.limits.maxStorageBufferRange;
+        limits["maxPushConstantsSize"] = props.limits.maxPushConstantsSize;
+        limits["maxMemoryAllocationCount"] = props.limits.maxMemoryAllocationCount;
+        limits["maxSamplerAllocationCount"] = props.limits.maxSamplerAllocationCount;
+        limits["bufferImageGranularity"] = props.limits.bufferImageGranularity;
+        limits["sparseAddressSpaceSize"] = props.limits.sparseAddressSpaceSize;
+        limits["maxBoundDescriptorSets"] = props.limits.maxBoundDescriptorSets;
+        limits["maxPerStageDescriptorSamplers"] = props.limits.maxPerStageDescriptorSamplers;
+        limits["maxPerStageDescriptorUniformBuffers"] = props.limits.maxPerStageDescriptorUniformBuffers;
+        limits["maxPerStageDescriptorStorageBuffers"] = props.limits.maxPerStageDescriptorStorageBuffers;
+        limits["maxPerStageDescriptorSampledImages"] = props.limits.maxPerStageDescriptorSampledImages;
+        limits["maxPerStageDescriptorStorageImages"] = props.limits.maxPerStageDescriptorStorageImages;
+        limits["maxPerStageDescriptorInputAttachments"] = props.limits.maxPerStageDescriptorInputAttachments;
+        limits["maxPerStageResources"] = props.limits.maxPerStageResources;
+        limits["maxDescriptorSetSamplers"] = props.limits.maxDescriptorSetSamplers;
+        limits["maxDescriptorSetUniformBuffers"] = props.limits.maxDescriptorSetUniformBuffers;
+        limits["maxDescriptorSetUniformBuffersDynamic"] = props.limits.maxDescriptorSetUniformBuffersDynamic;
+        limits["maxDescriptorSetStorageBuffers"] = props.limits.maxDescriptorSetStorageBuffers;
+        limits["maxDescriptorSetStorageBuffersDynamic"] = props.limits.maxDescriptorSetStorageBuffersDynamic;
+        limits["maxDescriptorSetSampledImages"] = props.limits.maxDescriptorSetSampledImages;
+        limits["maxDescriptorSetStorageImages"] = props.limits.maxDescriptorSetStorageImages;
+        limits["maxDescriptorSetInputAttachments"] = props.limits.maxDescriptorSetInputAttachments;
+        limits["maxVertexInputAttributes"] = props.limits.maxVertexInputAttributes;
+        limits["maxVertexInputBindings"] = props.limits.maxVertexInputBindings;
+        limits["maxVertexInputAttributeOffset"] = props.limits.maxVertexInputAttributeOffset;
+        limits["maxVertexInputBindingStride"] = props.limits.maxVertexInputBindingStride;
+        limits["maxVertexOutputComponents"] = props.limits.maxVertexOutputComponents;
+        limits["maxTessellationGenerationLevel"] = props.limits.maxTessellationGenerationLevel;
+        limits["maxTessellationPatchSize"] = props.limits.maxTessellationPatchSize;
+        limits["maxTessellationControlPerVertexInputComponents"] = props.limits.maxTessellationControlPerVertexInputComponents;
+        limits["maxTessellationControlPerVertexOutputComponents"] = props.limits.maxTessellationControlPerVertexOutputComponents;
+        limits["maxTessellationControlPerPatchOutputComponents"] = props.limits.maxTessellationControlPerPatchOutputComponents;
+        limits["maxTessellationControlTotalOutputComponents"] = props.limits.maxTessellationControlTotalOutputComponents;
+        limits["maxTessellationEvaluationInputComponents"] = props.limits.maxTessellationEvaluationInputComponents;
+        limits["maxTessellationEvaluationOutputComponents"] = props.limits.maxTessellationEvaluationOutputComponents;
+        limits["maxGeometryShaderInvocations"] = props.limits.maxGeometryShaderInvocations;
+        limits["maxGeometryInputComponents"] = props.limits.maxGeometryInputComponents;
+        limits["maxGeometryOutputComponents"] = props.limits.maxGeometryOutputComponents;
+        limits["maxGeometryOutputVertices"] = props.limits.maxGeometryOutputVertices;
+        limits["maxGeometryTotalOutputComponents"] = props.limits.maxGeometryTotalOutputComponents;
+        limits["maxFragmentInputComponents"] = props.limits.maxFragmentInputComponents;
+        limits["maxFragmentOutputAttachments"] = props.limits.maxFragmentOutputAttachments;
+        limits["maxFragmentDualSrcAttachments"] = props.limits.maxFragmentDualSrcAttachments;
+        limits["maxFragmentCombinedOutputResources"] = props.limits.maxFragmentCombinedOutputResources;
+        limits["maxComputeSharedMemorySize"] = props.limits.maxComputeSharedMemorySize;
+        limits["maxComputeWorkGroupCount"] = QVariant::fromValue(QVariantList({ props.limits.maxComputeWorkGroupCount[0], props.limits.maxComputeWorkGroupCount[1], props.limits.maxComputeWorkGroupCount[2] }));
+        limits["maxComputeWorkGroupInvocations"] = props.limits.maxComputeWorkGroupInvocations;
+        limits["maxComputeWorkGroupSize"] = QVariant::fromValue(QVariantList({ props.limits.maxComputeWorkGroupSize[0], props.limits.maxComputeWorkGroupSize[1], props.limits.maxComputeWorkGroupSize[2] }));
+        limits["subPixelPrecisionBits"] = props.limits.subPixelPrecisionBits;
+        limits["subTexelPrecisionBits"] = props.limits.subTexelPrecisionBits;
+        limits["mipmapPrecisionBits"] = props.limits.mipmapPrecisionBits;
+        limits["maxDrawIndexedIndexValue"] = props.limits.maxDrawIndexedIndexValue;
+        limits["maxDrawIndirectCount"] = props.limits.maxDrawIndirectCount;
+        limits["maxSamplerLodBias"] = props.limits.maxSamplerLodBias;
+        limits["maxSamplerAnisotropy"] = props.limits.maxSamplerAnisotropy;
+        limits["maxViewports"] = props.limits.maxViewports;
+        limits["maxViewportDimensions"] = QVariant::fromValue(QVariantList({ props.limits.maxViewportDimensions[0], props.limits.maxViewportDimensions[1] }));
+        limits["viewportBoundsRange"] = QVariant::fromValue(QVariantList({ props.limits.viewportBoundsRange[0], props.limits.viewportBoundsRange[1] }));
+        limits["viewportSubPixelBits"] = props.limits.viewportSubPixelBits;
+        limits["minMemoryMapAlignment"] = props.limits.minMemoryMapAlignment;
+        limits["minTexelBufferOffsetAlignment"] = props.limits.minTexelBufferOffsetAlignment;
+        limits["minUniformBufferOffsetAlignment"] = props.limits.minUniformBufferOffsetAlignment;
+        limits["minStorageBufferOffsetAlignment"] = props.limits.minStorageBufferOffsetAlignment;
+        limits["minTexelOffset"] = props.limits.minTexelOffset;
+        limits["maxTexelOffset"] = props.limits.maxTexelOffset;
+        limits["minTexelGatherOffset"] = props.limits.minTexelGatherOffset;
+        limits["maxTexelGatherOffset"] = props.limits.maxTexelGatherOffset;
+        limits["minInterpolationOffset"] = props.limits.minInterpolationOffset;
+        limits["maxInterpolationOffset"] = props.limits.maxInterpolationOffset;
+        limits["subPixelInterpolationOffsetBits"] = props.limits.subPixelInterpolationOffsetBits;
+        limits["maxFramebufferWidth"] = props.limits.maxFramebufferWidth;
+        limits["maxFramebufferHeight"] = props.limits.maxFramebufferHeight;
+        limits["maxFramebufferLayers"] = props.limits.maxFramebufferLayers;
+        limits["framebufferColorSampleCounts"] = props.limits.framebufferColorSampleCounts;
+        limits["framebufferDepthSampleCounts"] = props.limits.framebufferDepthSampleCounts;
+        limits["framebufferStencilSampleCounts"] = props.limits.framebufferStencilSampleCounts;
+        limits["framebufferNoAttachmentsSampleCounts"] = props.limits.framebufferNoAttachmentsSampleCounts;
+        limits["maxColorAttachments"] = props.limits.maxColorAttachments;
+        limits["sampledImageColorSampleCounts"] = props.limits.sampledImageColorSampleCounts;
+        limits["sampledImageIntegerSampleCounts"] = props.limits.sampledImageIntegerSampleCounts;
+        limits["sampledImageDepthSampleCounts"] = props.limits.sampledImageDepthSampleCounts;
+        limits["sampledImageStencilSampleCounts"] = props.limits.sampledImageStencilSampleCounts;
+        limits["storageImageSampleCounts"] = props.limits.storageImageSampleCounts;
+        limits["maxSampleMaskWords"] = props.limits.maxSampleMaskWords;
+        limits["timestampComputeAndGraphics"] = props.limits.timestampComputeAndGraphics;
+        limits["timestampPeriod"] = props.limits.timestampPeriod;
+        limits["maxClipDistances"] = props.limits.maxClipDistances;
+        limits["maxCullDistances"] = props.limits.maxCullDistances;
+        limits["maxCombinedClipAndCullDistances"] = props.limits.maxCombinedClipAndCullDistances;
+        limits["discreteQueuePriorities"] = props.limits.discreteQueuePriorities;
+        limits["pointSizeRange"] = QVariant::fromValue(QVariantList({ props.limits.pointSizeRange[0], props.limits.pointSizeRange[1] }));
+        limits["lineWidthRange"] = QVariant::fromValue(QVariantList({ props.limits.lineWidthRange[0], props.limits.lineWidthRange[1] }));
+        limits["pointSizeGranularity"] = props.limits.pointSizeGranularity;
+        limits["lineWidthGranularity"] = props.limits.lineWidthGranularity;
+        limits["strictLines"] = props.limits.strictLines;
+        limits["standardSampleLocations"] = props.limits.standardSampleLocations;
+        limits["optimalBufferCopyOffsetAlignment"] = props.limits.optimalBufferCopyOffsetAlignment;
+        limits["optimalBufferCopyRowPitchAlignment"] = props.limits.optimalBufferCopyRowPitchAlignment;
+        limits["nonCoherentAtomSize"] = props.limits.nonCoherentAtomSize;
 	}
 
 	/// <summary>
@@ -608,15 +602,9 @@ public:
 
 		// Device properties
 		QJsonObject jsonProperties;
-        for (auto& prop : properties) {
-			jsonProperties[QString::fromStdString(prop.first)] = QString::fromStdString(prop.second);
-        }
-        // Sparse residency properties
-        QJsonObject jsonSparseProperties;
-        for (auto& prop : sparseProperties) {
-            jsonSparseProperties[QString::fromStdString(prop.first)] = (int)prop.second;
-        }
-        jsonProperties["sparseProperties"] = jsonSparseProperties;
+        jsonProperties = QJsonObject::fromVariantMap(properties);
+        jsonProperties["sparseProperties"] = QJsonObject::fromVariantMap(sparseProperties);
+        jsonProperties["limits"] = QJsonObject::fromVariantMap(limits);
         // Pipeline cache UUID
         QJsonArray jsonPipelineCache;
         for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
@@ -625,22 +613,11 @@ public:
             jsonPipelineCache.append(jsonVal);
         }
         jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
-        // Device limits
-        QJsonObject jsonLimits;
-        for (auto& limit : limits) {
-            jsonLimits[QString::fromStdString(limit.first)] = QString::fromStdString(limit.second);
-        }
-        jsonProperties["limits"] = jsonLimits;
 
-		root["deviceproperties"] = jsonProperties;
+        root["properties"] = jsonProperties;
 
 		// Device features
-		QJsonObject jsonFeatures;
-		for (auto& feature : features)
-		{
-			jsonFeatures[QString::fromStdString(feature.first)] = QString::number(feature.second);
-		}
-		root["devicefeatures"] = jsonFeatures;
+        root["features"] = QJsonObject::fromVariantMap(features);
 
 		// Extensions
 		QJsonArray jsonExtensions;
