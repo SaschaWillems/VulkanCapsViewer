@@ -137,8 +137,8 @@ public:
 			assert(!vkRes);
 			std::vector<VkExtensionProperties> exts(extCount);
 			vkRes = vkEnumerateDeviceExtensionProperties(device, NULL, &extCount, &exts.front());
-			for (auto& ext : exts) 
-				extensions.push_back(ext);
+            for (auto& ext : exts)
+				extensions.push_back(ext);             
 		} while (vkRes == VK_INCOMPLETE);
 		assert(!vkRes);
 	}
@@ -432,6 +432,12 @@ public:
         }
 	}
 
+    QString toHex(VkDeviceSize deviceSize)
+    {
+        QString res = QString::number(deviceSize, 16).prepend("0x");
+        return res;
+    }
+
 	/// <summary>
 	///	Copy physical device limits into a map
 	/// </summary>
@@ -449,8 +455,8 @@ public:
         limits["maxPushConstantsSize"] = props.limits.maxPushConstantsSize;
         limits["maxMemoryAllocationCount"] = props.limits.maxMemoryAllocationCount;
         limits["maxSamplerAllocationCount"] = props.limits.maxSamplerAllocationCount;
-        limits["bufferImageGranularity"] = props.limits.bufferImageGranularity;
-        limits["sparseAddressSpaceSize"] = props.limits.sparseAddressSpaceSize;
+        limits["bufferImageGranularity"] = toHex(props.limits.bufferImageGranularity);
+        limits["sparseAddressSpaceSize"] = toHex(props.limits.sparseAddressSpaceSize);
         limits["maxBoundDescriptorSets"] = props.limits.maxBoundDescriptorSets;
         limits["maxPerStageDescriptorSamplers"] = props.limits.maxPerStageDescriptorSamplers;
         limits["maxPerStageDescriptorUniformBuffers"] = props.limits.maxPerStageDescriptorUniformBuffers;
@@ -504,10 +510,10 @@ public:
         limits["maxViewportDimensions"] = QVariant::fromValue(QVariantList({ props.limits.maxViewportDimensions[0], props.limits.maxViewportDimensions[1] }));
         limits["viewportBoundsRange"] = QVariant::fromValue(QVariantList({ props.limits.viewportBoundsRange[0], props.limits.viewportBoundsRange[1] }));
         limits["viewportSubPixelBits"] = props.limits.viewportSubPixelBits;
-        limits["minMemoryMapAlignment"] = props.limits.minMemoryMapAlignment;
-        limits["minTexelBufferOffsetAlignment"] = props.limits.minTexelBufferOffsetAlignment;
-        limits["minUniformBufferOffsetAlignment"] = props.limits.minUniformBufferOffsetAlignment;
-        limits["minStorageBufferOffsetAlignment"] = props.limits.minStorageBufferOffsetAlignment;
+        limits["minMemoryMapAlignment"] = toHex(props.limits.minMemoryMapAlignment);
+        limits["minTexelBufferOffsetAlignment"] = toHex(props.limits.minTexelBufferOffsetAlignment);
+        limits["minUniformBufferOffsetAlignment"] = toHex(props.limits.minUniformBufferOffsetAlignment);
+        limits["minStorageBufferOffsetAlignment"] = toHex(props.limits.minStorageBufferOffsetAlignment);
         limits["minTexelOffset"] = props.limits.minTexelOffset;
         limits["maxTexelOffset"] = props.limits.maxTexelOffset;
         limits["minTexelGatherOffset"] = props.limits.minTexelGatherOffset;
@@ -541,9 +547,9 @@ public:
         limits["lineWidthGranularity"] = props.limits.lineWidthGranularity;
         limits["strictLines"] = props.limits.strictLines;
         limits["standardSampleLocations"] = props.limits.standardSampleLocations;
-        limits["optimalBufferCopyOffsetAlignment"] = props.limits.optimalBufferCopyOffsetAlignment;
-        limits["optimalBufferCopyRowPitchAlignment"] = props.limits.optimalBufferCopyRowPitchAlignment;
-        limits["nonCoherentAtomSize"] = props.limits.nonCoherentAtomSize;
+        limits["optimalBufferCopyOffsetAlignment"] = toHex(props.limits.optimalBufferCopyOffsetAlignment);
+        limits["optimalBufferCopyRowPitchAlignment"] = toHex(props.limits.optimalBufferCopyRowPitchAlignment);
+        limits["nonCoherentAtomSize"] = toHex(props.limits.nonCoherentAtomSize);
 	}
 
 	/// <summary>
@@ -624,8 +630,8 @@ public:
 		for (auto& ext : extensions)
 		{
 			QJsonObject jsonExt;
-			jsonExt["extname"] = ext.extensionName;
-			jsonExt["specversion"] = QString::number(ext.specVersion);
+            jsonExt["extensionName"] = ext.extensionName;
+            jsonExt["specVersion"] = int(ext.specVersion);
 			jsonExtensions.append(jsonExt);
 		}
 		root["extensions"] = jsonExtensions;
@@ -634,13 +640,15 @@ public:
 		QJsonArray jsonFormats;
 		for (auto& format : formats)
 		{
-			QJsonObject jsonFormat;
-			jsonFormat["format"] = QString::number(format.format);
-			jsonFormat["supported"] = QString::number(format.supported);
-			jsonFormat["lineartilingfeatures"] = QString::number(format.properties.linearTilingFeatures);
-			jsonFormat["optimaltilingfeatures"] = QString::number(format.properties.optimalTilingFeatures);
-			jsonFormat["bufferfeatures"] = QString::number(format.properties.bufferFeatures);
-			jsonFormats.append(jsonFormat);
+            QJsonArray jsonFormat;
+            jsonFormat.append((QJsonValue(format.format)));
+            QJsonObject jsonFormatFeatures;
+            jsonFormatFeatures["linearTilingFeatures"] = int(format.properties.linearTilingFeatures);
+            jsonFormatFeatures["optimalTilingFeatures"] = int(format.properties.optimalTilingFeatures);
+            jsonFormatFeatures["bufferFeatures"] = int(format.properties.bufferFeatures);
+            jsonFormatFeatures["supported"] = format.supported;
+            jsonFormat.append(jsonFormatFeatures);
+            jsonFormats.append(jsonFormat);
 		}
 		root["formats"] = jsonFormats;
 
@@ -649,16 +657,16 @@ public:
 		for (auto& layer : layers)
 		{
 			QJsonObject jsonLayer;
-			jsonLayer["layername"] = layer.properties.layerName;
+            jsonLayer["layerName"] = layer.properties.layerName;
 			jsonLayer["description"] = layer.properties.description;
-			jsonLayer["specversion"] = QString::number(layer.properties.specVersion);
-			jsonLayer["implversion"] = QString::number(layer.properties.implementationVersion);
+            jsonLayer["specVersion"] =  int(layer.properties.specVersion);
+            jsonLayer["implementationVersion"] =  int(layer.properties.implementationVersion);
 			QJsonArray jsonLayerExtensions;
 			for (auto& ext : layer.extensions)
 			{
 				QJsonObject jsonExt;
-				jsonExt["extname"] = ext.extensionName;
-				jsonExt["specversion"] = QString::number(ext.specVersion);
+                jsonExt["extensionName"] = ext.extensionName;
+                jsonExt["specVersion"] = int(ext.specVersion);
 				jsonLayerExtensions.append(jsonExt);
 			}
 			jsonLayer["extensions"] = jsonLayerExtensions;
@@ -671,43 +679,44 @@ public:
         for (auto& queueFamily : queueFamilies)
 		{
 			QJsonObject jsonQueue;
-            jsonQueue["flags"] = QString::number(queueFamily.properties.queueFlags);
-            jsonQueue["count"] = QString::number(queueFamily.properties.queueCount);
-            jsonQueue["timestampValidBits"] = QString::number(queueFamily.properties.timestampValidBits);
-            jsonQueue["minImageTransferGranularity.width"] = QString::number(queueFamily.properties.minImageTransferGranularity.width);
-            jsonQueue["minImageTransferGranularity.height"] = QString::number(queueFamily.properties.minImageTransferGranularity.height);
-            jsonQueue["minImageTransferGranularity.depth"] = QString::number(queueFamily.properties.minImageTransferGranularity.depth);
-            jsonQueue["supportsPresent"] = QString::number(queueFamily.supportsPresent);
+            jsonQueue["queueFlags"] = int(queueFamily.properties.queueFlags);
+            jsonQueue["queueCount"] = int(queueFamily.properties.queueCount);
+            jsonQueue["timestampValidBits"] = int(queueFamily.properties.timestampValidBits);
+            QJsonObject minImageTransferGranularity;
+            minImageTransferGranularity["width"] =  int(queueFamily.properties.minImageTransferGranularity.width);
+            minImageTransferGranularity["height"] =  int(queueFamily.properties.minImageTransferGranularity.height);
+            minImageTransferGranularity["depth"] =  int(queueFamily.properties.minImageTransferGranularity.depth);
+            jsonQueue["minImageTransferGranularity"] = minImageTransferGranularity;
+            jsonQueue["supportsPresent"] = bool(queueFamily.supportsPresent);
             jsonQueues.append(jsonQueue);
 		}
-        //todo: rename
 		root["queues"] = jsonQueues;
 
 		// Memory properties
 		QJsonObject jsonMemoryProperties;
 		// Available memory types
-		jsonMemoryProperties["memorytypecount"] = QString::number(memoryProperties.memoryTypeCount);
+        jsonMemoryProperties["memoryTypeCount"] = int(memoryProperties.memoryTypeCount);
 		QJsonArray memtypes;
 		for (uint32_t i = 0; i < memoryProperties.memoryTypeCount; i++)
 		{
 			QJsonObject memtype;
-			memtype["propertyflags"] = QString::number(memoryProperties.memoryTypes[i].propertyFlags);
-			memtype["heapindex"] = QString::number(memoryProperties.memoryTypes[i].heapIndex);
+            memtype["propertyFlags"] = int(memoryProperties.memoryTypes[i].propertyFlags);
+            memtype["heapIndex"] = int(memoryProperties.memoryTypes[i].heapIndex);
 			memtypes.append(memtype);
 		}
-		jsonMemoryProperties["memorytypes"] = memtypes;
+        jsonMemoryProperties["memoryTypes"] = memtypes;
 		// Memory heaps
-		jsonMemoryProperties["memoryheapcount"] = QString::number(memoryProperties.memoryHeapCount);
+        jsonMemoryProperties["memoryHeapCount"] = int(memoryProperties.memoryHeapCount);
 		QJsonArray heaps;
 		for (uint32_t i = 0; i < memoryProperties.memoryHeapCount; i++)
 		{
 			QJsonObject memheap;
-			memheap["flags"] = QString::number(memoryProperties.memoryHeaps[i].flags);
-			memheap["size"] = QString::number(memoryProperties.memoryHeaps[i].size);
+            memheap["flags"] = int(memoryProperties.memoryHeaps[i].flags);
+            memheap["size"] = QString::number(memoryProperties.memoryHeaps[i].size, 16).prepend("0x");
 			heaps.append(memheap);
 		}
-		jsonMemoryProperties["heaps"] = heaps;
-		root["memoryproperties"] = jsonMemoryProperties;
+        jsonMemoryProperties["memoryHeaps"] = heaps;
+        root["memory"] = jsonMemoryProperties;
 
         // Surface capabilities
         QJsonObject jsonSurfaceCaps;
@@ -763,6 +772,7 @@ public:
 		jsonEnv["reportversion"] = QString::fromStdString(reportVersion);
 		root["environment"] = jsonEnv;
 
+#if defined(EXTENDED_PROPS)
         // VK_KHR_get_physical_device_properties2
         // Device properties 2
         QJsonArray jsonProperties2;
@@ -785,6 +795,7 @@ public:
             jsonFeatures2.append(jsonFeature2);
         }
         root["devicefeatures2"] = jsonFeatures2;
+#endif
 
         // Save to file
 		QJsonDocument doc(root);
