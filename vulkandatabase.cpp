@@ -220,7 +220,7 @@ string VulkanDatabase::postReport(string xml)
 {
 	string httpReply;
 	stringstream urlss;
-	urlss << getBaseUrl() << "services/uploadreport.php";
+    urlss << getBaseUrl() << "api/v2/uploadreport.php";
 	httpReply = httpPost(urlss.str(), xml);
 	return httpReply;
 }
