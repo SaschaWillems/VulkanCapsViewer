@@ -26,12 +26,25 @@
 #include <QMessageBox>
 #include <QLabel>
 #include <QLineEdit>
+#include <QLine>
 #include <QSettings>
 #include <QDialogButtonBox>
 
 submitDialog::submitDialog(QString submitter, QWidget * parent, Qt::WindowFlags f)
 {
 	QFormLayout *formLayout = new QFormLayout;
+
+    // QDialogBox doesn't appear modal on Android which makes it hard to see
+    #ifdef ANDROID
+        QLabel *labelCaption = new QLabel();
+    #ifdef DEVDATABASE
+        labelCaption->setText("Submit report to development database");
+    #else
+        labelCaption->setText("Submit report to database");
+    #endif
+        formLayout->addRow(labelCaption);
+        setStyleSheet("QDialog{ border: 2px solid black; border-style: solid; border-radius: 4px; }");
+    #endif
 
 	editSubmitter = new QLineEdit();
 	editSubmitter->setObjectName("submitter");
