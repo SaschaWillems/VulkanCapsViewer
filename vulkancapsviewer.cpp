@@ -74,7 +74,7 @@ OSInfo getOperatingSystem()
 	return osInfo;
 }
 
-const std::string vulkanCapsViewer::version = "1.3";
+const std::string vulkanCapsViewer::version = "1.4";
 
 vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	: QMainWindow(parent)
@@ -84,6 +84,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
 #ifdef DEVDATABASE
     setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " - Connected to DEVELOPMENT DATABASE!");
+    ui.toolButtonUpload->setText("DEVDB Upload");
 #else
     setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version));
 #endif
