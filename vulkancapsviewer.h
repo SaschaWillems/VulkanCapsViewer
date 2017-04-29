@@ -57,12 +57,14 @@ private:
 	struct {
 		TreeProxyFilter limits;
 		TreeProxyFilter features;
-		TreeProxyFilter formats;
+        TreeProxyFilter extended;
+        TreeProxyFilter formats;
 	} filterProxies;
 	struct {
 		QStandardItemModel limits;
 		QStandardItemModel features;
-		QStandardItemModel formats;
+        QStandardItemModel extended;
+        QStandardItemModel formats;
 	} models;
 #ifdef ANDROID
     ANativeWindow* nativeWindow = nullptr;
@@ -76,6 +78,7 @@ private:
 	void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
 	void displayDeviceLimits(VulkanDeviceInfo *device);
 	void displayDeviceFeatures(VulkanDeviceInfo *device);
+    void displayDeviceExtended(VulkanDeviceInfo *device);
 	void displayDeviceLayers(VulkanDeviceInfo *device);
 	void displayDeviceFormats(VulkanDeviceInfo *device);
 	void displayDeviceExtensions(VulkanDeviceInfo *device);
@@ -95,6 +98,7 @@ private Q_SLOTS:
 	void slotSettings();
 	void slotFilterLimits(QString text);
 	void slotFilterFeatures(QString text);
+    void slotFilterExtended(QString text);
 	void slotFilterFormats(QString text);
 };
 

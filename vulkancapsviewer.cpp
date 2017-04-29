@@ -104,9 +104,8 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     vulkanApiVersion = QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
 
 #ifdef ANDROID
-    // Vulkan is not part of android (yet), so we need to load the library manually
-    if (!loadVulkanLibrary())
-    {
+    // Load Vulkan libraries on Android manually
+    if (!loadVulkanLibrary()) {
         QMessageBox::warning(this, "Error", "Could not load Vulkan library!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
         exit(EXIT_FAILURE);
     }
@@ -129,7 +128,11 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
 	filterProxies.features.setSourceModel(&models.features);
 	connect(ui.filterLineEditFeatures, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeatures(QString)));
-	// Formats
+    // Extended
+    ui.treeViewDeviceExtended->setModel(&filterProxies.extended);
+    filterProxies.extended.setSourceModel(&models.extended);
+    connect(ui.filterLineEditExtended, SIGNAL(textChanged(QString)), this, SLOT(slotFilterExtended(QString)));
+    // Formats
 	ui.treeViewFormats->setModel(&filterProxies.formats);
 	filterProxies.formats.setSourceModel(&models.formats);
 	connect(ui.filterLineEditFormats, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFormats(QString)));
@@ -288,6 +291,12 @@ void vulkanCapsViewer::slotFilterFeatures(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
 	filterProxies.features.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterExtended(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.extended.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterFormats(QString text)
@@ -675,6 +684,7 @@ void vulkanCapsViewer::displayDevice(int index)
     displayDeviceMemoryProperites(&device);
 	displayDeviceLimits(&device);
 	displayDeviceFeatures(&device);
+    displayDeviceExtended(&device);
 	displayDeviceLayers(&device);
 	displayDeviceExtensions(&device);
 	displayDeviceFormats(&device);
@@ -729,22 +739,6 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
             addTreeItem(platformItem, detail.first, detail.second);
         }
     }
-
-    // Specific properties via VK_KHR_get_physical_device_properties2
-    if (device->properties2.size() > 0) {
-        QTreeWidgetItem *extItem;
-        const char* currExtName("");
-        for (auto const &property : device->properties2) {
-            if (strcmp(property.extension, currExtName) != 0) {
-                // New parent item for each extension
-                currExtName = property.extension;
-                extItem = new QTreeWidgetItem(treeItem);
-                extItem->setText(0, QString::fromLatin1(currExtName));
-                treeItem->addChild(extItem);
-            }
-            addTreeItem(extItem, property.name, property.value);
-        }
-    }    
 
     ui.treeWidgetDeviceProperties->expandAll();
 
@@ -829,27 +823,68 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 		rootItem->appendRow(rowItems);
 	}
 
-    // Specific features via VK_KHR_get_physical_device_properties2
+    ui.treeViewDeviceFeatures->expandAll();
+    ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+}
+
+void vulkanCapsViewer::displayDeviceExtended(VulkanDeviceInfo *device)
+{
+    models.extended.clear();
+    QStandardItem *rootItem = models.extended.invisibleRootItem();
+
+    // Extended features
     if (device->features2.size() > 0) {
-        QStandardItem *extItem;
+        QList<QStandardItem *> parentItem;
+        parentItem << new QStandardItem("Features");
+        parentItem << new QStandardItem("");
+        rootItem->appendRow(parentItem);
+
         const char* currExtName("");
+        QList<QStandardItem*> extItem;
         for (auto const &feature : device->features2) {
+            // New parent item for each extension
             if (strcmp(feature.extension, currExtName) != 0) {
-                // New parent item for each extension
                 currExtName = feature.extension;
-                extItem = new QStandardItem(QString::fromLatin1(currExtName));
-                rootItem->appendRow(extItem);
+                extItem.clear();
+                extItem << new QStandardItem(QString::fromLatin1(currExtName));
+                extItem << new QStandardItem();
+                parentItem[0]->appendRow(extItem);
             }
             QList<QStandardItem *> rowItems;
             rowItems << new QStandardItem(QString::fromStdString(feature.name));
             rowItems << new QStandardItem((feature.supported) ? "true" : "false");
             rowItems[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-            extItem->appendRow(rowItems);
+            extItem.first()->appendRow(rowItems);
         }
     }
 
-    ui.treeViewDeviceFeatures->expandAll();
-    ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    // Extended Properties
+    if (device->properties2.size() > 0) {
+        QList<QStandardItem *> parentItem;
+        parentItem << new QStandardItem("Properties");
+        parentItem << new QStandardItem("");
+        rootItem->appendRow(parentItem);
+
+        const char* currExtName("");
+        QList<QStandardItem*> extItem;
+        for (auto const &property : device->properties2) {
+            // New parent item for each extension
+            if (strcmp(property.extension, currExtName) != 0) {
+                currExtName = property.extension;
+                extItem.clear();
+                extItem << new QStandardItem(QString::fromLatin1(currExtName));
+                extItem << new QStandardItem();
+                parentItem[0]->appendRow(extItem);
+            }
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(QString::fromStdString(property.name));
+            rowItems << new QStandardItem(QString::fromStdString(property.value));
+            extItem.first()->appendRow(rowItems);
+        }
+    }
+
+    ui.treeViewDeviceExtended->expandAll();
+    ui.treeViewDeviceExtended->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
@@ -876,7 +911,7 @@ void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
 {
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
     treeWidget->clear();
-	ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
+    ui.tabWidgetDevice->setTabText(6, "Layers (" + QString::number(device->getLayers().size()) + ")");
 	for (auto& layer : device->getLayers())
 	{
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(treeWidget);
@@ -1005,7 +1040,7 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceExtensions;
     treeWidget->clear();
 	treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
+    ui.tabWidgetDevice->setTabText(4, "Extensions (" + QString::number(device->extensions.size()) + ")");
 	for (auto& extension : device->extensions)
 	{
 		QTreeWidgetItem *extItem = new QTreeWidgetItem(treeWidget);
@@ -1016,7 +1051,7 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
+    ui.tabWidgetDevice->setTabText(7, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
 	QTreeWidget *treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
     for (auto& queueFamily : device->queueFamilies)
