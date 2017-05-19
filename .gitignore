@@ -219,3 +219,5 @@ Makefile*
 
 # QtCtreator CMake
 CMakeLists.txt.user*
+
+libs/openssl/*/*.so
