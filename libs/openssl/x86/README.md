@@ -1,0 +1,1 @@
+Put libcrypto.so and libssl.so for Android x86 here

@@ -1,0 +1,1 @@
+Put libcrypto.so and libssl.so for Android ARM v7 here
