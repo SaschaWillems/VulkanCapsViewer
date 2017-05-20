@@ -60,6 +60,7 @@ QToolButton {
 color:#FFFFFF;
 border-top:0px;
 border-bottom:0px;
+background: transparent;
 }
 
 QToolButton::hover {       
@@ -128,196 +129,226 @@ QToolButton::hover {
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="cursor">
           <cursorShape>ArrowCursor</cursorShape>
          </property>
          <property name="styleSheet">
           <string notr="true">background-color: rgb(32, 32, 32);</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <property name="spacing">
-           <number>5</number>
+           <number>6</number>
           </property>
           <property name="leftMargin">
            <number>0</number>
           </property>
           <property name="topMargin">
-           <number>5</number>
+           <number>6</number>
           </property>
           <property name="rightMargin">
            <number>0</number>
           </property>
           <property name="bottomMargin">
-           <number>5</number>
+           <number>0</number>
           </property>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_buttons">
-            <property name="spacing">
-             <number>6</number>
+           <widget class="QLabel" name="pixmap_header_top">
+            <property name="text">
+             <string/>
             </property>
-            <item>
-             <widget class="QToolButton" name="toolButtonUpload">
-              <property name="text">
-               <string>Upload</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/upload48.png</normaloff>:/vulkancapsviewer/Resources/upload48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonSave">
-              <property name="text">
-               <string>Save</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/save48.png</normaloff>:/vulkancapsviewer/Resources/save48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonOnlineDevice">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Device</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/device48.png</normaloff>:/vulkancapsviewer/Resources/device48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonOnlineDataBase">
-              <property name="text">
-               <string>Database</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/browse48.png</normaloff>:/vulkancapsviewer/Resources/browse48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonSettings">
-              <property name="text">
-               <string>Settings</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/settings48.png</normaloff>:/vulkancapsviewer/Resources/settings48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-              <property name="arrowType">
-               <enum>Qt::NoArrow</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonAbout">
-              <property name="text">
-               <string>About</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/about48.png</normaloff>:/vulkancapsviewer/Resources/about48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButtonExit">
-              <property name="text">
-               <string>Exit</string>
-              </property>
-              <property name="icon">
-               <iconset resource="vulkancapsviewer.qrc">
-                <normaloff>:/vulkancapsviewer/Resources/close48.png</normaloff>:/vulkancapsviewer/Resources/close48.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>64</width>
-                <height>32</height>
-               </size>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextUnderIcon</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="lineWidth">
-               <number>0</number>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="vulkancapsviewer.qrc">:/vulkancapsviewer/Resources/vulkan48.png</pixmap>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-              </property>
-             </widget>
-            </item>
-           </layout>
+            <property name="pixmap">
+             <pixmap resource="vulkancapsviewer.qrc">:/vulkancapsviewer/Resources/vulkan48.png</pixmap>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_header_top">
+            <property name="styleSheet">
+             <string notr="true">color:#FFFFFF;</string>
+            </property>
+            <property name="text">
+             <string>Hardware Capability Viewer</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="widget" native="true">
+            <property name="styleSheet">
+             <string notr="true">background-color: rgb(48, 48, 48);</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_buttons">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>4</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>4</number>
+             </property>
+             <item>
+              <widget class="QToolButton" name="toolButtonUpload">
+               <property name="text">
+                <string>Upload</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/upload48.png</normaloff>:/vulkancapsviewer/Resources/upload48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonSave">
+               <property name="text">
+                <string>Save</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/save48.png</normaloff>:/vulkancapsviewer/Resources/save48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonOnlineDevice">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>Device</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/device48.png</normaloff>:/vulkancapsviewer/Resources/device48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonOnlineDataBase">
+               <property name="text">
+                <string>Database</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/browse48.png</normaloff>:/vulkancapsviewer/Resources/browse48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonSettings">
+               <property name="text">
+                <string>Settings</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/settings48.png</normaloff>:/vulkancapsviewer/Resources/settings48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonAbout">
+               <property name="text">
+                <string>About</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/about48.png</normaloff>:/vulkancapsviewer/Resources/about48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="toolButtonExit">
+               <property name="text">
+                <string>Exit</string>
+               </property>
+               <property name="icon">
+                <iconset resource="vulkancapsviewer.qrc">
+                 <normaloff>:/vulkancapsviewer/Resources/close48.png</normaloff>:/vulkancapsviewer/Resources/close48.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>64</width>
+                 <height>32</height>
+                </size>
+               </property>
+               <property name="toolButtonStyle">
+                <enum>Qt::ToolButtonTextUnderIcon</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -329,6 +360,18 @@ QToolButton::hover {
          </property>
          <property name="formAlignment">
           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+         </property>
+         <property name="horizontalSpacing">
+          <number>6</number>
+         </property>
+         <property name="verticalSpacing">
+          <number>6</number>
+         </property>
+         <property name="topMargin">
+          <number>4</number>
+         </property>
+         <property name="bottomMargin">
+          <number>4</number>
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="reportForLabel">
@@ -394,13 +437,7 @@ QToolButton::hover {
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <property name="documentMode">
-       <bool>false</bool>
-      </property>
       <property name="tabsClosable">
-       <bool>false</bool>
-      </property>
-      <property name="tabBarAutoHide">
        <bool>false</bool>
       </property>
       <widget class="QWidget" name="tabDevice">
@@ -451,6 +488,9 @@ QToolButton::hover {
                <set>QAbstractItemView::NoEditTriggers</set>
               </property>
               <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
+              <property name="headerHidden">
                <bool>true</bool>
               </property>
               <attribute name="headerDefaultSectionSize">
