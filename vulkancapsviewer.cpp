@@ -35,6 +35,8 @@
 #include <QInputDialog>
 #include <QSysInfo>
 #include <QDebug>
+#include <QScroller>
+#include <QEasingCurve>
 #include <qnamespace.h>
 #include <assert.h>
 #include <settingsDialog.h>
@@ -61,6 +63,8 @@
 
 #define VK_API_VERSION VK_MAKE_VERSION(1, 0, 3)
 
+const std::string vulkanCapsViewer::version = "1.4";
+
 /// <summary>
 ///	Returns operating system name
 /// </summary>
@@ -74,7 +78,18 @@ OSInfo getOperatingSystem()
 	return osInfo;
 }
 
-const std::string vulkanCapsViewer::version = "1.4";
+#ifdef __ANDROID__
+void setTouchProps(QWidget *widget) {
+    QScroller *scroller = QScroller::scroller(widget);
+    QScrollerProperties properties = QScroller::scroller(widget)->scrollerProperties();
+    QVariant overshootPolicy = QVariant::fromValue<QScrollerProperties::OvershootPolicy>(QScrollerProperties::OvershootAlwaysOff);
+    properties.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, overshootPolicy);
+    properties.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, overshootPolicy);
+    scroller->setScrollerProperties(properties);
+    scroller->grabGesture(widget, QScroller::LeftMouseButtonGesture);
+}
+
+#endif
 
 vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	: QMainWindow(parent)
@@ -103,11 +118,28 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
     vulkanApiVersion = QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
 
+    ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
 #ifdef ANDROID
     // Load Vulkan libraries on Android manually
     if (!loadVulkanLibrary()) {
         QMessageBox::warning(this, "Error", "Could not load Vulkan library!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
         exit(EXIT_FAILURE);
+    }
+    // Adjust toolbar to better fit mobile devices
+    foreach (QToolButton *toolButton, findChildren<QToolButton *>()) {
+        toolButton->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    }
+    ui.toolButtonSave->setVisible(false);
+    // Touch scrolling
+    foreach (QTreeWidget *widget, findChildren<QTreeWidget *>()) {
+        setTouchProps(widget);
+        widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+    }
+    foreach (QTreeView *widget, findChildren<QTreeView *>()) {
+        setTouchProps(widget);
+        widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
+        widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
     }
 #endif
 
@@ -188,7 +220,7 @@ void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016 by <a href='http://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2017 by <a href='http://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"
