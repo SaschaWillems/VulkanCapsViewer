@@ -2,10 +2,13 @@
 #include <QtWidgets/QApplication>
 #include <QDebug>
 #include <QCommandLineParser>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
-	QApplication a(argc, argv);
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    QApplication a(argc, argv);
     a.setApplicationVersion(QString::fromStdString(vulkanCapsViewer::version));
 
     QCommandLineParser parser;  

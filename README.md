@@ -25,4 +25,4 @@ Current releases for all platforms will be provided on a regular basis at [vulka
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-- [Qt 5.6](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
+- [Qt 5.8](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
