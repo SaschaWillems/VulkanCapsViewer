@@ -670,8 +670,19 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, std::string key, std::stri
 
 QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterator iter, bool asBool = false)
 {
+    // Map some key names to different display names
+    QMap<QString, QString> replaceList;
+    replaceList["apiVersionText"] = "apiVersion";
+    replaceList["deviceTypeText"] = "deviceType";
+    replaceList["driverVersionText"] = "driverVersion";
+
+    QString keyName = iter.key();
+    if (replaceList.contains(keyName)) {
+        keyName = replaceList[keyName];
+    }
+
     QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
-    newItem->setText(0, iter.key());
+    newItem->setText(0, keyName);
     if (asBool) {
         newItem->setText(1, (iter.value().toBool()) ? "true" : "false");
         newItem->setTextColor(1, (iter.value().toBool()) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
@@ -732,12 +743,14 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     treeWidget->clear();
 	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
 
+    // Some keys are doubled for raw and readable data for vkjson compatiblity, filter them out and display readable versions only
+    QStringList skipList;
+    skipList << "apiVersion" << "deviceType" << "driverVersion" << "headerversion";
+
     // Basic properties
     for(QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
-        if (iter.key() == "driverversion") {
-            addTreeItem(treeItem, iter.key().toStdString(), device->getDriverVersion());
+        if (skipList.indexOf(iter.key()) > -1)
             continue;
-        }
         addTreeItem(treeItem, iter);
     }
 
