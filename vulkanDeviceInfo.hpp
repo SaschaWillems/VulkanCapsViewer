@@ -279,7 +279,7 @@ public:
 	/// <summary>
 	///	Request physical device properties
 	/// </summary>
-	void readPhyiscalProperties()
+	void readPhysicalProperties()
 	{
 		assert(device != NULL);
 		vkGetPhysicalDeviceProperties(device, &props);
@@ -353,7 +353,7 @@ public:
 	/// <summary>
 	///	Request physical device features
 	/// </summary>
-	void readPhyiscalFeatures()
+	void readPhysicalFeatures()
 	{
 		assert(device != NULL);
 		vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
@@ -441,7 +441,7 @@ public:
 	/// <summary>
 	///	Copy physical device limits into a map
 	/// </summary>
-	void readPhyiscalLimits()
+	void readPhysicalLimits()
 	{
 		limits.clear();
         limits["maxImageDimension1D"] = props.limits.maxImageDimension1D;
@@ -555,7 +555,7 @@ public:
 	/// <summary>
 	///	Request physical memory properties
 	/// </summary>
-	void readPhyiscalMemoryProperties()
+	void readPhysicalMemoryProperties()
 	{
 		assert(device != NULL);
         vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);

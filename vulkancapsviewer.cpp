@@ -556,10 +556,10 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->readLayers();
 	GPU->readExtensions();
     GPU->readQueueFamilies();
-	GPU->readPhyiscalProperties();
-	GPU->readPhyiscalFeatures();
-	GPU->readPhyiscalLimits();
-	GPU->readPhyiscalMemoryProperties();
+    GPU->readPhysicalProperties();
+    GPU->readPhysicalFeatures();
+    GPU->readPhysicalLimits();
+    GPU->readPhysicalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
     GPU->readPlatformDetails();
 	// Request all available queues
