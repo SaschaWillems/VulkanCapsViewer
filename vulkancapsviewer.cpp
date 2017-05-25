@@ -470,7 +470,7 @@ bool vulkanCapsViewer::initVulkan()
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFeatures2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
         pfnGetPhysicalDeviceProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceProperties2KHR"));
-        if (!pfnGetPhysicalDeviceFeatures2KHR) {
+        if (!pfnGetPhysicalDeviceProperties2KHR) {
             globalInfo.features.deviceProperties2 = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
