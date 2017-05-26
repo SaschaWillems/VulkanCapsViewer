@@ -122,7 +122,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 #ifdef ANDROID
     // Load Vulkan libraries on Android manually
     if (!loadVulkanLibrary()) {
-        QMessageBox::warning(this, "Error", "Could not load Vulkan library!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API!");
         exit(EXIT_FAILURE);
     }
     // Adjust toolbar to better fit mobile devices
@@ -143,9 +143,9 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     }
 #endif
 
-	if (!initVulkan())
-	{
-        QMessageBox::warning(this, "Error", "Could not init Vulkan!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
+    if (!initVulkan())
+    {
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
         exit(EXIT_FAILURE);
 	}
 
