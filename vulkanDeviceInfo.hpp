@@ -45,7 +45,7 @@
 #include "vulkansurfaceinfo.hpp"
 #include "vulkanpfn.h"
 
-#ifdef __linux__
+#ifdef __ANDROID__
 #include <sys/system_properties.h>
 #endif
 
