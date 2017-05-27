@@ -20,7 +20,7 @@ win32 {
     LIBS += Advapi32.lib
 }
 linux:!android {
-    LIBS += "$$PWD/libs/vulkan/libvulkan.so"
+    LIBS += -lvulkan
     QT += x11extras
     #x11 {
         DEFINES += VK_USE_PLATFORM_XCB_KHR
