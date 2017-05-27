@@ -305,7 +305,7 @@ public:
         sparseProperties["residencyNonResidentStrict"] = props.sparseProperties.residencyNonResidentStrict;
 
         // VK_KHR_get_physical_device_properties2
-        if (pfnGetPhysicalDeviceFeatures2KHR) {
+        if (pfnGetPhysicalDeviceProperties2KHR) {
             // VK_KHX_multiview
             if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
