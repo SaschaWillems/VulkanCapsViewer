@@ -339,17 +339,18 @@ void vulkanCapsViewer::slotFilterFormats(QString text)
 
 void vulkanCapsViewer::getGlobalExtensions()
 {
+    globalInfo.extensions.clear();
 	VkResult vkRes;
-	do 
-	{
+    do {
 		uint32_t extCount;
 		vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, NULL);
-		assert(!vkRes);
-		std::vector<VkExtensionProperties> extensions(extCount);
-		vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, &extensions.front());
+        if (vkRes != VK_SUCCESS) {
+            return;
+        }
+        std::vector<VkExtensionProperties> extensions(extCount);
+        vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, &extensions.front());
 		globalInfo.extensions.insert(globalInfo.extensions.end(), extensions.begin(), extensions.end());
 	} while (vkRes == VK_INCOMPLETE);
-	assert(!vkRes);
 }
 
 void vulkanCapsViewer::displayGlobalExtensions()
