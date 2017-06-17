@@ -291,8 +291,11 @@ public:
         properties["apiVersion"] = props.apiVersion;
         properties["apiVersionText"] = QString::fromStdString(vulkanResources::versionToString(props.apiVersion));
         properties["headerversion"] = VK_HEADER_VERSION;
-        properties["vendorID"] = props.vendorID;
-        properties["deviceID"] = props.deviceID;
+        QString hexID = "";
+        hexID.setNum(props.vendorID, 16);
+        properties["vendorID"] = hexID;
+        hexID.setNum(props.deviceID, 16);
+        properties["deviceID"] = hexID;
         properties["deviceType"] = props.deviceType;
         properties["deviceTypeText"] = QString::fromStdString(vulkanResources::physicalDeviceTypeString(props.deviceType));
 
