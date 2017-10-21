@@ -600,11 +600,11 @@ public:
     }
 
     /// <summary>
-    ///	Save report to JSON file
+    ///	Return device information as a Json object
     /// </summary>
-    void saveToJSON(std::string fileName, std::string submitter, std::string comment)
+    QJsonObject toJson(std::string fileName, std::string submitter, std::string comment)
 	{
-		QJsonObject root;
+        QJsonObject root;
 
 		// Device properties
 		QJsonObject jsonProperties;
@@ -806,11 +806,7 @@ public:
         root["extended"] = jsonExtended;
 #endif
 
-        // Save to file
-		QJsonDocument doc(root);
-		QFile jsonFile(QString::fromStdString(fileName));
-		jsonFile.open(QFile::WriteOnly);
-        jsonFile.write(doc.toJson(QJsonDocument::Indented));
+        return root;
 	}
 
 };

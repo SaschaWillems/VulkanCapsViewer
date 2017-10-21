@@ -337,34 +337,16 @@ void vulkanCapsViewer::slotFilterFormats(QString text)
 	filterProxies.formats.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::getGlobalExtensions()
-{
-    globalInfo.extensions.clear();
-	VkResult vkRes;
-    do {
-		uint32_t extCount;
-		vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, NULL);
-        if (vkRes != VK_SUCCESS) {
-            return;
-        }
-        std::vector<VkExtensionProperties> extensions(extCount);
-        vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, &extensions.front());
-		globalInfo.extensions.insert(globalInfo.extensions.end(), extensions.begin(), extensions.end());
-	} while (vkRes == VK_INCOMPLETE);
-}
-
 void vulkanCapsViewer::displayGlobalExtensions()
 {
 	QTreeWidget *tree = ui.treeWidgetGlobalExtenssions;
 
-	for (auto& globalExt : globalInfo.extensions)
-	{
+    for (auto& ext : instanceInfo.extensions) {
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
-		treeItem->setText(0, QString::fromLatin1(globalExt.extensionName));
-		treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(globalExt.specVersion)));
+        treeItem->setText(0, QString::fromLatin1(ext.extensionName));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(ext.specVersion)));
 	}
-	for (int i = 0; i < tree->columnCount(); i++)
-	{
+    for (int i = 0; i < tree->columnCount(); i++) {
 		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 	}
 }
@@ -375,7 +357,6 @@ void vulkanCapsViewer::displayGlobalExtensions()
 bool vulkanCapsViewer::initVulkan()
 {	
 	VkResult vkRes;
-
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -390,27 +371,24 @@ bool vulkanCapsViewer::initVulkan()
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceCreateInfo.pApplicationInfo = &appInfo;
 
-    // Get globalally available layers
+    // Get instance layers
 	uint32_t layerCount = 0;
-	std::vector<VkLayerProperties> globalLayerProperties;
+    std::vector<VkLayerProperties> instanceLayerProperties;
 	do 
 	{
 		vkRes = vkEnumerateInstanceLayerProperties(&layerCount, NULL);
-		globalLayerProperties.resize(layerCount);
-		if (layerCount > 0)
-		{
-			vkRes = vkEnumerateInstanceLayerProperties(&layerCount, &globalLayerProperties.front());
+        instanceLayerProperties.resize(layerCount);
+        if (layerCount > 0) {
+            vkRes = vkEnumerateInstanceLayerProperties(&layerCount, &instanceLayerProperties.front());
 		}
 	} while (vkRes == VK_INCOMPLETE);
 	assert(!vkRes);
 
-	for (auto& globalLayerProperty : globalLayerProperties) 
-	{
+    for (auto& layerProperty : instanceLayerProperties) {
 		VulkanLayerInfo layer;
-		layer.properties = globalLayerProperty;
-		instanceInfo.globalLayers.push_back(layer);
+        layer.properties = layerProperty;
+        instanceInfo.layers.push_back(layer);
 	}
-
 
     surfaceExtension = "";
 
@@ -426,12 +404,22 @@ bool vulkanCapsViewer::initVulkan()
 
     std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, surfaceExtension.c_str() };
 
-    // Global extensions
-	getGlobalExtensions();
+    // Get instance extensions
+    instanceInfo.extensions.clear();
+    do {
+        uint32_t extCount;
+        vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, NULL);
+        if (vkRes != VK_SUCCESS) {
+            break;
+        }
+        std::vector<VkExtensionProperties> extensions(extCount);
+        vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, &extensions.front());
+        instanceInfo.extensions.insert(instanceInfo.extensions.end(), extensions.begin(), extensions.end());
+    } while (vkRes == VK_INCOMPLETE);
 
     // Check support for new property and feature queries
     globalInfo.features.deviceProperties2 = false;
-    for (auto& ext : globalInfo.extensions) {
+    for (auto& ext : instanceInfo.extensions) {
         if (strcmp(ext.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
             globalInfo.features.deviceProperties2 = true;
             enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
@@ -936,16 +924,14 @@ void vulkanCapsViewer::displayDeviceExtended(VulkanDeviceInfo *device)
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
 {
     tree->clear();
-	for (auto& globalLayer : instanceInfo.globalLayers) 
-	{
+    for (auto& layer : instanceInfo.layers) {
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
-		treeItem->setText(0, QString::fromLatin1(globalLayer.properties.layerName));
-		treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(globalLayer.properties.specVersion)));
-		treeItem->setText(2, QString::fromStdString(vulkanResources::versionToString(globalLayer.properties.implementationVersion)));
-        treeItem->setText(3, QString::fromStdString(to_string(globalLayer.extensions.size())));
-		treeItem->setText(4, globalLayer.properties.description);
-		for (auto& layerExt : globalLayer.extensions)
-		{
+        treeItem->setText(0, QString::fromLatin1(layer.properties.layerName));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
+        treeItem->setText(2, QString::fromStdString(vulkanResources::versionToString(layer.properties.implementationVersion)));
+        treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
+        treeItem->setText(4, layer.properties.description);
+        for (auto& layerExt : layer.extensions) {
             addTreeItem(treeItem, layerExt.extensionName, to_string(layerExt.specVersion));
 		}
 	}
@@ -1253,7 +1239,45 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
 {
 	VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
-	device.saveToJSON(fileName, submitter, comment);
+    QJsonObject report = device.toJson(fileName, submitter, comment);
+
+    // Add instance information
+    QJsonObject jsonInstance;
+    // Extensions
+    QJsonArray jsonExtensions;
+    for (auto& ext : instanceInfo.extensions) {
+        QJsonObject jsonExt;
+        jsonExt["extensionName"] = ext.extensionName;
+        jsonExt["specVersion"] = int(ext.specVersion);
+        jsonExtensions.append(jsonExt);
+    }
+    jsonInstance["extensions"] = jsonExtensions;
+    // Layers
+    QJsonArray jsonLayers;
+    for (auto& layer : instanceInfo.layers) {
+        QJsonObject jsonLayer;
+        jsonLayer["layerName"] = layer.properties.layerName;
+        jsonLayer["description"] = layer.properties.description;
+        jsonLayer["specVersion"] =  int(layer.properties.specVersion);
+        jsonLayer["implementationVersion"] =  int(layer.properties.implementationVersion);
+        QJsonArray jsonLayerExtensions;
+        for (auto& ext : layer.extensions) {
+            QJsonObject jsonExt;
+            jsonExt["extensionName"] = ext.extensionName;
+            jsonExt["specVersion"] = int(ext.specVersion);
+            jsonLayerExtensions.append(jsonExt);
+        }
+        jsonLayer["extensions"] = jsonLayerExtensions;
+        jsonLayers.append(jsonLayer);
+    }
+    jsonInstance["layers"] = jsonLayers;
+
+    report["instance"] = jsonInstance;
+
+    QJsonDocument doc(report);
+    QFile jsonFile(QString::fromStdString(fileName));
+    jsonFile.open(QFile::WriteOnly);
+    jsonFile.write(doc.toJson(QJsonDocument::Indented));
 }
 
 /// <summary>

@@ -19,14 +19,13 @@
 
 #include "vulkan/vulkan.h"
 
-struct vulkanInstanceInfo 
-{
-	std::vector<VulkanLayerInfo> globalLayers;
+struct vulkanInstanceInfo {
+    std::vector<VulkanLayerInfo> layers;
+    std::vector<VkExtensionProperties> extensions;
 };
 
 struct vulkanGlobalInfo
 {
-	std::vector<VkExtensionProperties> extensions;
     struct Features {
         bool deviceProperties2;
     } features;
@@ -70,7 +69,6 @@ private:
     ANativeWindow* nativeWindow = nullptr;
 #endif
 	bool initVulkan();
-	void getGlobalExtensions();
 	void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
 	void getGPUs();
 	void displayDevice(int index);
