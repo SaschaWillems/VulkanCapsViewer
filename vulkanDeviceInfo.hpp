@@ -347,6 +347,25 @@ public:
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("perViewPositionAllComponents", QString::number(extProps.perViewPositionAllComponents), VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME));
             }
+            // VK_EXT_conservative_rasterization
+            if (extensionSupported(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME)) {
+                const char* extName(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME);
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceConservativeRasterizationPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("primitiveOverestimationSize", QString::number(extProps.primitiveOverestimationSize), extName));
+                properties2.push_back(Property2("maxExtraPrimitiveOverestimationSize", QString::number(extProps.maxExtraPrimitiveOverestimationSize), extName));
+                properties2.push_back(Property2("extraPrimitiveOverestimationSizeGranularity", QString::number(extProps.extraPrimitiveOverestimationSizeGranularity), extName));
+                properties2.push_back(Property2("primitiveUnderestimation", QString::number(extProps.primitiveUnderestimation), extName));
+                properties2.push_back(Property2("conservativePointAndLineRasterization", QString::number(extProps.conservativePointAndLineRasterization), extName));
+                properties2.push_back(Property2("degenerateTrianglesRasterized", QString::number(extProps.degenerateTrianglesRasterized), extName));
+                properties2.push_back(Property2("degenerateLinesRasterized", QString::number(extProps.degenerateLinesRasterized), extName));
+                properties2.push_back(Property2("fullyCoveredFragmentShaderInputVariable", QString::number(extProps.fullyCoveredFragmentShaderInputVariable), extName));
+                properties2.push_back(Property2("conservativeRasterizationPostDepthCoverage", QString::number(extProps.conservativeRasterizationPostDepthCoverage), extName));
+            }
         }
 	}
 	
