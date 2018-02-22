@@ -459,6 +459,19 @@ public:
                 features2.push_back(Feature2("variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
                 features2.push_back(Feature2("variablePointers", extFeatures.variablePointers, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
             }
+            // VK_KHR_16bit_storage
+            if (extensionSupported(VK_KHR_16BIT_STORAGE_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDevice16BitStorageFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("storageBuffer16BitAccess", extFeatures.storageBuffer16BitAccess, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("uniformAndStorageBuffer16BitAccess", extFeatures.uniformAndStorageBuffer16BitAccess, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("storagePushConstant16", extFeatures.storagePushConstant16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("storageInputOutput16", extFeatures.storageInputOutput16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
+            }
         }
 	}
 
