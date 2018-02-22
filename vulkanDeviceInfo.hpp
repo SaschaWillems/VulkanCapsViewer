@@ -410,6 +410,16 @@ public:
                 properties2.push_back(Property2("advancedBlendCorrelatedOverlap", QVariant(bool(extProps.advancedBlendCorrelatedOverlap)), extName));
                 properties2.push_back(Property2("advancedBlendAllOperations", QVariant(bool(extProps.advancedBlendAllOperations)), extName));
             }
+            // VK_KHR_sampler_ycbcr_conversion
+            if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkSamplerYcbcrConversionImageFormatPropertiesKHR extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_PROPERTIES_KHR;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("combinedImageSamplerDescriptorCount", QVariant(extProps.combinedImageSamplerDescriptorCount), VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
+            }
         }
 	}
 	
@@ -525,6 +535,16 @@ public:
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.advancedBlendCoherentOperations, VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME));
+            }
+            // VK_KHR_sampler_ycbcr_conversion
+            if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.samplerYcbcrConversion, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
             }
         }
 	}
