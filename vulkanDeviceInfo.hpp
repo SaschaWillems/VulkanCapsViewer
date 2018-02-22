@@ -73,9 +73,9 @@ struct Feature2 {
 
 struct Property2 {
     std::string name;
-    std::string value;
+    QVariant value;
     const char* extension;
-    Property2(std::string n, QString val, const char* ext) : name(n), value(val.toStdString()), extension(ext) {}
+    Property2(std::string n, QVariant val, const char* ext) : name(n), value(val), extension(ext) {}
 };
 
 
@@ -841,7 +841,7 @@ public:
             QJsonObject jsonProperty2;
             jsonProperty2["name"] = QString::fromStdString(property2.name);
             jsonProperty2["extension"] = QString::fromLatin1(property2.extension);
-            jsonProperty2["value"] = QString::fromStdString(property2.value);
+            jsonProperty2["value"] = property2.value.toString();
             jsonProperties2.append(jsonProperty2);
         }
         jsonExtended["deviceproperties2"] = jsonProperties2;

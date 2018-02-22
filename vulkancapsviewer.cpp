@@ -911,8 +911,19 @@ void vulkanCapsViewer::displayDeviceExtended(VulkanDeviceInfo *device)
                 parentItem[0]->appendRow(extItem);
             }
             QList<QStandardItem *> rowItems;
-            rowItems << new QStandardItem(QString::fromStdString(property.name));
-            rowItems << new QStandardItem(QString::fromStdString(property.value));
+            rowItems << new QStandardItem(QString::fromStdString(property.name));            
+            switch (property.value.type()) {
+            case QMetaType::Bool:
+            {
+                bool boolVal = property.value.toBool();
+                rowItems << new QStandardItem(boolVal ? "true" : "false");
+                rowItems[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                break;
+            }
+            default:
+                rowItems << new QStandardItem(property.value.toString());
+            }
+
             extItem.first()->appendRow(rowItems);
         }
     }
