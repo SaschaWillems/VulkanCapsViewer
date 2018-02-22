@@ -394,6 +394,22 @@ public:
                 properties2.push_back(Property2("sampleLocationSubPixelBits", QString::number(extProps.sampleLocationSubPixelBits), extName));
                 properties2.push_back(Property2("variableSampleLocations", QVariant(bool(extProps.variableSampleLocations)), extName));
             }
+            // VK_EXT_blend_operation_advanced
+            if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
+                const char* extName(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME);
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("advancedBlendMaxColorAttachments", QVariant(extProps.advancedBlendMaxColorAttachments), extName));
+                properties2.push_back(Property2("advancedBlendIndependentBlend", QVariant(bool(extProps.advancedBlendIndependentBlend)), extName));
+                properties2.push_back(Property2("advancedBlendNonPremultipliedSrcColor", QVariant(bool(extProps.advancedBlendNonPremultipliedSrcColor)), extName));
+                properties2.push_back(Property2("advancedBlendNonPremultipliedDstColor", QVariant(bool(extProps.advancedBlendNonPremultipliedDstColor)), extName));
+                properties2.push_back(Property2("advancedBlendCorrelatedOverlap", QVariant(bool(extProps.advancedBlendCorrelatedOverlap)), extName));
+                properties2.push_back(Property2("advancedBlendAllOperations", QVariant(bool(extProps.advancedBlendAllOperations)), extName));
+            }
         }
 	}
 	
@@ -499,6 +515,16 @@ public:
                 features2.push_back(Feature2("uniformAndStorageBuffer16BitAccess", extFeatures.uniformAndStorageBuffer16BitAccess, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
                 features2.push_back(Feature2("storagePushConstant16", extFeatures.storagePushConstant16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
                 features2.push_back(Feature2("storageInputOutput16", extFeatures.storageInputOutput16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
+            }
+            // VK_EXT_blend_operation_advanced
+            if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.advancedBlendCoherentOperations, VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME));
             }
         }
 	}
