@@ -190,7 +190,7 @@ void vulkanCapsViewer::slotClose()
 /// </summary>
 void vulkanCapsViewer::slotBrowseDatabase() 
 {
-	QString link = "http://vulkan.gpuinfo.org/";
+    QString link = "https://vulkan.gpuinfo.org/";
 	QDesktopServices::openUrl(QUrl(link));
 }
 
@@ -220,12 +220,12 @@ void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016-2017 by <a href='http://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2018 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"
 		"For usage and distribution details refer to the readme<br/><br/><br/>"
-		"<a href='http://www.gpuinfo.org'>http://www.gpuinfo.org</a><br><br>";
+        "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>";
 	aboutText << "</p>";
 	QMessageBox::about(this, tr("About the Vulkan hardware capability viewer"), QString::fromStdString(aboutText.str()));
 }
