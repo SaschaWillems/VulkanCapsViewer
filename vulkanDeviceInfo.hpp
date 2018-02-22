@@ -414,7 +414,7 @@ public:
             if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
                 VkSamplerYcbcrConversionImageFormatPropertiesKHR extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_PROPERTIES_KHR;
+                extProps.sType = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES_KHR;
                 deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
