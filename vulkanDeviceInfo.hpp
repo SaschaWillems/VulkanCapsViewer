@@ -439,14 +439,25 @@ public:
             // VK_KHX_multiview
             if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceMultiviewFeaturesKHX multiViewFeatures{};
-                multiViewFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
+                VkPhysicalDeviceMultiviewFeaturesKHX extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
                 deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &multiViewFeatures;
+                deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("multiview", multiViewFeatures.multiview, VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewGeometryShader", multiViewFeatures.multiviewGeometryShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewTessellationShader", multiViewFeatures.multiviewTessellationShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiview", extFeatures.multiview, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewGeometryShader", extFeatures.multiviewGeometryShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewTessellationShader", extFeatures.multiviewTessellationShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+            }
+            // VK_KHR_variable_pointers
+            if (extensionSupported(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceVariablePointerFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
+                features2.push_back(Feature2("variablePointers", extFeatures.variablePointers, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
             }
         }
 	}
