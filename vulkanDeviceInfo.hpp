@@ -341,8 +341,8 @@ public:
             if (extensionSupported(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
                 VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("perViewPositionAllComponents", QString::number(extProps.perViewPositionAllComponents), VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME));
@@ -353,7 +353,7 @@ public:
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
                 VkPhysicalDeviceConservativeRasterizationPropertiesEXT extProps{};
                 extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("primitiveOverestimationSize", QString::number(extProps.primitiveOverestimationSize), extName));
@@ -371,7 +371,7 @@ public:
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
                 VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT extProps{};
                 extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("filterMinmaxSingleComponentFormats", QString::number(extProps.filterMinmaxSingleComponentFormats), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
