@@ -377,6 +377,23 @@ public:
                 properties2.push_back(Property2("filterMinmaxSingleComponentFormats", QVariant(bool(extProps.filterMinmaxSingleComponentFormats)), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
                 properties2.push_back(Property2("filterMinmaxImageComponentMapping", QVariant(bool(extProps.filterMinmaxImageComponentMapping)), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
             }
+            // VK_EXT_sample_locations
+            if (extensionSupported(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME)) {
+                const char* extName(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME);
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceSampleLocationsPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("sampleLocationSampleCounts", QString::number(extProps.sampleLocationSampleCounts), extName));
+                properties2.push_back(Property2("maxSampleLocationGridSize.width", QString::number(extProps.maxSampleLocationGridSize.width), extName));
+                properties2.push_back(Property2("maxSampleLocationGridSize.height", QString::number(extProps.maxSampleLocationGridSize.height), extName));
+                properties2.push_back(Property2("sampleLocationCoordinateRange[0]", QString::number(extProps.sampleLocationCoordinateRange[0]), extName));
+                properties2.push_back(Property2("sampleLocationCoordinateRange[1]", QString::number(extProps.sampleLocationCoordinateRange[1]), extName));
+                properties2.push_back(Property2("sampleLocationSubPixelBits", QString::number(extProps.sampleLocationSubPixelBits), extName));
+                properties2.push_back(Property2("variableSampleLocations", QVariant(bool(extProps.variableSampleLocations)), extName));
+            }
         }
 	}
 	
