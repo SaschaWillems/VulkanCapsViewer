@@ -366,6 +366,17 @@ public:
                 properties2.push_back(Property2("fullyCoveredFragmentShaderInputVariable", QString::number(extProps.fullyCoveredFragmentShaderInputVariable), extName));
                 properties2.push_back(Property2("conservativeRasterizationPostDepthCoverage", QString::number(extProps.conservativeRasterizationPostDepthCoverage), extName));
             }
+            // VK_EXT_sampler_filter_minmax
+            if (extensionSupported(VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("filterMinmaxSingleComponentFormats", QString::number(extProps.filterMinmaxSingleComponentFormats), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
+                properties2.push_back(Property2("filterMinmaxImageComponentMapping", QString::number(extProps.filterMinmaxImageComponentMapping), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
+            }
         }
 	}
 	
