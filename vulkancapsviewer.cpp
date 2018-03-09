@@ -745,10 +745,49 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 
     // Sparse properties
     QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-    parentItem->setText(0, "sparseProperties");
+    parentItem->setText(0, "sparse properties");
     treeItem->addChild(parentItem);
     for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
         addTreeItem(parentItem, iter, true);
+    }
+
+    // Subgroup operations properties
+    if (device->hasSubgroupProperties) {
+        QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
+        parentItem->setText(0, "subgroup properties");
+        for(QVariantMap::const_iterator iter = device->subgroupProperties.begin(); iter != device->subgroupProperties.end(); ++iter) {
+            QString keyName = iter.key();
+            if (keyName == "quadOperationsInAllStages") {
+                addTreeItem(parentItem, iter, true);
+            }
+            if (keyName == "subgroupSize") {
+                addTreeItem(parentItem, iter, false);
+            }
+            if (keyName == "supportedOperations") {
+                VkSubgroupFeatureFlags flags = iter.value().toUInt();
+                QTreeWidgetItem *opsItem = addTreeItem(parentItem, iter, false);
+                addTreeItemVkBool32(opsItem, "basic", flags & VK_SUBGROUP_FEATURE_BASIC_BIT);
+                addTreeItemVkBool32(opsItem, "vote", flags & VK_SUBGROUP_FEATURE_VOTE_BIT);
+                addTreeItemVkBool32(opsItem, "arithmetic", flags & VK_SUBGROUP_FEATURE_ARITHMETIC_BIT);
+                addTreeItemVkBool32(opsItem, "ballot", flags & VK_SUBGROUP_FEATURE_BALLOT_BIT);
+                addTreeItemVkBool32(opsItem, "schuffle", flags & VK_SUBGROUP_FEATURE_SHUFFLE_BIT);
+                addTreeItemVkBool32(opsItem, "schuffle (relative)", flags & VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT);
+                addTreeItemVkBool32(opsItem, "clustered", flags & VK_SUBGROUP_FEATURE_CLUSTERED_BIT);
+                addTreeItemVkBool32(opsItem, "quad", flags & VK_SUBGROUP_FEATURE_QUAD_BIT);
+            }
+            if (keyName == "supportedStages") {
+                VkShaderStageFlags flags = iter.value().toUInt();
+                QTreeWidgetItem *stageItem = addTreeItem(parentItem, iter, false);
+                addTreeItemVkBool32(stageItem, "vertex", flags & VK_SHADER_STAGE_VERTEX_BIT);
+                addTreeItemVkBool32(stageItem, "tessellation control", flags & VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT);
+                addTreeItemVkBool32(stageItem, "tessellation evaluation", flags & VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT);
+                addTreeItemVkBool32(stageItem, "geometry", flags & VK_SHADER_STAGE_GEOMETRY_BIT);
+                addTreeItemVkBool32(stageItem, "fragment", flags & VK_SHADER_STAGE_FRAGMENT_BIT);
+                addTreeItemVkBool32(stageItem, "compute", flags & VK_SHADER_STAGE_COMPUTE_BIT);
+                addTreeItemVkBool32(stageItem, "all graphics", flags & VK_SHADER_STAGE_ALL_GRAPHICS);
+                addTreeItemVkBool32(stageItem, "all", flags & VK_SHADER_STAGE_ALL);
+            }
+        }
     }
 
     // Pipeline cache UUID

@@ -104,6 +104,9 @@ public:
 	VkPhysicalDeviceMemoryProperties memoryProperties;
 	VkPhysicalDeviceFeatures deviceFeatures;
 
+    bool hasSubgroupProperties = false;
+    QVariantMap subgroupProperties;
+
     VkPhysicalDeviceProperties2KHR deviceProperties2;
     VkPhysicalDeviceFeatures2KHR deviceFeatures2;
 
@@ -123,6 +126,16 @@ public:
 	{
 		return layers;
 	}
+
+    /// <summary>
+    ///	Returns true if device supports Vulkan 1.1 (or above)
+    /// </summary>
+    bool vulkan_1_1()
+    {
+        uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
+        uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
+        return ((major > 1) || ((major == 1) && (minor >= 1)));
+    }
 
 	/// <summary>
 	///	Get list of global extensions for this device (not specific to any layer)
@@ -420,6 +433,20 @@ public:
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("combinedImageSamplerDescriptorCount", QVariant(extProps.combinedImageSamplerDescriptorCount), VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
+            }
+            if (vulkan_1_1()) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceSubgroupProperties extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                hasSubgroupProperties = true;
+                subgroupProperties.clear();
+                subgroupProperties["subgroupSize"] = extProps.subgroupSize;
+                subgroupProperties["supportedStages"] = extProps.supportedStages;
+                subgroupProperties["supportedOperations"] = extProps.supportedOperations;
+                subgroupProperties["quadOperationsInAllStages"] = QVariant(bool(extProps.quadOperationsInAllStages));
             }
         }
 	}
@@ -728,6 +755,7 @@ public:
 		QJsonObject jsonProperties;
         jsonProperties = QJsonObject::fromVariantMap(properties);
         jsonProperties["sparseProperties"] = QJsonObject::fromVariantMap(sparseProperties);
+        jsonProperties["subgroupProperties"] = QJsonObject::fromVariantMap(subgroupProperties);
         jsonProperties["limits"] = QJsonObject::fromVariantMap(limits);
         // Pipeline cache UUID
         QJsonArray jsonPipelineCache;
