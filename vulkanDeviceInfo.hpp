@@ -306,16 +306,17 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceProperties2KHR) {
-            // VK_KHX_multiview
-            if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
+            // VK_KHR_multiview
+            if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
+                const char* extName(VK_KHR_MULTIVIEW_EXTENSION_NAME);
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMultiviewPropertiesKHX extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHX;
+                VkPhysicalDeviceMultiviewPropertiesKHR extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR;
                 deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount), VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex), VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount), extName));
+                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex), extName));
             }
             // VK_KHR_push_descriptor
             if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
@@ -491,16 +492,16 @@ public:
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceFeatures2KHR) {
             // VK_KHX_multiview
-            if (extensionSupported(VK_KHX_MULTIVIEW_EXTENSION_NAME)) {
+            if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceMultiviewFeaturesKHX extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHX;
+                VkPhysicalDeviceMultiviewFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
                 deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("multiview", extFeatures.multiview, VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewGeometryShader", extFeatures.multiviewGeometryShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewTessellationShader", extFeatures.multiviewTessellationShader, VK_KHX_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiview", extFeatures.multiview, VK_KHR_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewGeometryShader", extFeatures.multiviewGeometryShader, VK_KHR_MULTIVIEW_EXTENSION_NAME));
+                features2.push_back(Feature2("multiviewTessellationShader", extFeatures.multiviewTessellationShader, VK_KHR_MULTIVIEW_EXTENSION_NAME));
             }
             // VK_KHR_variable_pointers
             if (extensionSupported(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME)) {
