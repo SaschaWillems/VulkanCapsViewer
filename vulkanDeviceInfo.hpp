@@ -574,6 +574,19 @@ public:
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.samplerYcbcrConversion, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
             }
+            if (vulkan_1_1()) {
+                // VK_KHR_shader_draw_parameters
+                if (extensionSupported(VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME)) {
+                    VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                    VkPhysicalDeviceShaderDrawParameterFeatures extFeatures{};
+                    extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES;
+                    deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                    deviceFeatures2.pNext = &extFeatures;
+                    pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                    features2.push_back(Feature2("shaderDrawParameters", extFeatures.shaderDrawParameters, VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME));
+                }
+            }
+
         }
 	}
 
