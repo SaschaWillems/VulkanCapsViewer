@@ -447,6 +447,18 @@ public:
                 subgroupProperties["supportedStages"] = extProps.supportedStages;
                 subgroupProperties["supportedOperations"] = extProps.supportedOperations;
                 subgroupProperties["quadOperationsInAllStages"] = QVariant(bool(extProps.quadOperationsInAllStages));
+                // VK_KHR_maintenance3
+                if (extensionSupported(VK_KHR_MAINTENANCE3_EXTENSION_NAME)) {
+                    const char* extName(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
+                    VkPhysicalDeviceProperties2KHR deviceProps2{};
+                    VkPhysicalDeviceMaintenance3Properties extProps{};
+                    extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
+                    deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                    deviceProps2.pNext = &extProps;
+                    pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                    properties2.push_back(Property2("maxPerSetDescriptors", QVariant(extProps.maxPerSetDescriptors), extName));
+                    properties2.push_back(Property2("maxMemoryAllocationSize", QVariant(extProps.maxMemoryAllocationSize), extName));
+                }
             }
         }
 	}
