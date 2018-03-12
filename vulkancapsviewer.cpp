@@ -61,7 +61,7 @@
 #include <android/native_window_jni.h>
 #endif
 
-#define VK_API_VERSION VK_MAKE_VERSION(1, 0, 3)
+#define VK_API_VERSION VK_API_VERSION_1_1
 
 const std::string vulkanCapsViewer::version = "1.5";
 
