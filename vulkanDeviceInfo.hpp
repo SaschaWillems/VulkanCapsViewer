@@ -584,7 +584,7 @@ public:
                 deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.samplerYcbcrConversion, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
+                features2.push_back(Feature2("samplerYcbcrConversion", extFeatures.samplerYcbcrConversion, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
             }
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
