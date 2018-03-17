@@ -784,8 +784,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
                 addTreeItemVkBool32(stageItem, "geometry", flags & VK_SHADER_STAGE_GEOMETRY_BIT);
                 addTreeItemVkBool32(stageItem, "fragment", flags & VK_SHADER_STAGE_FRAGMENT_BIT);
                 addTreeItemVkBool32(stageItem, "compute", flags & VK_SHADER_STAGE_COMPUTE_BIT);
-                addTreeItemVkBool32(stageItem, "all graphics", flags & VK_SHADER_STAGE_ALL_GRAPHICS);
-                addTreeItemVkBool32(stageItem, "all", flags & VK_SHADER_STAGE_ALL);
+                addTreeItemVkBool32(stageItem, "all graphics", (flags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS);
             }
         }
     }
