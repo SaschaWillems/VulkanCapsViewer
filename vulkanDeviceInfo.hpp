@@ -216,8 +216,8 @@ public:
 	{
 		supportedFormatCount = 0;
 		assert(device != NULL);
-        for (int32_t format = VK_FORMAT_BEGIN_RANGE+1; format < VK_FORMAT_END_RANGE+1; format++)
-		{
+        // Base formats
+        for (int32_t format = VK_FORMAT_BEGIN_RANGE+1; format < VK_FORMAT_END_RANGE+1; format++) {
 			VulkanFormatInfo formatInfo = {};
 			formatInfo.format = (VkFormat)format;
 			vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
@@ -229,6 +229,21 @@ public:
 			if (formatInfo.supported)
 				supportedFormatCount++;
 		}
+        // VK_KHR_sampler_ycbcr_conversion
+        if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+            for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format < VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; format++) {
+                VulkanFormatInfo formatInfo = {};
+                formatInfo.format = (VkFormat)format;
+                vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
+                formatInfo.supported =
+                    (formatInfo.properties.linearTilingFeatures != 0) |
+                    (formatInfo.properties.optimalTilingFeatures != 0) |
+                    (formatInfo.properties.bufferFeatures != 0);
+                formats.push_back(formatInfo);
+                if (formatInfo.supported)
+                    supportedFormatCount++;
+            }
+        }
 	}
 
 	/// <summary>
