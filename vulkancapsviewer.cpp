@@ -1067,7 +1067,7 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 				if (featureSet.flags == 0)
 				{
 					QList<QStandardItem *> flagItem;
-					flagItem << new QStandardItem("none");
+					flagItem << new QStandardItem("none");                    
 					flagItems[0]->appendRow(flagItem);
 				}
 				else
@@ -1076,8 +1076,10 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 					if (featureSet.flags & flag) \
 					{ \
 						QList<QStandardItem *> flagItem; \
-						flagItem << new QStandardItem(#flag); \
-						flagItems[0]->appendRow(flagItem); \
+                        QString flagname(#flag); \
+                        flagname = flagname.replace("VK_FORMAT_FEATURE_", ""); \
+                        flagItem << new QStandardItem(flagname); \
+                        flagItems[0]->appendRow(flagItem); \
 					} 
 
                     // Core
