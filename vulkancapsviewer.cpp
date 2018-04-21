@@ -770,8 +770,8 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
                 addTreeItemVkBool32(opsItem, "vote", flags & VK_SUBGROUP_FEATURE_VOTE_BIT);
                 addTreeItemVkBool32(opsItem, "arithmetic", flags & VK_SUBGROUP_FEATURE_ARITHMETIC_BIT);
                 addTreeItemVkBool32(opsItem, "ballot", flags & VK_SUBGROUP_FEATURE_BALLOT_BIT);
-                addTreeItemVkBool32(opsItem, "schuffle", flags & VK_SUBGROUP_FEATURE_SHUFFLE_BIT);
-                addTreeItemVkBool32(opsItem, "schuffle (relative)", flags & VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT);
+                addTreeItemVkBool32(opsItem, "shuffle", flags & VK_SUBGROUP_FEATURE_SHUFFLE_BIT);
+                addTreeItemVkBool32(opsItem, "shuffle (relative)", flags & VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT);
                 addTreeItemVkBool32(opsItem, "clustered", flags & VK_SUBGROUP_FEATURE_CLUSTERED_BIT);
                 addTreeItemVkBool32(opsItem, "quad", flags & VK_SUBGROUP_FEATURE_QUAD_BIT);
             }
