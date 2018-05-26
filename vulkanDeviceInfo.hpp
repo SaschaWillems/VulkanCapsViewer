@@ -506,7 +506,7 @@ public:
                     deviceProps2.pNext = &extProps;
                     pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                     properties2.push_back(Property2("maxPerSetDescriptors", QVariant(extProps.maxPerSetDescriptors), extName));
-                    properties2.push_back(Property2("maxMemoryAllocationSize", QVariant(extProps.maxMemoryAllocationSize), extName));
+                    properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
                 }
             }
         }
