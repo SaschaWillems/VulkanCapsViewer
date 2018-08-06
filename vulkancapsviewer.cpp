@@ -611,7 +611,7 @@ void vulkanCapsViewer::getGPUs()
 	vkRes = vkEnumeratePhysicalDevices(vkInstance, &numGPUs, NULL);
 	if (vkRes != VK_SUCCESS) 
 	{
-        QMessageBox::warning(this, tr("Error"), "Could not enumarted device count!");
+        QMessageBox::warning(this, tr("Error"), "Could not enumerate device count!");
         return;
 	}
 	std::vector<VkPhysicalDevice> vulkanDevices;
@@ -620,7 +620,7 @@ void vulkanCapsViewer::getGPUs()
 	vkRes = vkEnumeratePhysicalDevices(vkInstance, &numGPUs, &vulkanDevices.front());
 	if (vkRes != VK_SUCCESS) 
 	{
-        QMessageBox::warning(this, tr("Error"), "Could not enumarted physical devices!");
+        QMessageBox::warning(this, tr("Error"), "Could not enumerate physical devices!");
         return;
 	}
 
