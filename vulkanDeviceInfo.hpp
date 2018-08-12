@@ -665,6 +665,18 @@ public:
                 features2.push_back(Feature2("descriptorBindingVariableDescriptorCount", extFeatures.descriptorBindingVariableDescriptorCount, extName));
                 features2.push_back(Feature2("runtimeDescriptorArray", extFeatures.runtimeDescriptorArray, extName));
             }
+            // VK_KHR_8bit_storage
+            if (extensionSupported(VK_KHR_8BIT_STORAGE_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDevice8BitStorageFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("storageBuffer8BitAccess", extFeatures.storageBuffer8BitAccess, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("uniformAndStorageBuffer8BitAccess", extFeatures.uniformAndStorageBuffer8BitAccess, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("storagePushConstant8", extFeatures.storagePushConstant8, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
+            }
             // VK 1.1 Core
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
