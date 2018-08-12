@@ -677,6 +677,18 @@ public:
                 features2.push_back(Feature2("uniformAndStorageBuffer8BitAccess", extFeatures.uniformAndStorageBuffer8BitAccess, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
                 features2.push_back(Feature2("storagePushConstant8", extFeatures.storagePushConstant8, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
             }
+            // VK_EXT_conditional_rendering
+            if (extensionSupported(VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceConditionalRenderingFeaturesEXT extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("conditionalRendering", extFeatures.conditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
+                features2.push_back(Feature2("inheritedConditionalRendering", extFeatures.inheritedConditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
+
+            }
             // VK 1.1 Core
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
