@@ -714,6 +714,17 @@ public:
                 features2.push_back(Feature2("inlineUniformBlock", extFeatures.inlineUniformBlock, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
                 features2.push_back(Feature2("descriptorBindingInlineUniformBlockUpdateAfterBind", extFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
             }
+            // VK_KHR_vulkan_memory_model
+            if (extensionSupported(VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceVulkanMemoryModelFeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("vulkanMemoryModel", extFeatures.vulkanMemoryModel, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
+                features2.push_back(Feature2("vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
+            }
             // VK 1.1 Core
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
