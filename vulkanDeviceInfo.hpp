@@ -496,7 +496,16 @@ public:
                 properties2.push_back(Property2("maxDescriptorSetInlineUniformBlocks", QVariant(extProps.maxDescriptorSetInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
                 properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxDescriptorSetUpdateAfterBindInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
             }
-
+            // VK_EXT_vertex_attribute_divisor
+            if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor), VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
+            }
             // VK 1.1 core
             if (vulkan_1_1()) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -724,6 +733,17 @@ public:
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("vulkanMemoryModel", extFeatures.vulkanMemoryModel, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
                 features2.push_back(Feature2("vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
+            }
+            // VK_EXT_vertex_attribute_divisor
+            if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("vertexAttributeInstanceRateDivisor", extFeatures.vertexAttributeInstanceRateDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
+                features2.push_back(Feature2("vertexAttributeInstanceRateZeroDivisor", extFeatures.vertexAttributeInstanceRateZeroDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
             }
             // VK 1.1 Core
             if (vulkan_1_1()) {
