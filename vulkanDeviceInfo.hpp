@@ -482,6 +482,21 @@ public:
                 properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindStorageImages", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageImages), extName));
                 properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindInputAttachments", QVariant(extProps.maxDescriptorSetUpdateAfterBindInputAttachments), extName));
             }
+            // VK_EXT_inline_uniform_block
+            if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceInlineUniformBlockPropertiesEXT extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("maxInlineUniformBlockSize", QVariant(extProps.maxInlineUniformBlockSize), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+                properties2.push_back(Property2("maxPerStageDescriptorInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+                properties2.push_back(Property2("maxDescriptorSetInlineUniformBlocks", QVariant(extProps.maxDescriptorSetInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxDescriptorSetUpdateAfterBindInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+            }
+
             // VK 1.1 core
             if (vulkan_1_1()) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -687,7 +702,17 @@ public:
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("conditionalRendering", extFeatures.conditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
                 features2.push_back(Feature2("inheritedConditionalRendering", extFeatures.inheritedConditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
-
+            }
+            // VK_EXT_inline_uniform_block
+            if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceInlineUniformBlockFeaturesEXT extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("inlineUniformBlock", extFeatures.inlineUniformBlock, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
+                features2.push_back(Feature2("descriptorBindingInlineUniformBlockUpdateAfterBind", extFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
             }
             // VK 1.1 Core
             if (vulkan_1_1()) {
