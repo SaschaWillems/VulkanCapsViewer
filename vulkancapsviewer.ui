@@ -66,6 +66,23 @@ background: transparent;
 QToolButton::hover {       
 	color: #cb2b30;
 	background: rgb(180, 180, 180);
+}
+
+QTreeWidet {
+	front-size: 12px;
+}
+
+QTreeWidget::item {
+  padding: 3px 0;
+}
+
+QTreeView::item {
+  padding: 3px 0;
+}
+
+QTreeView {
+	alternate-background-color: #f2f2f2; 
+	font-size: 12px;
 }</string>
   </property>
   <property name="documentMode">
@@ -433,6 +450,9 @@ padding-bottom:5px;</string>
        </item>
        <item>
         <widget class="QTabWidget" name="tabWidgetDevice">
+         <property name="styleSheet">
+          <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+         </property>
          <property name="tabPosition">
           <enum>QTabWidget::North</enum>
          </property>
@@ -440,7 +460,7 @@ padding-bottom:5px;</string>
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <property name="documentMode">
           <bool>false</bool>
@@ -606,14 +626,14 @@ padding-bottom:5px;</string>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tabDeviceExtended">
+         <widget class="QWidget" name="tab">
           <attribute name="title">
-           <string>Extended</string>
+           <string>Extensions</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
+          <layout class="QVBoxLayout" name="verticalLayout_11">
            <item>
-            <widget class="QWidget" name="widget_6" native="true">
-             <layout class="QFormLayout" name="formLayout_5">
+            <widget class="QWidget" name="widget_7" native="true">
+             <layout class="QFormLayout" name="formLayout_6">
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -627,14 +647,14 @@ padding-bottom:5px;</string>
                <number>2</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLabel" name="filterLabel_4">
+               <widget class="QLabel" name="filterLabel_5">
                 <property name="text">
                  <string>Filter :</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLineEdit" name="filterLineEditExtended">
+               <widget class="QLineEdit" name="filterLineEditExtensions">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -647,9 +667,14 @@ padding-bottom:5px;</string>
             </widget>
            </item>
            <item>
-            <widget class="QTreeView" name="treeViewDeviceExtended">
+            <widget class="QTreeView" name="treeViewDeviceExtensions">
+             <property name="font">
+              <font>
+               <pointsize>-1</pointsize>
+              </font>
+             </property>
              <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+              <string notr="true"/>
              </property>
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
@@ -660,36 +685,6 @@ padding-bottom:5px;</string>
              <property name="headerHidden">
               <bool>true</bool>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab">
-          <attribute name="title">
-           <string>Extensions</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <item>
-            <widget class="QTreeWidget" name="treeWidgetDeviceExtensions">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Version</string>
-              </property>
-             </column>
             </widget>
            </item>
           </layout>
