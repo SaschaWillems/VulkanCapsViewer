@@ -1057,6 +1057,18 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 	ui.treeViewFormats->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
+QString arrayToStr(QVariant value) {
+    QList<QVariant> list = value.toList();
+    QString listStr = "[";
+    for (int i = 0; i < list.size(); i++) {
+        listStr += list[i].toString();
+        if (i < list.size() - 1)
+            listStr += ", ";
+    }
+    listStr += "]";
+    return listStr;
+}
+
 /*
     Fill extension tree model incudling extension features and properties
 */
@@ -1101,15 +1113,20 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
                 hasProperties = true;
                 QList<QStandardItem *> propertyItem;
                 propertyItem << new QStandardItem(QString::fromStdString(property.name));
-                switch (property.value.type()) {
-                    case QMetaType::Bool: {
-                        bool boolVal = property.value.toBool();
-                        propertyItem << new QStandardItem(boolVal ? "true" : "false");
-                        propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                        break;
+
+                if (property.value.canConvert(QVariant::List)) {
+                    propertyItem << new QStandardItem(arrayToStr(property.value));
+                } else {
+                    switch (property.value.type()) {
+                        case QMetaType::Bool: {
+                            bool boolVal = property.value.toBool();
+                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
+                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                            break;
+                        }
+                        default:
+                            propertyItem << new QStandardItem(property.value.toString());
                     }
-                    default:
-                        propertyItem << new QStandardItem(property.value.toString());
                 }
                 propertiesRootItem.first()->appendRow(propertyItem);
             }
