@@ -340,4 +340,24 @@ default: return "UNKNOWN_DEVICE";
                     return s;
             }
         }
+
+    template<typename Number>
+    static std::string toHexString(const Number number)
+    {
+        std::stringstream ss;
+        ss << std::hex << std::showbase << number;
+        return ss.str();
+    }
+
+    template<>
+    static std::string toHexString(const uint8_t number)
+    {
+        return toHexString(static_cast<unsigned>(number));
+    }
+
+    template<>
+    static std::string toHexString(const int8_t number)
+    {
+        return toHexString(static_cast<int>(number));
+    }
 };

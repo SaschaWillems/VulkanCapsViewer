@@ -762,10 +762,9 @@ public:
         }
 	}
 
-    QString toHex(VkDeviceSize deviceSize)
+    QString toHexQString(VkDeviceSize deviceSize)
     {
-        QString res = QString::number(deviceSize, 16).prepend("0x");
-        return res;
+        return QString::fromStdString(vulkanResources::toHexString(deviceSize));
     }
 
 	/// <summary>
@@ -785,8 +784,8 @@ public:
         limits["maxPushConstantsSize"] = props.limits.maxPushConstantsSize;
         limits["maxMemoryAllocationCount"] = props.limits.maxMemoryAllocationCount;
         limits["maxSamplerAllocationCount"] = props.limits.maxSamplerAllocationCount;
-        limits["bufferImageGranularity"] = toHex(props.limits.bufferImageGranularity);
-        limits["sparseAddressSpaceSize"] = toHex(props.limits.sparseAddressSpaceSize);
+        limits["bufferImageGranularity"] = toHexQString(props.limits.bufferImageGranularity);
+        limits["sparseAddressSpaceSize"] = toHexQString(props.limits.sparseAddressSpaceSize);
         limits["maxBoundDescriptorSets"] = props.limits.maxBoundDescriptorSets;
         limits["maxPerStageDescriptorSamplers"] = props.limits.maxPerStageDescriptorSamplers;
         limits["maxPerStageDescriptorUniformBuffers"] = props.limits.maxPerStageDescriptorUniformBuffers;
@@ -840,10 +839,10 @@ public:
         limits["maxViewportDimensions"] = QVariant::fromValue(QVariantList({ props.limits.maxViewportDimensions[0], props.limits.maxViewportDimensions[1] }));
         limits["viewportBoundsRange"] = QVariant::fromValue(QVariantList({ props.limits.viewportBoundsRange[0], props.limits.viewportBoundsRange[1] }));
         limits["viewportSubPixelBits"] = props.limits.viewportSubPixelBits;
-        limits["minMemoryMapAlignment"] = toHex(props.limits.minMemoryMapAlignment);
-        limits["minTexelBufferOffsetAlignment"] = toHex(props.limits.minTexelBufferOffsetAlignment);
-        limits["minUniformBufferOffsetAlignment"] = toHex(props.limits.minUniformBufferOffsetAlignment);
-        limits["minStorageBufferOffsetAlignment"] = toHex(props.limits.minStorageBufferOffsetAlignment);
+        limits["minMemoryMapAlignment"] = toHexQString(props.limits.minMemoryMapAlignment);
+        limits["minTexelBufferOffsetAlignment"] = toHexQString(props.limits.minTexelBufferOffsetAlignment);
+        limits["minUniformBufferOffsetAlignment"] = toHexQString(props.limits.minUniformBufferOffsetAlignment);
+        limits["minStorageBufferOffsetAlignment"] = toHexQString(props.limits.minStorageBufferOffsetAlignment);
         limits["minTexelOffset"] = props.limits.minTexelOffset;
         limits["maxTexelOffset"] = props.limits.maxTexelOffset;
         limits["minTexelGatherOffset"] = props.limits.minTexelGatherOffset;
@@ -877,9 +876,9 @@ public:
         limits["lineWidthGranularity"] = props.limits.lineWidthGranularity;
         limits["strictLines"] = props.limits.strictLines;
         limits["standardSampleLocations"] = props.limits.standardSampleLocations;
-        limits["optimalBufferCopyOffsetAlignment"] = toHex(props.limits.optimalBufferCopyOffsetAlignment);
-        limits["optimalBufferCopyRowPitchAlignment"] = toHex(props.limits.optimalBufferCopyRowPitchAlignment);
-        limits["nonCoherentAtomSize"] = toHex(props.limits.nonCoherentAtomSize);
+        limits["optimalBufferCopyOffsetAlignment"] = toHexQString(props.limits.optimalBufferCopyOffsetAlignment);
+        limits["optimalBufferCopyRowPitchAlignment"] = toHexQString(props.limits.optimalBufferCopyRowPitchAlignment);
+        limits["nonCoherentAtomSize"] = toHexQString(props.limits.nonCoherentAtomSize);
 	}
 
 	/// <summary>
