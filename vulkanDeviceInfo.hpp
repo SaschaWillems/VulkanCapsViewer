@@ -506,6 +506,20 @@ public:
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor), VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
             }
+            // VK_KHR_driver_properties
+            if (extensionSupported(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME)) {
+                const char* extName(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME);
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceDriverPropertiesKHR extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("driverID", QString::fromStdString(vulkanResources::driverIdKHRString(static_cast<VkDriverIdKHR>(extProps.driverID))), extName));
+                properties2.push_back(Property2("driverName", QString::fromStdString(extProps.driverName), extName));
+                properties2.push_back(Property2("driverInfo", QString::fromStdString(extProps.driverInfo), extName));
+                properties2.push_back(Property2("conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)), extName));
+            }
             // VK 1.1 core
             if (vulkan_1_1()) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
