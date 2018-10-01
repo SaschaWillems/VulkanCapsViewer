@@ -26,6 +26,9 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <algorithm>
+#include <iterator>
+#include <vector>
 #include "vulkan/vulkan.h"
 
 class vulkanResources {
@@ -340,4 +343,67 @@ default: return "UNKNOWN_DEVICE";
                     return s;
             }
         }
+
+    template<typename Number>
+    static std::string toHexString(const Number number)
+    {
+        std::stringstream ss;
+        ss << std::hex << std::showbase << number;
+        return ss.str();
+    }
+
+    template<>
+    static std::string toHexString(const uint8_t number)
+    {
+        return toHexString(static_cast<unsigned>(number));
+    }
+
+    template<>
+    static std::string toHexString(const int8_t number)
+    {
+        return toHexString(static_cast<int>(number));
+    }
+
+    static std::string driverIdKHRString(const VkDriverIdKHR driverId)
+    {
+        switch(driverId){
+#define STR(r) case VK_DRIVER_ID_##r##_KHR: return #r
+            STR(AMD_PROPRIETARY);
+            STR(AMD_OPEN_SOURCE);
+            STR(MESA_RADV);
+            STR(NVIDIA_PROPRIETARY);
+            STR(INTEL_PROPRIETARY_WINDOWS);
+            STR(INTEL_OPEN_SOURCE_MESA);
+            STR(IMAGINATION_PROPRIETARY);
+            STR(QUALCOMM_PROPRIETARY);
+            STR(ARM_PROPRIETARY);
+#undef STR
+            default: return toHexString(driverId);
+        };
+    }
+
+    static std::string joinString(const char separator, const std::vector<std::string>& stringList)
+    {
+        std::stringstream ss;
+        bool first = true;
+        for (const auto& s : stringList) {
+            if (!first) ss << separator;
+            first = false;
+            ss << s;
+        }
+
+        return ss.str();
+    }
+
+    static std::string conformanceVersionKHRString(const VkConformanceVersionKHR& conformanceVersion)
+    {
+        const std::vector<uint8_t> versionAsList = {conformanceVersion.major, conformanceVersion.minor, conformanceVersion.subminor, conformanceVersion.patch};
+        std::vector<std::string> versionAsStringList;
+        const auto u8ToString = [](const uint8_t num) {
+            return std::to_string(static_cast<uint>(num));
+        };
+        std::transform(versionAsList.begin(), versionAsList.end(), std::back_inserter(versionAsStringList), u8ToString);
+    
+        return joinString('.', versionAsStringList);
+    }
 };
