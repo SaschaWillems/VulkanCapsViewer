@@ -81,7 +81,6 @@ QTreeView::item {
 }
 
 QTreeView {
-	alternate-background-color: #f2f2f2; 
 	font-size: 12px;
 }</string>
   </property>

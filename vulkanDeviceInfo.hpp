@@ -520,6 +520,18 @@ public:
                 properties2.push_back(Property2("driverInfo", QString::fromStdString(extProps.driverInfo), extName));
                 properties2.push_back(Property2("conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)), extName));
             }
+            // VK_NV_shading_rate_image
+            if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
+                VkPhysicalDeviceProperties2KHR deviceProps2{};
+                VkPhysicalDeviceShadingRateImagePropertiesNV extProps{};
+                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV;
+                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+                deviceProps2.pNext = &extProps;
+                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                properties2.push_back(Property2("shadingRateTexelSize", QVariant::fromValue(QVariantList({ extProps.shadingRateTexelSize.width, extProps.shadingRateTexelSize.height })), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
+                properties2.push_back(Property2("shadingRatePaletteSize", QVariant(extProps.shadingRatePaletteSize), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
+                properties2.push_back(Property2("shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
+            }
             // VK 1.1 core
             if (vulkan_1_1()) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -758,6 +770,28 @@ public:
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("vertexAttributeInstanceRateDivisor", extFeatures.vertexAttributeInstanceRateDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
                 features2.push_back(Feature2("vertexAttributeInstanceRateZeroDivisor", extFeatures.vertexAttributeInstanceRateZeroDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
+            }
+            // VK_NV_compute_shader_derivatives
+            if (extensionSupported(VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceComputeShaderDerivativesFeaturesNV extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("computeDerivativeGroupQuads", extFeatures.computeDerivativeGroupQuads, VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME));
+                features2.push_back(Feature2("computeDerivativeGroupLinear", extFeatures.computeDerivativeGroupLinear, VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME));
+            }
+            // VK_NV_shading_rate_image
+            if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceShadingRateImageFeaturesNV extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("shadingRateImage", extFeatures.shadingRateImage, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
+                features2.push_back(Feature2("shadingRateCoarseSampleOrder", extFeatures.shadingRateCoarseSampleOrder, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
             // VK 1.1 Core
             if (vulkan_1_1()) {
