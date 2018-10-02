@@ -304,6 +304,57 @@ public:
         }
     }
 
+    VkPhysicalDeviceProperties2 initDeviceProperties2(void * pNext) {
+        VkPhysicalDeviceProperties2 props2{};
+        props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+        props2.pNext = pNext;
+        return props2;
+    }
+
+    template<typename T>
+    void pushProperty2(const char* extension, std::string name, T value) {
+        properties2.push_back(Property2(name, QVariant(value), extension));
+    }
+
+    // Read phsyical device properties (2) for extensions from the KHR namespace
+    void readPhysicalProperties_KHR() {
+        // VK_KHR_multiview
+        if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+            VkPhysicalDeviceMultiviewPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR };
+            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount));
+            pushProperty2(extension, "maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex));
+        }
+        // VK_KHR_push_descriptor
+        if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+            VkPhysicalDevicePushDescriptorPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR };
+            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxPushDescriptors", QString::number(extProps.maxPushDescriptors));
+        }
+        // VK_KHR_sampler_ycbcr_conversion
+        if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
+            VkSamplerYcbcrConversionImageFormatPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES };
+            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "combinedImageSamplerDescriptorCount", QVariant(extProps.combinedImageSamplerDescriptorCount));
+        }
+        // VK_KHR_driver_properties
+        if (extensionSupported(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME);
+            VkPhysicalDeviceDriverPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "driverID", QString::fromStdString(vulkanResources::driverIdKHRString(static_cast<VkDriverIdKHR>(extProps.driverID))));
+            pushProperty2(extension, "driverName", QString::fromStdString(extProps.driverName));
+            pushProperty2(extension, "driverInfo", QString::fromStdString(extProps.driverInfo));
+            pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)));
+        }
+    }
 	/// <summary>
 	///	Request physical device properties
 	/// </summary>
@@ -334,28 +385,6 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceProperties2KHR) {
-            // VK_KHR_multiview
-            if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
-                const char* extName(VK_KHR_MULTIVIEW_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMultiviewPropertiesKHR extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount), extName));
-                properties2.push_back(Property2("maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex), extName));
-            }
-            // VK_KHR_push_descriptor
-            if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDevicePushDescriptorPropertiesKHR extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxPushDescriptors", QString::number(extProps.maxPushDescriptors), VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME));
-            }
             // VK_EXT_discard_rectangles
             if (extensionSupported(VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -439,16 +468,6 @@ public:
                 properties2.push_back(Property2("advancedBlendCorrelatedOverlap", QVariant(bool(extProps.advancedBlendCorrelatedOverlap)), extName));
                 properties2.push_back(Property2("advancedBlendAllOperations", QVariant(bool(extProps.advancedBlendAllOperations)), extName));
             }
-            // VK_KHR_sampler_ycbcr_conversion
-            if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkSamplerYcbcrConversionImageFormatPropertiesKHR extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("combinedImageSamplerDescriptorCount", QVariant(extProps.combinedImageSamplerDescriptorCount), VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
-            }
             // VK_EXT_descriptor_indexing
             if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
                 const char* extName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
@@ -506,20 +525,6 @@ public:
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor), VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
             }
-            // VK_KHR_driver_properties
-            if (extensionSupported(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME)) {
-                const char* extName(VK_KHR_DRIVER_PROPERTIES_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceDriverPropertiesKHR extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES_KHR;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("driverID", QString::fromStdString(vulkanResources::driverIdKHRString(static_cast<VkDriverIdKHR>(extProps.driverID))), extName));
-                properties2.push_back(Property2("driverName", QString::fromStdString(extProps.driverName), extName));
-                properties2.push_back(Property2("driverInfo", QString::fromStdString(extProps.driverInfo), extName));
-                properties2.push_back(Property2("conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)), extName));
-            }
             // VK_NVX_raytracing
             if (extensionSupported(VK_NVX_RAYTRACING_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -567,6 +572,9 @@ public:
                 properties2.push_back(Property2("shadingRatePaletteSize", QVariant(extProps.shadingRatePaletteSize), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
                 properties2.push_back(Property2("shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
+
+            readPhysicalProperties_KHR();
+
             // VK 1.1 core
             if (vulkan_1_1()) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -596,6 +604,87 @@ public:
             }
         }
 	}
+
+    VkPhysicalDeviceFeatures2 initDeviceFeatures2(void *pNext) {
+        VkPhysicalDeviceFeatures2 features2{};
+        features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+        features2.pNext = pNext;
+        return features2;
+    }
+
+    void pushFeature2(const char* extension, std::string name, bool supported) {
+        features2.push_back(Feature2(name, supported, extension));
+    }
+
+    // Read phsyical device features (2) for extensions from the KHR namespace
+    void readPhysicalFeatures_KHR() {
+        // VK_KHR_multiview
+        if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_MULTIVIEW_EXTENSION_NAME);
+            VkPhysicalDeviceMultiviewFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "multiview", extFeatures.multiview);
+            pushFeature2(extension, "multiviewGeometryShader", extFeatures.multiviewGeometryShader);
+            pushFeature2(extension, "multiviewTessellationShader", extFeatures.multiviewTessellationShader);
+        }
+        // VK_KHR_variable_pointers
+        if (extensionSupported(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME);
+            VkPhysicalDeviceVariablePointerFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer);
+            pushFeature2(extension, "variablePointers", extFeatures.variablePointers);
+        }
+        // VK_KHR_16bit_storage
+        if (extensionSupported(VK_KHR_16BIT_STORAGE_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_16BIT_STORAGE_EXTENSION_NAME);
+            VkPhysicalDevice16BitStorageFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "storageBuffer16BitAccess", extFeatures.storageBuffer16BitAccess);
+            pushFeature2(extension, "uniformAndStorageBuffer16BitAccess", extFeatures.uniformAndStorageBuffer16BitAccess);
+            pushFeature2(extension, "storagePushConstant16", extFeatures.storagePushConstant16);
+            pushFeature2(extension, "storageInputOutput16", extFeatures.storageInputOutput16);
+        }
+        // VK_KHR_sampler_ycbcr_conversion
+        if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
+            VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "samplerYcbcrConversion", extFeatures.samplerYcbcrConversion);
+        }
+        // VK_KHR_8bit_storage
+        if (extensionSupported(VK_KHR_8BIT_STORAGE_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_8BIT_STORAGE_EXTENSION_NAME);
+            VkPhysicalDevice8BitStorageFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "storageBuffer8BitAccess", extFeatures.storageBuffer8BitAccess);
+            pushFeature2(extension, "uniformAndStorageBuffer8BitAccess", extFeatures.uniformAndStorageBuffer8BitAccess);
+            pushFeature2(extension, "storagePushConstant8", extFeatures.storagePushConstant8);
+        }
+        // VK_KHR_vulkan_memory_model
+        if (extensionSupported(VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME);
+            VkPhysicalDeviceVulkanMemoryModelFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "vulkanMemoryModel", extFeatures.vulkanMemoryModel);
+            pushFeature2(extension, "vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope);
+        }
+        // VK_KHR_shader_atomic_int64
+        if (extensionSupported(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME);
+            VkPhysicalDeviceShaderAtomicInt64FeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "shaderBufferInt64Atomics", extFeatures.shaderBufferInt64Atomics);
+            pushFeature2(extension, "shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics);
+        }
+    }
 	
 	/// <summary>
 	///	Request physical device features
@@ -664,42 +753,6 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceFeatures2KHR) {
-            // VK_KHX_multiview
-            if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceMultiviewFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("multiview", extFeatures.multiview, VK_KHR_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewGeometryShader", extFeatures.multiviewGeometryShader, VK_KHR_MULTIVIEW_EXTENSION_NAME));
-                features2.push_back(Feature2("multiviewTessellationShader", extFeatures.multiviewTessellationShader, VK_KHR_MULTIVIEW_EXTENSION_NAME));
-            }
-            // VK_KHR_variable_pointers
-            if (extensionSupported(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceVariablePointerFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
-                features2.push_back(Feature2("variablePointers", extFeatures.variablePointers, VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME));
-            }
-            // VK_KHR_16bit_storage
-            if (extensionSupported(VK_KHR_16BIT_STORAGE_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDevice16BitStorageFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("storageBuffer16BitAccess", extFeatures.storageBuffer16BitAccess, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("uniformAndStorageBuffer16BitAccess", extFeatures.uniformAndStorageBuffer16BitAccess, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("storagePushConstant16", extFeatures.storagePushConstant16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("storageInputOutput16", extFeatures.storageInputOutput16, VK_KHR_16BIT_STORAGE_EXTENSION_NAME));
-            }
             // VK_EXT_blend_operation_advanced
             if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
@@ -709,16 +762,6 @@ public:
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.advancedBlendCoherentOperations, VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME));
-            }
-            // VK_KHR_sampler_ycbcr_conversion
-            if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceSamplerYcbcrConversionFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("samplerYcbcrConversion", extFeatures.samplerYcbcrConversion, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME));
             }
             // VK_EXT_descriptor_indexing
             if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
@@ -750,18 +793,6 @@ public:
                 features2.push_back(Feature2("descriptorBindingVariableDescriptorCount", extFeatures.descriptorBindingVariableDescriptorCount, extName));
                 features2.push_back(Feature2("runtimeDescriptorArray", extFeatures.runtimeDescriptorArray, extName));
             }
-            // VK_KHR_8bit_storage
-            if (extensionSupported(VK_KHR_8BIT_STORAGE_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDevice8BitStorageFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("storageBuffer8BitAccess", extFeatures.storageBuffer8BitAccess, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("uniformAndStorageBuffer8BitAccess", extFeatures.uniformAndStorageBuffer8BitAccess, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("storagePushConstant8", extFeatures.storagePushConstant8, VK_KHR_8BIT_STORAGE_EXTENSION_NAME));
-            }
             // VK_EXT_conditional_rendering
             if (extensionSupported(VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
@@ -783,17 +814,6 @@ public:
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("inlineUniformBlock", extFeatures.inlineUniformBlock, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
                 features2.push_back(Feature2("descriptorBindingInlineUniformBlockUpdateAfterBind", extFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-            }
-            // VK_KHR_vulkan_memory_model
-            if (extensionSupported(VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceVulkanMemoryModelFeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_MEMORY_MODEL_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("vulkanMemoryModel", extFeatures.vulkanMemoryModel, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
-                features2.push_back(Feature2("vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope, VK_KHR_VULKAN_MEMORY_MODEL_EXTENSION_NAME));
             }
             // VK_EXT_vertex_attribute_divisor
             if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
@@ -839,18 +859,9 @@ public:
                 features2.push_back(Feature2("shadingRateImage", extFeatures.shadingRateImage, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
                 features2.push_back(Feature2("shadingRateCoarseSampleOrder", extFeatures.shadingRateCoarseSampleOrder, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
-            // VK_KHR_shader_atomic_int64
-            if (extensionSupported(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME)) {
-                const char* extName(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME);
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceShaderAtomicInt64FeaturesKHR extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("shaderBufferInt64Atomics", extFeatures.shaderBufferInt64Atomics, extName));
-                features2.push_back(Feature2("shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics, extName));
-            }
+
+            readPhysicalFeatures_KHR();
+
             // VK 1.1 Core
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
