@@ -839,6 +839,18 @@ public:
                 features2.push_back(Feature2("shadingRateImage", extFeatures.shadingRateImage, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
                 features2.push_back(Feature2("shadingRateCoarseSampleOrder", extFeatures.shadingRateCoarseSampleOrder, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
+            // VK_KHR_shader_atomic_int64
+            if (extensionSupported(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME)) {
+                const char* extName(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME);
+                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+                VkPhysicalDeviceShaderAtomicInt64FeaturesKHR extFeatures{};
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_INT64_FEATURES_KHR;
+                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+                deviceFeatures2.pNext = &extFeatures;
+                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                features2.push_back(Feature2("shaderBufferInt64Atomics", extFeatures.shaderBufferInt64Atomics, extName));
+                features2.push_back(Feature2("shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics, extName));
+            }
             // VK 1.1 Core
             if (vulkan_1_1()) {
                 // VK_KHR_shader_draw_parameters
