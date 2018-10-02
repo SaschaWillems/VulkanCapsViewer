@@ -322,7 +322,7 @@ public:
         if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
             const char* extension(VK_KHR_MULTIVIEW_EXTENSION_NAME);
             VkPhysicalDeviceMultiviewPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES_KHR };
-            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "maxMultiviewViewCount", QString::number(extProps.maxMultiviewViewCount));
             pushProperty2(extension, "maxMultiviewInstanceIndex", QString::number(extProps.maxMultiviewInstanceIndex));
@@ -331,7 +331,7 @@ public:
         if (extensionSupported(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME)) {
             const char* extension(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
             VkPhysicalDevicePushDescriptorPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PUSH_DESCRIPTOR_PROPERTIES_KHR };
-            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "maxPushDescriptors", QString::number(extProps.maxPushDescriptors));
         }
@@ -339,7 +339,7 @@ public:
         if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
             const char* extension(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME);
             VkSamplerYcbcrConversionImageFormatPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES };
-            VkPhysicalDeviceProperties2KHR deviceProps2(initDeviceProperties2(&extProps));
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "combinedImageSamplerDescriptorCount", QVariant(extProps.combinedImageSamplerDescriptorCount));
         }
