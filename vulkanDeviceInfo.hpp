@@ -355,6 +355,32 @@ public:
             pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)));
         }
     }
+
+    // Read phsyical device properties (2) for extensions from the AMD namespace
+    void readPhysicalProperties_AMD() {
+        // VK_AMD_shader_core_properties
+        if (extensionSupported(VK_AMD_SHADER_CORE_PROPERTIES_EXTENSION_NAME)) {
+            const char* extension(VK_AMD_SHADER_CORE_PROPERTIES_EXTENSION_NAME);
+            VkPhysicalDeviceShaderCorePropertiesAMD extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_AMD };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "shaderEngineCount", extProps.shaderEngineCount);
+            pushProperty2(extension, "shaderArraysPerEngineCount", extProps.shaderArraysPerEngineCount);
+            pushProperty2(extension, "computeUnitsPerShaderArray", extProps.computeUnitsPerShaderArray);
+            pushProperty2(extension, "simdPerComputeUnit", extProps.simdPerComputeUnit);
+            pushProperty2(extension, "wavefrontsPerSimd", extProps.wavefrontsPerSimd);
+            pushProperty2(extension, "wavefrontSize", extProps.wavefrontSize);
+            pushProperty2(extension, "sgprsPerSimd", extProps.sgprsPerSimd);
+            pushProperty2(extension, "minSgprAllocation", extProps.minSgprAllocation);
+            pushProperty2(extension, "maxSgprAllocation", extProps.maxSgprAllocation);
+            pushProperty2(extension, "sgprAllocationGranularity", extProps.sgprAllocationGranularity);
+            pushProperty2(extension, "vgprsPerSimd", extProps.vgprsPerSimd);
+            pushProperty2(extension, "minVgprAllocation", extProps.minVgprAllocation);
+            pushProperty2(extension, "maxVgprAllocation", extProps.maxVgprAllocation);
+            pushProperty2(extension, "vgprAllocationGranularity", extProps.vgprAllocationGranularity);
+        }
+    }
+
 	/// <summary>
 	///	Request physical device properties
 	/// </summary>
@@ -573,6 +599,7 @@ public:
                 properties2.push_back(Property2("shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
 
+            readPhysicalProperties_AMD();
             readPhysicalProperties_KHR();
 
             // VK 1.1 core
