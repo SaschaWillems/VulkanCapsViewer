@@ -304,6 +304,10 @@ public:
         }
     }
 
+    /*
+        Physical device properties
+    */
+
     VkPhysicalDeviceProperties2 initDeviceProperties2(void * pNext) {
         VkPhysicalDeviceProperties2 props2{};
         props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
@@ -617,6 +621,10 @@ public:
         }
 	}
 
+    /*
+        Physical device features
+    */
+
     VkPhysicalDeviceFeatures2 initDeviceFeatures2(void *pNext) {
         VkPhysicalDeviceFeatures2 features2{};
         features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
@@ -866,6 +874,7 @@ public:
             }
 
             readPhysicalFeatures_KHR();
+            readPhysicalFeatures_EXT();
 
             // VK 1.1 Core
             if (vulkan_1_1()) {
