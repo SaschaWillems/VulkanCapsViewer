@@ -316,7 +316,7 @@ public:
         properties2.push_back(Property2(name, QVariant(value), extension));
     }
 
-    // Read phsyical device properties (2) for extensions from the KHR namespace
+    // Read physical device properties (2) for extensions from the KHR namespace
     void readPhysicalProperties_KHR() {
         // VK_KHR_multiview
         if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
@@ -356,7 +356,121 @@ public:
         }
     }
 
-    // Read phsyical device properties (2) for extensions from the AMD namespace
+    // Read physical device properties (2) for extensions from the EXT namespace
+    void readPhysicalProperties_EXT() {
+        // VK_EXT_discard_rectangles
+        if (extensionSupported(VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME);
+            VkPhysicalDeviceDiscardRectanglePropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxDiscardRectangles", QString::number(extProps.maxDiscardRectangles));
+        }
+        // VK_EXT_conservative_rasterization
+        if (extensionSupported(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME);
+            VkPhysicalDeviceConservativeRasterizationPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "primitiveOverestimationSize", QString::number(extProps.primitiveOverestimationSize));
+            pushProperty2(extension, "maxExtraPrimitiveOverestimationSize", QString::number(extProps.maxExtraPrimitiveOverestimationSize));
+            pushProperty2(extension, "extraPrimitiveOverestimationSizeGranularity", QString::number(extProps.extraPrimitiveOverestimationSizeGranularity));
+            pushProperty2(extension, "primitiveUnderestimation", QVariant(bool(extProps.primitiveUnderestimation)));
+            pushProperty2(extension, "conservativePointAndLineRasterization", QVariant(bool(extProps.conservativePointAndLineRasterization)));
+            pushProperty2(extension, "degenerateTrianglesRasterized", QVariant(bool(extProps.degenerateTrianglesRasterized)));
+            pushProperty2(extension, "degenerateLinesRasterized", QVariant(bool(extProps.degenerateLinesRasterized)));
+            pushProperty2(extension, "fullyCoveredFragmentShaderInputVariable", QVariant(bool(extProps.fullyCoveredFragmentShaderInputVariable)));
+            pushProperty2(extension, "conservativeRasterizationPostDepthCoverage", QVariant(bool(extProps.conservativeRasterizationPostDepthCoverage)));
+        }
+        // VK_EXT_sampler_filter_minmax
+        if (extensionSupported(VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME);
+            VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "filterMinmaxSingleComponentFormats", QVariant(bool(extProps.filterMinmaxSingleComponentFormats)));
+            pushProperty2(extension, "filterMinmaxImageComponentMapping", QVariant(bool(extProps.filterMinmaxImageComponentMapping));
+        }
+        // VK_EXT_sample_locations
+        if (extensionSupported(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME);
+            VkPhysicalDeviceSampleLocationsPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "sampleLocationSampleCounts", QString::number(extProps.sampleLocationSampleCounts));
+            pushProperty2(extension, "maxSampleLocationGridSize.width", QString::number(extProps.maxSampleLocationGridSize.width));
+            pushProperty2(extension, "maxSampleLocationGridSize.height", QString::number(extProps.maxSampleLocationGridSize.height));
+            pushProperty2(extension, "sampleLocationCoordinateRange[0]", QString::number(extProps.sampleLocationCoordinateRange[0]));
+            pushProperty2(extension, "sampleLocationCoordinateRange[1]", QString::number(extProps.sampleLocationCoordinateRange[1]));
+            pushProperty2(extension, "sampleLocationSubPixelBits", QString::number(extProps.sampleLocationSubPixelBits));
+            pushProperty2(extension, "variableSampleLocations", QVariant(bool(extProps.variableSampleLocations)));
+        }
+        // VK_EXT_blend_operation_advanced
+        if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME);
+            VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "advancedBlendMaxColorAttachments", QVariant(extProps.advancedBlendMaxColorAttachments));
+            pushProperty2(extension, "advancedBlendIndependentBlend", QVariant(bool(extProps.advancedBlendIndependentBlend)));
+            pushProperty2(extension, "advancedBlendNonPremultipliedSrcColor", QVariant(bool(extProps.advancedBlendNonPremultipliedSrcColor)));
+            pushProperty2(extension, "advancedBlendNonPremultipliedDstColor", QVariant(bool(extProps.advancedBlendNonPremultipliedDstColor)));
+            pushProperty2(extension, "advancedBlendCorrelatedOverlap", QVariant(bool(extProps.advancedBlendCorrelatedOverlap)));
+            pushProperty2(extension, "advancedBlendAllOperations", QVariant(bool(extProps.advancedBlendAllOperations)));
+        }
+        // VK_EXT_descriptor_indexing
+        if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
+            const char* extName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+            VkPhysicalDeviceDescriptorIndexingPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxUpdateAfterBindDescriptorsInAllPools", QVariant(extProps.maxUpdateAfterBindDescriptorsInAllPools));
+            pushProperty2(extension, "shaderUniformBufferArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderUniformBufferArrayNonUniformIndexingNative)));
+            pushProperty2(extension, "shaderSampledImageArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderSampledImageArrayNonUniformIndexingNative)));
+            pushProperty2(extension, "shaderStorageBufferArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderStorageBufferArrayNonUniformIndexingNative)));
+            pushProperty2(extension, "shaderStorageImageArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderStorageImageArrayNonUniformIndexingNative)));
+            pushProperty2(extension, "shaderInputAttachmentArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderInputAttachmentArrayNonUniformIndexingNative)));
+            pushProperty2(extension, "robustBufferAccessUpdateAfterBind", QVariant(bool(extProps.robustBufferAccessUpdateAfterBind)));
+            pushProperty2(extension, "quadDivergentImplicitLod", QVariant(bool(extProps.quadDivergentImplicitLod)));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindSamplers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindSamplers));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindUniformBuffers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindStorageBuffers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindSampledImages", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindSampledImages));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindStorageImages", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindStorageImages));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindInputAttachments", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindInputAttachments));
+            pushProperty2(extension, "maxPerStageUpdateAfterBindResources", QVariant(extProps.maxPerStageUpdateAfterBindResources));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindSamplers", QVariant(extProps.maxDescriptorSetUpdateAfterBindSamplers));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindUniformBuffers", QVariant(extProps.maxDescriptorSetUpdateAfterBindUniformBuffers));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindUniformBuffersDynamic", QVariant(extProps.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindStorageBuffers", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageBuffers));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindStorageBuffersDynamic", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindSampledImages", QVariant(extProps.maxDescriptorSetUpdateAfterBindSampledImages));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindStorageImages", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageImages));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindInputAttachments", QVariant(extProps.maxDescriptorSetUpdateAfterBindInputAttachments));
+        }
+        // VK_EXT_inline_uniform_block
+        if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME);
+            VkPhysicalDeviceInlineUniformBlockPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxInlineUniformBlockSize", QVariant(extProps.maxInlineUniformBlockSize));
+            pushProperty2(extension, "maxPerStageDescriptorInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorInlineUniformBlocks));
+            pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks));
+            pushProperty2(extension, "maxDescriptorSetInlineUniformBlocks", QVariant(extProps.maxDescriptorSetInlineUniformBlocks));
+            pushProperty2(extension, "maxDescriptorSetUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxDescriptorSetUpdateAfterBindInlineUniformBlocks));
+        }
+        // VK_EXT_vertex_attribute_divisor
+        if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME);
+            VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extenstion, "maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor));
+        }
+    }
+
+    // Read physical device properties (2) for extensions from the AMD namespace
     void readPhysicalProperties_AMD() {
         // VK_AMD_shader_core_properties
         if (extensionSupported(VK_AMD_SHADER_CORE_PROPERTIES_EXTENSION_NAME)) {
@@ -411,16 +525,6 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceProperties2KHR) {
-            // VK_EXT_discard_rectangles
-            if (extensionSupported(VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceDiscardRectanglePropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISCARD_RECTANGLE_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxDiscardRectangles", QString::number(extProps.maxDiscardRectangles), VK_EXT_DISCARD_RECTANGLES_EXTENSION_NAME));
-            }
             // VK_NVX_multiview_per_view_attributes
             if (extensionSupported(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME)) {
                 VkPhysicalDeviceProperties2KHR deviceProps2{};
@@ -430,126 +534,6 @@ public:
                 deviceProps2.pNext = &extProps;
                 pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("perViewPositionAllComponents", QVariant(bool(extProps.perViewPositionAllComponents)), VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME));
-            }
-            // VK_EXT_conservative_rasterization
-            if (extensionSupported(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME)) {
-                const char* extName(VK_EXT_CONSERVATIVE_RASTERIZATION_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceConservativeRasterizationPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONSERVATIVE_RASTERIZATION_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("primitiveOverestimationSize", QString::number(extProps.primitiveOverestimationSize), extName));
-                properties2.push_back(Property2("maxExtraPrimitiveOverestimationSize", QString::number(extProps.maxExtraPrimitiveOverestimationSize), extName));
-                properties2.push_back(Property2("extraPrimitiveOverestimationSizeGranularity", QString::number(extProps.extraPrimitiveOverestimationSizeGranularity), extName));
-                properties2.push_back(Property2("primitiveUnderestimation", QVariant(bool(extProps.primitiveUnderestimation)), extName));
-                properties2.push_back(Property2("conservativePointAndLineRasterization", QVariant(bool(extProps.conservativePointAndLineRasterization)), extName));
-                properties2.push_back(Property2("degenerateTrianglesRasterized", QVariant(bool(extProps.degenerateTrianglesRasterized)), extName));
-                properties2.push_back(Property2("degenerateLinesRasterized", QVariant(bool(extProps.degenerateLinesRasterized)), extName));
-                properties2.push_back(Property2("fullyCoveredFragmentShaderInputVariable", QVariant(bool(extProps.fullyCoveredFragmentShaderInputVariable)), extName));
-                properties2.push_back(Property2("conservativeRasterizationPostDepthCoverage", QVariant(bool(extProps.conservativeRasterizationPostDepthCoverage)), extName));
-            }
-            // VK_EXT_sampler_filter_minmax
-            if (extensionSupported(VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceSamplerFilterMinmaxPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_FILTER_MINMAX_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("filterMinmaxSingleComponentFormats", QVariant(bool(extProps.filterMinmaxSingleComponentFormats)), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
-                properties2.push_back(Property2("filterMinmaxImageComponentMapping", QVariant(bool(extProps.filterMinmaxImageComponentMapping)), VK_EXT_SAMPLER_FILTER_MINMAX_EXTENSION_NAME));
-            }
-            // VK_EXT_sample_locations
-            if (extensionSupported(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME)) {
-                const char* extName(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceSampleLocationsPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLE_LOCATIONS_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("sampleLocationSampleCounts", QString::number(extProps.sampleLocationSampleCounts), extName));
-                properties2.push_back(Property2("maxSampleLocationGridSize.width", QString::number(extProps.maxSampleLocationGridSize.width), extName));
-                properties2.push_back(Property2("maxSampleLocationGridSize.height", QString::number(extProps.maxSampleLocationGridSize.height), extName));
-                properties2.push_back(Property2("sampleLocationCoordinateRange[0]", QString::number(extProps.sampleLocationCoordinateRange[0]), extName));
-                properties2.push_back(Property2("sampleLocationCoordinateRange[1]", QString::number(extProps.sampleLocationCoordinateRange[1]), extName));
-                properties2.push_back(Property2("sampleLocationSubPixelBits", QString::number(extProps.sampleLocationSubPixelBits), extName));
-                properties2.push_back(Property2("variableSampleLocations", QVariant(bool(extProps.variableSampleLocations)), extName));
-            }
-            // VK_EXT_blend_operation_advanced
-            if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
-                const char* extName(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceBlendOperationAdvancedPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("advancedBlendMaxColorAttachments", QVariant(extProps.advancedBlendMaxColorAttachments), extName));
-                properties2.push_back(Property2("advancedBlendIndependentBlend", QVariant(bool(extProps.advancedBlendIndependentBlend)), extName));
-                properties2.push_back(Property2("advancedBlendNonPremultipliedSrcColor", QVariant(bool(extProps.advancedBlendNonPremultipliedSrcColor)), extName));
-                properties2.push_back(Property2("advancedBlendNonPremultipliedDstColor", QVariant(bool(extProps.advancedBlendNonPremultipliedDstColor)), extName));
-                properties2.push_back(Property2("advancedBlendCorrelatedOverlap", QVariant(bool(extProps.advancedBlendCorrelatedOverlap)), extName));
-                properties2.push_back(Property2("advancedBlendAllOperations", QVariant(bool(extProps.advancedBlendAllOperations)), extName));
-            }
-            // VK_EXT_descriptor_indexing
-            if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
-                const char* extName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceDescriptorIndexingPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxUpdateAfterBindDescriptorsInAllPools", QVariant(extProps.maxUpdateAfterBindDescriptorsInAllPools), extName));
-                properties2.push_back(Property2("shaderUniformBufferArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderUniformBufferArrayNonUniformIndexingNative)), extName));
-                properties2.push_back(Property2("shaderSampledImageArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderSampledImageArrayNonUniformIndexingNative)), extName));
-                properties2.push_back(Property2("shaderStorageBufferArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderStorageBufferArrayNonUniformIndexingNative)), extName));
-                properties2.push_back(Property2("shaderStorageImageArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderStorageImageArrayNonUniformIndexingNative)), extName));
-                properties2.push_back(Property2("shaderInputAttachmentArrayNonUniformIndexingNative", QVariant(bool(extProps.shaderInputAttachmentArrayNonUniformIndexingNative)), extName));
-                properties2.push_back(Property2("robustBufferAccessUpdateAfterBind", QVariant(bool(extProps.robustBufferAccessUpdateAfterBind)), extName));
-                properties2.push_back(Property2("quadDivergentImplicitLod", QVariant(bool(extProps.quadDivergentImplicitLod)), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindSamplers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindSamplers), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindUniformBuffers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindUniformBuffers), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindStorageBuffers", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindStorageBuffers), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindSampledImages", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindSampledImages), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindStorageImages", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindStorageImages), extName));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindInputAttachments", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindInputAttachments), extName));
-                properties2.push_back(Property2("maxPerStageUpdateAfterBindResources", QVariant(extProps.maxPerStageUpdateAfterBindResources), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindSamplers", QVariant(extProps.maxDescriptorSetUpdateAfterBindSamplers), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindUniformBuffers", QVariant(extProps.maxDescriptorSetUpdateAfterBindUniformBuffers), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindUniformBuffersDynamic", QVariant(extProps.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindStorageBuffers", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageBuffers), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindStorageBuffersDynamic", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindSampledImages", QVariant(extProps.maxDescriptorSetUpdateAfterBindSampledImages), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindStorageImages", QVariant(extProps.maxDescriptorSetUpdateAfterBindStorageImages), extName));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindInputAttachments", QVariant(extProps.maxDescriptorSetUpdateAfterBindInputAttachments), extName));
-            }
-            // VK_EXT_inline_uniform_block
-            if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceInlineUniformBlockPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxInlineUniformBlockSize", QVariant(extProps.maxInlineUniformBlockSize), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-                properties2.push_back(Property2("maxPerStageDescriptorInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-                properties2.push_back(Property2("maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-                properties2.push_back(Property2("maxDescriptorSetInlineUniformBlocks", QVariant(extProps.maxDescriptorSetInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-                properties2.push_back(Property2("maxDescriptorSetUpdateAfterBindInlineUniformBlocks", QVariant(extProps.maxDescriptorSetUpdateAfterBindInlineUniformBlocks), VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-            }
-            // VK_EXT_vertex_attribute_divisor
-            if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor), VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
             }
             // VK_NVX_raytracing
             if (extensionSupported(VK_NVX_RAYTRACING_EXTENSION_NAME)) {
@@ -599,8 +583,9 @@ public:
                 properties2.push_back(Property2("shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
             }
 
-            readPhysicalProperties_AMD();
+            readPhysicalProperties_EXT();
             readPhysicalProperties_KHR();
+            readPhysicalProperties_AMD();
 
             // VK 1.1 core
             if (vulkan_1_1()) {
@@ -643,7 +628,7 @@ public:
         features2.push_back(Feature2(name, supported, extension));
     }
 
-    // Read phsyical device features (2) for extensions from the KHR namespace
+    // Read physical device features (2) for extensions from the KHR namespace
     void readPhysicalFeatures_KHR() {
         // VK_KHR_multiview
         if (extensionSupported(VK_KHR_MULTIVIEW_EXTENSION_NAME)) {
