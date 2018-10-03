@@ -1019,7 +1019,7 @@ public:
     }
 
 #if defined(__ANDROID__)
-    std::string getSystemProperty(char* propname)
+    std::string getSystemProperty(const char* propname)
     {
         char prop[PROP_VALUE_MAX+1];
         int len = __system_property_get(propname, prop);
