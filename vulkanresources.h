@@ -352,13 +352,11 @@ default: return "UNKNOWN_DEVICE";
         return ss.str();
     }
 
-    template<>
     static std::string toHexString(const uint8_t number)
     {
         return toHexString(static_cast<unsigned>(number));
     }
 
-    template<>
     static std::string toHexString(const int8_t number)
     {
         return toHexString(static_cast<int>(number));
@@ -395,15 +393,22 @@ default: return "UNKNOWN_DEVICE";
         return ss.str();
     }
 
+    // Android workaround
+    static std::string to_string(const unsigned num) {
+        std::stringstream ss;
+        ss << num;
+        return ss.str();
+    }
+
     static std::string conformanceVersionKHRString(const VkConformanceVersionKHR& conformanceVersion)
     {
         const std::vector<uint8_t> versionAsList = {conformanceVersion.major, conformanceVersion.minor, conformanceVersion.subminor, conformanceVersion.patch};
         std::vector<std::string> versionAsStringList;
         const auto u8ToString = [](const uint8_t num) {
-            return std::to_string(static_cast<uint>(num));
+            return to_string(static_cast<unsigned>(num));
         };
         std::transform(versionAsList.begin(), versionAsList.end(), std::back_inserter(versionAsStringList), u8ToString);
-    
+
         return joinString('.', versionAsStringList);
     }
 };
