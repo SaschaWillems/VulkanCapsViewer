@@ -389,7 +389,7 @@ public:
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "filterMinmaxSingleComponentFormats", QVariant(bool(extProps.filterMinmaxSingleComponentFormats)));
-            pushProperty2(extension, "filterMinmaxImageComponentMapping", QVariant(bool(extProps.filterMinmaxImageComponentMapping));
+            pushProperty2(extension, "filterMinmaxImageComponentMapping", QVariant(bool(extProps.filterMinmaxImageComponentMapping)));
         }
         // VK_EXT_sample_locations
         if (extensionSupported(VK_EXT_SAMPLE_LOCATIONS_EXTENSION_NAME)) {
@@ -420,7 +420,7 @@ public:
         }
         // VK_EXT_descriptor_indexing
         if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
-            const char* extName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+            const char* extension(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
             VkPhysicalDeviceDescriptorIndexingPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_PROPERTIES_EXT };
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
@@ -466,7 +466,7 @@ public:
             VkPhysicalDeviceVertexAttributeDivisorPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_EXT };
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-            pushProperty2(extenstion, "maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor));
+            pushProperty2(extension, "maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor));
         }
     }
 
@@ -697,6 +697,72 @@ public:
             pushFeature2(extension, "shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics);
         }
     }
+
+    // Read physical device features (2) for extensions from the EXT namespace
+    void readPhysicalFeatures_EXT() {
+        // VK_EXT_blend_operation_advanced
+        if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME);
+            VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "advancedBlendCoherentOperations", extFeatures.advancedBlendCoherentOperations);
+        }
+        // VK_EXT_descriptor_indexing
+        if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
+            VkPhysicalDeviceDescriptorIndexingFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "shaderInputAttachmentArrayDynamicIndexing", extFeatures.shaderInputAttachmentArrayDynamicIndexing);
+            pushFeature2(extension, "shaderUniformTexelBufferArrayDynamicIndexing", extFeatures.shaderUniformTexelBufferArrayDynamicIndexing);
+            pushFeature2(extension, "shaderStorageTexelBufferArrayDynamicIndexing", extFeatures.shaderStorageTexelBufferArrayDynamicIndexing);
+            pushFeature2(extension, "shaderUniformBufferArrayNonUniformIndexing", extFeatures.shaderUniformBufferArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderSampledImageArrayNonUniformIndexing", extFeatures.shaderSampledImageArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderStorageBufferArrayNonUniformIndexing", extFeatures.shaderStorageBufferArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderStorageImageArrayNonUniformIndexing", extFeatures.shaderStorageImageArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderInputAttachmentArrayNonUniformIndexing", extFeatures.shaderInputAttachmentArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderUniformTexelBufferArrayNonUniformIndexing", extFeatures.shaderUniformTexelBufferArrayNonUniformIndexing);
+            pushFeature2(extension, "shaderStorageTexelBufferArrayNonUniformIndexing", extFeatures.shaderStorageTexelBufferArrayNonUniformIndexing);
+            pushFeature2(extension, "descriptorBindingUniformBufferUpdateAfterBind", extFeatures.descriptorBindingUniformBufferUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingSampledImageUpdateAfterBind", extFeatures.descriptorBindingSampledImageUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingStorageImageUpdateAfterBind", extFeatures.descriptorBindingStorageImageUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingStorageBufferUpdateAfterBind", extFeatures.descriptorBindingStorageBufferUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingUniformTexelBufferUpdateAfterBind", extFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingStorageTexelBufferUpdateAfterBind", extFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind);
+            pushFeature2(extension, "descriptorBindingUpdateUnusedWhilePending", extFeatures.descriptorBindingUpdateUnusedWhilePending);
+            pushFeature2(extension, "descriptorBindingPartiallyBound", extFeatures.descriptorBindingPartiallyBound);
+            pushFeature2(extension, "descriptorBindingVariableDescriptorCount", extFeatures.descriptorBindingVariableDescriptorCount);
+            pushFeature2(extension, "runtimeDescriptorArray", extFeatures.runtimeDescriptorArray);
+        }
+        // VK_EXT_conditional_rendering
+        if (extensionSupported(VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME);
+            VkPhysicalDeviceConditionalRenderingFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "conditionalRendering", extFeatures.conditionalRendering);
+            pushFeature2(extension, "inheritedConditionalRendering", extFeatures.inheritedConditionalRendering);
+        }
+        // VK_EXT_inline_uniform_block
+        if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME);
+            VkPhysicalDeviceInlineUniformBlockFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "inlineUniformBlock", extFeatures.inlineUniformBlock);
+            pushFeature2(extension, "descriptorBindingInlineUniformBlockUpdateAfterBind", extFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind);
+        }
+        // VK_EXT_vertex_attribute_divisor
+        if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME);
+            VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "vertexAttributeInstanceRateDivisor", extFeatures.vertexAttributeInstanceRateDivisor);
+            pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures.vertexAttributeInstanceRateZeroDivisor);
+        }
+    }
 	
 	/// <summary>
 	///	Request physical device features
@@ -765,79 +831,6 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceFeatures2KHR) {
-            // VK_EXT_blend_operation_advanced
-            if (extensionSupported(VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceBlendOperationAdvancedFeaturesEXT extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BLEND_OPERATION_ADVANCED_FEATURES_EXT;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("advancedBlendCoherentOperations", extFeatures.advancedBlendCoherentOperations, VK_EXT_BLEND_OPERATION_ADVANCED_EXTENSION_NAME));
-            }
-            // VK_EXT_descriptor_indexing
-            if (extensionSupported(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME)) {
-                const char* extName(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceDescriptorIndexingFeaturesEXT extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("shaderInputAttachmentArrayDynamicIndexing", extFeatures.shaderInputAttachmentArrayDynamicIndexing, extName));
-                features2.push_back(Feature2("shaderUniformTexelBufferArrayDynamicIndexing", extFeatures.shaderUniformTexelBufferArrayDynamicIndexing, extName));
-                features2.push_back(Feature2("shaderStorageTexelBufferArrayDynamicIndexing", extFeatures.shaderStorageTexelBufferArrayDynamicIndexing, extName));
-                features2.push_back(Feature2("shaderUniformBufferArrayNonUniformIndexing", extFeatures.shaderUniformBufferArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderSampledImageArrayNonUniformIndexing", extFeatures.shaderSampledImageArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderStorageBufferArrayNonUniformIndexing", extFeatures.shaderStorageBufferArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderStorageImageArrayNonUniformIndexing", extFeatures.shaderStorageImageArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderInputAttachmentArrayNonUniformIndexing", extFeatures.shaderInputAttachmentArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderUniformTexelBufferArrayNonUniformIndexing", extFeatures.shaderUniformTexelBufferArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("shaderStorageTexelBufferArrayNonUniformIndexing", extFeatures.shaderStorageTexelBufferArrayNonUniformIndexing, extName));
-                features2.push_back(Feature2("descriptorBindingUniformBufferUpdateAfterBind", extFeatures.descriptorBindingUniformBufferUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingSampledImageUpdateAfterBind", extFeatures.descriptorBindingSampledImageUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingStorageImageUpdateAfterBind", extFeatures.descriptorBindingStorageImageUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingStorageBufferUpdateAfterBind", extFeatures.descriptorBindingStorageBufferUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingUniformTexelBufferUpdateAfterBind", extFeatures.descriptorBindingUniformTexelBufferUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingStorageTexelBufferUpdateAfterBind", extFeatures.descriptorBindingStorageTexelBufferUpdateAfterBind, extName));
-                features2.push_back(Feature2("descriptorBindingUpdateUnusedWhilePending", extFeatures.descriptorBindingUpdateUnusedWhilePending, extName));
-                features2.push_back(Feature2("descriptorBindingPartiallyBound", extFeatures.descriptorBindingPartiallyBound, extName));
-                features2.push_back(Feature2("descriptorBindingVariableDescriptorCount", extFeatures.descriptorBindingVariableDescriptorCount, extName));
-                features2.push_back(Feature2("runtimeDescriptorArray", extFeatures.runtimeDescriptorArray, extName));
-            }
-            // VK_EXT_conditional_rendering
-            if (extensionSupported(VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceConditionalRenderingFeaturesEXT extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CONDITIONAL_RENDERING_FEATURES_EXT;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("conditionalRendering", extFeatures.conditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
-                features2.push_back(Feature2("inheritedConditionalRendering", extFeatures.inheritedConditionalRendering, VK_EXT_CONDITIONAL_RENDERING_EXTENSION_NAME));
-            }
-            // VK_EXT_inline_uniform_block
-            if (extensionSupported(VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceInlineUniformBlockFeaturesEXT extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INLINE_UNIFORM_BLOCK_FEATURES_EXT;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("inlineUniformBlock", extFeatures.inlineUniformBlock, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-                features2.push_back(Feature2("descriptorBindingInlineUniformBlockUpdateAfterBind", extFeatures.descriptorBindingInlineUniformBlockUpdateAfterBind, VK_EXT_INLINE_UNIFORM_BLOCK_EXTENSION_NAME));
-            }
-            // VK_EXT_vertex_attribute_divisor
-            if (extensionSupported(VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceVertexAttributeDivisorFeaturesEXT extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_EXT;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("vertexAttributeInstanceRateDivisor", extFeatures.vertexAttributeInstanceRateDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
-                features2.push_back(Feature2("vertexAttributeInstanceRateZeroDivisor", extFeatures.vertexAttributeInstanceRateZeroDivisor, VK_EXT_VERTEX_ATTRIBUTE_DIVISOR_EXTENSION_NAME));
-            }
             // VK_NV_mesh_shader
             if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
