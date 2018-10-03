@@ -499,9 +499,58 @@ public:
         }
     }
 
-	/// <summary>
-	///	Request physical device properties
-	/// </summary>
+    // Read physical device properties (2) for extensions from the NV namespace
+    void readPhysicalProperties_NV() {
+        // VK_NVX_multiview_per_view_attributes
+        if (extensionSupported(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME)) {
+            const char* extension(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME);
+            VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "perViewPositionAllComponents", QVariant(bool(extProps.perViewPositionAllComponents)));
+        }
+        // VK_NVX_raytracing
+        if (extensionSupported(VK_NVX_RAYTRACING_EXTENSION_NAME)) {
+            const char* extension(VK_NVX_RAYTRACING_EXTENSION_NAME);
+            VkPhysicalDeviceRaytracingPropertiesNVX extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "shaderHeaderSize", QVariant(extProps.shaderHeaderSize));
+            pushProperty2(extension, "maxRecursionDepth", QVariant(extProps.maxRecursionDepth));
+            pushProperty2(extension, "maxGeometryCount", QVariant(extProps.maxGeometryCount));
+        }
+        // VK_NV_mesh_shader
+        if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
+            const char* extension(VK_NV_MESH_SHADER_EXTENSION_NAME);
+            VkPhysicalDeviceMeshShaderPropertiesNV extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxDrawMeshTasksCount", QVariant(extProps.maxDrawMeshTasksCount));
+            pushProperty2(extension, "maxTaskWorkGroupInvocations", QVariant(extProps.maxTaskWorkGroupInvocations));
+            pushProperty2(extension, "maxTaskWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxTaskWorkGroupSize[0], extProps.maxTaskWorkGroupSize[1], extProps.maxTaskWorkGroupSize[2] })));
+            pushProperty2(extension, "maxTaskTotalMemorySize", QVariant(extProps.maxTaskTotalMemorySize));
+            pushProperty2(extension, "maxTaskOutputCount", QVariant(extProps.maxTaskOutputCount));
+            pushProperty2(extension, "maxMeshWorkGroupInvocations", QVariant(extProps.maxMeshWorkGroupInvocations));
+            pushProperty2(extension, "maxMeshWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxMeshWorkGroupSize[0], extProps.maxMeshWorkGroupSize[1], extProps.maxMeshWorkGroupSize[2] })));
+            pushProperty2(extension, "maxMeshTotalMemorySize", QVariant(extProps.maxMeshTotalMemorySize));
+            pushProperty2(extension, "maxMeshOutputVertices", QVariant(extProps.maxMeshOutputVertices));
+            pushProperty2(extension, "maxMeshOutputPrimitives", QVariant(extProps.maxMeshOutputPrimitives));
+            pushProperty2(extension, "maxMeshMultiviewViewCount", QVariant(extProps.maxMeshMultiviewViewCount));
+            pushProperty2(extension, "meshOutputPerVertexGranularity", QVariant(extProps.meshOutputPerVertexGranularity));
+            pushProperty2(extension, "meshOutputPerPrimitiveGranularity", QVariant(extProps.meshOutputPerPrimitiveGranularity));
+        }
+        // VK_NV_shading_rate_image
+        if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
+            const char* extension(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME);
+            VkPhysicalDeviceShadingRateImagePropertiesNV extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "shadingRateTexelSize", QVariant::fromValue(QVariantList({ extProps.shadingRateTexelSize.width, extProps.shadingRateTexelSize.height })));
+            pushProperty2(extension, "shadingRatePaletteSize", QVariant(extProps.shadingRatePaletteSize));
+            pushProperty2(extension, "shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples));
+        }
+    }
+
 	void readPhysicalProperties()
 	{
 		assert(device != NULL);
@@ -529,67 +578,11 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceProperties2KHR) {
-            // VK_NVX_multiview_per_view_attributes
-            if (extensionSupported(VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMultiviewPerViewAttributesPropertiesNVX extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_ATTRIBUTES_PROPERTIES_NVX;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("perViewPositionAllComponents", QVariant(bool(extProps.perViewPositionAllComponents)), VK_NVX_MULTIVIEW_PER_VIEW_ATTRIBUTES_EXTENSION_NAME));
-            }
-            // VK_NVX_raytracing
-            if (extensionSupported(VK_NVX_RAYTRACING_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceRaytracingPropertiesNVX extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("shaderHeaderSize", QVariant(extProps.shaderHeaderSize), VK_NVX_RAYTRACING_EXTENSION_NAME));
-                properties2.push_back(Property2("maxRecursionDepth", QVariant(extProps.maxRecursionDepth), VK_NVX_RAYTRACING_EXTENSION_NAME));
-                properties2.push_back(Property2("maxGeometryCount", QVariant(extProps.maxGeometryCount), VK_NVX_RAYTRACING_EXTENSION_NAME));
-            }
-            // VK_NV_mesh_shader
-            if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
-                const char* extName(VK_NV_MESH_SHADER_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMeshShaderPropertiesNV extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_NV;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxDrawMeshTasksCount", QVariant(extProps.maxDrawMeshTasksCount), extName));
-                properties2.push_back(Property2("maxTaskWorkGroupInvocations", QVariant(extProps.maxTaskWorkGroupInvocations), extName));
-                properties2.push_back(Property2("maxTaskWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxTaskWorkGroupSize[0], extProps.maxTaskWorkGroupSize[1], extProps.maxTaskWorkGroupSize[2] })), extName));
-                properties2.push_back(Property2("maxTaskTotalMemorySize", QVariant(extProps.maxTaskTotalMemorySize), extName));
-                properties2.push_back(Property2("maxTaskOutputCount", QVariant(extProps.maxTaskOutputCount), extName));
-                properties2.push_back(Property2("maxMeshWorkGroupInvocations", QVariant(extProps.maxMeshWorkGroupInvocations), extName));
-                properties2.push_back(Property2("maxMeshWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxMeshWorkGroupSize[0], extProps.maxMeshWorkGroupSize[1], extProps.maxMeshWorkGroupSize[2] })), extName));
-                properties2.push_back(Property2("maxMeshTotalMemorySize", QVariant(extProps.maxMeshTotalMemorySize), extName));
-                properties2.push_back(Property2("maxMeshOutputVertices", QVariant(extProps.maxMeshOutputVertices), extName));
-                properties2.push_back(Property2("maxMeshOutputPrimitives", QVariant(extProps.maxMeshOutputPrimitives), extName));
-                properties2.push_back(Property2("maxMeshMultiviewViewCount", QVariant(extProps.maxMeshMultiviewViewCount), extName));
-                properties2.push_back(Property2("meshOutputPerVertexGranularity", QVariant(extProps.meshOutputPerVertexGranularity), extName));
-                properties2.push_back(Property2("meshOutputPerPrimitiveGranularity", QVariant(extProps.meshOutputPerPrimitiveGranularity), extName));
-            }
-            // VK_NV_shading_rate_image
-            if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceShadingRateImagePropertiesNV extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_PROPERTIES_NV;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("shadingRateTexelSize", QVariant::fromValue(QVariantList({ extProps.shadingRateTexelSize.width, extProps.shadingRateTexelSize.height })), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
-                properties2.push_back(Property2("shadingRatePaletteSize", QVariant(extProps.shadingRatePaletteSize), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
-                properties2.push_back(Property2("shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples), VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
-            }
 
             readPhysicalProperties_EXT();
             readPhysicalProperties_KHR();
             readPhysicalProperties_AMD();
+            readPhysicalProperties_NV();
 
             // VK 1.1 core
             if (vulkan_1_1()) {
@@ -772,9 +765,37 @@ public:
         }
     }
 	
-	/// <summary>
-	///	Request physical device features
-	/// </summary>
+    // Read physical device features (2) for extensions from the NV namespace
+    void readPhysicalFeatures_NV() {
+        // VK_NV_mesh_shader
+        if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
+            const char* extension(VK_NV_MESH_SHADER_EXTENSION_NAME);
+            VkPhysicalDeviceMeshShaderFeaturesNV extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "taskShader", extFeatures.taskShader);
+            pushFeature2(extension, "meshShader", extFeatures.meshShader);
+        }
+        // VK_NV_compute_shader_derivatives
+        if (extensionSupported(VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME)) {
+            const char* extension(VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME);
+            VkPhysicalDeviceComputeShaderDerivativesFeaturesNV extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "computeDerivativeGroupQuads", extFeatures.computeDerivativeGroupQuads);
+            pushFeature2(extension, "computeDerivativeGroupLinear", extFeatures.computeDerivativeGroupLinear);
+        }
+        // VK_NV_shading_rate_image
+        if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
+            const char* extension(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME);
+            VkPhysicalDeviceShadingRateImageFeaturesNV extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "shadingRateImage", extFeatures.shadingRateImage);
+            pushFeature2(extension, "shadingRateCoarseSampleOrder", extFeatures.shadingRateCoarseSampleOrder);
+        }
+    }
+
 	void readPhysicalFeatures()
 	{
 		assert(device != NULL);
@@ -839,42 +860,10 @@ public:
 
         // VK_KHR_get_physical_device_properties2
         if (pfnGetPhysicalDeviceFeatures2KHR) {
-            // VK_NV_mesh_shader
-            if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceMeshShaderFeaturesNV extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_NV;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("taskShader", extFeatures.taskShader, VK_NV_MESH_SHADER_EXTENSION_NAME));
-                features2.push_back(Feature2("meshShader", extFeatures.meshShader, VK_NV_MESH_SHADER_EXTENSION_NAME));
-            }
-            // VK_NV_compute_shader_derivatives
-            if (extensionSupported(VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceComputeShaderDerivativesFeaturesNV extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_NV;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("computeDerivativeGroupQuads", extFeatures.computeDerivativeGroupQuads, VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME));
-                features2.push_back(Feature2("computeDerivativeGroupLinear", extFeatures.computeDerivativeGroupLinear, VK_NV_COMPUTE_SHADER_DERIVATIVES_EXTENSION_NAME));
-            }
-            // VK_NV_shading_rate_image
-            if (extensionSupported(VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-                VkPhysicalDeviceShadingRateImageFeaturesNV extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADING_RATE_IMAGE_FEATURES_NV;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-                deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-                features2.push_back(Feature2("shadingRateImage", extFeatures.shadingRateImage, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
-                features2.push_back(Feature2("shadingRateCoarseSampleOrder", extFeatures.shadingRateCoarseSampleOrder, VK_NV_SHADING_RATE_IMAGE_EXTENSION_NAME));
-            }
 
             readPhysicalFeatures_KHR();
             readPhysicalFeatures_EXT();
+            readPhysicalFeatures_NV();
 
             // VK 1.1 Core
             if (vulkan_1_1()) {
