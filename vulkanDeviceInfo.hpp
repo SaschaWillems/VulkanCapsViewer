@@ -472,6 +472,23 @@ public:
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "maxVertexAttribDivisor", QVariant(extProps.maxVertexAttribDivisor));
         }
+        // VK_EXT_transform_feedback
+        if (extensionSupported(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME);
+            VkPhysicalDeviceTransformFeedbackPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "maxTransformFeedbackStreams", QVariant(extProps.maxTransformFeedbackStreams));
+            pushProperty2(extension, "maxTransformFeedbackBuffers", QVariant(extProps.maxTransformFeedbackBuffers));
+            pushProperty2(extension, "maxTransformFeedbackBufferSize", QVariant(extProps.maxTransformFeedbackBufferSize));
+            pushProperty2(extension, "maxTransformFeedbackStreamDataSize", QVariant(extProps.maxTransformFeedbackStreamDataSize));
+            pushProperty2(extension, "maxTransformFeedbackBufferDataSize", QVariant(extProps.maxTransformFeedbackBufferDataSize));
+            pushProperty2(extension, "maxTransformFeedbackBufferDataStride", QVariant(extProps.maxTransformFeedbackBufferDataStride));
+            pushProperty2(extension, "transformFeedbackQueries", QVariant(bool(extProps.transformFeedbackQueries)));
+            pushProperty2(extension, "transformFeedbackStreamsLinesTriangles", QVariant(bool(extProps.transformFeedbackStreamsLinesTriangles)));
+            pushProperty2(extension, "transformFeedbackRasterizationStreamSelect", QVariant(bool(extProps.transformFeedbackRasterizationStreamSelect)));
+            pushProperty2(extension, "transformFeedbackDraw", QVariant(bool(extProps.transformFeedbackDraw)));
+        }
     }
 
     // Read physical device properties (2) for extensions from the AMD namespace
@@ -762,6 +779,15 @@ public:
             pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
             pushFeature2(extension, "vertexAttributeInstanceRateDivisor", extFeatures.vertexAttributeInstanceRateDivisor);
             pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures.vertexAttributeInstanceRateZeroDivisor);
+        }
+        // VK_EXT_transform_feedback
+        if (extensionSupported(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME);
+            VkPhysicalDeviceTransformFeedbackFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "transformFeedback", extFeatures.transformFeedback);
+            pushFeature2(extension, "geometryStreams", extFeatures.geometryStreams);
         }
     }
 	
