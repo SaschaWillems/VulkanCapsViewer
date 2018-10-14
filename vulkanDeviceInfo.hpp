@@ -475,7 +475,7 @@ public:
         // VK_EXT_transform_feedback
         if (extensionSupported(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME)) {
             const char* extension(VK_EXT_TRANSFORM_FEEDBACK_EXTENSION_NAME);
-            VkPhysicalDeviceTransformFeedbackPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_FEATURES_EXT };
+            VkPhysicalDeviceTransformFeedbackPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TRANSFORM_FEEDBACK_PROPERTIES_EXT };
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "maxTransformFeedbackStreams", QVariant(extProps.maxTransformFeedbackStreams));
