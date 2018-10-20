@@ -199,7 +199,7 @@ void vulkanCapsViewer::slotBrowseDatabase()
 /// </summary>
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
-	int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
+    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex], this->version);
 	stringstream ss;
 	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
 	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
@@ -268,7 +268,7 @@ void vulkanCapsViewer::slotUploadReport()
 		return;
 	}
 
-	int reportId = databaseConnection.getReportId(device);
+    int reportId = databaseConnection.getReportId(device, this->version);
 	if (reportId > -1)
 	{ 
 		QMessageBox::StandardButton reply;
@@ -1359,10 +1359,10 @@ void vulkanCapsViewer::checkReportDatabaseState()
 		return;
 	}
 
-	if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex])) 
+    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], this->version))
 	{
         ui.toolButtonOnlineDevice->setEnabled(true);
-		ui.labelDevicePresent->setText("<font color='#00813e'>Device already present in database</font>");
+        ui.labelDevicePresent->setText("<font color='#00813e'>Device report already present in database</font>");
 		// Report present, check if it can be updated		
 		// TODO : Update mechanics!
 		/*
@@ -1374,7 +1374,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 	}
 	else 
 	{
-		ui.labelDevicePresent->setText("<font color='#bc0003'>Device not present in database yet</font>");
+        ui.labelDevicePresent->setText("<font color='#bc0003'>Device report not present in database yet</font>");
 	}
 	ui.labelDevicePresent->setVisible(true);
 	QApplication::restoreOverrideCursor();

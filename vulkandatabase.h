@@ -57,8 +57,8 @@ public:
     static bool dbLogin;
     static QString dbUser;
     static QString dbPass;
-	int getReportId(VulkanDeviceInfo device);
-	bool checkReportPresent(VulkanDeviceInfo device);
+    int getReportId(VulkanDeviceInfo device, string version);
+    bool checkReportPresent(VulkanDeviceInfo device, string version);
 	vector<string> fetchDevices();
 	vector<reportInfo> fetchDeviceReports(string device);
 	bool checkServerConnection();
