@@ -459,7 +459,7 @@ padding-bottom:5px;</string>
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <property name="documentMode">
           <bool>false</bool>
