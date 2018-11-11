@@ -526,15 +526,20 @@ public:
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "perViewPositionAllComponents", QVariant(bool(extProps.perViewPositionAllComponents)));
         }
-        // VK_NVX_raytracing
-        if (extensionSupported(VK_NVX_RAYTRACING_EXTENSION_NAME)) {
-            const char* extension(VK_NVX_RAYTRACING_EXTENSION_NAME);
-            VkPhysicalDeviceRaytracingPropertiesNVX extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAYTRACING_PROPERTIES_NVX };
+        // VK_NV_raytracing
+        if (extensionSupported(VK_NV_RAY_TRACING_EXTENSION_NAME)) {
+            const char* extension(VK_NV_RAY_TRACING_EXTENSION_NAME);
+            VkPhysicalDeviceRayTracingPropertiesNV extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_NV };
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-            pushProperty2(extension, "shaderHeaderSize", QVariant(extProps.shaderHeaderSize));
+            pushProperty2(extension, "shaderGroupHandleSize", QVariant(extProps.shaderGroupHandleSize));
             pushProperty2(extension, "maxRecursionDepth", QVariant(extProps.maxRecursionDepth));
+            pushProperty2(extension, "maxShaderGroupStride", QVariant(extProps.maxShaderGroupStride));
+            pushProperty2(extension, "shaderGroupBaseAlignment", QVariant(extProps.shaderGroupBaseAlignment));
             pushProperty2(extension, "maxGeometryCount", QVariant(extProps.maxGeometryCount));
+            pushProperty2(extension, "maxInstanceCount", QVariant(extProps.maxInstanceCount));
+            pushProperty2(extension, "maxTriangleCount", QVariant(extProps.maxTriangleCount));
+            pushProperty2(extension, "maxDescriptorSetAccelerationStructures", QVariant(extProps.maxDescriptorSetAccelerationStructures));
         }
         // VK_NV_mesh_shader
         if (extensionSupported(VK_NV_MESH_SHADER_EXTENSION_NAME)) {
