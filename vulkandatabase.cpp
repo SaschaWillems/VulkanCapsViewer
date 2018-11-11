@@ -306,7 +306,7 @@ vector<reportInfo> VulkanDatabase::fetchDeviceReports(string device)
 string VulkanDatabase::getBaseUrl()
 {
 #ifdef DEVDATABASE
-    return "http://vulkan.gpuinfo.org/dev/";
+    return "http://localhost:8000/";
 #else
 	return "http://vulkan.gpuinfo.org/";
 #endif
