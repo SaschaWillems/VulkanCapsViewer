@@ -63,7 +63,8 @@
 
 #define VK_API_VERSION VK_API_VERSION_1_1
 
-const std::string vulkanCapsViewer::version = "2.0";
+const std::string vulkanCapsViewer::version = "1.91";
+const std::string vulkanCapsViewer::reportVersion = "1.9";
 
 /// <summary>
 ///	Returns operating system name
@@ -596,7 +597,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
 	GPU->readSupportedFormats();
 	GPU->os = getOperatingSystem();
-	GPU->reportVersion = version;
+    GPU->reportVersion = reportVersion;
 }
 
 /// <summary>

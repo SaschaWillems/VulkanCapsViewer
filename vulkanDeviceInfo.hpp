@@ -120,9 +120,9 @@ public:
 
 	OSInfo os;
 
-	std::string reportVersion;
+    std::string reportVersion;
 
-	std::vector<VulkanLayerInfo> getLayers()
+    std::vector<VulkanLayerInfo> getLayers()
 	{
 		return layers;
 	}

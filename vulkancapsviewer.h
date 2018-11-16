@@ -37,6 +37,7 @@ class vulkanCapsViewer : public QMainWindow
 
 public:
     static const std::string version;
+    static const std::string reportVersion;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
