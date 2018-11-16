@@ -178,8 +178,8 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
         << "&osarchitecture=" << device.os.architecture
-        << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion)
-        << "&reportversion=" << version ;
+        << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
+        // << "&reportversion=" << version ;
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
