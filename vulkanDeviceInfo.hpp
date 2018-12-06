@@ -719,6 +719,15 @@ public:
             pushFeature2(extension, "shaderBufferInt64Atomics", extFeatures.shaderBufferInt64Atomics);
             pushFeature2(extension, "shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics);
         }
+        // VK_KHR_shader_float16_int8
+        if (extensionSupported(VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_SHADER_FLOAT16_INT8_EXTENSION_NAME);
+            VkPhysicalDeviceFloat16Int8FeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT16_INT8_FEATURES_KHR };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "shaderFloat16", extFeatures.shaderFloat16);
+            pushFeature2(extension, "shaderInt8", extFeatures.shaderInt8);
+        }
     }
 
     // Read physical device features (2) for extensions from the EXT namespace
