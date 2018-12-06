@@ -513,6 +513,16 @@ public:
             pushProperty2(extension, "transformFeedbackRasterizationStreamSelect", QVariant(bool(extProps.transformFeedbackRasterizationStreamSelect)));
             pushProperty2(extension, "transformFeedbackDraw", QVariant(bool(extProps.transformFeedbackDraw)));
         }
+        // VK_EXT_fragment_density_map
+        if (extensionSupported(VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME);
+            VkPhysicalDeviceFragmentDensityMapPropertiesEXT extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "fragmentDensityInvocations", QVariant(bool(extProps.fragmentDensityInvocations)));
+            pushProperty2(extension, "minFragmentDensityTexelSize", QVariant::fromValue(QVariantList({ extProps.minFragmentDensityTexelSize.width, extProps.minFragmentDensityTexelSize.height })));
+            pushProperty2(extension, "maxFragmentDensityTexelSize", QVariant::fromValue(QVariantList({ extProps.maxFragmentDensityTexelSize.width, extProps.maxFragmentDensityTexelSize.height })));
+        }
     }
 
     // Read physical device properties (2) for extensions from the AMD namespace
@@ -826,6 +836,16 @@ public:
             pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
             pushFeature2(extension, "transformFeedback", extFeatures.transformFeedback);
             pushFeature2(extension, "geometryStreams", extFeatures.geometryStreams);
+        }
+        // VK_EXT_fragment_density_map
+        if (extensionSupported(VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME)) {
+            const char* extension(VK_EXT_FRAGMENT_DENSITY_MAP_EXTENSION_NAME);
+            VkPhysicalDeviceFragmentDensityMapFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "fragmentDensityMap", extFeatures.fragmentDensityMap);
+            pushFeature2(extension, "fragmentDensityMapDynamic", extFeatures.fragmentDensityMapDynamic);
+            pushFeature2(extension, "fragmentDensityMapNonSubsampledImages", extFeatures.fragmentDensityMapNonSubsampledImages);
         }
     }
 	
