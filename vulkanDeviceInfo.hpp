@@ -358,6 +358,30 @@ public:
             pushProperty2(extension, "driverInfo", QString::fromStdString(extProps.driverInfo));
             pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.conformanceVersion)));
         }
+        // VK_KHR_shader_float_controls
+        if (extensionSupported(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME)) {
+            const char* extension(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
+            VkPhysicalDeviceFloatControlsPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "separateDenormSettings",  QVariant(bool(extProps.separateDenormSettings)));
+            pushProperty2(extension, "separateRoundingModeSettings",  QVariant(bool(extProps.separateRoundingModeSettings)));
+            pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat16",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat16)));
+            pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat32",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat32)));
+            pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat64",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat64)));
+            pushProperty2(extension, "shaderDenormPreserveFloat16",  QVariant(bool(extProps.shaderDenormPreserveFloat16)));
+            pushProperty2(extension, "shaderDenormPreserveFloat32",  QVariant(bool(extProps.shaderDenormPreserveFloat32)));
+            pushProperty2(extension, "shaderDenormPreserveFloat64",  QVariant(bool(extProps.shaderDenormPreserveFloat64)));
+            pushProperty2(extension, "shaderDenormFlushToZeroFloat16",  QVariant(bool(extProps.shaderDenormFlushToZeroFloat16)));
+            pushProperty2(extension, "shaderDenormFlushToZeroFloat32",  QVariant(bool(extProps.shaderDenormFlushToZeroFloat32)));
+            pushProperty2(extension, "shaderDenormFlushToZeroFloat64",  QVariant(bool(extProps.shaderDenormFlushToZeroFloat64)));
+            pushProperty2(extension, "shaderRoundingModeRTEFloat16",  QVariant(bool(extProps.shaderRoundingModeRTEFloat16)));
+            pushProperty2(extension, "shaderRoundingModeRTEFloat32",  QVariant(bool(extProps.shaderRoundingModeRTEFloat32)));
+            pushProperty2(extension, "shaderRoundingModeRTEFloat64",  QVariant(bool(extProps.shaderRoundingModeRTEFloat64)));
+            pushProperty2(extension, "shaderRoundingModeRTZFloat16",  QVariant(bool(extProps.shaderRoundingModeRTZFloat16)));
+            pushProperty2(extension, "shaderRoundingModeRTZFloat32",  QVariant(bool(extProps.shaderRoundingModeRTZFloat32)));
+            pushProperty2(extension, "shaderRoundingModeRTZFloat64",  QVariant(bool(extProps.shaderRoundingModeRTZFloat64)));
+        }
     }
 
     // Read physical device properties (2) for extensions from the EXT namespace
