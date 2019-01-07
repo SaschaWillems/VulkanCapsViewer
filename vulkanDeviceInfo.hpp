@@ -382,6 +382,17 @@ public:
             pushProperty2(extension, "shaderRoundingModeRTZFloat32",  QVariant(bool(extProps.shaderRoundingModeRTZFloat32)));
             pushProperty2(extension, "shaderRoundingModeRTZFloat64",  QVariant(bool(extProps.shaderRoundingModeRTZFloat64)));
         }
+        // VK_KHR_depth_stencil_resolve
+        if (extensionSupported(VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME )) {
+            const char* extension(VK_KHR_DEPTH_STENCIL_RESOLVE_EXTENSION_NAME );
+            VkPhysicalDeviceDepthStencilResolvePropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_STENCIL_RESOLVE_PROPERTIES_KHR };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "supportedDepthResolveModes",  QVariant(uint64_t(extProps.supportedDepthResolveModes)));
+            pushProperty2(extension, "supportedStencilResolveModes",  QVariant(uint64_t(extProps.supportedStencilResolveModes)));
+            pushProperty2(extension, "independentResolveNone",  QVariant(bool(extProps.independentResolveNone)));
+            pushProperty2(extension, "independentResolve",  QVariant(bool(extProps.independentResolve)));
+        }
     }
 
     // Read physical device properties (2) for extensions from the EXT namespace
