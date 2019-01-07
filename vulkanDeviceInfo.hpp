@@ -858,6 +858,16 @@ public:
             pushFeature2(extension, "fragmentDensityMapDynamic", extFeatures.fragmentDensityMapDynamic);
             pushFeature2(extension, "fragmentDensityMapNonSubsampledImages", extFeatures.fragmentDensityMapNonSubsampledImages);
         }
+        // VK_EXT_buffer_device_address
+        if (extensionSupported(VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME )) {
+            const char* extension(VK_EXT_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME );
+            VkPhysicalDeviceBufferAddressFeaturesEXT  extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_ADDRESS_FEATURES_EXT };
+            VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            pushFeature2(extension, "bufferDeviceAddress", extFeatures.bufferDeviceAddress);
+            pushFeature2(extension, "bufferDeviceAddressCaptureReplay", extFeatures.bufferDeviceAddressCaptureReplay);
+            pushFeature2(extension, "bufferDeviceAddressMultiDevice", extFeatures.bufferDeviceAddressMultiDevice);
+        }
     }
 	
     // Read physical device features (2) for extensions from the NV namespace
