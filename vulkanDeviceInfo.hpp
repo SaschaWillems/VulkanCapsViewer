@@ -523,6 +523,17 @@ public:
             pushProperty2(extension, "minFragmentDensityTexelSize", QVariant::fromValue(QVariantList({ extProps.minFragmentDensityTexelSize.width, extProps.minFragmentDensityTexelSize.height })));
             pushProperty2(extension, "maxFragmentDensityTexelSize", QVariant::fromValue(QVariantList({ extProps.maxFragmentDensityTexelSize.width, extProps.maxFragmentDensityTexelSize.height })));
         }
+        // VK_EXT_pci_bus_info
+        if (extensionSupported(VK_EXT_PCI_BUS_INFO_EXTENSION_NAME )) {
+            const char* extension(VK_EXT_PCI_BUS_INFO_EXTENSION_NAME );
+            VkPhysicalDevicePCIBusInfoPropertiesEXT  extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PCI_BUS_INFO_PROPERTIES_EXT };
+            VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            pushProperty2(extension, "pciDomain", QVariant(extProps.pciDomain));
+            pushProperty2(extension, "pciBus", QVariant(extProps.pciBus));
+            pushProperty2(extension, "pciDevice", QVariant(extProps.pciDevice));
+            pushProperty2(extension, "pciFunction", QVariant(extProps.pciFunction));
+        }
     }
 
     // Read physical device properties (2) for extensions from the AMD namespace
