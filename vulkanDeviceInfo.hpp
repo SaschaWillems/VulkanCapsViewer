@@ -388,8 +388,8 @@ public:
             VkPhysicalDeviceDepthStencilResolvePropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_STENCIL_RESOLVE_PROPERTIES_KHR };
             VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-            pushProperty2(extension, "supportedDepthResolveModes",  QVariant(uint64_t(extProps.supportedDepthResolveModes)));
-            pushProperty2(extension, "supportedStencilResolveModes",  QVariant(uint64_t(extProps.supportedStencilResolveModes)));
+            pushProperty2(extension, "supportedDepthResolveModes",  QVariant::fromValue((uint64_t(extProps.supportedDepthResolveModes))));
+            pushProperty2(extension, "supportedStencilResolveModes",  QVariant::fromValue((uint64_t(extProps.supportedStencilResolveModes))));
             pushProperty2(extension, "independentResolveNone",  QVariant(bool(extProps.independentResolveNone)));
             pushProperty2(extension, "independentResolve",  QVariant(bool(extProps.independentResolve)));
         }
