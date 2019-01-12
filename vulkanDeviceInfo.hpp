@@ -515,7 +515,7 @@ public:
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             pushProperty2(extension, "maxTransformFeedbackStreams", QVariant(extProps.maxTransformFeedbackStreams));
             pushProperty2(extension, "maxTransformFeedbackBuffers", QVariant(extProps.maxTransformFeedbackBuffers));
-            pushProperty2(extension, "maxTransformFeedbackBufferSize", QVariant(extProps.maxTransformFeedbackBufferSize));
+            pushProperty2(extension, "maxTransformFeedbackBufferSize", QVariant::fromValue(extProps.maxTransformFeedbackBufferSize));
             pushProperty2(extension, "maxTransformFeedbackStreamDataSize", QVariant(extProps.maxTransformFeedbackStreamDataSize));
             pushProperty2(extension, "maxTransformFeedbackBufferDataSize", QVariant(extProps.maxTransformFeedbackBufferDataSize));
             pushProperty2(extension, "maxTransformFeedbackBufferDataStride", QVariant(extProps.maxTransformFeedbackBufferDataStride));
@@ -592,9 +592,9 @@ public:
             pushProperty2(extension, "maxRecursionDepth", QVariant(extProps.maxRecursionDepth));
             pushProperty2(extension, "maxShaderGroupStride", QVariant(extProps.maxShaderGroupStride));
             pushProperty2(extension, "shaderGroupBaseAlignment", QVariant(extProps.shaderGroupBaseAlignment));
-            pushProperty2(extension, "maxGeometryCount", QVariant(extProps.maxGeometryCount));
-            pushProperty2(extension, "maxInstanceCount", QVariant(extProps.maxInstanceCount));
-            pushProperty2(extension, "maxTriangleCount", QVariant(extProps.maxTriangleCount));
+            pushProperty2(extension, "maxGeometryCount", QVariant::fromValue(extProps.maxGeometryCount));
+            pushProperty2(extension, "maxInstanceCount", QVariant::fromValue(extProps.maxInstanceCount));
+            pushProperty2(extension, "maxTriangleCount", QVariant::fromValue(extProps.maxTriangleCount));
             pushProperty2(extension, "maxDescriptorSetAccelerationStructures", QVariant(extProps.maxDescriptorSetAccelerationStructures));
         }
         // VK_NV_mesh_shader
@@ -685,7 +685,7 @@ public:
                     deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                     deviceProps2.pNext = &extProps;
                     pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                    properties2.push_back(Property2("maxPerSetDescriptors", QVariant(extProps.maxPerSetDescriptors), extName));
+                    properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
                     properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
                 }
             }
