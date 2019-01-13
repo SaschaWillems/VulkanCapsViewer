@@ -11,7 +11,7 @@
 #include <settings.h>
 #include <vector>
 
-#include "vulkanDeviceInfo.hpp"
+#include "vulkanDeviceInfo.h"
 #include "vulkanLayerInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
 #include "vulkandatabase.h"
