@@ -620,6 +620,7 @@ void VulkanDeviceInfo::readPhysicalFeatures_KHR() {
         pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
         pushFeature2(extension, "vulkanMemoryModel", extFeatures.vulkanMemoryModel);
         pushFeature2(extension, "vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope);
+        pushFeature2(extension, "vulkanMemoryModelAvailabilityVisibilityChains", extFeatures.vulkanMemoryModelAvailabilityVisibilityChains);
     }
     // VK_KHR_shader_atomic_int64
     if (extensionSupported(VK_KHR_SHADER_ATOMIC_INT64_EXTENSION_NAME)) {
