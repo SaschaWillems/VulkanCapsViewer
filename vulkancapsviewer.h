@@ -48,7 +48,7 @@ public:
 private:
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
-	VkInstance vkInstance;
+    VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     std::string surfaceExtension;
     VulkanDatabase databaseConnection;

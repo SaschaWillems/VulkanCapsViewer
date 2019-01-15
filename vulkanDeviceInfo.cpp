@@ -99,7 +99,6 @@ void VulkanDeviceInfo::readLayers()
 
 void VulkanDeviceInfo::readSupportedFormats()
 {
-    supportedFormatCount = 0;
     assert(device != NULL);
     // Base formats
     for (int32_t format = VK_FORMAT_BEGIN_RANGE+1; format < VK_FORMAT_END_RANGE+1; format++) {
@@ -111,8 +110,6 @@ void VulkanDeviceInfo::readSupportedFormats()
             (formatInfo.properties.optimalTilingFeatures != 0) |
             (formatInfo.properties.bufferFeatures != 0);
         formats.push_back(formatInfo);
-        if (formatInfo.supported)
-            supportedFormatCount++;
     }
     // VK_KHR_sampler_ycbcr_conversion
     if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
@@ -125,8 +122,6 @@ void VulkanDeviceInfo::readSupportedFormats()
                 (formatInfo.properties.optimalTilingFeatures != 0) |
                 (formatInfo.properties.bufferFeatures != 0);
             formats.push_back(formatInfo);
-            if (formatInfo.supported)
-                supportedFormatCount++;
         }
     }
 }

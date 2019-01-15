@@ -113,7 +113,7 @@ public:
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     VkPhysicalDevice device;
-    VkDevice dev;
+    VkDevice dev = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceMemoryProperties memoryProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
@@ -123,7 +123,6 @@ public:
     VkPhysicalDeviceFeatures2KHR deviceFeatures2;
     std::vector<VkExtensionProperties> extensions;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
-    int32_t supportedFormatCount;
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
     OSInfo os;
