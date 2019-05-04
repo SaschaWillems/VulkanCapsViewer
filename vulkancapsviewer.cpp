@@ -63,7 +63,7 @@
 
 #define VK_API_VERSION VK_API_VERSION_1_1
 
-const std::string vulkanCapsViewer::version = "1.92";
+const std::string vulkanCapsViewer::version = "1.93";
 const std::string vulkanCapsViewer::reportVersion = "1.9";
 
 /// <summary>
@@ -175,7 +175,14 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
 vulkanCapsViewer::~vulkanCapsViewer()
 {
-	//
+    for (VulkanDeviceInfo &gpu : vulkanGPUs) {
+        if (gpu.dev != VK_NULL_HANDLE) {
+            vkDestroyDevice(gpu.dev, nullptr);
+        }
+    }
+    if (vkInstance != VK_NULL_HANDLE) {
+        vkDestroyInstance(vkInstance, nullptr);
+    }
 }
 
 /// <summary>
@@ -221,7 +228,7 @@ void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016-2018 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2019 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"

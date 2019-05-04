@@ -30,7 +30,7 @@
 #include <QFile>
 #include <QDebug>
 
-#include "vulkanDeviceInfo.hpp"
+#include "vulkanDeviceInfo.h"
 
 using namespace std;
 

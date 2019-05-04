@@ -11,7 +11,7 @@
 #include <settings.h>
 #include <vector>
 
-#include "vulkanDeviceInfo.hpp"
+#include "vulkanDeviceInfo.h"
 #include "vulkanLayerInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
 #include "vulkandatabase.h"
@@ -48,7 +48,7 @@ public:
 private:
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
-	VkInstance vkInstance;
+    VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     std::string surfaceExtension;
     VulkanDatabase databaseConnection;
