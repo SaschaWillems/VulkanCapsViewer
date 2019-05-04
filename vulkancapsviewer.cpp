@@ -82,14 +82,22 @@ OSInfo getOperatingSystem()
 #ifdef __ANDROID__
 void setTouchProps(QWidget *widget) {
     QScroller *scroller = QScroller::scroller(widget);
-    QScrollerProperties properties = QScroller::scroller(widget)->scrollerProperties();
+    QScrollerProperties properties = scroller->scrollerProperties();
     QVariant overshootPolicy = QVariant::fromValue<QScrollerProperties::OvershootPolicy>(QScrollerProperties::OvershootAlwaysOff);
     properties.setScrollMetric(QScrollerProperties::VerticalOvershootPolicy, overshootPolicy);
     properties.setScrollMetric(QScrollerProperties::HorizontalOvershootPolicy, overshootPolicy);
-    scroller->setScrollerProperties(properties);
+    properties.setScrollMetric(QScrollerProperties::DragVelocitySmoothingFactor, 0.6);
+    properties.setScrollMetric(QScrollerProperties::MinimumVelocity, 0.0);
+    properties.setScrollMetric(QScrollerProperties::MaximumVelocity, 0.5);
+    properties.setScrollMetric(QScrollerProperties::AcceleratingFlickMaximumTime, 0.4);
+    properties.setScrollMetric(QScrollerProperties::AcceleratingFlickSpeedupFactor, 1.2);
+    properties.setScrollMetric(QScrollerProperties::SnapPositionRatio, 0.2);
+    properties.setScrollMetric(QScrollerProperties::MaximumClickThroughVelocity, 0);
+    properties.setScrollMetric(QScrollerProperties::DragStartDistance, 0.001);
+    properties.setScrollMetric(QScrollerProperties::MousePressEventDelay, 0.5);   
     scroller->grabGesture(widget, QScroller::LeftMouseButtonGesture);
+    scroller->setScrollerProperties(properties);
 }
-
 #endif
 
 vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
@@ -132,15 +140,22 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     }
     ui.toolButtonSave->setVisible(false);
     // Touch scrolling
-    foreach (QTreeWidget *widget, findChildren<QTreeWidget *>()) {
+    foreach (QTreeView *widget, findChildren<QTreeWidget  *>()) {
         setTouchProps(widget);
+        widget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        widget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        widget->setSelectionMode(QAbstractItemView::NoSelection);
     }
+
     foreach (QTreeView *widget, findChildren<QTreeView *>()) {
         setTouchProps(widget);
+        widget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        widget->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+        widget->setSelectionMode(QAbstractItemView::NoSelection);
     }
 #endif
 
