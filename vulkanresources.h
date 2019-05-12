@@ -320,6 +320,8 @@ default: return "UNKNOWN_DEVICE";
                 STR(MAILBOX_KHR);
                 STR(FIFO_KHR);
                 STR(FIFO_RELAXED_KHR);
+                STR(SHARED_DEMAND_REFRESH_KHR);
+                STR(SHARED_CONTINUOUS_REFRESH_KHR);
 #undef STR
                 default:
                     std::stringstream ss;
