@@ -487,6 +487,15 @@ void VulkanDeviceInfo::readPhysicalProperties_NV() {
         pushProperty2(extension, "shadingRatePaletteSize", QVariant(extProps.shadingRatePaletteSize));
         pushProperty2(extension, "shadingRateMaxCoarseSamples", QVariant(extProps.shadingRateMaxCoarseSamples));
     }
+    // VK_NV_shader_sm_builtins
+    if (extensionSupported(VK_NV_SHADER_SM_BUILTINS_EXTENSION_NAME)) {
+        const char* extension(VK_NV_SHADER_SM_BUILTINS_EXTENSION_NAME);
+        VkPhysicalDeviceShaderSMBuiltinsPropertiesNV extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SM_BUILTINS_PROPERTIES_NV };
+        VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+        pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+        pushProperty2(extension, "shaderSMCount", QVariant(extProps.shaderSMCount));
+        pushProperty2(extension, "shaderWarpsPerSM", QVariant(extProps.shaderWarpsPerSM));
+    }
 }
 
 void VulkanDeviceInfo::readPhysicalProperties()
@@ -577,7 +586,7 @@ void VulkanDeviceInfo::readPhysicalFeatures_KHR() {
     // VK_KHR_variable_pointers
     if (extensionSupported(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME)) {
         const char* extension(VK_KHR_VARIABLE_POINTERS_EXTENSION_NAME);
-        VkPhysicalDeviceVariablePointerFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR };
+        VkPhysicalDeviceVariablePointerFeaturesKHR extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES_KHR };
         VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
         pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
         pushFeature2(extension, "variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer);
@@ -841,7 +850,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             if (extensionSupported(VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
                 VkPhysicalDeviceShaderDrawParameterFeatures extFeatures{};
-                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES;
+                extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
                 deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
