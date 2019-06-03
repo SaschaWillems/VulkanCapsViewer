@@ -743,6 +743,16 @@ void VulkanDeviceInfo::readPhysicalFeatures_EXT() {
         pushFeature2(extension, "bufferDeviceAddressCaptureReplay", extFeatures.bufferDeviceAddressCaptureReplay);
         pushFeature2(extension, "bufferDeviceAddressMultiDevice", extFeatures.bufferDeviceAddressMultiDevice);
     }
+    // VK_EXT_fragment_shader_interlock
+    if (extensionSupported(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME )) {
+        const char* extension(VK_EXT_FRAGMENT_SHADER_INTERLOCK_EXTENSION_NAME );
+        VkPhysicalDeviceFragmentShaderInterlockFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_INTERLOCK_FEATURES_EXT };
+        VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+        pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+        pushFeature2(extension, "fragmentShaderSampleInterlock", extFeatures.fragmentShaderSampleInterlock);
+        pushFeature2(extension, "fragmentShaderPixelInterlock", extFeatures.fragmentShaderPixelInterlock);
+        pushFeature2(extension, "fragmentShaderShadingRateInterlock", extFeatures.fragmentShaderShadingRateInterlock);
+    }
 }
 
 void VulkanDeviceInfo::readPhysicalFeatures_NV() {
