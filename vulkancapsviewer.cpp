@@ -122,6 +122,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     connect(ui.toolButtonAbout, SIGNAL(pressed()), this, SLOT(slotAbout()));
     connect(ui.toolButtonExit, SIGNAL(pressed()), this, SLOT(slotClose()));
     connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()));
+    connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)));
 
     qApp->setStyle(QStyleFactory::create("Fusion"));
 
