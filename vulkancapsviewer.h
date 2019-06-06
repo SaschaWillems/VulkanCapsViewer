@@ -98,6 +98,7 @@ private Q_SLOTS:
 	void slotFilterFeatures(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);
+    void slotComboTabChanged(int index);
 };
 
 #endif // VULKANCAPSVIEWER_H

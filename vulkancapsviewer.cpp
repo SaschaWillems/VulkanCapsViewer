@@ -147,6 +147,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
         widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setSelectionMode(QAbstractItemView::NoSelection);
+        widget->setFrameStyle(QFrame::NoFrame);
     }
 
     foreach (QTreeView *widget, findChildren<QTreeView *>()) {
@@ -156,7 +157,19 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
         widget->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
         widget->setSelectionMode(QAbstractItemView::NoSelection);
+        widget->setFrameStyle(QFrame::NoFrame);
     }
+
+    // No identation
+    for (int i = 0; i < ui.tabWidgetDevice->count(); i++) {
+        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
+    }
+
+    QTabBar *tabBar = ui.tabWidgetDevice->findChild<QTabBar *>();
+    tabBar->hide();
+    ui.comboBox->setVisible(true);
+#else
+    ui.comboBox->setVisible(false);
 #endif
 
     if (!initVulkan())
@@ -358,6 +371,11 @@ void vulkanCapsViewer::slotFilterFormats(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
 	filterProxies.formats.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotComboTabChanged(int index)
+{
+    ui.tabWidgetDevice->setCurrentIndex(index);
 }
 
 void vulkanCapsViewer::displayGlobalExtensions()
@@ -919,6 +937,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 
     ui.treeViewDeviceFeatures->expandAll();
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    ui.treeViewDeviceFeatures->header()->setStretchLastSection(false);
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
