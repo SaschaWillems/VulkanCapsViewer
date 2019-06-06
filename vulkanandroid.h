@@ -19,7 +19,9 @@
 // Not complete, just the functions used in the caps viewer!
 extern PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr;
 extern PFN_vkCreateInstance vkCreateInstance;
+extern PFN_vkDestroyInstance vkDestroyInstance;
 extern PFN_vkCreateDevice vkCreateDevice;
+extern PFN_vkDestroyDevice vkDestroyDevice;
 extern PFN_vkEnumeratePhysicalDevices vkEnumeratePhysicalDevices;
 extern PFN_vkGetPhysicalDeviceProperties vkGetPhysicalDeviceProperties;
 extern PFN_vkEnumerateDeviceExtensionProperties vkEnumerateDeviceExtensionProperties;

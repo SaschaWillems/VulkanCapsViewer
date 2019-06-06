@@ -549,9 +549,6 @@ bool vulkanCapsViewer::initVulkan()
             QAndroidJniEnvironment qjniEnv;
             nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
         }
-
-        qDebug() << (int)nativeWindow;
-
     }
 
     if (nativeWindow)
