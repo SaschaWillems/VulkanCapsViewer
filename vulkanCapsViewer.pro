@@ -25,6 +25,8 @@ linux:!android {
     #x11 {
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     #}
+    target.path = /usr/bin
+    INSTALLS += target
     #todo: other linux targets
 }
 android {
