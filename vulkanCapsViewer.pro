@@ -4,7 +4,6 @@
 
 TEMPLATE = app
 TARGET = vulkanCapsViewer
-DESTDIR = ./Win32/Release
 QT += core network widgets gui
 CONFIG += c++11
 #CONFIG += release bad for debugging
@@ -14,6 +13,7 @@ INCLUDEPATH += ./GeneratedFiles \
     ./GeneratedFiles/Release
 INCLUDEPATH += "./external"
 win32 {
+    DESTDIR = ./Win32/Release
     DEFINES += WIN64
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
     LIBS += "$$PWD/libs/vulkan/vulkan-1.lib"
