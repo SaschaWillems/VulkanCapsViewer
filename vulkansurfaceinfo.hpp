@@ -39,6 +39,10 @@ struct VulkanSurfaceInfo
 
     void get(VkPhysicalDevice device, VkSurfaceKHR surface)
     {
+        if (!validSurface) {
+           return;
+        }
+
         //todo: error checking
         VkResult vkRes;
         vkRes = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);

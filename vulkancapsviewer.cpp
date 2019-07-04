@@ -444,7 +444,12 @@ bool vulkanCapsViewer::initVulkan()
     // todo : wayland etc.
 #endif
 
-    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, surfaceExtension.c_str() };
+    std::vector<const char*> enabledExtensions = {};
+
+    if(!surfaceExtension.empty()) {
+        enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
+        enabledExtensions.push_back(surfaceExtension.c_str());
+    };
 
     // Get instance extensions
     instanceInfo.extensions.clear();
