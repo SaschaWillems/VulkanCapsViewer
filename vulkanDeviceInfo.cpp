@@ -426,6 +426,17 @@ void VulkanDeviceInfo::readPhysicalProperties_EXT() {
         pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
         pushProperty2(extension, "lineSubPixelPrecisionBits", QVariant(extProps.lineSubPixelPrecisionBits));
     }
+    // VK_EXT_texel_buffer_alignment
+    if (extensionSupported(VK_EXT_TEXEL_BUFFER_ALIGNMENT_EXTENSION_NAME )) {
+        const char* extension(VK_EXT_TEXEL_BUFFER_ALIGNMENT_EXTENSION_NAME );
+        VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT  extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT };
+        VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+        pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+        pushProperty2(extension, "storageTexelBufferOffsetAlignmentBytes", QVariant(extProps.storageTexelBufferOffsetAlignmentBytes));
+        pushProperty2(extension, "storageTexelBufferOffsetSingleTexelAlignment", QVariant(bool(extProps.storageTexelBufferOffsetSingleTexelAlignment)));
+        pushProperty2(extension, "uniformTexelBufferOffsetAlignmentBytes", QVariant(extProps.uniformTexelBufferOffsetAlignmentBytes));
+        pushProperty2(extension, "uniformTexelBufferOffsetSingleTexelAlignment", QVariant(bool(extProps.uniformTexelBufferOffsetSingleTexelAlignment)));
+    }
 }
 
 void VulkanDeviceInfo::readPhysicalProperties_AMD() {
