@@ -227,8 +227,8 @@ void VulkanDeviceInfo::readPhysicalProperties_KHR() {
         VkPhysicalDeviceFloatControlsPropertiesKHR extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FLOAT_CONTROLS_PROPERTIES_KHR };
         VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
         pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-        pushProperty2(extension, "separateDenormSettings",  QVariant(bool(extProps.separateDenormSettings)));
-        pushProperty2(extension, "separateRoundingModeSettings",  QVariant(bool(extProps.separateRoundingModeSettings)));
+        pushProperty2(extension, "denormBehaviorIndependence",  QVariant(extProps.denormBehaviorIndependence));
+        pushProperty2(extension, "roundingModeIndependence",  QVariant(extProps.roundingModeIndependence));
         pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat16",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat16)));
         pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat32",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat32)));
         pushProperty2(extension, "shaderSignedZeroInfNanPreserveFloat64",  QVariant(bool(extProps.shaderSignedZeroInfNanPreserveFloat64)));
