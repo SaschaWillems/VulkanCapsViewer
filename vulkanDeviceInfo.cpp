@@ -407,6 +407,17 @@ void VulkanDeviceInfo::readPhysicalProperties_EXT() {
         pushProperty2(extension, "pciDevice", QVariant(extProps.pciDevice));
         pushProperty2(extension, "pciFunction", QVariant(extProps.pciFunction));
     }
+    // VK_EXT_subgroup_size_control
+    if (extensionSupported(VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME )) {
+        const char* extension(VK_EXT_SUBGROUP_SIZE_CONTROL_EXTENSION_NAME );
+        VkPhysicalDeviceSubgroupSizeControlPropertiesEXT  extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_SIZE_CONTROL_PROPERTIES_EXT };
+        VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+        pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+        pushProperty2(extension, "minSubgroupSize", QVariant(extProps.minSubgroupSize));
+        pushProperty2(extension, "maxSubgroupSize", QVariant(extProps.maxSubgroupSize));
+        pushProperty2(extension, "maxComputeWorkgroupSubgroups", QVariant(extProps.maxComputeWorkgroupSubgroups));
+        pushProperty2(extension, "requiredSubgroupSizeStages", QVariant(extProps.requiredSubgroupSizeStages));
+    }
 }
 
 void VulkanDeviceInfo::readPhysicalProperties_AMD() {
