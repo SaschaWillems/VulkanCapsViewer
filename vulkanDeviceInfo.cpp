@@ -418,6 +418,14 @@ void VulkanDeviceInfo::readPhysicalProperties_EXT() {
         pushProperty2(extension, "maxComputeWorkgroupSubgroups", QVariant(extProps.maxComputeWorkgroupSubgroups));
         pushProperty2(extension, "requiredSubgroupSizeStages", QVariant(extProps.requiredSubgroupSizeStages));
     }
+    // VK_EXT_line_rasterization
+    if (extensionSupported(VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME )) {
+        const char* extension(VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME );
+        VkPhysicalDeviceLineRasterizationPropertiesEXT  extProps{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_PROPERTIES_EXT };
+        VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+        pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+        pushProperty2(extension, "lineSubPixelPrecisionBits", QVariant(extProps.lineSubPixelPrecisionBits));
+    }
 }
 
 void VulkanDeviceInfo::readPhysicalProperties_AMD() {
@@ -763,6 +771,19 @@ void VulkanDeviceInfo::readPhysicalFeatures_EXT() {
         pushFeature2(extension, "fragmentShaderSampleInterlock", extFeatures.fragmentShaderSampleInterlock);
         pushFeature2(extension, "fragmentShaderPixelInterlock", extFeatures.fragmentShaderPixelInterlock);
         pushFeature2(extension, "fragmentShaderShadingRateInterlock", extFeatures.fragmentShaderShadingRateInterlock);
+    }
+    // VK_EXT_line_rasterization
+    if (extensionSupported(VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME )) {
+        const char* extension(VK_EXT_LINE_RASTERIZATION_EXTENSION_NAME );
+        VkPhysicalDeviceLineRasterizationFeaturesEXT extFeatures{ VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_FEATURES_EXT };
+        VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+        pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+        pushFeature2(extension, "rectangularLines", extFeatures.rectangularLines);
+        pushFeature2(extension, "bresenhamLines", extFeatures.bresenhamLines);
+        pushFeature2(extension, "smoothLines", extFeatures.smoothLines);
+        pushFeature2(extension, "stippledRectangularLines", extFeatures.stippledRectangularLines);
+        pushFeature2(extension, "stippledBresenhamLines", extFeatures.stippledBresenhamLines);
+        pushFeature2(extension, "stippledSmoothLines", extFeatures.stippledSmoothLines);
     }
 }
 
