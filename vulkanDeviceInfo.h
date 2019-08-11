@@ -44,6 +44,7 @@
 #include "vulkanLayerInfo.hpp"
 #include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
+#include "VulkanDeviceInfoExtensions.h"
 #include "vulkanpfn.h"
 
 #ifdef __ANDROID__
@@ -65,39 +66,11 @@ struct VulkanQueueFamilyInfo
     VkBool32 supportsPresent;
 };
 
-struct Feature2 {
-    std::string name;
-    VkBool32 supported;
-    const char* extension;
-    Feature2(std::string n, VkBool32 supp, const char* ext) : name(n), supported(supp), extension(ext) {}
-};
-
-struct Property2 {
-    std::string name;
-    QVariant value;
-    const char* extension;
-    Property2(std::string n, QVariant val, const char* ext) : name(n), value(val), extension(ext) {}
-};
-
-class VulkanDeviceInfo
+class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 {
 private:
     std::vector<VulkanLayerInfo> layers;
     QString toHexQString(VkDeviceSize deviceSize);
-    VkPhysicalDeviceFeatures2 initDeviceFeatures2(void *pNext);
-    VkPhysicalDeviceProperties2 initDeviceProperties2(void * pNext);
-    template<typename T>
-    void pushProperty2(const char* extension, std::string name, T value) {
-        properties2.push_back(Property2(name, QVariant(value), extension));
-    };
-    void pushFeature2(const char* extension, std::string name, bool supported);
-    void readPhysicalFeatures_KHR();
-    void readPhysicalFeatures_EXT();
-    void readPhysicalFeatures_NV();
-    void readPhysicalProperties_KHR();
-    void readPhysicalProperties_EXT();
-    void readPhysicalProperties_AMD();
-    void readPhysicalProperties_NV();
     bool vulkan_1_1();
     bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)
@@ -110,18 +83,12 @@ public:
     QVariantMap limits;
     QVariantMap features;
     std::map<std::string, std::string> platformdetails;
-    std::vector<Feature2> features2;
-    std::vector<Property2> properties2;
-    VkPhysicalDevice device;
     VkDevice dev = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceMemoryProperties memoryProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     bool hasSubgroupProperties = false;
     QVariantMap subgroupProperties;
-    VkPhysicalDeviceProperties2KHR deviceProperties2;
-    VkPhysicalDeviceFeatures2KHR deviceFeatures2;
-    std::vector<VkExtensionProperties> extensions;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
