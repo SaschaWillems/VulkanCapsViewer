@@ -63,8 +63,8 @@
 
 #define VK_API_VERSION VK_API_VERSION_1_1
 
-const std::string vulkanCapsViewer::version = "1.93";
-const std::string vulkanCapsViewer::reportVersion = "1.9";
+const std::string vulkanCapsViewer::version = "2.00";
+const std::string vulkanCapsViewer::reportVersion = "2.0";
 
 /// <summary>
 ///	Returns operating system name
