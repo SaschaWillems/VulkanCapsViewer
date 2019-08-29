@@ -76,7 +76,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxTransformFeedbackStreams", QVariant(extProps.maxTransformFeedbackStreams));
 		pushProperty2(extension, "maxTransformFeedbackBuffers", QVariant(extProps.maxTransformFeedbackBuffers));
-		pushProperty2(extension, "maxTransformFeedbackBufferSize", QVariant(extProps.maxTransformFeedbackBufferSize));
+		pushProperty2(extension, "maxTransformFeedbackBufferSize", QVariant::fromValue(extProps.maxTransformFeedbackBufferSize));
 		pushProperty2(extension, "maxTransformFeedbackStreamDataSize", QVariant(extProps.maxTransformFeedbackStreamDataSize));
 		pushProperty2(extension, "maxTransformFeedbackBufferDataSize", QVariant(extProps.maxTransformFeedbackBufferDataSize));
 		pushProperty2(extension, "maxTransformFeedbackBufferDataStride", QVariant(extProps.maxTransformFeedbackBufferDataStride));
@@ -183,7 +183,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		VkPhysicalDeviceExternalMemoryHostPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_HOST_PROPERTIES_EXT };
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "minImportedHostPointerAlignment", QVariant(extProps.minImportedHostPointerAlignment));
+		pushProperty2(extension, "minImportedHostPointerAlignment", QVariant::fromValue(extProps.minImportedHostPointerAlignment));
 	}
 	if (extensionSupported("VK_EXT_vertex_attribute_divisor")) {
 		const char* extension("VK_EXT_vertex_attribute_divisor");
@@ -233,9 +233,9 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT };
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "storageTexelBufferOffsetAlignmentBytes", QVariant(extProps.storageTexelBufferOffsetAlignmentBytes));
+		pushProperty2(extension, "storageTexelBufferOffsetAlignmentBytes", QVariant::fromValue(extProps.storageTexelBufferOffsetAlignmentBytes));
 		pushProperty2(extension, "storageTexelBufferOffsetSingleTexelAlignment", QVariant(bool(extProps.storageTexelBufferOffsetSingleTexelAlignment)));
-		pushProperty2(extension, "uniformTexelBufferOffsetAlignmentBytes", QVariant(extProps.uniformTexelBufferOffsetAlignmentBytes));
+		pushProperty2(extension, "uniformTexelBufferOffsetAlignmentBytes", QVariant::fromValue(extProps.uniformTexelBufferOffsetAlignmentBytes));
 		pushProperty2(extension, "uniformTexelBufferOffsetSingleTexelAlignment", QVariant(bool(extProps.uniformTexelBufferOffsetSingleTexelAlignment)));
 	}
 }
@@ -301,7 +301,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxPerSetDescriptors", QVariant(extProps.maxPerSetDescriptors));
-		pushProperty2(extension, "maxMemoryAllocationSize", QVariant(extProps.maxMemoryAllocationSize));
+		pushProperty2(extension, "maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize));
 	}
 	if (extensionSupported("VK_KHR_driver_properties")) {
 		const char* extension("VK_KHR_driver_properties");
@@ -374,9 +374,9 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "maxRecursionDepth", QVariant(extProps.maxRecursionDepth));
 		pushProperty2(extension, "maxShaderGroupStride", QVariant(extProps.maxShaderGroupStride));
 		pushProperty2(extension, "shaderGroupBaseAlignment", QVariant(extProps.shaderGroupBaseAlignment));
-		pushProperty2(extension, "maxGeometryCount", QVariant(extProps.maxGeometryCount));
-		pushProperty2(extension, "maxInstanceCount", QVariant(extProps.maxInstanceCount));
-		pushProperty2(extension, "maxTriangleCount", QVariant(extProps.maxTriangleCount));
+		pushProperty2(extension, "maxGeometryCount", QVariant::fromValue(extProps.maxGeometryCount));
+		pushProperty2(extension, "maxInstanceCount", QVariant::fromValue(extProps.maxInstanceCount));
+		pushProperty2(extension, "maxTriangleCount", QVariant::fromValue(extProps.maxTriangleCount));
 		pushProperty2(extension, "maxDescriptorSetAccelerationStructures", QVariant(extProps.maxDescriptorSetAccelerationStructures));
 	}
 	if (extensionSupported("VK_NV_mesh_shader")) {
