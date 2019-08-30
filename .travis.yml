@@ -4,6 +4,7 @@ sudo: require
 dist: trusty
 
 before_install:
+- "sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 6B05F25D762E3157"
 - "sudo add-apt-repository ppa:beineri/opt-qt593-trusty -y"
 - "sudo apt-get update -qq"
 
