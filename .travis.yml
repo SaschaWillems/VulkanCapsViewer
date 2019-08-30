@@ -10,6 +10,7 @@ before_install:
 
 install:
 - "sudo apt-get -y install qt59base libgl1-mesa-dev"
+- "sudo apt-get install qt-latest qt51x11extras"
 - "source /opt/qt*/bin/qt*-env.sh"
 
 script:
