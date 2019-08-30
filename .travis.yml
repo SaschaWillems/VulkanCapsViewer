@@ -30,3 +30,7 @@ script:
   #except:
     - # Do not build tags that we create when we upload to GitHub Releases
     #- /^(?i:continuous)/
+
+branches:
+  only:
+    - extension_file_generator    
