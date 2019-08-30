@@ -27,6 +27,12 @@ linux:!android {
     #}
     target.path = /usr/bin
     INSTALLS += target
+    desktop.files = vulkanCapsViewer.desktop
+    desktop.path = /usr/share/applications
+    icon.extra = cp $$PWD/gfx/android_icon_256.png vulkanCapsViewer.png
+    icon.files = vulkanCapsViewer.png
+    icon.path = /usr/share/icons/hicolor/256x256/apps/
+    INSTALLS += desktop icon
     #todo: other linux targets
 }
 android {
