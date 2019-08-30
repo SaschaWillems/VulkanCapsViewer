@@ -20,13 +20,13 @@ script:
   # export VERSION=... # linuxdeployqt uses this for naming the file
   - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/*.desktop -appimage
 
-after_success:
+#after_success:
   # find appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq # for debugging
   # curl --upload-file Vulkan Caps Viewer*.AppImage https://transfer.sh/Vulkan Caps Viewer-git.$(git rev-parse --short HEAD)-x86_64.AppImage
-  - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
-  - bash upload.sh Vulkan Caps Viewer*.AppImage*
+  #- wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
+  #- bash upload.sh Vulkan Caps Viewer*.AppImage*
   
-branches:
-  except:
+#branches:
+  #except:
     - # Do not build tags that we create when we upload to GitHub Releases
-    - /^(?i:continuous)/
+    #- /^(?i:continuous)/
