@@ -688,6 +688,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "samplerYcbcrConversion", extFeatures.samplerYcbcrConversion);
 	}
+	if (extensionSupported("VK_KHR_shader_subgroup_extended_types")) {
+		const char* extension("VK_KHR_shader_subgroup_extended_types");
+		VkPhysicalDeviceShaderSubgroupExtendedTypesFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_EXTENDED_TYPES_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderSubgroupExtendedTypes", extFeatures.shaderSubgroupExtendedTypes);
+	}
 	if (extensionSupported("VK_KHR_8bit_storage")) {
 		const char* extension("VK_KHR_8bit_storage");
 		VkPhysicalDevice8BitStorageFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_8BIT_STORAGE_FEATURES_KHR };
