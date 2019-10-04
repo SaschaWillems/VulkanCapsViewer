@@ -660,8 +660,12 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromLatin1(property2.extension);
-        jsonProperty2["value"] = property2.value.toString();
+        jsonProperty2["extension"] = QString::fromLatin1(property2.extension);        
+        if (property2.value.canConvert(QMetaType::QVariantList)) {
+            jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
+        } else {
+            jsonProperty2["value"] = property2.value.toString();
+        }
         jsonProperties2.append(jsonProperty2);
     }
     jsonExtended["deviceproperties2"] = jsonProperties2;
