@@ -636,6 +636,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->readSupportedFormats();
 	GPU->os = getOperatingSystem();
     GPU->reportVersion = reportVersion;
+    GPU->appVersion = version;
 }
 
 /// <summary>

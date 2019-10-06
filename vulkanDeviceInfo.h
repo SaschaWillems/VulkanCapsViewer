@@ -93,6 +93,7 @@ public:
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
     OSInfo os;
+    std::string appVersion;
     std::string reportVersion;
     std::vector<VulkanLayerInfo> getLayers();
     std::string getDriverVersion();

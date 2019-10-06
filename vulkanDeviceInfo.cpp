@@ -648,6 +648,7 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
     jsonEnv["submitter"] = QString::fromStdString(submitter);
     jsonEnv["comment"] = QString::fromStdString(comment);
     jsonEnv["reportversion"] = QString::fromStdString(reportVersion);
+    jsonEnv["appversion"] = QString::fromStdString(appVersion);
     root["environment"] = jsonEnv;
 
 #define EXTENDED_PROPS
