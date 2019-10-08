@@ -346,6 +346,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "independentResolveNone", QVariant(bool(extProps.independentResolveNone)));
 		pushProperty2(extension, "independentResolve", QVariant(bool(extProps.independentResolve)));
 	}
+	if (extensionSupported("VK_KHR_timeline_semaphore")) {
+		const char* extension("VK_KHR_timeline_semaphore");
+		VkPhysicalDeviceTimelineSemaphorePropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxTimelineSemaphoreValueDifference", QVariant::fromValue(extProps.maxTimelineSemaphoreValueDifference));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 	if (extensionSupported("VK_NV_shader_sm_builtins")) {
@@ -711,6 +718,21 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderBufferInt64Atomics", extFeatures.shaderBufferInt64Atomics);
 		pushFeature2(extension, "shaderSharedInt64Atomics", extFeatures.shaderSharedInt64Atomics);
+	}
+	if (extensionSupported("VK_KHR_shader_clock")) {
+		const char* extension("VK_KHR_shader_clock");
+		VkPhysicalDeviceShaderClockFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CLOCK_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderSubgroupClock", extFeatures.shaderSubgroupClock);
+		pushFeature2(extension, "shaderDeviceClock", extFeatures.shaderDeviceClock);
+	}
+	if (extensionSupported("VK_KHR_timeline_semaphore")) {
+		const char* extension("VK_KHR_timeline_semaphore");
+		VkPhysicalDeviceTimelineSemaphoreFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "timelineSemaphore", extFeatures.timelineSemaphore);
 	}
 	if (extensionSupported("VK_KHR_vulkan_memory_model")) {
 		const char* extension("VK_KHR_vulkan_memory_model");
