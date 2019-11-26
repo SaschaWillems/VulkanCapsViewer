@@ -288,6 +288,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "deviceNodeMask", QVariant(extProps.deviceNodeMask));
 		pushProperty2(extension, "deviceLUIDValid", QVariant(bool(extProps.deviceLUIDValid)));
 	}
+	if (extensionSupported("VK_KHR_performance_query")) {
+		const char* extension("VK_KHR_performance_query");
+		VkPhysicalDevicePerformanceQueryPropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_QUERY_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "allowCommandBufferQueryCopies", QVariant(bool(extProps.allowCommandBufferQueryCopies)));
+	}
 	if (extensionSupported("VK_KHR_maintenance2")) {
 		const char* extension("VK_KHR_maintenance2");
 		VkPhysicalDevicePointClippingProperties extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_POINT_CLIPPING_PROPERTIES };
@@ -680,6 +687,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "imagelessFramebuffer", extFeatures.imagelessFramebuffer);
 	}
+	if (extensionSupported("VK_KHR_performance_query")) {
+		const char* extension("VK_KHR_performance_query");
+		VkPhysicalDevicePerformanceQueryFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_QUERY_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "performanceCounterQueryPools", extFeatures.performanceCounterQueryPools);
+		pushFeature2(extension, "performanceCounterMultipleQueryPools", extFeatures.performanceCounterMultipleQueryPools);
+	}
 	if (extensionSupported("VK_KHR_variable_pointers")) {
 		const char* extension("VK_KHR_variable_pointers");
 		VkPhysicalDeviceVariablePointersFeatures extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES };
@@ -743,12 +758,28 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope);
 		pushFeature2(extension, "vulkanMemoryModelAvailabilityVisibilityChains", extFeatures.vulkanMemoryModelAvailabilityVisibilityChains);
 	}
+	if (extensionSupported("VK_KHR_separate_depth_stencil_layouts")) {
+		const char* extension("VK_KHR_separate_depth_stencil_layouts");
+		VkPhysicalDeviceSeparateDepthStencilLayoutsFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SEPARATE_DEPTH_STENCIL_LAYOUTS_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "separateDepthStencilLayouts", extFeatures.separateDepthStencilLayouts);
+	}
 	if (extensionSupported("VK_KHR_uniform_buffer_standard_layout")) {
 		const char* extension("VK_KHR_uniform_buffer_standard_layout");
 		VkPhysicalDeviceUniformBufferStandardLayoutFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES_KHR };
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "uniformBufferStandardLayout", extFeatures.uniformBufferStandardLayout);
+	}
+	if (extensionSupported("VK_KHR_buffer_device_address")) {
+		const char* extension("VK_KHR_buffer_device_address");
+		VkPhysicalDeviceBufferDeviceAddressFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "bufferDeviceAddress", extFeatures.bufferDeviceAddress);
+		pushFeature2(extension, "bufferDeviceAddressCaptureReplay", extFeatures.bufferDeviceAddressCaptureReplay);
+		pushFeature2(extension, "bufferDeviceAddressMultiDevice", extFeatures.bufferDeviceAddressMultiDevice);
 	}
 	if (extensionSupported("VK_KHR_pipeline_executable_properties")) {
 		const char* extension("VK_KHR_pipeline_executable_properties");

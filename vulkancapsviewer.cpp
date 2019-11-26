@@ -63,7 +63,7 @@
 
 #define VK_API_VERSION VK_API_VERSION_1_1
 
-const std::string vulkanCapsViewer::version = "2.02";
+const std::string vulkanCapsViewer::version = "2.03";
 const std::string vulkanCapsViewer::reportVersion = "2.0";
 
 /// <summary>
