@@ -1,0 +1,27 @@
+language: cpp
+
+matrix:
+  fast_finish: true
+  include:
+  - name: Ubuntu release
+    os: linux
+    dist: xenial
+    group: stable
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+        update: true
+        packages:
+        - qt512base
+        - qt512tools
+        - gcc-7
+        - g++-7
+    script:
+        - PATH="/opt/qt512/bin:$PATH"
+        - CXX="clang++"
+        - qt512-env.sh
+        - qmake
+        - make
