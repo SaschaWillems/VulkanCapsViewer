@@ -19,8 +19,6 @@ matrix:
         - qt512base
         - qt512tools
         - qt512x11extras
-        - gcc-7
-        - g++-7
     script:
         - PATH="/opt/qt512/bin:$PATH"
         - CXX="clang++"
