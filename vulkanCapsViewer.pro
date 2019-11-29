@@ -11,6 +11,7 @@ DEFINES += QT_DLL QT_NETWORK_LIB QT_WIDGETS_LIB
 INCLUDEPATH += ./GeneratedFiles \
     . \
     ./GeneratedFiles/Release
+INCLUDEPATH += "Vulkan-Headers/include"
 INCLUDEPATH += "/Vulkan-Headers/include"
 win32 {
     DESTDIR = ./Win32/Release
