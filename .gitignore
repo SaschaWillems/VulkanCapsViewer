@@ -221,3 +221,8 @@ Makefile*
 CMakeLists.txt.user*
 
 libs/openssl/*/*.so
+
+redist/windows/
+redist/*.apk
+redist/*.tar.gz
+redist/*.zip
