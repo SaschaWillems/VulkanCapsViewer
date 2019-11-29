@@ -11,10 +11,10 @@ matrix:
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
         - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
         update: true
         packages:
+        - mesa-utils
         - vulkan-utils
         - qt512base
         - qt512tools
