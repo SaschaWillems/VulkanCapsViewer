@@ -14,14 +14,17 @@ matrix:
         - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
         update: true
         packages:
-        - mesa-utils
-        - vulkan-utils
         - qt512base
         - qt512tools
         - qt512x11extras
+    install:
+      - export VK_VERSION=1.1.126.0
+      - wget -O vulkansdk-linux-x86_64-$VK_VERSION.tar.gz https://sdk.lunarg.com/sdk/download/$VK_VERSION/linux/vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
+      - tar zxf vulkansdk-linux-x86_64-$VK_VERSION.tar.gz
+      - export VULKAN_SDK=$TRAVIS_BUILD_DIR/$VK_VERSION/x86_64   
     script:
-        - PATH="/opt/qt512/bin:$PATH"
-        - CXX="clang++"
-        - qt512-env.sh
-        - qmake
-        - make
+      - PATH="/opt/qt512/bin:$PATH"
+      - CXX="clang++"
+      - qt512-env.sh
+      - qmake
+      - make
