@@ -1,0 +1,31 @@
+language: cpp
+
+matrix:
+  fast_finish: true
+  include:
+  - name: Ubuntu release
+    os: linux
+    dist: xenial
+    group: stable
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+        update: true
+        packages:
+        - qt512base
+        - qt512tools
+        - qt512x11extras
+        - libgl1-mesa-dev
+    install:
+      - wget -qO - http://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-xenial.list http://packages.lunarg.com/vulkan/lunarg-vulkan-xenial.list
+      - sudo apt update
+      - sudo apt install vulkan-sdk
+    script:
+      - PATH="/opt/qt512/bin:$PATH"
+      - CXX="clang++"
+      - qt512-env.sh
+      - qmake
+      - make
