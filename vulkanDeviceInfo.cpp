@@ -22,6 +22,8 @@
 
 #include "vulkanDeviceInfo.h"
 
+#include <type_traits>
+
 std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
 {
     return layers;
@@ -100,28 +102,35 @@ void VulkanDeviceInfo::readLayers()
 void VulkanDeviceInfo::readSupportedFormats()
 {
     assert(device != NULL);
-    // Base formats
-    for (int32_t format = VK_FORMAT_R4G4_UNORM_PACK8; format <= VK_FORMAT_ASTC_12x12_SRGB_BLOCK; ++format) {
-        VulkanFormatInfo formatInfo = {};
-        formatInfo.format = (VkFormat)format;
-        vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-        formatInfo.supported =
-            (formatInfo.properties.linearTilingFeatures != 0) |
-            (formatInfo.properties.optimalTilingFeatures != 0) |
-            (formatInfo.properties.bufferFeatures != 0);
-        formats.push_back(formatInfo);
-    }
-    // VK_KHR_sampler_ycbcr_conversion
-    if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
-        for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format <= VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; ++format) {
-            VulkanFormatInfo formatInfo = {};
-            formatInfo.format = (VkFormat)format;
-            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported =
-                (formatInfo.properties.linearTilingFeatures != 0) |
-                (formatInfo.properties.optimalTilingFeatures != 0) |
-                (formatInfo.properties.bufferFeatures != 0);
-            formats.push_back(formatInfo);
+
+    enum FeatureSet{ CORE10, DEVICE_EXTENSION };
+    struct FormatRange{
+        FeatureSet featureSet;
+        const char* extension;
+        VkFormat begin, end; // VkFormat underlying int values are very sequential; exploit that
+    };
+
+    const std::vector<FormatRange> formatRanges = {
+        {CORE10, "", VK_FORMAT_R4G4_UNORM_PACK8, VK_FORMAT_ASTC_12x12_SRGB_BLOCK},
+        {DEVICE_EXTENSION, VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME, VK_FORMAT_G8B8G8R8_422_UNORM, VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM}
+    };
+
+    const auto next = [](VkFormat& f){
+        const std::underlying_type<VkFormat>::type fAsInt = f;
+        f = static_cast<VkFormat>(fAsInt + 1);
+    };
+
+    for (const auto& formatRange : formatRanges){
+        // TODO: technically requires Vulkan 1.1 or VK_KHR_get_physical_device_properties2
+        // I am just using internal knowledge of this app here
+        const bool physicalDeviceLevelExtensionsSupported = pfnGetPhysicalDeviceFeatures2KHR != nullptr;
+        if (  formatRange.featureSet == CORE10 || ( formatRange.featureSet == DEVICE_EXTENSION && physicalDeviceLevelExtensionsSupported && extensionSupported(formatRange.extension) )  ) {
+            for (VkFormat format = formatRange.begin; format <= formatRange.end; next(format)) {
+                VkFormatProperties props;
+                vkGetPhysicalDeviceFormatProperties(device, format, &props);
+                const bool supported = props.linearTilingFeatures | props.optimalTilingFeatures | props.bufferFeatures;
+                this->formats.push_back({format, props, supported});
+            }
         }
     }
 }
