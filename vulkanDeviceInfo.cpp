@@ -101,7 +101,7 @@ void VulkanDeviceInfo::readSupportedFormats()
 {
     assert(device != NULL);
     // Base formats
-    for (int32_t format = VK_FORMAT_BEGIN_RANGE+1; format < VK_FORMAT_END_RANGE+1; format++) {
+    for (int32_t format = VK_FORMAT_R4G4_UNORM_PACK8; format <= VK_FORMAT_ASTC_12x12_SRGB_BLOCK; ++format) {
         VulkanFormatInfo formatInfo = {};
         formatInfo.format = (VkFormat)format;
         vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
