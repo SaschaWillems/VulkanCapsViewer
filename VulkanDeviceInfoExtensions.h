@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include <QVariant>
+#include <QMap>
 
 #include "vulkan/vulkan.h"
 #include "vulkanpfn.h"
@@ -47,6 +48,15 @@ struct Property2 {
     QVariant value;
     const char* extension;
     Property2(std::string n, QVariant val, const char* ext) : name(n), value(val), extension(ext) {}
+};
+
+struct ToolProperty {
+    std::string version;
+    VkToolPurposeFlagsEXT purposes;
+    std::string description;
+    std::string layer;
+    ToolProperty(){}
+    ToolProperty(std::string v, VkToolPurposeFlagsEXT p, std::string d, std::string l ) : version(v), purposes(p), description(d), layer(l) {}
 };
 
 class VulkanDeviceInfoExtensions
@@ -83,10 +93,12 @@ public:
     const uint32_t vkHeaderVersion = 130;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
+    QMap<QString, ToolProperty> toolProperties;
     std::vector<VkExtensionProperties> extensions;
     VkPhysicalDevice device;
     void readExtendedFeatures();
     void readExtendedProperties();
+    void readToolProperties();
 };
 
 #endif // VULKANDEVICEINFOEXTENSIONS_H

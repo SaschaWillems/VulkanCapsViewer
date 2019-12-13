@@ -510,6 +510,9 @@ bool vulkanCapsViewer::initVulkan()
             globalInfo.features.deviceProperties2 = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
+
+        // depends on deviceProperties2, because it is a physical-device-level functionality
+        pfnGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceToolPropertiesEXT"));
     }
 
     // Create a surface
@@ -833,6 +836,34 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         }
     }
 
+    // Tool properties
+    if (device->hasToolProperties) {
+        QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
+        parentItem->setText(0, "Tool properties (VK_EXT_tooling_info)");
+        parentItem->setText(1, QString::number(device->toolProperties.size()));
+        for(decltype(device->toolProperties)::const_iterator iter = device->toolProperties.begin(); iter != device->toolProperties.end(); ++iter) {
+            const QString& toolName = iter.key();
+            const auto& toolProps = iter.value();
+
+            QTreeWidgetItem *toolItem = new QTreeWidgetItem(parentItem);
+            toolItem->setText(0, toolName);
+
+            addTreeItem(toolItem, "version", toolProps.version);
+
+            QTreeWidgetItem *toolPurposesItem = addTreeItem(toolItem, "purposes", vulkanResources::toHexString(toolProps.purposes));
+            addFlagTreeItem(toolPurposesItem, "VALIDATION_BIT",          toolProps.purposes & VK_TOOL_PURPOSE_VALIDATION_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "PROFILING_BIT",           toolProps.purposes & VK_TOOL_PURPOSE_PROFILING_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "TRACING_BIT",             toolProps.purposes & VK_TOOL_PURPOSE_TRACING_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "ADDITIONAL_FEATURES_BIT", toolProps.purposes & VK_TOOL_PURPOSE_ADDITIONAL_FEATURES_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "MODIFYING_FEATURES_BIT",  toolProps.purposes & VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "DEBUG_REPORTING_BIT",     toolProps.purposes & VK_TOOL_PURPOSE_DEBUG_REPORTING_BIT_EXT);
+            addFlagTreeItem(toolPurposesItem, "DEBUG_MARKERS_BIT",       toolProps.purposes & VK_TOOL_PURPOSE_DEBUG_MARKERS_BIT_EXT);
+
+            addTreeItem(toolItem, "description", toolProps.description);
+            addTreeItem(toolItem, "layer", toolProps.layer);
+        }
+    }
+
     // Pipeline cache UUID
     QString pipelineCacheUUID = "[";
     for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
@@ -856,7 +887,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         }
     }
 
-    ui.treeWidgetDeviceProperties->expandAll();
+    //ui.treeWidgetDeviceProperties->expandAll();
 
     for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);

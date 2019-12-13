@@ -439,6 +439,27 @@ void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_NVX();
 }
 
+void VulkanDeviceInfoExtensions::readToolProperties() {
+	if (extensionSupported("VK_EXT_tooling_info")) {
+		const char* extension = "VK_EXT_tooling_info";
+		VkPhysicalDeviceToolPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TOOL_PROPERTIES_EXT };
+
+		uint32_t toolCount;
+		std::vector<VkPhysicalDeviceToolPropertiesEXT> toolsProps;
+		VkResult r;
+		do{
+			pfnGetPhysicalDeviceToolPropertiesEXT(device, &toolCount, nullptr);
+			toolsProps.resize(toolCount);
+			r = pfnGetPhysicalDeviceToolPropertiesEXT(device, &toolCount, toolsProps.data());
+		} while (r == VK_INCOMPLETE);
+		toolsProps.resize(toolCount);
+
+		for (const auto& toolProps : toolsProps){
+			this->toolProperties[toolProps.name] = {toolProps.version, toolProps.purposes, toolProps.description, toolProps.layer};
+		}
+	}
+}
+
 VkPhysicalDeviceFeatures2 VulkanDeviceInfoExtensions::initDeviceFeatures2(void *pNext) {
     VkPhysicalDeviceFeatures2 features2{};
     features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
