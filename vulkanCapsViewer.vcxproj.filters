@@ -83,6 +83,18 @@
     <ClCompile Include="treeproxyfilter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="vulkanandroid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulkanDeviceInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VulkanDeviceInfoExtensions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulkanpfn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="vulkancapsviewer.h">
@@ -118,6 +130,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="treeproxyfilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanandroid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanDeviceInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VulkanDeviceInfoExtensions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanpfn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanresources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkansurfaceinfo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vulkanFormatInfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
