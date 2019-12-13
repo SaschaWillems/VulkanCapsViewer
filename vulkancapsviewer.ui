@@ -120,7 +120,7 @@ QTreeView {
      <number>0</number>
     </property>
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="widget_6" native="true">
       <property name="styleSheet">
        <string notr="true"/>
       </property>
