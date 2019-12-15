@@ -70,7 +70,6 @@ class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 {
 private:
     std::vector<VulkanLayerInfo> layers;
-    QString toHexQString(VkDeviceSize deviceSize);
     bool vulkan_1_1();
     bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)

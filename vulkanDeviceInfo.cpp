@@ -321,13 +321,10 @@ void VulkanDeviceInfo::readPhysicalFeatures()
     }
 }
 
-QString VulkanDeviceInfo::toHexQString(VkDeviceSize deviceSize)
-{
-    return QString::fromStdString(vulkanResources::toHexString(deviceSize));
-}
-
 void VulkanDeviceInfo::readPhysicalLimits()
 {
+    using vulkanResources::toHexQString;
+
     limits.clear();
     limits["maxImageDimension1D"] = props.limits.maxImageDimension1D;
     limits["maxImageDimension2D"] = props.limits.maxImageDimension2D;
@@ -661,7 +658,7 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromLatin1(property2.extension);        
+        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);        
         if (property2.value.canConvert(QMetaType::QVariantList)) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {
@@ -676,7 +673,7 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
     for (auto& feature2 : features2) {
         QJsonObject jsonFeature2;
         jsonFeature2["name"] = QString::fromStdString(feature2.name);
-        jsonFeature2["extension"] = QString::fromLatin1(feature2.extension);
+        jsonFeature2["extension"] = QString::fromUtf8(feature2.extension);
         jsonFeature2["supported"] = bool(feature2.supported);
         jsonFeatures2.append(jsonFeature2);
     }

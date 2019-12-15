@@ -905,7 +905,7 @@ height: 24px;
              </column>
              <column>
               <property name="text">
-               <string>Extensioncount</string>
+               <string>Extension count</string>
               </property>
              </column>
              <column>
@@ -1104,7 +1104,7 @@ height: 24px;
                  </column>
                  <column>
                   <property name="text">
-                   <string>Extensioncount</string>
+                   <string>Extension count</string>
                   </property>
                  </column>
                  <column>
