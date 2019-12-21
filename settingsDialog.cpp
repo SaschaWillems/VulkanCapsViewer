@@ -81,7 +81,6 @@ settingsDialog::settingsDialog(settings appSet, QWidget * parent, Qt::WindowFlag
 
 	// Restore settings
 	QSettings settings("saschawillems", "vulkancapsviewer");
-	QLineEdit* edit;
 	this->findChild<QLineEdit*>("editSubmitterName", Qt::FindChildrenRecursively)->setText(settings.value("global/submitterName", "").toString());
 	this->findChild<QLineEdit*>("editProxyDns", Qt::FindChildrenRecursively)->setText(settings.value("proxy/dns", "").toString());
 	this->findChild<QLineEdit*>("editProxyPort", Qt::FindChildrenRecursively)->setText(settings.value("proxy/port", "").toString());

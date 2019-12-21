@@ -719,7 +719,7 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterato
     newItem->setText(0, keyName);
     if (asBool) {
         newItem->setText(1, (iter.value().toBool()) ? "true" : "false");
-        newItem->setTextColor(1, (iter.value().toBool()) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+        newItem->setForeground(1, (iter.value().toBool()) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
     } else {
         newItem->setText(1, iter.value().toString());
     }
@@ -732,7 +732,7 @@ QTreeWidgetItem *addTreeItemVkBool32(QTreeWidgetItem *parent, std::string key, V
 	QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
 	newItem->setText(0, QString::fromStdString(key));
 	newItem->setText(1, (value) ? "true" : "false");
-	newItem->setTextColor(1, (value) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+	newItem->setForeground(1, (value) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
 	parent->addChild(newItem);
 	return newItem;
 }
@@ -1225,7 +1225,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     if (!device.surfaceInfo.validSurface)
     {
         QTreeWidgetItem *errorItem = addTreeItem(treeWidget->invisibleRootItem(), "Could not get a valid surface, no surface information available!", "");
-        errorItem->setTextColor(0, QColor::fromRgb(255, 0, 0));
+        errorItem->setForeground(0, QColor::fromRgb(255, 0, 0));
         treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
         return;
     }
