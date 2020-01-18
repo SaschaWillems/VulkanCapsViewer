@@ -554,7 +554,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
-QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter, std::string comment)
+QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
 {
     QJsonObject root;
 
@@ -577,6 +577,9 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
 
     // Device features
     root["features"] = QJsonObject::fromVariantMap(features);
+    // @todo: check if present
+    root["features11"] = QJsonObject::fromVariantMap(features11);
+    root["features12"] = QJsonObject::fromVariantMap(features12);
 
     // Extensions
     QJsonArray jsonExtensions;

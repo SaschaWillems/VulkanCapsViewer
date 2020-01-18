@@ -113,7 +113,7 @@ public:
     void readPhysicalMemoryProperties();
     void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
     void readPlatformDetails();
-    QJsonObject toJson(std::string fileName, std::string submitter, std::string comment);
+    QJsonObject toJson(std::string submitter, std::string comment);
 };
 
 #endif // VULKANDEVICEINFO_H
