@@ -577,9 +577,6 @@ bool vulkanCapsViewer::initVulkan()
 	return true;
 }
 
-/// <summary>
-///	Get details for the specificed vulkan GPU
-/// </summary>
 void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device)
 {
 	VkResult vkRes;

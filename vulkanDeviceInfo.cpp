@@ -27,13 +27,10 @@ std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
     return layers;
 }
 
-bool VulkanDeviceInfo::vulkan_1_1()
+bool VulkanDeviceInfo::vulkanVersionCheck(uint32_t major, uint32_t minor)
 {
-    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
-    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
-    return ((major > 1) || ((major == 1) && (minor >= 1)));
+    return ((VK_VERSION_MAJOR(props.apiVersion) >= major) && (VK_VERSION_MINOR(props.apiVersion) >= minor));
 }
-
 void VulkanDeviceInfo::readExtensions()
 {
     assert(device != NULL);
@@ -208,7 +205,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
         readExtendedProperties();
 
         // VK 1.1 core
-        if (vulkan_1_1()) {
+        if (vulkanVersionCheck(1, 1)) {
             VkPhysicalDeviceProperties2KHR deviceProps2{};
             VkPhysicalDeviceSubgroupProperties extProps{};
             extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
@@ -233,6 +230,14 @@ void VulkanDeviceInfo::readPhysicalProperties()
                 properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
                 properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
             }
+        }
+
+        if (vulkanVersionCheck(1, 2)) {
+            VkPhysicalDeviceProperties2KHR deviceProps2{};
+            vulkan12Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
+            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+            deviceProps2.pNext = &vulkan12Properties;
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
         }
     }
 }
@@ -305,7 +310,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
         readExtendedFeatures();
 
         // VK 1.1 Core
-        if (vulkan_1_1()) {
+        if (vulkanVersionCheck(1, 1)) {
             // VK_KHR_shader_draw_parameters
             if (extensionSupported(VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME)) {
                 VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
@@ -318,6 +323,15 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             }
         }
 
+
+        // VK 1.2 Core
+        if (vulkanVersionCheck(1, 2)) {
+            VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+            vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+            deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+            deviceFeatures2.pNext = &vulkan12Features;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+        }
     }
 }
 
