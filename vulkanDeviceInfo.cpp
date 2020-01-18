@@ -324,13 +324,78 @@ void VulkanDeviceInfo::readPhysicalFeatures()
         }
 
 
-        // VK 1.2 Core
+        // New dedicated feature struct since VK 1.2
         if (vulkanVersionCheck(1, 2)) {
+            // VK 1.1
             VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
-            vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+            vulkan11Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
             deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+            deviceFeatures2.pNext = &vulkan11Features;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            features11["storageBuffer16BitAccess"] = vulkan11Features.storageBuffer16BitAccess;
+            features11["uniformAndStorageBuffer16BitAccess"] = vulkan11Features.uniformAndStorageBuffer16BitAccess;
+            features11["storagePushConstant16"] = vulkan11Features.storagePushConstant16;
+            features11["storageInputOutput16"] = vulkan11Features.storageInputOutput16;
+            features11["multiview"] = vulkan11Features.multiview;
+            features11["multiviewGeometryShader"] = vulkan11Features.multiviewGeometryShader;
+            features11["multiviewTessellationShader"] = vulkan11Features.multiviewTessellationShader;
+            features11["variablePointersStorageBuffer"] = vulkan11Features.variablePointersStorageBuffer;
+            features11["variablePointers"] = vulkan11Features.variablePointers;
+            features11["protectedMemory"] = vulkan11Features.protectedMemory;
+            features11["samplerYcbcrConversion"] = vulkan11Features.samplerYcbcrConversion;
+            features11["shaderDrawParameters"] = vulkan11Features.shaderDrawParameters;
+
+            // VK 1.2
+            vulkan12Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
             deviceFeatures2.pNext = &vulkan12Features;
             pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            features12["samplerMirrorClampToEdge"] = vulkan12Features.samplerMirrorClampToEdge;
+            features12["drawIndirectCount"] = vulkan12Features.drawIndirectCount;
+            features12["storageBuffer8BitAccess"] = vulkan12Features.storageBuffer8BitAccess;
+            features12["uniformAndStorageBuffer8BitAccess"] = vulkan12Features.uniformAndStorageBuffer8BitAccess;
+            features12["storagePushConstant8"] = vulkan12Features.storagePushConstant8;
+            features12["shaderBufferInt64Atomics"] = vulkan12Features.shaderBufferInt64Atomics;
+            features12["shaderSharedInt64Atomics"] = vulkan12Features.shaderSharedInt64Atomics;
+            features12["shaderFloat16"] = vulkan12Features.shaderFloat16;
+            features12["shaderInt8"] = vulkan12Features.shaderInt8;
+            features12["descriptorIndexing"] = vulkan12Features.descriptorIndexing;
+            features12["shaderInputAttachmentArrayDynamicIndexing"] = vulkan12Features.shaderInputAttachmentArrayDynamicIndexing;
+            features12["shaderUniformTexelBufferArrayDynamicIndexing"] = vulkan12Features.shaderUniformTexelBufferArrayDynamicIndexing;
+            features12["shaderStorageTexelBufferArrayDynamicIndexing"] = vulkan12Features.shaderStorageTexelBufferArrayDynamicIndexing;
+            features12["shaderUniformBufferArrayNonUniformIndexing"] = vulkan12Features.shaderUniformBufferArrayNonUniformIndexing;
+            features12["shaderSampledImageArrayNonUniformIndexing"] = vulkan12Features.shaderSampledImageArrayNonUniformIndexing;
+            features12["shaderStorageBufferArrayNonUniformIndexing"] = vulkan12Features.shaderStorageBufferArrayNonUniformIndexing;
+            features12["shaderStorageImageArrayNonUniformIndexing"] = vulkan12Features.shaderStorageImageArrayNonUniformIndexing;
+            features12["shaderInputAttachmentArrayNonUniformIndexing"] = vulkan12Features.shaderInputAttachmentArrayNonUniformIndexing;
+            features12["shaderUniformTexelBufferArrayNonUniformIndexing"] = vulkan12Features.shaderUniformTexelBufferArrayNonUniformIndexing;
+            features12["shaderStorageTexelBufferArrayNonUniformIndexing"] = vulkan12Features.shaderStorageTexelBufferArrayNonUniformIndexing;
+            features12["descriptorBindingUniformBufferUpdateAfterBind"] = vulkan12Features.descriptorBindingUniformBufferUpdateAfterBind;
+            features12["descriptorBindingSampledImageUpdateAfterBind"] = vulkan12Features.descriptorBindingSampledImageUpdateAfterBind;
+            features12["descriptorBindingStorageImageUpdateAfterBind"] = vulkan12Features.descriptorBindingStorageImageUpdateAfterBind;
+            features12["descriptorBindingStorageBufferUpdateAfterBind"] = vulkan12Features.descriptorBindingStorageBufferUpdateAfterBind;
+            features12["descriptorBindingUniformTexelBufferUpdateAfterBind"] = vulkan12Features.descriptorBindingUniformTexelBufferUpdateAfterBind;
+            features12["descriptorBindingStorageTexelBufferUpdateAfterBind"] = vulkan12Features.descriptorBindingStorageTexelBufferUpdateAfterBind;
+            features12["descriptorBindingUpdateUnusedWhilePending"] = vulkan12Features.descriptorBindingUpdateUnusedWhilePending;
+            features12["descriptorBindingPartiallyBound"] = vulkan12Features.descriptorBindingPartiallyBound;
+            features12["descriptorBindingVariableDescriptorCount"] = vulkan12Features.descriptorBindingVariableDescriptorCount;
+            features12["runtimeDescriptorArray"] = vulkan12Features.runtimeDescriptorArray;
+            features12["samplerFilterMinmax"] = vulkan12Features.samplerFilterMinmax;
+            features12["scalarBlockLayout"] = vulkan12Features.scalarBlockLayout;
+            features12["imagelessFramebuffer"] = vulkan12Features.imagelessFramebuffer;
+            features12["uniformBufferStandardLayout"] = vulkan12Features.uniformBufferStandardLayout;
+            features12["shaderSubgroupExtendedTypes"] = vulkan12Features.shaderSubgroupExtendedTypes;
+            features12["separateDepthStencilLayouts"] = vulkan12Features.separateDepthStencilLayouts;
+            features12["hostQueryReset"] = vulkan12Features.hostQueryReset;
+            features12["timelineSemaphore"] = vulkan12Features.timelineSemaphore;
+            features12["bufferDeviceAddress"] = vulkan12Features.bufferDeviceAddress;
+            features12["bufferDeviceAddressCaptureReplay"] = vulkan12Features.bufferDeviceAddressCaptureReplay;
+            features12["bufferDeviceAddressMultiDevice"] = vulkan12Features.bufferDeviceAddressMultiDevice;
+            features12["vulkanMemoryModel"] = vulkan12Features.vulkanMemoryModel;
+            features12["vulkanMemoryModelDeviceScope"] = vulkan12Features.vulkanMemoryModelDeviceScope;
+            features12["vulkanMemoryModelAvailabilityVisibilityChains"] = vulkan12Features.vulkanMemoryModelAvailabilityVisibilityChains;
+            features12["shaderOutputViewportIndex"] = vulkan12Features.shaderOutputViewportIndex;
+            features12["shaderOutputLayer"] = vulkan12Features.shaderOutputLayer;
+            features12["subgroupBroadcastDynamicId"] = vulkan12Features.subgroupBroadcastDynamicId;
         }
     }
 }

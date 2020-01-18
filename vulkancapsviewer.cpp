@@ -61,10 +61,10 @@
 #include <android/native_window_jni.h>
 #endif
 
-#define VK_API_VERSION VK_API_VERSION_1_1
+#define VK_API_VERSION VK_API_VERSION_1_2
 
-const std::string vulkanCapsViewer::version = "2.03";
-const std::string vulkanCapsViewer::reportVersion = "2.0";
+const std::string vulkanCapsViewer::version = "2.1";
+const std::string vulkanCapsViewer::reportVersion = "2.1";
 
 /// <summary>
 ///	Returns operating system name
@@ -927,18 +927,54 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     models.features.clear();
     QStandardItem *rootItem = models.features.invisibleRootItem();
 
-    // Basic features
-    for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
-        QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(iter.key());
-        rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-        rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-		rootItem->appendRow(rowItems);
-	}
+    // Vulkan 1.0
+    {
+        QList<QStandardItem *> versionItem;
+        versionItem << new QStandardItem("Vulkan 1.0");
+        versionItem << new QStandardItem("");
+        for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            versionItem.first()->appendRow(rowItems);
+        }
+        rootItem->appendRow(versionItem);
+    }
+
+    // @todo: check support
+    // Vulkan 1.1
+    {
+        QList<QStandardItem *> versionItem;
+        versionItem << new QStandardItem("Vulkan 1.1");
+        versionItem << new QStandardItem("");
+        for(QVariantMap::const_iterator iter = device->features11.begin(); iter != device->features11.end(); ++iter) {
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            versionItem.first()->appendRow(rowItems);
+        }
+        rootItem->appendRow(versionItem);
+    }
+
+    // Vulkan 1.2
+    {
+        QList<QStandardItem *> versionItem;
+        versionItem << new QStandardItem("Vulkan 1.2");
+        versionItem << new QStandardItem("");
+        for(QVariantMap::const_iterator iter = device->features12.begin(); iter != device->features12.end(); ++iter) {
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            versionItem.first()->appendRow(rowItems);
+        }
+        rootItem->appendRow(versionItem);
+    }
 
     ui.treeViewDeviceFeatures->expandAll();
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui.treeViewDeviceFeatures->header()->setStretchLastSection(false);
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)

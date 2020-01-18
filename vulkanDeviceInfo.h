@@ -82,6 +82,8 @@ public:
     QVariantMap sparseProperties;
     QVariantMap limits;
     QVariantMap features;
+    QVariantMap features11;
+    QVariantMap features12;
     std::map<std::string, std::string> platformdetails;
     VkDevice dev = VK_NULL_HANDLE;
     VkPhysicalDeviceProperties props;
