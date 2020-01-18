@@ -174,6 +174,15 @@ std::string VulkanDeviceInfo::getDriverVersion()
     }
 }
 
+QVariant fromArray(uint8_t* array, size_t size)
+{
+    QVariantList qvList;
+    for (size_t i = 0; i < size; i++) {
+        qvList.push_back(array[i]);
+    }
+    return QVariant::fromValue(qvList);
+}
+
 void VulkanDeviceInfo::readPhysicalProperties()
 {
     assert(device != NULL);
@@ -233,11 +242,86 @@ void VulkanDeviceInfo::readPhysicalProperties()
         }
 
         if (vulkanVersionCheck(1, 2)) {
+            // VK 1.1
             VkPhysicalDeviceProperties2KHR deviceProps2{};
-            vulkan12Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
+            vulkan11Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
             deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+            deviceProps2.pNext = &vulkan11Properties;
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            properties11["deviceUUID"] = fromArray(vulkan11Properties.deviceUUID, VK_UUID_SIZE);
+            properties11["driverUUID"] = fromArray(vulkan11Properties.driverUUID, VK_UUID_SIZE);
+            properties11["deviceLUID"] = fromArray(vulkan11Properties.deviceLUID, VK_UUID_SIZE);
+            properties11["deviceNodeMask"] = vulkan11Properties.deviceNodeMask;
+            properties11["deviceLUIDValid"] = vulkan11Properties.deviceLUIDValid;
+            properties11["subgroupSize"] = vulkan11Properties.subgroupSize;
+            properties11["subgroupSupportedStages"] = vulkan11Properties.subgroupSupportedStages;
+            properties11["subgroupSupportedOperations"] = vulkan11Properties.subgroupSupportedOperations;
+            properties11["subgroupQuadOperationsInAllStages"] = vulkan11Properties.subgroupQuadOperationsInAllStages;
+            properties11["pointClippingBehavior"] = vulkan11Properties.pointClippingBehavior;
+            properties11["maxMultiviewViewCount"] = vulkan11Properties.maxMultiviewViewCount;
+            properties11["maxMultiviewInstanceIndex"] = vulkan11Properties.maxMultiviewInstanceIndex;
+            properties11["protectedNoFault"] = vulkan11Properties.protectedNoFault;
+            properties11["maxPerSetDescriptors"] = vulkan11Properties.maxPerSetDescriptors;
+            properties11["maxMemoryAllocationSize"] = vulkan11Properties.maxMemoryAllocationSize;
+
+            // VK 1.2
+            vulkan12Properties.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
             deviceProps2.pNext = &vulkan12Properties;
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            properties12["driverID"] = vulkan12Properties.driverID;
+            properties12["driverName"] = vulkan12Properties.driverName;
+            properties12["driverInfo"] = vulkan12Properties.driverInfo;
+            properties12["conformanceVersion"] = QVariant::fromValue(QVariantList({ vulkan12Properties.conformanceVersion.major, vulkan12Properties.conformanceVersion.minor, vulkan12Properties.conformanceVersion.subminor, vulkan12Properties.conformanceVersion.patch }));
+            properties12["denormBehaviorIndependence"] = vulkan12Properties.denormBehaviorIndependence;
+            properties12["roundingModeIndependence"] = vulkan12Properties.roundingModeIndependence;
+            properties12["shaderSignedZeroInfNanPreserveFloat16"] = vulkan12Properties.shaderSignedZeroInfNanPreserveFloat16;
+            properties12["shaderSignedZeroInfNanPreserveFloat32"] = vulkan12Properties.shaderSignedZeroInfNanPreserveFloat32;
+            properties12["shaderSignedZeroInfNanPreserveFloat64"] = vulkan12Properties.shaderSignedZeroInfNanPreserveFloat64;
+            properties12["shaderDenormPreserveFloat16"] = vulkan12Properties.shaderDenormPreserveFloat16;
+            properties12["shaderDenormPreserveFloat32"] = vulkan12Properties.shaderDenormPreserveFloat32;
+            properties12["shaderDenormPreserveFloat64"] = vulkan12Properties.shaderDenormPreserveFloat64;
+            properties12["shaderDenormFlushToZeroFloat16"] = vulkan12Properties.shaderDenormFlushToZeroFloat16;
+            properties12["shaderDenormFlushToZeroFloat32"] = vulkan12Properties.shaderDenormFlushToZeroFloat32;
+            properties12["shaderDenormFlushToZeroFloat64"] = vulkan12Properties.shaderDenormFlushToZeroFloat64;
+            properties12["shaderRoundingModeRTEFloat16"] = vulkan12Properties.shaderRoundingModeRTEFloat16;
+            properties12["shaderRoundingModeRTEFloat32"] = vulkan12Properties.shaderRoundingModeRTEFloat32;
+            properties12["shaderRoundingModeRTEFloat64"] = vulkan12Properties.shaderRoundingModeRTEFloat64;
+            properties12["shaderRoundingModeRTZFloat16"] = vulkan12Properties.shaderRoundingModeRTZFloat16;
+            properties12["shaderRoundingModeRTZFloat32"] = vulkan12Properties.shaderRoundingModeRTZFloat32;
+            properties12["shaderRoundingModeRTZFloat64"] = vulkan12Properties.shaderRoundingModeRTZFloat64;
+            properties12["maxUpdateAfterBindDescriptorsInAllPools"] = vulkan12Properties.maxUpdateAfterBindDescriptorsInAllPools;
+            properties12["shaderUniformBufferArrayNonUniformIndexingNative"] = vulkan12Properties.shaderUniformBufferArrayNonUniformIndexingNative;
+            properties12["shaderSampledImageArrayNonUniformIndexingNative"] = vulkan12Properties.shaderSampledImageArrayNonUniformIndexingNative;
+            properties12["shaderStorageBufferArrayNonUniformIndexingNative"] = vulkan12Properties.shaderStorageBufferArrayNonUniformIndexingNative;
+            properties12["shaderStorageImageArrayNonUniformIndexingNative"] = vulkan12Properties.shaderStorageImageArrayNonUniformIndexingNative;
+            properties12["shaderInputAttachmentArrayNonUniformIndexingNative"] = vulkan12Properties.shaderInputAttachmentArrayNonUniformIndexingNative;
+            properties12["robustBufferAccessUpdateAfterBind"] = vulkan12Properties.robustBufferAccessUpdateAfterBind;
+            properties12["quadDivergentImplicitLod"] = vulkan12Properties.quadDivergentImplicitLod;
+            properties12["maxPerStageDescriptorUpdateAfterBindSamplers"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindSamplers;
+            properties12["maxPerStageDescriptorUpdateAfterBindUniformBuffers"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindUniformBuffers;
+            properties12["maxPerStageDescriptorUpdateAfterBindStorageBuffers"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindStorageBuffers;
+            properties12["maxPerStageDescriptorUpdateAfterBindSampledImages"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindSampledImages;
+            properties12["maxPerStageDescriptorUpdateAfterBindStorageImages"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindStorageImages;
+            properties12["maxPerStageDescriptorUpdateAfterBindInputAttachments"] = vulkan12Properties.maxPerStageDescriptorUpdateAfterBindInputAttachments;
+            properties12["maxPerStageUpdateAfterBindResources"] = vulkan12Properties.maxPerStageUpdateAfterBindResources;
+            properties12["maxDescriptorSetUpdateAfterBindSamplers"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindSamplers;
+            properties12["maxDescriptorSetUpdateAfterBindUniformBuffers"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindUniformBuffers;
+            properties12["maxDescriptorSetUpdateAfterBindUniformBuffersDynamic"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic;
+            properties12["maxDescriptorSetUpdateAfterBindStorageBuffers"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindStorageBuffers;
+            properties12["maxDescriptorSetUpdateAfterBindStorageBuffersDynamic"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic;
+            properties12["maxDescriptorSetUpdateAfterBindSampledImages"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindSampledImages;
+            properties12["maxDescriptorSetUpdateAfterBindStorageImages"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindStorageImages;
+            properties12["maxDescriptorSetUpdateAfterBindInputAttachments"] = vulkan12Properties.maxDescriptorSetUpdateAfterBindInputAttachments;
+            properties12["supportedDepthResolveModes"] = vulkan12Properties.supportedDepthResolveModes;
+            properties12["supportedStencilResolveModes"] = vulkan12Properties.supportedStencilResolveModes;
+            properties12["independentResolveNone"] = vulkan12Properties.independentResolveNone;
+            properties12["independentResolve"] = vulkan12Properties.independentResolve;
+            properties12["filterMinmaxSingleComponentFormats"] = vulkan12Properties.filterMinmaxSingleComponentFormats;
+            properties12["filterMinmaxImageComponentMapping"] = vulkan12Properties.filterMinmaxImageComponentMapping;
+            properties12["maxTimelineSemaphoreValueDifference"] = vulkan12Properties.maxTimelineSemaphoreValueDifference;
+            properties12["framebufferIntegerColorSampleCounts"] = vulkan12Properties.framebufferIntegerColorSampleCounts;
         }
     }
 }
@@ -574,6 +658,9 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
 
     root["properties"] = jsonProperties;
+
+    root["properties11"] = QJsonObject::fromVariantMap(properties11);
+    root["properties12"] = QJsonObject::fromVariantMap(properties12);
 
     // Device features
     root["features"] = QJsonObject::fromVariantMap(features);

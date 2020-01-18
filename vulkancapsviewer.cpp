@@ -257,7 +257,7 @@ void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016-2019 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"
@@ -717,8 +717,12 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterato
     if (asBool) {
         newItem->setText(1, (iter.value().toBool()) ? "true" : "false");
         newItem->setForeground(1, (iter.value().toBool()) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-    } else {
-        newItem->setText(1, iter.value().toString());
+    } else {        
+        if (iter.value().canConvert(QMetaType::QVariantList)) {
+            newItem->setText(1, '[' + iter.value().toStringList().join(',') + ']');
+        } else {
+            newItem->setText(1, iter.value().toString());
+        }
     }
     parent->addChild(newItem);
     return newItem;
@@ -851,6 +855,24 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         for (auto& detail : device->platformdetails) {
             addTreeItem(platformItem, detail.first, detail.second);
         }
+    }
+
+    // Vulkan 1.1
+    // @todo: Check if present
+    parentItem = new QTreeWidgetItem(treeItem);
+    parentItem->setText(0, "Vulkan 1.1");
+    treeItem->addChild(parentItem);
+    for(QVariantMap::const_iterator iter = device->properties11.begin(); iter != device->properties11.end(); ++iter) {
+        addTreeItem(parentItem, iter);
+    }
+
+    // Vulkan 1.2
+    // @todo: Check if present
+    parentItem = new QTreeWidgetItem(treeItem);
+    parentItem->setText(0, "Vulkan 1.1");
+    treeItem->addChild(parentItem);
+    for(QVariantMap::const_iterator iter = device->properties12.begin(); iter != device->properties12.end(); ++iter) {
+        addTreeItem(parentItem, iter);
     }
 
     ui.treeWidgetDeviceProperties->expandAll();

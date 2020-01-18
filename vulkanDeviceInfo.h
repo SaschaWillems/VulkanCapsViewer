@@ -79,6 +79,8 @@ private:
 public:
     uint32_t id;
     QVariantMap properties;
+    QVariantMap properties11;
+    QVariantMap properties12;
     QVariantMap sparseProperties;
     QVariantMap limits;
     QVariantMap features;
