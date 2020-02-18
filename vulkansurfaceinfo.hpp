@@ -31,42 +31,42 @@
 
 struct VulkanSurfaceInfo
 {
-    bool validSurface = false;
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkPresentModeKHR> presentModes;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::string surfaceExtension;
+	bool validSurface = false;
+	VkSurfaceCapabilitiesKHR capabilities;
+	std::vector<VkPresentModeKHR> presentModes;
+	std::vector<VkSurfaceFormatKHR> formats;
+	std::string surfaceExtension;
 
-    void get(VkPhysicalDevice device, VkSurfaceKHR surface)
-    {
-        if (!validSurface) {
-           return;
-        }
+	void get(VkPhysicalDevice device, VkSurfaceKHR surface)
+	{
+		if (!validSurface) {
+			return;
+		}
 
-        //todo: error checking
-        VkResult vkRes;
-        vkRes = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
+		//todo: error checking
+		VkResult vkRes;
+		vkRes = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
 
-        // Present modes
-        uint32_t presentModeCount;
-        if (vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr) == VK_SUCCESS)
-        {
-            presentModes.resize(presentModeCount);
-            if (presentModeCount > 0)
-            {
-                vkRes = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
-            }
-        }
+		// Present modes
+		uint32_t presentModeCount;
+		if (vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr) == VK_SUCCESS)
+		{
+			presentModes.resize(presentModeCount);
+			if (presentModeCount > 0)
+			{
+				vkRes = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+			}
+		}
 
-        // Surface formats
-        uint32_t surfaceFormatCount;
-        if (vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr) == VK_SUCCESS)
-        {
-            formats.resize(surfaceFormatCount);
-            if (surfaceFormatCount > 0)
-            {
-                vkRes = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
-            }
-        }
-    }
+		// Surface formats
+		uint32_t surfaceFormatCount;
+		if (vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr) == VK_SUCCESS)
+		{
+			formats.resize(surfaceFormatCount);
+			if (surfaceFormatCount > 0)
+			{
+				vkRes = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
+			}
+		}
+	}
 };

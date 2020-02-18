@@ -23,19 +23,19 @@
 
 bool VulkanDeviceInfoExtensions::extensionSupported(const char* extensionName)
 {
-    for (auto& ext : extensions) {
-        if (strcmp(ext.extensionName, extensionName) == 0) {
-            return true;
-        }
-    }
-    return false;
+	for (auto& ext : extensions) {
+		if (strcmp(ext.extensionName, extensionName) == 0) {
+			return true;
+		}
+	}
+	return false;
 }
 
 VkPhysicalDeviceProperties2 VulkanDeviceInfoExtensions::initDeviceProperties2(void * pNext) {
-    VkPhysicalDeviceProperties2 props2{};
-    props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-    props2.pNext = pNext;
-    return props2;
+	VkPhysicalDeviceProperties2 props2{};
+	props2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+	props2.pNext = pNext;
+	return props2;
 }
 
 void VulkanDeviceInfoExtensions::readPhysicalProperties_AMD() {
@@ -432,22 +432,22 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NVX() {
 
 
 void VulkanDeviceInfoExtensions::readExtendedProperties() {
-    readPhysicalProperties_AMD();
-    readPhysicalProperties_EXT();
-    readPhysicalProperties_KHR();
-    readPhysicalProperties_NV();
-    readPhysicalProperties_NVX();
+	readPhysicalProperties_AMD();
+	readPhysicalProperties_EXT();
+	readPhysicalProperties_KHR();
+	readPhysicalProperties_NV();
+	readPhysicalProperties_NVX();
 }
 
 VkPhysicalDeviceFeatures2 VulkanDeviceInfoExtensions::initDeviceFeatures2(void *pNext) {
-    VkPhysicalDeviceFeatures2 features2{};
-    features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-    features2.pNext = pNext;
-    return features2;
+	VkPhysicalDeviceFeatures2 features2{};
+	features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+	features2.pNext = pNext;
+	return features2;
 }
 
 void VulkanDeviceInfoExtensions::pushFeature2(const char* extension, std::string name, bool supported) {
-    features2.push_back(Feature2(name, supported, extension));
+	features2.push_back(Feature2(name, supported, extension));
 }
 
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMD() {
@@ -882,9 +882,9 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 
 
 void VulkanDeviceInfoExtensions::readExtendedFeatures() {
-    readPhysicalFeatures_AMD();
-    readPhysicalFeatures_EXT();
-    readPhysicalFeatures_INTEL();
-    readPhysicalFeatures_KHR();
-    readPhysicalFeatures_NV();
+	readPhysicalFeatures_AMD();
+	readPhysicalFeatures_EXT();
+	readPhysicalFeatures_INTEL();
+	readPhysicalFeatures_KHR();
+	readPhysicalFeatures_NV();
 }

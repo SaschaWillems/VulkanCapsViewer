@@ -55,59 +55,59 @@
 
 struct OSInfo
 {
-    std::string name;
-    std::string version;
-    std::string architecture;
+	std::string name;
+	std::string version;
+	std::string architecture;
 };
 
 struct VulkanQueueFamilyInfo
 {
-    VkQueueFamilyProperties properties;
-    VkBool32 supportsPresent;
+	VkQueueFamilyProperties properties;
+	VkBool32 supportsPresent;
 };
 
 class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 {
 private:
-    std::vector<VulkanLayerInfo> layers;
-    QString toHexQString(VkDeviceSize deviceSize);
-    bool vulkan_1_1();
-    bool extensionSupported(const char* extensionName);
+	std::vector<VulkanLayerInfo> layers;
+	QString toHexQString(VkDeviceSize deviceSize);
+	bool vulkan_1_1();
+	bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)
-    std::string getSystemProperty(const char* propname);
+	std::string getSystemProperty(const char* propname);
 #endif
 public:
-    uint32_t id;
-    QVariantMap properties;
-    QVariantMap sparseProperties;
-    QVariantMap limits;
-    QVariantMap features;
-    std::map<std::string, std::string> platformdetails;
-    VkDevice dev = VK_NULL_HANDLE;
-    VkPhysicalDeviceProperties props;
-    VkPhysicalDeviceMemoryProperties memoryProperties;
-    VkPhysicalDeviceFeatures deviceFeatures;
-    bool hasSubgroupProperties = false;
-    QVariantMap subgroupProperties;
-    std::vector<VulkanQueueFamilyInfo> queueFamilies;
-    std::vector<VulkanFormatInfo> formats;
-    VulkanSurfaceInfo surfaceInfo;
-    OSInfo os;
-    std::string appVersion;
-    std::string reportVersion;
-    std::vector<VulkanLayerInfo> getLayers();
-    std::string getDriverVersion();
-    void readExtensions();
-    void readLayers();
-    void readSupportedFormats();
-    void readQueueFamilies();
-    void readPhysicalProperties();
-    void readPhysicalFeatures();
-    void readPhysicalLimits();
-    void readPhysicalMemoryProperties();
-    void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
-    void readPlatformDetails();
-    QJsonObject toJson(std::string fileName, std::string submitter, std::string comment);
+	uint32_t id;
+	QVariantMap properties;
+	QVariantMap sparseProperties;
+	QVariantMap limits;
+	QVariantMap features;
+	std::map<std::string, std::string> platformdetails;
+	VkDevice dev = VK_NULL_HANDLE;
+	VkPhysicalDeviceProperties props;
+	VkPhysicalDeviceMemoryProperties memoryProperties;
+	VkPhysicalDeviceFeatures deviceFeatures;
+	bool hasSubgroupProperties = false;
+	QVariantMap subgroupProperties;
+	std::vector<VulkanQueueFamilyInfo> queueFamilies;
+	std::vector<VulkanFormatInfo> formats;
+	VulkanSurfaceInfo surfaceInfo;
+	OSInfo os;
+	std::string appVersion;
+	std::string reportVersion;
+	std::vector<VulkanLayerInfo> getLayers();
+	std::string getDriverVersion();
+	void readExtensions();
+	void readLayers();
+	void readSupportedFormats();
+	void readQueueFamilies();
+	void readPhysicalProperties();
+	void readPhysicalFeatures();
+	void readPhysicalLimits();
+	void readPhysicalMemoryProperties();
+	void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
+	void readPlatformDetails();
+	QJsonObject toJson(std::string fileName, std::string submitter, std::string comment);
 };
 
 #endif // VULKANDEVICEINFO_H
