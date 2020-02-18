@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     a.setApplicationVersion(QString::fromStdString(vulkanCapsViewer::version));
 
-    QCommandLineParser parser;  
+    QCommandLineParser parser;
 
     QCommandLineOption optionDBUser("u", "User name for protected database access", "dbuser", "");
     QCommandLineOption optionDBPass("p", "Password for protected database access", "dbpass", "");

@@ -62,39 +62,34 @@ bool VulkanDeviceInfo::extensionSupported(const char* extensionName)
 
 void VulkanDeviceInfo::readLayers()
 {
-    assert(device != NULL);
-    VkResult vkRes;
-    do {
-        uint32_t layerCount;
-        vkRes = vkEnumerateDeviceLayerProperties(device, &layerCount, NULL);
-        std::vector<VkLayerProperties> props(layerCount);
-        if (layerCount > 0)
-        {
-            vkRes = vkEnumerateDeviceLayerProperties(device, &layerCount, &props.front());
+    assert(this->device);
 
-        }
-        for (auto& prop : props)
-        {
-            VulkanLayerInfo layerInfo;
-            layerInfo.properties = prop;
-            // Get Layer extensions
-            VkResult vkRes;
-            do {
-                uint32_t extCount;
-                vkRes = vkEnumerateDeviceExtensionProperties(device, prop.layerName, &extCount, NULL);
-                assert(!vkRes);
-                if (extCount > 0) {
-                    std::vector<VkExtensionProperties> exts(extCount);
-                    vkRes = vkEnumerateDeviceExtensionProperties(device, prop.layerName, &extCount, &exts.front());
-                    for (auto& ext : exts)
-                        layerInfo.extensions.push_back(ext);
-                }
-            } while (vkRes == VK_INCOMPLETE);
-            assert(!vkRes);
-            // Push to layer list
-            layers.push_back(layerInfo);
-        }
-    } while (vkRes == VK_INCOMPLETE);
+    VkResult errco;
+    uint32_t itemCountTmp;
+
+    std::vector<VkLayerProperties> layersProps;
+    do{
+        errco = vkEnumerateDeviceLayerProperties(this->device, &itemCountTmp, nullptr);
+        assert(!errco); // TODO: technically not correct because assert is Debug mode only
+        layersProps.resize(itemCountTmp);
+        errco = vkEnumerateDeviceLayerProperties(this->device, &itemCountTmp, layersProps.data());
+    } while(errco == VK_INCOMPLETE);
+    assert(!errco);
+    layersProps.resize(itemCountTmp); // shrink in the off-case of enumerantsCount1 > enumerantsCount2
+
+    for (const auto& layerProps : layersProps){
+        std::vector<VkExtensionProperties> layerExtensionsProps;
+        do{
+            errco = vkEnumerateDeviceExtensionProperties(this->device, layerProps.layerName, &itemCountTmp, nullptr);
+            assert(!errco);
+            layerExtensionsProps.resize(itemCountTmp);
+            errco = vkEnumerateDeviceExtensionProperties(this->device, layerProps.layerName, &itemCountTmp, layerExtensionsProps.data());
+        } while(errco == VK_INCOMPLETE);
+        assert(!errco);
+        layerExtensionsProps.resize(itemCountTmp); // shrink in the off-case of enumerantsCount1 > enumerantsCount2
+
+        this->layers.push_back({layerProps, layerExtensionsProps});
+    }
 }
 
 void VulkanDeviceInfo::readSupportedFormats()
@@ -209,30 +204,15 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
         // VK 1.1 core
         if (vulkan_1_1()) {
-            VkPhysicalDeviceProperties2KHR deviceProps2{};
-            VkPhysicalDeviceSubgroupProperties extProps{};
-            extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
-            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-            deviceProps2.pNext = &extProps;
+            VkPhysicalDeviceSubgroupProperties subgroupProps{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES};
+            VkPhysicalDeviceProperties2 deviceProps2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, &subgroupProps};
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             hasSubgroupProperties = true;
             subgroupProperties.clear();
-            subgroupProperties["subgroupSize"] = extProps.subgroupSize;
-            subgroupProperties["supportedStages"] = extProps.supportedStages;
-            subgroupProperties["supportedOperations"] = extProps.supportedOperations;
-            subgroupProperties["quadOperationsInAllStages"] = QVariant(bool(extProps.quadOperationsInAllStages));
-            // VK_KHR_maintenance3
-            if (extensionSupported(VK_KHR_MAINTENANCE3_EXTENSION_NAME)) {
-                const char* extName(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMaintenance3Properties extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
-                properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
-            }
+            subgroupProperties["subgroupSize"] = subgroupProps.subgroupSize;
+            subgroupProperties["supportedStages"] = subgroupProps.supportedStages;
+            subgroupProperties["supportedOperations"] = subgroupProps.supportedOperations;
+            subgroupProperties["quadOperationsInAllStages"] = QVariant(bool(subgroupProps.quadOperationsInAllStages));
         }
     }
 }
@@ -472,7 +452,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
-QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter, std::string comment)
+QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
 {
     QJsonObject root;
 

@@ -440,10 +440,7 @@ void VulkanDeviceInfoExtensions::readExtendedProperties() {
 }
 
 VkPhysicalDeviceFeatures2 VulkanDeviceInfoExtensions::initDeviceFeatures2(void *pNext) {
-    VkPhysicalDeviceFeatures2 features2{};
-    features2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
-    features2.pNext = pNext;
-    return features2;
+    return {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR, pNext, {}};
 }
 
 void VulkanDeviceInfoExtensions::pushFeature2(const char* extension, std::string name, bool supported) {

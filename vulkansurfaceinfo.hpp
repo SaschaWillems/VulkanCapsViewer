@@ -32,7 +32,7 @@
 struct VulkanSurfaceInfo
 {
     bool validSurface = false;
-    VkSurfaceCapabilitiesKHR capabilities;
+    VkSurfaceCapabilitiesKHR capabilities = {};
     std::vector<VkPresentModeKHR> presentModes;
     std::vector<VkSurfaceFormatKHR> formats;
     std::string surfaceExtension;

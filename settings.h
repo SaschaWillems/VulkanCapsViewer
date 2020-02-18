@@ -13,7 +13,7 @@ public:
 	QString proxyPort;
 	QString proxyUserName;
 	QString proxyUserPassword;
-	bool proxyEnabled;
+	bool proxyEnabled = false;
 	void restore();
 };
 
