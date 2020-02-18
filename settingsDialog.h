@@ -14,7 +14,3 @@ private Q_SLOTS:
 	void slotAccept();
 	void slotCancel();
 };
-
-
-
-

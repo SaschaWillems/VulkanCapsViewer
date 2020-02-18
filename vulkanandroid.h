@@ -46,14 +46,14 @@ void loadVulkanFunctions(VkInstance instance);
 
 namespace std
 {
-    // to_tring is missing from std in recent NDK versions...q
-    template <typename T>
-    std::string to_string(T value)
-    {
-        std::ostringstream os;
-        os << value;
-        return os.str();
-    }
+	// to_string is missing from std in recent NDK versions...q
+	template <typename T>
+	std::string to_string(T value)
+	{
+		std::ostringstream os;
+		os << value;
+		return os.str();
+	}
 }
 
 #endif

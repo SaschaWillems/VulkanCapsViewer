@@ -16,4 +16,3 @@ public:
 	bool proxyEnabled;
 	void restore();
 };
-

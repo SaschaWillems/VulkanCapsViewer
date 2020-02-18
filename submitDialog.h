@@ -42,7 +42,3 @@ public:
 	void slotAccept();
 	void slotCancel();
 };
-
-
-
-

@@ -55,9 +55,9 @@ bool TreeProxyFilter::filterAcceptsRowSelf(int sourceRow, const QModelIndex &sou
 bool TreeProxyFilter::hasAcceptedChildren(int sourceRow, const QModelIndex &sourceParent) const
 {
 	QModelIndex item = sourceModel()->index(sourceRow, 0, sourceParent);
-	if (!item.isValid()) 
+	if (!item.isValid())
 	{
 		return false;
 	}
-    return true;
+	return true;
 }

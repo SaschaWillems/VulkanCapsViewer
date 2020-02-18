@@ -54,11 +54,11 @@ private:
 	string httpPost(string url, string data);
 	string encodeUrl(string url);
 public:
-    static bool dbLogin;
-    static QString dbUser;
-    static QString dbPass;
-    int getReportId(VulkanDeviceInfo device, string version);
-    bool checkReportPresent(VulkanDeviceInfo device, string version);
+	static bool dbLogin;
+	static QString dbUser;
+	static QString dbPass;
+	int getReportId(VulkanDeviceInfo device, string version);
+	bool checkReportPresent(VulkanDeviceInfo device, string version);
 	vector<string> fetchDevices();
 	vector<reportInfo> fetchDeviceReports(string device);
 	bool checkServerConnection();
@@ -69,4 +69,3 @@ public:
 	VulkanDatabase();
 	~VulkanDatabase();
 };
-

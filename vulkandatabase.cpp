@@ -51,11 +51,11 @@ bool VulkanDatabase::checkServerConnection()
 
 	QUrl qurl(QString::fromStdString(getBaseUrl() + "/services/serverstate.php"));
 
-    if (dbLogin)
-    {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
-    }
+	if (dbLogin)
+	{
+		qurl.setUserName(dbUser);
+		qurl.setPassword(dbPass);
+	}
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
 
@@ -67,7 +67,7 @@ bool VulkanDatabase::checkServerConnection()
 }
 
 /// <summary>
-/// Execute http get request 
+/// Execute http get request
 /// </summary>
 /// <param name="url">url for the http get request</param>
 /// <returns>string of the http get request or empty string in case of failure</returns>
@@ -77,11 +77,11 @@ string VulkanDatabase::httpGet(string url)
 
 	QUrl qurl(QString::fromStdString(url));
 
-    if (dbLogin)
-    {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
-    }
+	if (dbLogin)
+	{
+		qurl.setUserName(dbUser);
+		qurl.setPassword(dbPass);
+	}
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
 
@@ -124,16 +124,16 @@ string VulkanDatabase::httpPost(string url, string data)
 
 	QUrl qurl(QString::fromStdString(url));
 
-    if (dbLogin)
-    {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
-    }
+	if (dbLogin)
+	{
+		qurl.setUserName(dbUser);
+		qurl.setPassword(dbPass);
+	}
 
 	QNetworkRequest request(qurl);
 	QNetworkReply *reply = manager->post(request, multiPart);
 	multiPart->setParent(reply);
-	
+
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
 	loop.exec();
@@ -174,12 +174,12 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
 	stringstream urlss;
 	urlss << getBaseUrl() << "/services/getreportid.php?"
 		<< "devicename=" << device.props.deviceName
-        << "&driverversion=" << device.getDriverVersion()
+		<< "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
-        << "&osarchitecture=" << device.os.architecture
-        << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
-        // << "&reportversion=" << version ;
+		<< "&osarchitecture=" << device.os.architecture
+		<< "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
+		// << "&reportversion=" << version ;
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
@@ -190,7 +190,7 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
 /// </summary>
 bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device, string version)
 {
-    int reportID = getReportId(device, version);
+	int reportID = getReportId(device, version);
 	return (reportID > -1) ? true : false;
 }
 
@@ -203,26 +203,26 @@ string VulkanDatabase::fetchReport(int reportId)
 {
 	string reportXml;
 	stringstream urlss;
-    urlss << getBaseUrl() << "services/getreport.php?id=" << reportId;
+	urlss << getBaseUrl() << "services/getreport.php?id=" << reportId;
 	reportXml = httpGet(urlss.str());
 	return reportXml;
 }
 
 /// <summary>
-/// Posts the given xml for a report to the database	
+/// Posts the given xml for a report to the database
 /// </summary>
 /// <returns>todo</returns>
 string VulkanDatabase::postReport(string xml)
 {
 	string httpReply;
 	stringstream urlss;
-    urlss << getBaseUrl() << "api/v2/uploadreport.php";
+	urlss << getBaseUrl() << "api/v2/uploadreport.php";
 	httpReply = httpPost(urlss.str(), xml);
 	return httpReply;
 }
 
 /// <summary>
-/// Posts the given url to the db report update script 
+/// Posts the given url to the db report update script
 /// </summary>
 /// <returns>Coma separated list of updated caps</returns>
 string VulkanDatabase::postReportForUpdate(string xml)
@@ -248,7 +248,7 @@ vector<string> VulkanDatabase::fetchDevices()
 
 	if (!httpReply.empty()) {
 		QXmlStreamReader xmlReader(&httpReply[0]);
-		while (!xmlReader.atEnd())  {
+		while (!xmlReader.atEnd()) {
 
 			if ((xmlReader.name() == "device") && (xmlReader.isStartElement())) {
 				deviceList.push_back(xmlReader.readElementText().toStdString());
@@ -306,9 +306,8 @@ vector<reportInfo> VulkanDatabase::fetchDeviceReports(string device)
 string VulkanDatabase::getBaseUrl()
 {
 #ifdef DEVDATABASE
-    return "http://localhost:8000/";
+	return "http://localhost:8000/";
 #else
 	return "http://vulkan.gpuinfo.org/";
 #endif
 }
-
