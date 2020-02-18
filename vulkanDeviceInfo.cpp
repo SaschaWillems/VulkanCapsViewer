@@ -22,6 +22,9 @@
 
 #include "vulkanDeviceInfo.h"
 
+#include <algorithm>
+#include <iterator>
+
 std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
 {
     return layers;
@@ -36,18 +39,32 @@ bool VulkanDeviceInfo::vulkan_1_1()
 
 void VulkanDeviceInfo::readExtensions()
 {
-    assert(device != NULL);
-    VkResult vkRes;
-    do {
+    assert(device);
+    VkResult err;
+
+    // Get enabled instance layers
+    uint32_t layerCount;
+    err = vkEnumerateDeviceLayerProperties(device, &layerCount, nullptr);
+    assert(!err); // TODO: should be non-debug asserts too because of runtime memory errors
+    std::vector<VkLayerProperties> layerProps(layerCount);
+    err = vkEnumerateDeviceLayerProperties(device, &layerCount, layerProps.data());
+    assert(!err && layerCount == layerProps.size());
+
+    std::vector<const char*> layers = {nullptr};
+    std::transform(layerProps.begin(), layerProps.end(), std::back_inserter(layers),
+                   [](const VkLayerProperties& lp) -> const char*{ return lp.layerName; });
+
+    this->extensions.clear();
+    for (const auto& layer : layers) {
         uint32_t extCount;
-        vkRes = vkEnumerateDeviceExtensionProperties(device, NULL, &extCount, NULL);
-        assert(!vkRes);
-        std::vector<VkExtensionProperties> exts(extCount);
-        vkRes = vkEnumerateDeviceExtensionProperties(device, NULL, &extCount, &exts.front());
-        for (auto& ext : exts)
-            extensions.push_back(ext);
-    } while (vkRes == VK_INCOMPLETE);
-    assert(!vkRes);
+        err = vkEnumerateDeviceExtensionProperties(device, layer, &extCount, nullptr);
+        assert(!err);
+        std::vector<VkExtensionProperties> extProps(extCount);
+        err = vkEnumerateDeviceExtensionProperties(device, layer, &extCount, extProps.data());
+        assert(!err && extCount == extProps.size());
+
+        this->extensions.insert(this->extensions.end(), extProps.begin(), extProps.end());
+    }
 }
 
 bool VulkanDeviceInfo::extensionSupported(const char* extensionName)
@@ -234,6 +251,13 @@ void VulkanDeviceInfo::readPhysicalProperties()
                 properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
             }
         }
+    }
+
+    // VK_EXT_tooling_info
+    const bool physicalDeviceLevelExtensionsSupported = pfnGetPhysicalDeviceProperties2KHR != nullptr;
+    if (extensionSupported(VK_EXT_TOOLING_INFO_EXTENSION_NAME) && pfnGetPhysicalDeviceToolPropertiesEXT && physicalDeviceLevelExtensionsSupported) {
+        readToolProperties();
+        this->hasToolProperties = true;
     }
 }
 
@@ -661,7 +685,7 @@ QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromLatin1(property2.extension);        
+        jsonProperty2["extension"] = QString::fromLatin1(property2.extension);
         if (property2.value.canConvert(QMetaType::QVariantList)) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {

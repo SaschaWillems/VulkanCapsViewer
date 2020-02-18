@@ -88,6 +88,7 @@ public:
     VkPhysicalDeviceMemoryProperties memoryProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
     bool hasSubgroupProperties = false;
+    bool hasToolProperties = false;
     QVariantMap subgroupProperties;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
     std::vector<VulkanFormatInfo> formats;
