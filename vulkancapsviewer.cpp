@@ -441,7 +441,8 @@ bool vulkanCapsViewer::initVulkan()
     surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
     surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-    // todo : wayland etc.
+#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+    surfaceExtension = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 #endif
 
     std::vector<const char*> enabledExtensions = {};
@@ -569,6 +570,13 @@ bool vulkanCapsViewer::initVulkan()
         surfaceCreateInfo.connection = QX11Info::connection();
         surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
         surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
+        VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
+        surfaceCreateInfo.pNext = nullptr;
+        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+        surfaceCreateInfo.display = wl_display_connect(NULL);
+        surfaceCreateInfo.surface = nullptr;
+        surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #endif
 
     displayGlobalLayers(ui.treeWidgetGlobalLayers);
