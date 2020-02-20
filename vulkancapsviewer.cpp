@@ -278,6 +278,7 @@ void vulkanCapsViewer::slotAbout()
 /// </summary>
 void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 {
+	assert( index >= 0 );
 	if (index != selectedDeviceIndex)
 	{
 		displayDevice(index);
@@ -778,13 +779,11 @@ QTreeWidgetItem *addTreeItemFlags(QTreeWidgetItem *parent, const std::string& fl
 /// <summary>
 ///	Display information on given device
 /// </summary>
-void vulkanCapsViewer::displayDevice(int index)
+void vulkanCapsViewer::displayDevice(const int index)
 {
-	assert(index < vulkanGPUs.size());
-
-	VulkanDeviceInfo device = vulkanGPUs[index];
+	VulkanDeviceInfo device = vulkanGPUs.at(index);
 	selectedDeviceIndex = index;
-	
+
 	displayDeviceProperties(&device);
     displayDeviceMemoryProperites(&device);
 	displayDeviceLimits(&device);
@@ -823,11 +822,13 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     }
 
     // Sparse properties
-    QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-    parentItem->setText(0, "sparse properties");
-    treeItem->addChild(parentItem);
-    for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
-        addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
+    {
+        QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
+        parentItem->setText(0, "sparse properties");
+        treeItem->addChild(parentItem);
+        for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
+            addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
+        }
     }
 
     // Subgroup operations properties
@@ -1344,7 +1345,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
 {
 	VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
-    QJsonObject report = device.toJson(fileName, submitter, comment);
+    QJsonObject report = device.toJson(submitter, comment);
 
     // Add instance information
     QJsonObject jsonInstance;

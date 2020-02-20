@@ -76,16 +76,16 @@ private:
     std::string getSystemProperty(const char* propname);
 #endif
 public:
-    uint32_t id;
+    uint32_t id = UINT32_MAX;
     QVariantMap properties;
     QVariantMap sparseProperties;
     QVariantMap limits;
     QVariantMap features;
     std::map<std::string, std::string> platformdetails;
     VkDevice dev = VK_NULL_HANDLE;
-    VkPhysicalDeviceProperties props;
-    VkPhysicalDeviceMemoryProperties memoryProperties;
-    VkPhysicalDeviceFeatures deviceFeatures;
+    VkPhysicalDeviceProperties props = {};
+    VkPhysicalDeviceMemoryProperties memoryProperties = {};
+    VkPhysicalDeviceFeatures deviceFeatures = {};
     bool hasSubgroupProperties = false;
     QVariantMap subgroupProperties;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
@@ -106,7 +106,7 @@ public:
     void readPhysicalMemoryProperties();
     void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
     void readPlatformDetails();
-    QJsonObject toJson(std::string fileName, std::string submitter, std::string comment);
+    QJsonObject toJson(std::string submitter, std::string comment);
 };
 
 #endif // VULKANDEVICEINFO_H

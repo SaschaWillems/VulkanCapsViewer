@@ -84,7 +84,7 @@ public:
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;
-    VkPhysicalDevice device;
+    VkPhysicalDevice device = nullptr;
     void readExtendedFeatures();
     void readExtendedProperties();
 };

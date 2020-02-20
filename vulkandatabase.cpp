@@ -168,7 +168,7 @@ string VulkanDatabase::encodeUrl(string url)
 	return urlStr.toStdString();
 }
 
-int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
+int VulkanDatabase::getReportId(VulkanDeviceInfo device, string /*version*/)
 {
 	string reply;
 	stringstream urlss;

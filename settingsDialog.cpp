@@ -46,7 +46,8 @@ QCheckBox *createCheckBox(QString name)
 	return checkbox;
 }
 
-settingsDialog::settingsDialog(settings appSet, QWidget * parent, Qt::WindowFlags f)
+settingsDialog::settingsDialog(settings appSet, QWidget *parent, Qt::WindowFlags f)
+: QDialog(parent, f)
 {
 	appSettings = appSet;
 

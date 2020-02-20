@@ -34,13 +34,12 @@
 
 using namespace std;
 
-class reportInfo
+struct reportInfo
 {
-	public:
-		string device;
-		string version;
-		string operatingSystem;
-		int reportId;
+	string device;
+	string version;
+	string operatingSystem;
+	int reportId;
 };
 
 class VulkanDatabase :
@@ -48,8 +47,8 @@ class VulkanDatabase :
 {
 	Q_OBJECT
 private:
-	QNetworkProxy *proxy;
-	QNetworkAccessManager *manager;
+	QNetworkProxy *proxy = nullptr;
+	QNetworkAccessManager *manager = nullptr;
 	string httpGet(string url);
 	string httpPost(string url, string data);
 	string encodeUrl(string url);

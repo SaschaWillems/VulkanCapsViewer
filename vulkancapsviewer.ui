@@ -200,7 +200,7 @@ QTreeView {
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="widget" native="true">
+           <widget class="QWidget" name="widget_9" native="true">
             <property name="styleSheet">
              <string notr="true">background-color: rgb(48, 48, 48);</string>
             </property>

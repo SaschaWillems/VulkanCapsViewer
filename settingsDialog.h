@@ -8,7 +8,7 @@ class settingsDialog : public QDialog
 private:
 	settings appSettings;
 public:
-	settingsDialog(settings appSet, QWidget * parent = 0, Qt::WindowFlags f = 0);
+	settingsDialog(settings appSet, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 	~settingsDialog();
 private Q_SLOTS:
 	void slotAccept();

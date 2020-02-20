@@ -34,7 +34,7 @@ private:
 public:
 	std::string submitter;
 	std::string comment;
-	submitDialog(QString submitter, QWidget * parent = 0, Qt::WindowFlags f = 0);
+	submitDialog(QString submitter, QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
 	~submitDialog();
 	std::string getSubmitter();
 	std::string getComment();
