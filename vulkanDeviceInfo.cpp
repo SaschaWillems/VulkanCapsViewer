@@ -204,8 +204,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
         // VK 1.1 core
         if (vulkan_1_1()) {
-            VkPhysicalDeviceSubgroupProperties subgroupProps{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES};
-            VkPhysicalDeviceProperties2 deviceProps2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, &subgroupProps};
+            VkPhysicalDeviceSubgroupProperties subgroupProps{}; subgroupProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
+            VkPhysicalDeviceProperties2 deviceProps2{VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, &subgroupProps, {}};
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             hasSubgroupProperties = true;
             subgroupProperties.clear();
