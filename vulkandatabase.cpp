@@ -308,7 +308,7 @@ string VulkanDatabase::getBaseUrl()
 #ifdef DEVDATABASE
     return "http://localhost:8000/";
 #else
-	return "http://vulkan.gpuinfo.org/";
+	return "https://vulkan.gpuinfo.org/";
 #endif
 }
 
