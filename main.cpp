@@ -16,28 +16,29 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;  
 
-    QCommandLineOption optionDBUser("u", "User name for protected database access", "dbuser", "");
-    QCommandLineOption optionDBPass("p", "Password for protected database access", "dbpass", "");
     QCommandLineOption optionSaveReport("s", "Save report to file without starting the GUI", "savereport", "");
+    QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "ini", "");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
     parser.addHelpOption();
     parser.addVersionOption();
-
-    parser.addOption(optionDBUser);
-    parser.addOption(optionDBPass);
     parser.addOption(optionSaveReport);
-    //parser.parse(a.arguments());
+    parser.addOption(optionDBConnection);
     parser.process(a);
-    if (parser.isSet(optionDBUser))
+
+    // Custom database settings can be applied via a .ini file
+    if (parser.isSet(optionDBConnection))
     {
-        VulkanDatabase::dbUser = parser.value(optionDBUser);
+        QString fileName = parser.value(optionDBConnection);
+        if (QFile::exists(fileName))
+        {
+            QSettings dbSettings(fileName, QSettings::IniFormat);
+            VulkanDatabase::username = dbSettings.value("username").toString();
+            VulkanDatabase::password = dbSettings.value("password").toString();
+            VulkanDatabase::databaseUrl = dbSettings.value("databaseUrl").toString();
+        }
     }
-    if (parser.isSet(optionDBPass))
-    {
-        VulkanDatabase::dbPass = parser.value(optionDBPass);
-    }
-    VulkanDatabase::dbLogin = (!VulkanDatabase::dbUser.isEmpty()) && (!VulkanDatabase::dbPass.isEmpty());
+
     vulkanCapsViewer w;
 
     if (parser.isSet(optionSaveReport))

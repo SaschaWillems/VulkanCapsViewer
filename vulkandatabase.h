@@ -34,15 +34,6 @@
 
 using namespace std;
 
-class reportInfo
-{
-	public:
-		string device;
-		string version;
-		string operatingSystem;
-		int reportId;
-};
-
 class VulkanDatabase :
 	public QObject
 {
@@ -54,15 +45,13 @@ private:
 	string httpPost(string url, string data);
 	string encodeUrl(string url);
 public:
-    static bool dbLogin;
-    static QString dbUser;
-    static QString dbPass;
+    static QString username;
+    static QString password;
+    static QString databaseUrl;
     int getReportId(VulkanDeviceInfo device, string version);
     bool checkReportPresent(VulkanDeviceInfo device, string version);
-	vector<string> fetchDevices();
-	vector<reportInfo> fetchDeviceReports(string device);
 	bool checkServerConnection();
-	static string getBaseUrl();
+    string getBaseUrl();
 	string fetchReport(int reportId);
 	string postReport(string xml);
 	string postReportForUpdate(string xml);

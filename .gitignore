@@ -227,3 +227,5 @@ redist/windows/
 redist/*.apk
 redist/*.tar.gz
 redist/*.zip
+
+devdatabase.ini

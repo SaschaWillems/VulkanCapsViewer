@@ -110,15 +110,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	: QMainWindow(parent)
 {
 	ui.setupUi(this);
-
-
-#ifdef DEVDATABASE
-    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version) + " - Connected to DEVELOPMENT DATABASE!");
-    ui.toolButtonUpload->setText("DEVDB Upload");
-#else
     setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version));
-#endif
-
 	// Connect slots
     connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)));
     connect(ui.toolButtonUpload, SIGNAL(pressed()), this, SLOT(slotUploadReport()));
@@ -263,7 +255,7 @@ void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016-2019 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + to_string(VK_HEADER_VERSION) + "<br/><br/>"
 		"This tool is <b>FREEWARE</b><br/><br/>"

@@ -41,6 +41,7 @@ public:
     std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
+    VulkanDatabase databaseConnection;
     void checkReportDatabaseState();
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
@@ -51,7 +52,6 @@ private:
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
     std::string surfaceExtension;
-    VulkanDatabase databaseConnection;
 	Ui::vulkanCapsViewerClass ui;
 	settings appSettings;
 	struct {

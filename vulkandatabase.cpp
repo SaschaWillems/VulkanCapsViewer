@@ -29,14 +29,13 @@
 #include <QHttpMultiPart>
 #include <QXmlStreamReader>
 
-bool VulkanDatabase::dbLogin = false;
-QString VulkanDatabase::dbUser = "";
-QString VulkanDatabase::dbPass = "";
+QString VulkanDatabase::username = "";
+QString VulkanDatabase::password = "";
+QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
 
 VulkanDatabase::VulkanDatabase()
 {
 }
-
 
 VulkanDatabase::~VulkanDatabase()
 {
@@ -47,14 +46,14 @@ VulkanDatabase::~VulkanDatabase()
 /// </summary>
 bool VulkanDatabase::checkServerConnection()
 {
-	manager = new QNetworkAccessManager(NULL);
+    manager = new QNetworkAccessManager(nullptr);
 
 	QUrl qurl(QString::fromStdString(getBaseUrl() + "/services/serverstate.php"));
 
-    if (dbLogin)
+    if (username != "" && password != "")
     {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
+        qurl.setUserName(username);
+        qurl.setPassword(password);
     }
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
@@ -77,10 +76,10 @@ string VulkanDatabase::httpGet(string url)
 
 	QUrl qurl(QString::fromStdString(url));
 
-    if (dbLogin)
+    if (username != "" && password != "")
     {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
+        qurl.setUserName(username);
+        qurl.setPassword(password);
     }
 
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
@@ -124,10 +123,10 @@ string VulkanDatabase::httpPost(string url, string data)
 
 	QUrl qurl(QString::fromStdString(url));
 
-    if (dbLogin)
+    if (username != "" && password != "")
     {
-        qurl.setUserName(dbUser);
-        qurl.setPassword(dbPass);
+        qurl.setUserName(username);
+        qurl.setPassword(password);
     }
 
 	QNetworkRequest request(qurl);
@@ -234,81 +233,9 @@ string VulkanDatabase::postReportForUpdate(string xml)
 	return httpReply;
 }
 
-/// <summary>
-/// Fetches all available devices from the online database and lists them in the ui
-/// </summary>
-/// <returns>List of reports as vector</returns>
-vector<string> VulkanDatabase::fetchDevices()
-{
-	vector<string> deviceList;
-	string httpReply;
-	stringstream urlss;
-	urlss << getBaseUrl() << "services/gl_getdevices.php";
-	httpReply = httpGet(urlss.str());
 
-	if (!httpReply.empty()) {
-		QXmlStreamReader xmlReader(&httpReply[0]);
-		while (!xmlReader.atEnd())  {
-
-			if ((xmlReader.name() == "device") && (xmlReader.isStartElement())) {
-				deviceList.push_back(xmlReader.readElementText().toStdString());
-			}
-
-			xmlReader.readNext();
-		}
-	}
-
-	return deviceList;
-}
-
-/// <summary>
-/// Fetches all available reports for the given device
-/// </summary>
-/// <param name="device">Name of the device to select reports for (GL_RENDERER) </param>
-/// <returns></returns>
-vector<reportInfo> VulkanDatabase::fetchDeviceReports(string device)
-{
-	vector<reportInfo> reportList;
-	string httpReply;
-	stringstream urlss;
-	urlss << getBaseUrl() << "services/gl_getdevicereports.php?glrenderer=" << device;
-	string url;
-	url = encodeUrl(urlss.str());
-	httpReply = httpGet(url);
-
-	if (!httpReply.empty())
-	{
-		QXmlStreamReader xmlReader(&httpReply[0]);
-
-		while (!xmlReader.atEnd()) {
-
-			if ((xmlReader.name() == "report") && (xmlReader.isStartElement())) {
-				reportInfo report;
-				report.device = device;
-				QXmlStreamAttributes xmlAttribs = xmlReader.attributes();
-				report.operatingSystem = xmlAttribs.value("os").toString().toStdString();
-				report.reportId = xmlAttribs.value("id").toInt();
-				report.version = xmlReader.readElementText().toStdString();
-				reportList.push_back(report);
-			}
-
-			xmlReader.readNext();
-		}
-
-	};
-
-	return reportList;
-}
-
-/// <summary>
-/// Returns the base url of the OpenGL hardware database
-/// </summary>
 string VulkanDatabase::getBaseUrl()
 {
-#ifdef DEVDATABASE
-    return "http://localhost:8000/";
-#else
-	return "http://vulkan.gpuinfo.org/";
-#endif
+    return databaseUrl.toStdString();
 }
 
