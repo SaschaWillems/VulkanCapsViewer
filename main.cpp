@@ -17,13 +17,19 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;  
 
     QCommandLineOption optionSaveReport("s", "Save report to file without starting the GUI", "savereport", "");
-    QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "ini", "");
+    QCommandLineOption optionUploadReport("upload", "Upload report for device with given index to the database without visual interaction");
+    QCommandLineOption optionUploadReportDeviceIndex("deviceindex", "Set device index for report upload", "0");
+    QCommandLineOption optionUploadReportSubmitter("submitter", "Set submitter name for report upload", "submitter", "");
+    QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "db.ini", "");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addOption(optionSaveReport);
+    parser.addOption(optionUploadReport);
     parser.addOption(optionDBConnection);
+    parser.addOption(optionUploadReportDeviceIndex);
+    parser.addOption(optionUploadReportSubmitter);
     parser.process(a);
 
     // Custom database settings can be applied via a .ini file
@@ -46,9 +52,21 @@ int main(int argc, char *argv[])
         w.exportReportAsJSON(parser.value(optionSaveReport).toStdString(), "", "");
         return 0;
     }
-    else
+
+    if (parser.isSet(optionUploadReport))
     {
-        w.show();
-        return a.exec();
+        int deviceIndex = 0;
+        QString submitter = "";
+        if (parser.isSet(optionUploadReportDeviceIndex)) {
+            deviceIndex = parser.value(optionUploadReportDeviceIndex).toInt();
+        }
+        if (parser.isSet(optionUploadReportSubmitter)) {
+            submitter = parser.value(optionUploadReportSubmitter);
+        }
+        int res = w.uploadReportNonVisual(deviceIndex, submitter);
+        return res;
     }
+
+    w.show();
+    return a.exec();
 }

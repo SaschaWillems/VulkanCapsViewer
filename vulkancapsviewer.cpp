@@ -1415,3 +1415,43 @@ void vulkanCapsViewer::checkReportDatabaseState()
 	ui.labelDevicePresent->setVisible(true);
 	QApplication::restoreOverrideCursor();
 }
+
+// Upload a report without visual dialogs (e.g. from command line)
+int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter)
+{
+    VulkanDeviceInfo device = vulkanGPUs[deviceIndex];
+
+    bool dbstatus = databaseConnection.checkServerConnection();
+    if (!dbstatus)
+    {
+        qWarning() << "Database unreachable";
+        return -1;
+    }
+
+    int reportId = databaseConnection.getReportId(device, this->version);
+    if (reportId > -1)
+    {
+        qWarning() << "Device already present in database";
+        return -2;
+    }
+
+    exportReportAsJSON("vulkanreport.json", submitter.toStdString(), "Uploaded from command line");
+    std::ostringstream sstream(std::ios::out | std::ios::binary);
+    std::ifstream inFile("vulkanreport.json");
+    std::string line;
+    while (std::getline(inFile, line)) sstream << line << "\r\n";
+
+    string reply = databaseConnection.postReport(sstream.str());
+    if (reply == "res_uploaded")
+    {
+        qInfo() << "Report successfully submitted. Thanks for your contribution!";
+        return 0;
+    }
+    else
+    {
+        qInfo() << "The report could not be uploaded : \n" + QString::fromStdString(reply);
+        return -3;
+    }
+
+    return 0;
+}
