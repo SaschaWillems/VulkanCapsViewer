@@ -238,6 +238,21 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "uniformTexelBufferOffsetAlignmentBytes", QVariant::fromValue(extProps.uniformTexelBufferOffsetAlignmentBytes));
 		pushProperty2(extension, "uniformTexelBufferOffsetSingleTexelAlignment", QVariant(bool(extProps.uniformTexelBufferOffsetSingleTexelAlignment)));
 	}
+	if (extensionSupported("VK_EXT_robustness2")) {
+		const char* extension("VK_EXT_robustness2");
+		VkPhysicalDeviceRobustness2PropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "robustStorageBufferAccessSizeAlignment", QVariant::fromValue(extProps.robustStorageBufferAccessSizeAlignment));
+		pushProperty2(extension, "robustUniformBufferAccessSizeAlignment", QVariant::fromValue(extProps.robustUniformBufferAccessSizeAlignment));
+	}
+	if (extensionSupported("VK_EXT_custom_border_color")) {
+		const char* extension("VK_EXT_custom_border_color");
+		VkPhysicalDeviceCustomBorderColorPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxCustomBorderColorSamplers", QVariant(extProps.maxCustomBorderColorSamplers));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 	if (extensionSupported("VK_KHR_multiview")) {
@@ -671,6 +686,23 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "texelBufferAlignment", extFeatures.texelBufferAlignment);
+	}
+	if (extensionSupported("VK_EXT_robustness2")) {
+		const char* extension("VK_EXT_robustness2");
+		VkPhysicalDeviceRobustness2FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "robustBufferAccess2", extFeatures.robustBufferAccess2);
+		pushFeature2(extension, "robustImageAccess2", extFeatures.robustImageAccess2);
+		pushFeature2(extension, "nullDescriptor", extFeatures.nullDescriptor);
+	}
+	if (extensionSupported("VK_EXT_custom_border_color")) {
+		const char* extension("VK_EXT_custom_border_color");
+		VkPhysicalDeviceCustomBorderColorFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_BORDER_COLOR_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "customBorderColors", extFeatures.customBorderColors);
+		pushFeature2(extension, "customBorderColorWithoutFormat", extFeatures.customBorderColorWithoutFormat);
 	}
 	if (extensionSupported("VK_EXT_pipeline_creation_cache_control")) {
 		const char* extension("VK_EXT_pipeline_creation_cache_control");
