@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
     QCommandLineOption optionSaveReport("s", "Save report to file without starting the GUI", "savereport", "");
     QCommandLineOption optionUploadReport("upload", "Upload report for device with given index to the database without visual interaction");
     QCommandLineOption optionUploadReportDeviceIndex("deviceindex", "Set device index for report upload", "0");
-    QCommandLineOption optionUploadReportSubmitter("submitter", "Set submitter name for report upload", "submitter", "");
+    QCommandLineOption optionUploadReportSubmitter("submitter", "Set optional submitter name for report upload", "submitter", "");
+    QCommandLineOption optionUploadReportComment("comment", "Set optional comment for report upload", "comment", "");
     QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "db.ini", "");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
@@ -30,6 +31,7 @@ int main(int argc, char *argv[])
     parser.addOption(optionDBConnection);
     parser.addOption(optionUploadReportDeviceIndex);
     parser.addOption(optionUploadReportSubmitter);
+    parser.addOption(optionUploadReportComment);
     parser.process(a);
 
     // Custom database settings can be applied via a .ini file
@@ -57,13 +59,17 @@ int main(int argc, char *argv[])
     {
         int deviceIndex = 0;
         QString submitter = "";
+        QString comment = "";
         if (parser.isSet(optionUploadReportDeviceIndex)) {
             deviceIndex = parser.value(optionUploadReportDeviceIndex).toInt();
         }
         if (parser.isSet(optionUploadReportSubmitter)) {
             submitter = parser.value(optionUploadReportSubmitter);
         }
-        int res = w.uploadReportNonVisual(deviceIndex, submitter);
+        if (parser.isSet(optionUploadReportComment)) {
+            comment = parser.value(optionUploadReportComment);
+        }
+        int res = w.uploadReportNonVisual(deviceIndex, submitter, comment);
         return res;
     }
 

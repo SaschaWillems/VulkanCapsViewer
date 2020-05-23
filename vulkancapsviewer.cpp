@@ -1417,7 +1417,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 }
 
 // Upload a report without visual dialogs (e.g. from command line)
-int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter)
+int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, QString comment)
 {
     VulkanDeviceInfo device = vulkanGPUs[deviceIndex];
 
@@ -1435,7 +1435,7 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter)
         return -2;
     }
 
-    exportReportAsJSON("vulkanreport.json", submitter.toStdString(), "Uploaded from command line");
+    exportReportAsJSON("vulkanreport.json", submitter.toStdString(), comment.toStdString());
     std::ostringstream sstream(std::ios::out | std::ios::binary);
     std::ifstream inFile("vulkanreport.json");
     std::string line;

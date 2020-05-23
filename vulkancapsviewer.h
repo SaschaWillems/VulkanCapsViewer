@@ -46,7 +46,7 @@ public:
 	vulkanCapsViewer(QWidget *parent = 0);
 	~vulkanCapsViewer();
     void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
-    int uploadReportNonVisual(int deviceIndex, QString submitter);
+    int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
     QString vulkanApiVersion;
 	int selectedDeviceIndex = 0;
