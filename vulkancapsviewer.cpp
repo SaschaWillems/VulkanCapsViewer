@@ -1305,6 +1305,9 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         return;
     }
 
+    // Surface extension used
+    addTreeItem(treeWidget->invisibleRootItem(), "Surface extension", surfaceExtension);
+
     // Surface capabilities
     QTreeWidgetItem *surfaceCapsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface Capabilities", "");
 
