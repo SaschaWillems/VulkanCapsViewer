@@ -430,23 +430,25 @@ bool vulkanCapsViewer::initVulkan()
         instanceInfo.layers.push_back(layer);
 	}
 
-    surfaceExtension = "";
-
     // Platform specific surface extensions
-#if defined(_WIN32)
-    surfaceExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-    surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-    // todo : wayland etc.
+    std::vector<std::string> surfaceExtensionsAvailable = {
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+      VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #endif
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+      VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#endif
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+      VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+#endif
+      // todo : wayland etc.
+    };
 
     std::vector<const char*> enabledExtensions = {};
 
     if(!surfaceExtension.empty()) {
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-        enabledExtensions.push_back(surfaceExtension.c_str());
+        enabledExtensions.push_back(surfaceExtensionsAvailable[0].c_str());
     };
 
     // Get instance extensions
@@ -568,6 +570,9 @@ bool vulkanCapsViewer::initVulkan()
         surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
         surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #endif
+
+    if (surfaceResult == VK_SUCCESS)
+        surfaceExtension = surfaceExtensionsAvailable[0];
 
     displayGlobalLayers(ui.treeWidgetGlobalLayers);
     displayGlobalExtensions();
