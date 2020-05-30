@@ -431,7 +431,7 @@ bool vulkanCapsViewer::initVulkan()
 	}
 
     // Platform specific surface extensions
-    std::vector<std::string> surfaceExtensionsAvailable = {
+    std::vector<std::string> possibleSurfaceExtensions = {
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
       VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #endif
@@ -446,10 +446,26 @@ bool vulkanCapsViewer::initVulkan()
 
     std::vector<const char*> enabledExtensions = {};
 
-    if(!surfaceExtension.empty()) {
+    uint32_t availableExtensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(availableExtensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, availableExtensions.data());
+
+    if (availableExtensionCount != 0) {
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-        enabledExtensions.push_back(surfaceExtensionsAvailable[0].c_str());
     };
+
+    std::vector<std::string> surfaceExtensionsAvailable = {};
+
+    for (const std::string& possibleExtension : possibleSurfaceExtensions) {
+      for (const auto& availableExtension : availableExtensions) {
+        if (possibleExtension == availableExtension.extensionName) {
+          surfaceExtensionsAvailable.push_back(possibleExtension);
+          enabledExtensions.push_back(possibleExtension.c_str());
+          break;
+        }
+      }
+    }
 
     // Get instance extensions
     instanceInfo.extensions.clear();
