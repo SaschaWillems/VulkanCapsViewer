@@ -435,13 +435,15 @@ bool vulkanCapsViewer::initVulkan()
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
       VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #endif
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+      VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#endif
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
       VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
 #endif
 #if defined(VK_USE_PLATFORM_XCB_KHR)
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
-      // todo : wayland etc.
     };
 
     std::vector<const char*> enabledExtensions = {};
@@ -585,6 +587,17 @@ bool vulkanCapsViewer::initVulkan()
                 surfaceCreateInfo.window = nativeWindow;
                 surfaceResult = vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
             }
+        }
+#endif
+
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+        if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
+            VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.pNext = nullptr;
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.display = wl_display_connect(NULL);
+            surfaceCreateInfo.surface = nullptr;
+            surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
 #endif
 

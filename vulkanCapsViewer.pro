@@ -22,10 +22,10 @@ win32 {
 }
 linux:!android {
     LIBS += -lvulkan
+    QT += waylandclient
     QT += x11extras
-    #x11 {
-        DEFINES += VK_USE_PLATFORM_XCB_KHR
-    #}
+    DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+    DEFINES += VK_USE_PLATFORM_XCB_KHR
     target.path = /usr/bin
     INSTALLS += target
     desktop.files = vulkanCapsViewer.desktop
