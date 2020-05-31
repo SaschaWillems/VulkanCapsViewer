@@ -430,25 +430,44 @@ bool vulkanCapsViewer::initVulkan()
         instanceInfo.layers.push_back(layer);
 	}
 
-    surfaceExtension = "";
-
     // Platform specific surface extensions
-#if defined(_WIN32)
-    surfaceExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-    surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-    surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
-#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-    surfaceExtension = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
+    std::vector<std::string> possibleSurfaceExtensions = {
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+      VK_KHR_ANDROID_SURFACE_EXTENSION_NAME,
 #endif
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+      VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME,
+#endif
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+      VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
+#endif
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+      VK_KHR_XCB_SURFACE_EXTENSION_NAME,
+#endif
+    };
 
     std::vector<const char*> enabledExtensions = {};
 
-    if(!surfaceExtension.empty()) {
+    uint32_t availableExtensionCount = 0;
+    vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(availableExtensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &availableExtensionCount, availableExtensions.data());
+
+    if (availableExtensionCount != 0) {
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-        enabledExtensions.push_back(surfaceExtension.c_str());
     };
+
+    std::vector<std::string> surfaceExtensionsAvailable = {};
+
+    for (const std::string& possibleExtension : possibleSurfaceExtensions) {
+      for (const auto& availableExtension : availableExtensions) {
+        if (possibleExtension == availableExtension.extensionName) {
+          surfaceExtensionsAvailable.push_back(possibleExtension);
+          enabledExtensions.push_back(possibleExtension.c_str());
+          break;
+        }
+      }
+    }
 
     // Get instance extensions
     instanceInfo.extensions.clear();
@@ -512,70 +531,93 @@ bool vulkanCapsViewer::initVulkan()
     }
 
     // Create a surface
-    // todo: only if surfaceExtensions != ""
-    VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
-    surface = VK_NULL_HANDLE;
+    for (auto surface_extension : surfaceExtensionsAvailable) {
+        VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
+        surface = VK_NULL_HANDLE;
+
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-        VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-        surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
-        surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-        surfaceResult = vkCreateWin32SurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-
-    // Get a native window via JNI
-    // Qt doesn't offer access to this, so we have to do this manually
-    // Note: Purely based on countless hours of trial-and-error, need to check on other devices
-    // todo: cleanup, error checking
-
-    // Get window
-    QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject window;
-    if (activity.isValid())
-    {
-        window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-    }
-
-    if (window.isValid())
-    {
-
-        // Get a surface texture
-        QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
-        qDebug() << surfaceTexture.isValid();
-
-        // Get a surface based on the texture
-        QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
-        qDebug() << surface.isValid();
-
-        if (surfaceTexture.isValid())
-        {
-            // Create a native window from our surface that can be used to create the Vulkan surface
-            QAndroidJniEnvironment qjniEnv;
-            nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
+        if (surface_extension == VK_KHR_WIN32_SURFACE_EXTENSION_NAME) {
+            VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
+            surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
+            surfaceResult = vkCreateWin32SurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
-    }
-
-    if (nativeWindow)
-    {
-        VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-        surfaceCreateInfo.window = nativeWindow;
-        surfaceResult = vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
-    }
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-        VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-        surfaceCreateInfo.connection = QX11Info::connection();
-        surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-        surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
-#elif defined(VK_USE_PLATFORM_WAYLAND_KHR)
-        VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
-        surfaceCreateInfo.pNext = nullptr;
-        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-        surfaceCreateInfo.display = wl_display_connect(NULL);
-        surfaceCreateInfo.surface = nullptr;
-        surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
 #endif
+
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+        if (surface_extension == VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) {
+
+            // Get a native window via JNI
+            // Qt doesn't offer access to this, so we have to do this manually
+            // Note: Purely based on countless hours of trial-and-error, need to check on other devices
+            // todo: cleanup, error checking
+
+            // Get window
+            QAndroidJniObject activity = QtAndroid::androidActivity();
+            QAndroidJniObject window;
+            if (activity.isValid())
+            {
+                window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+            }
+
+            if (window.isValid())
+            {
+
+                // Get a surface texture
+                QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
+                qDebug() << surfaceTexture.isValid();
+
+                // Get a surface based on the texture
+                QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
+                qDebug() << surface.isValid();
+
+                if (surfaceTexture.isValid())
+                {
+                    // Create a native window from our surface that can be used to create the Vulkan surface
+                    QAndroidJniEnvironment qjniEnv;
+                    nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
+                }
+            }
+
+            if (nativeWindow)
+            {
+                VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
+                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+                surfaceCreateInfo.window = nativeWindow;
+                surfaceResult = vkCreateAndroidSurfaceKHR(vkInstance, &surfaceCreateInfo, NULL, &surface);
+            }
+        }
+#endif
+
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR)
+        if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
+            VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.pNext = nullptr;
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.display = wl_display_connect(NULL);
+            surfaceCreateInfo.surface = nullptr;
+            surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+        }
+#endif
+
+#if defined(VK_USE_PLATFORM_XCB_KHR)
+        if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
+            VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.connection = QX11Info::connection();
+            surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
+            surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+        }
+#endif
+
+        if (surfaceResult == VK_SUCCESS) {
+            surfaceExtension = surface_extension;
+            break;
+        }
+        else
+            surface = VK_NULL_HANDLE;
+    }
 
     displayGlobalLayers(ui.treeWidgetGlobalLayers);
     displayGlobalExtensions();
@@ -1262,6 +1304,9 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         treeWidget->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
         return;
     }
+
+    // Surface extension used
+    addTreeItem(treeWidget->invisibleRootItem(), "Surface extension", surfaceExtension);
 
     // Surface capabilities
     QTreeWidgetItem *surfaceCapsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface Capabilities", "");
