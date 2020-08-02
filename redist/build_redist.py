@@ -1,8 +1,19 @@
 import shutil
 import os
+import sys
 import zipfile
+import argparse
 
-release_name = '2_03'
+parser = argparse.ArgumentParser(description='Android redistribution')
+parser.add_argument('--release', type=str, help='Release version')
+args = parser.parse_args()
+
+if args.release == None:
+    sys.exit('No release specified')
+
+release_name = args.release
+
+# Windows
 
 dst_path = './windows/vulkancapsviewer'
 if not os.path.exists(dst_path):
@@ -27,3 +38,9 @@ for root, dirs, files in os.walk('vulkancapsviewer'):
         zip_file.write(os.path.join(root, file), compress_type=zipfile.ZIP_LZMA)
 zip_file.close()
 os.chdir('..')
+
+# Android
+
+dst_path = './'
+
+shutil.copy2('../android-build/build/outputs/apk/android-build-release-signed.apk', dst_path + 'vulkancapsviewer_'+release_name+'_arm.apk')
