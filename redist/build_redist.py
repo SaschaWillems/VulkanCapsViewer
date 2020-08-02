@@ -35,7 +35,7 @@ os.chdir('windows')
 zip_file = zipfile.ZipFile('../vulkancapsviewer_'+release_name+'_win64.zip', 'w')
 for root, dirs, files in os.walk('vulkancapsviewer'):
     for file in files:
-        zip_file.write(os.path.join(root, file), compress_type=zipfile.ZIP_LZMA)
+        zip_file.write(os.path.join(root, file), compress_type=zipfile.ZIP_DEFLATED)
 zip_file.close()
 os.chdir('..')
 
