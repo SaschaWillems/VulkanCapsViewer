@@ -342,6 +342,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "maxDescriptorSetAccelerationStructures", QVariant(extProps.maxDescriptorSetAccelerationStructures));
 		pushProperty2(extension, "shaderGroupHandleCaptureReplaySize", QVariant(extProps.shaderGroupHandleCaptureReplaySize));
 	}
+	if (extensionSupported("VK_KHR_portability_subset")) {
+		const char* extension("VK_KHR_portability_subset");
+		VkPhysicalDevicePortabilitySubsetPropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "minVertexInputBindingStrideAlignment", QVariant(extProps.minVertexInputBindingStrideAlignment));
+	}
 	if (extensionSupported("VK_KHR_maintenance3")) {
 		const char* extension("VK_KHR_maintenance3");
 		VkPhysicalDeviceMaintenance3Properties extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES };
@@ -767,6 +774,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "robustImageAccess", extFeatures.robustImageAccess);
 	}
+	if (extensionSupported("VK_EXT_4444_formats")) {
+		const char* extension("VK_EXT_4444_formats");
+		VkPhysicalDevice4444FormatsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "formatA4R4G4B4", extFeatures.formatA4R4G4B4);
+		pushFeature2(extension, "formatA4B4G4R4", extFeatures.formatA4B4G4R4);
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_INTEL() {
 	if (extensionSupported("VK_INTEL_shader_integer_functions2")) {
@@ -849,6 +864,27 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "samplerYcbcrConversion", extFeatures.samplerYcbcrConversion);
+	}
+	if (extensionSupported("VK_KHR_portability_subset")) {
+		const char* extension("VK_KHR_portability_subset");
+		VkPhysicalDevicePortabilitySubsetFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "constantAlphaColorBlendFactors", extFeatures.constantAlphaColorBlendFactors);
+		pushFeature2(extension, "events", extFeatures.events);
+		pushFeature2(extension, "imageViewFormatReinterpretation", extFeatures.imageViewFormatReinterpretation);
+		pushFeature2(extension, "imageViewFormatSwizzle", extFeatures.imageViewFormatSwizzle);
+		pushFeature2(extension, "imageView2DOn3DImage", extFeatures.imageView2DOn3DImage);
+		pushFeature2(extension, "multisampleArrayImage", extFeatures.multisampleArrayImage);
+		pushFeature2(extension, "mutableComparisonSamplers", extFeatures.mutableComparisonSamplers);
+		pushFeature2(extension, "pointPolygons", extFeatures.pointPolygons);
+		pushFeature2(extension, "samplerMipLodBias", extFeatures.samplerMipLodBias);
+		pushFeature2(extension, "separateStencilMaskRef", extFeatures.separateStencilMaskRef);
+		pushFeature2(extension, "shaderSampleRateInterpolationFunctions", extFeatures.shaderSampleRateInterpolationFunctions);
+		pushFeature2(extension, "tessellationIsolines", extFeatures.tessellationIsolines);
+		pushFeature2(extension, "tessellationPointMode", extFeatures.tessellationPointMode);
+		pushFeature2(extension, "triangleFans", extFeatures.triangleFans);
+		pushFeature2(extension, "vertexAttributeAccessBeyondStride", extFeatures.vertexAttributeAccessBeyondStride);
 	}
 	if (extensionSupported("VK_KHR_shader_subgroup_extended_types")) {
 		const char* extension("VK_KHR_shader_subgroup_extended_types");

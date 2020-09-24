@@ -80,7 +80,7 @@ private:
     void readPhysicalProperties_NVX();
 
 public:
-    const uint32_t vkHeaderVersion = 148;
+    const uint32_t vkHeaderVersion = 154;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;
