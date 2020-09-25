@@ -19,6 +19,11 @@ matrix:
         - qt512tools
         - qt512x11extras
         - libgl1-mesa-dev
+    install:
+      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
+      - sudo apt update
+      - sudo apt install vulkan-sdk        
     script:
       - PATH="/opt/qt512/bin:$PATH"
       - CXX="clang++"
@@ -55,6 +60,11 @@ matrix:
         - libwayland-server0
         - libgles2-mesa-dev
         - libxkbcommon-dev        
+    install:
+      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
+      - sudo apt update
+      - sudo apt install vulkan-sdk
     script:
       - PATH="/opt/qt512/bin:$PATH"
       - CXX="clang++"
