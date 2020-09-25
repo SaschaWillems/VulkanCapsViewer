@@ -5,25 +5,20 @@ matrix:
   include:
   - name: Build Linux X11
     os: linux
-    dist: bionic
+    dist: xenial
     group: stable
     compiler: clang
     env: TARGET_PLATFORM=X11
     addons:
       apt:
         sources:
-        - sourceline: 'ppa:beineri/opt-qt-5.12.0-bionic'
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
         update: true
         packages:
         - qt512base
         - qt512tools
         - qt512x11extras
         - libgl1-mesa-dev
-    install:
-      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.148-bionic.list https://packages.lunarg.com/vulkan/1.2.148/lunarg-vulkan-1.2.148-bionic.list
-      - sudo apt update
-      - sudo apt install vulkan-sdk
     script:
       - PATH="/opt/qt512/bin:$PATH"
       - CXX="clang++"
@@ -40,14 +35,14 @@ matrix:
       - ./redist/deploy.sh
   - name: Build Linux Wayland
     os: linux
-    dist: bionic
+    dist: xenial
     group: stable
     compiler: clang
     env: TARGET_PLATFORM=wayland
     addons:
       apt:
         sources:
-        - sourceline: 'ppa:beineri/opt-qt-5.12.0-bionic'
+        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
         update: true
         packages:
         - qt512base
@@ -60,11 +55,6 @@ matrix:
         - libwayland-server0
         - libgles2-mesa-dev
         - libxkbcommon-dev        
-    install:
-      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.148-bionic.list https://packages.lunarg.com/vulkan/1.2.148/lunarg-vulkan-1.2.148-bionic.list
-      - sudo apt update
-      - sudo apt install vulkan-sdk
     script:
       - PATH="/opt/qt512/bin:$PATH"
       - CXX="clang++"
