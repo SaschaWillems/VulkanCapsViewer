@@ -84,6 +84,7 @@ matrix:
     dist: xenial
     group: stable
     compiler: clang
+    env: TARGET_PLATFORM=osx
     addons:
       homebrew:
         packages:
@@ -96,6 +97,6 @@ matrix:
       - qmake -config release
       - make -j$(nproc)
       - macdeployqt vulkanCapsViewer.app -dmg
-    # after_success:
-    #   - chmod +x ./redist/deploy.sh
-    #   - ./redist/deploy.sh          
+    after_success:
+      - chmod +x ./redist/deploy.sh
+      - ./redist/deploy.sh
