@@ -89,6 +89,7 @@ matrix:
         packages:
         - qt  
     install:
+      - brew cask install apenngrace/vulkan/vulkan-sdk
       - export PATH=$PATH:/usr/local/opt/qt/bin
       - export CPATH=$CPATH:/usr/local/include/    
     script:
