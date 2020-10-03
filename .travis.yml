@@ -98,6 +98,6 @@ matrix:
       - make -j$(nproc)
       - macdeployqt vulkanCapsViewer.app -dmg
     after_success:
-      - cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.AppImage.dmg
+      - cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
       - chmod +x ./redist/deploy.sh
       - ./redist/deploy.sh
