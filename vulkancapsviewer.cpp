@@ -444,6 +444,9 @@ bool vulkanCapsViewer::initVulkan()
 #if defined(VK_USE_PLATFORM_XCB_KHR)
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
+#endif
     };
 
     std::vector<const char*> enabledExtensions = {};
