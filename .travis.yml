@@ -3,79 +3,98 @@ language: cpp
 matrix:
   fast_finish: true
   include:
-  - name: Build Linux X11
-    os: linux
+  # - name: Build Linux X11
+  #   os: linux
+  #   dist: xenial
+  #   group: stable
+  #   compiler: clang
+  #   env: TARGET_PLATFORM=X11
+  #   addons:
+  #     apt:
+  #       sources:
+  #       - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+  #       update: true
+  #       packages:
+  #       - qt512base
+  #       - qt512tools
+  #       - qt512x11extras
+  #       - libgl1-mesa-dev
+  #   install:
+  #     - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+  #     - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
+  #     - sudo apt update
+  #     - sudo apt install vulkan-sdk        
+  #   script:
+  #     - PATH="/opt/qt512/bin:$PATH"
+  #     - CXX="clang++"
+  #     - qt512-env.sh
+  #     - qmake CONFIG+=release PREFIX=/usr
+  #     - make INSTALL_ROOT=appdir install ; find appdir/
+  #     - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  #     - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+  #     - export VERSION=${TARGET_PLATFORM}
+  #     - cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+  #     - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+  #   after_success:
+  #     - chmod +x ./redist/deploy.sh
+  #     - ./redist/deploy.sh
+  # - name: Build Linux Wayland
+  #   os: linux
+  #   dist: xenial
+  #   group: stable
+  #   compiler: clang
+  #   env: TARGET_PLATFORM=wayland
+  #   addons:
+  #     apt:
+  #       sources:
+  #       - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
+  #       update: true
+  #       packages:
+  #       - qt512base
+  #       - qt512tools
+  #       - qt512wayland
+  #       - libqt5waylandclient5-dev
+  #       - libgl1-mesa-dev
+  #       - libwayland-dev
+  #       - libwayland-egl1-mesa
+  #       - libwayland-server0
+  #       - libgles2-mesa-dev
+  #       - libxkbcommon-dev        
+  #   install:
+  #     - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+  #     - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
+  #     - sudo apt update
+  #     - sudo apt install vulkan-sdk
+  #   script:
+  #     - PATH="/opt/qt512/bin:$PATH"
+  #     - CXX="clang++"
+  #     - qt512-env.sh
+  #     - qmake CONFIG+=release PREFIX=/usr
+  #     - make INSTALL_ROOT=appdir install ; find appdir/
+  #     - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+  #     - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+  #     - export VERSION=${TARGET_PLATFORM}
+  #     - cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+  #     - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+  #   after_success:
+  #     - chmod +x ./redist/deploy.sh
+  #     - ./redist/deploy.sh          
+  - name: Build Mac OSX
+    os: osx
     dist: xenial
     group: stable
     compiler: clang
-    env: TARGET_PLATFORM=X11
     addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
-        update: true
+      homebrew:
         packages:
-        - qt512base
-        - qt512tools
-        - qt512x11extras
-        - libgl1-mesa-dev
+        - qt  
     install:
-      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
-      - sudo apt update
-      - sudo apt install vulkan-sdk        
+      - export PATH=$PATH:/usr/local/opt/qt/bin
+      - export CPATH=$CPATH:/usr/local/include/    
     script:
-      - PATH="/opt/qt512/bin:$PATH"
-      - CXX="clang++"
-      - qt512-env.sh
-      - qmake CONFIG+=release PREFIX=/usr
-      - make INSTALL_ROOT=appdir install ; find appdir/
-      - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-      - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
-      - export VERSION=${TARGET_PLATFORM}
-      - cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-      - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
-    after_success:
-      - chmod +x ./redist/deploy.sh
-      - ./redist/deploy.sh
-  - name: Build Linux Wayland
-    os: linux
-    dist: xenial
-    group: stable
-    compiler: clang
-    env: TARGET_PLATFORM=wayland
-    addons:
-      apt:
-        sources:
-        - sourceline: 'ppa:beineri/opt-qt-5.12.0-xenial'
-        update: true
-        packages:
-        - qt512base
-        - qt512tools
-        - qt512wayland
-        - libqt5waylandclient5-dev
-        - libgl1-mesa-dev
-        - libwayland-dev
-        - libwayland-egl1-mesa
-        - libwayland-server0
-        - libgles2-mesa-dev
-        - libxkbcommon-dev        
-    install:
-      - wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
-      - sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
-      - sudo apt update
-      - sudo apt install vulkan-sdk
-    script:
-      - PATH="/opt/qt512/bin:$PATH"
-      - CXX="clang++"
-      - qt512-env.sh
-      - qmake CONFIG+=release PREFIX=/usr
-      - make INSTALL_ROOT=appdir install ; find appdir/
-      - wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-      - chmod a+x linuxdeployqt-continuous-x86_64.AppImage
-      - export VERSION=${TARGET_PLATFORM}
-      - cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-      - ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
-    after_success:
-      - chmod +x ./redist/deploy.sh
-      - ./redist/deploy.sh          
+      - qmake -config release
+      - make -j$(nproc)
+      # - macdeployqt vulkanCapsViewer.app -dmg
+    # after_success:
+    #   - chmod +x ./redist/deploy.sh
+    #   - ./redist/deploy.sh          
