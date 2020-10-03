@@ -50,7 +50,7 @@ android {
 }
 macx {
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
-    VULKAN_DYLIB = libvulkan.1.dylib
+    VULKAN_DYLIB = /usr/local/lib/libvulkan.1.dylib
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
 }
 DEPENDPATH += .
