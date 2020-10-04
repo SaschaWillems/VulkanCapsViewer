@@ -65,10 +65,6 @@
 #include <android/native_window_jni.h>
 #endif
 
-#ifdef VK_USE_PLATFORM_MACOS_MVK
-#import <AppKit/NSView.h>
-#endif
-
 using std::to_string;
 
 #define VK_API_VERSION VK_API_VERSION_1_1
@@ -622,7 +618,7 @@ bool vulkanCapsViewer::initVulkan()
         if (surface_extension == VK_MVK_MACOS_SURFACE_EXTENSION_NAME) {
             VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-            surfaceCreateInfo.pView = reinterpret_cast<NSView*>(this->winId());
+            surfaceCreateInfo.pView = (void*)this->winId();
             surfaceResult = vkCreateMacOSSurfaceMVK(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
 #endif
