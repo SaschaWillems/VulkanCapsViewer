@@ -66,7 +66,7 @@
 #endif
 
 #ifdef VK_USE_PLATFORM_MACOS_MVK
-#import <AppKit/NSView.h
+#import <AppKit/NSView.h>
 #endif
 
 using std::to_string;
