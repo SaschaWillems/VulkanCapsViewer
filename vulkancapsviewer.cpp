@@ -618,7 +618,7 @@ bool vulkanCapsViewer::initVulkan()
         if (surface_extension == VK_MVK_MACOS_SURFACE_EXTENSION_NAME) {
             VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-            surfaceCreateInfo.pView = (void*)QWidget::winId();
+            surfaceCreateInfo.pView = reinterpret_cast<NSView*>(this->winId());
             surfaceResult = vkCreateMacOSSurfaceMVK(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
 #endif
