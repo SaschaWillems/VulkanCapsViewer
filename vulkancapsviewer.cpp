@@ -65,6 +65,10 @@
 #include <android/native_window_jni.h>
 #endif
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+#import <Cocoa/Cocoa.h>
+#endif
+
 using std::to_string;
 
 #define VK_API_VERSION VK_API_VERSION_1_1
