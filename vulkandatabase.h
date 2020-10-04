@@ -48,8 +48,8 @@ public:
     static QString username;
     static QString password;
     static QString databaseUrl;
-    int getReportId(VulkanDeviceInfo device, string version);
-    bool checkReportPresent(VulkanDeviceInfo device, string version);
+    int getReportId(VulkanDeviceInfo device);
+    bool checkReportPresent(VulkanDeviceInfo device);
 	bool checkServerConnection();
     string getBaseUrl();
 	string fetchReport(int reportId);

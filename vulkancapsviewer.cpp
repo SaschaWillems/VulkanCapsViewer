@@ -234,7 +234,7 @@ void vulkanCapsViewer::slotBrowseDatabase()
 /// </summary>
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
-    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex], this->version);
+    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
 	stringstream ss;
 	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
 	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
@@ -303,7 +303,7 @@ void vulkanCapsViewer::slotUploadReport()
 		return;
 	}
 
-    int reportId = databaseConnection.getReportId(device, this->version);
+    int reportId = databaseConnection.getReportId(device);
 	if (reportId > -1)
 	{ 
 		QMessageBox::StandardButton reply;
@@ -1452,7 +1452,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 		return;
 	}
 
-    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], this->version))
+    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex]))
 	{
         ui.toolButtonOnlineDevice->setEnabled(true);
         ui.labelDevicePresent->setText("<font color='#00813e'>Device report already present in database</font>");
@@ -1485,7 +1485,7 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
         return -1;
     }
 
-    int reportId = databaseConnection.getReportId(device, this->version);
+    int reportId = databaseConnection.getReportId(device);
     if (reportId > -1)
     {
         qWarning() << "Device already present in database";
