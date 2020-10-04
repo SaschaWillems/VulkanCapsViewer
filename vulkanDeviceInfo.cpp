@@ -474,7 +474,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
-QJsonObject VulkanDeviceInfo::toJson(std::string fileName, std::string submitter, std::string comment)
+QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
 {
     QJsonObject root;
 
