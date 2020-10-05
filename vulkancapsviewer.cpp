@@ -65,6 +65,13 @@
 #include <android/native_window_jni.h>
 #endif
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+extern "C"{
+    void makeViewMetalCompatible(void* handle);
+    void unmakeViewMetalCompatible2(void* handle);
+}
+#endif
+
 using std::to_string;
 
 #define VK_API_VERSION VK_API_VERSION_1_1
@@ -618,6 +625,7 @@ bool vulkanCapsViewer::initVulkan()
         if (surface_extension == VK_MVK_MACOS_SURFACE_EXTENSION_NAME) {
             VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+            makeViewMetalCompatible((void*)(this->winId()));
             surfaceCreateInfo.pView = (void*)this->winId();
             surfaceResult = vkCreateMacOSSurfaceMVK(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
@@ -654,6 +662,9 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->readPhysicalLimits();
     GPU->readPhysicalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    unmakeViewMetalCompatible2((void*)(this->winId()));
+#endif
     GPU->readPlatformDetails();
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
