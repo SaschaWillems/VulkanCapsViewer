@@ -16,13 +16,8 @@ extern "C" void makeViewMetalCompatible(void* handle)
 
 extern "C" void unmakeViewMetalCompatible2(void* handle)
 {
-#ifdef BUILD_FOR_MAC
     NSView* view = (NSView*)handle;
     assert([view isKindOfClass:[NSView class]]);
-#else
-    UIView* view = (UIView*)handle;
-    assert([view isKindOfClass:[UIView class]]);
-#endif
     if ([view.layer isKindOfClass:[CAMetalLayer class]])
     {
         [view setLayer:orilayer];
