@@ -13,6 +13,7 @@ HEADERS += ./settings.h \
     $$PWD/vulkanandroid.h \
     $$PWD/vulkansurfaceinfo.hpp \
     $$PWD/vulkanpfn.h \
+    $$PWD/makeviewmetal.mm \
     $$PWD/vulkanDeviceInfo.h
 SOURCES += ./main.cpp \
     $$PWD/VulkanDeviceInfoExtensions.cpp \
