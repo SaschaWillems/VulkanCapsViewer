@@ -54,7 +54,6 @@ macx {
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += makeviewmetal.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
-    QMAKE_INFO_PLIST = Info.plist
 }
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/release
