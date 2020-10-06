@@ -65,6 +65,13 @@
 #include <android/native_window_jni.h>
 #endif
 
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+extern "C"{
+    void makeViewMetalCompatible(void* handle);
+    void unmakeViewMetalCompatible2(void* handle);
+}
+#endif
+
 using std::to_string;
 
 #define VK_API_VERSION VK_API_VERSION_1_1
@@ -234,7 +241,7 @@ void vulkanCapsViewer::slotBrowseDatabase()
 /// </summary>
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
-    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex], this->version);
+    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
 	stringstream ss;
 	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
 	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
@@ -303,7 +310,7 @@ void vulkanCapsViewer::slotUploadReport()
 		return;
 	}
 
-    int reportId = databaseConnection.getReportId(device, this->version);
+    int reportId = databaseConnection.getReportId(device);
 	if (reportId > -1)
 	{ 
 		QMessageBox::StandardButton reply;
@@ -444,6 +451,9 @@ bool vulkanCapsViewer::initVulkan()
 #if defined(VK_USE_PLATFORM_XCB_KHR)
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
+#endif
     };
 
     std::vector<const char*> enabledExtensions = {};
@@ -455,7 +465,7 @@ bool vulkanCapsViewer::initVulkan()
 
     if (availableExtensionCount != 0) {
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    };
+    }
 
     std::vector<std::string> surfaceExtensionsAvailable = {};
 
@@ -611,6 +621,16 @@ bool vulkanCapsViewer::initVulkan()
         }
 #endif
 
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+        if (surface_extension == VK_MVK_MACOS_SURFACE_EXTENSION_NAME) {
+            VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
+            makeViewMetalCompatible((void*)(this->winId()));
+            surfaceCreateInfo.pView = (void*)this->winId();
+            surfaceResult = vkCreateMacOSSurfaceMVK(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+        }
+#endif
+
         if (surfaceResult == VK_SUCCESS) {
             surfaceExtension = surface_extension;
             break;
@@ -642,6 +662,9 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->readPhysicalLimits();
     GPU->readPhysicalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
+#ifdef VK_USE_PLATFORM_MACOS_MVK
+    unmakeViewMetalCompatible2((void*)(this->winId()));
+#endif
     GPU->readPlatformDetails();
 	// Request all available queues
 	std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -1134,32 +1157,32 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 					}
 
                     // Core
-					ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_BLIT_SRC_BIT);
-					ADD_FLAG(VK_FORMAT_FEATURE_BLIT_DST_BIT);
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_SRC_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_DST_BIT)
                     // 1.1
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_SRC_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_DST_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_DISJOINT_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT);
+                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_SRC_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_DST_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_DISJOINT_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT)
 
                     // EXT
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT);
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG);
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)
+                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG)
                 }
 
 				rowItems[0]->appendRow(flagItems);
@@ -1241,7 +1264,7 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
                     propertyItem << new QStandardItem(arrayToStr(property.value));
                 } else {
                     switch (property.value.type()) {
-                        case QMetaType::Bool: {
+                        case QVariant::Bool: {
                             bool boolVal = property.value.toBool();
                             propertyItem << new QStandardItem(boolVal ? "true" : "false");
                             propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
@@ -1381,7 +1404,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
 {
 	VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
-    QJsonObject report = device.toJson(fileName, submitter, comment);
+    QJsonObject report = device.toJson(submitter, comment);
 
     // Add instance information
     QJsonObject jsonInstance;
@@ -1440,7 +1463,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 		return;
 	}
 
-    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], this->version))
+    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex]))
 	{
         ui.toolButtonOnlineDevice->setEnabled(true);
         ui.labelDevicePresent->setText("<font color='#00813e'>Device report already present in database</font>");
@@ -1473,7 +1496,7 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
         return -1;
     }
 
-    int reportId = databaseConnection.getReportId(device, this->version);
+    int reportId = databaseConnection.getReportId(device);
     if (reportId > -1)
     {
         qWarning() << "Device already present in database";
@@ -1497,6 +1520,4 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
         qInfo() << "The report could not be uploaded : \n" + QString::fromStdString(reply);
         return -3;
     }
-
-    return 0;
 }

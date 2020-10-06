@@ -15,6 +15,7 @@ The hardware reports can be submitted to a public [online database](http://vulka
 - Windows (x64)
 - Linux (x64)
 - Android (Including Android TV)
+- Mac OS X
 
 # API version
 Due to the explicit nature of Vulkan, the API version of the Vulkan driver (or Android image) must fit the API level against which the application was build.
@@ -27,7 +28,7 @@ The repository includes a project file for the [Qt Creator IDE](https://www.qt.i
 Alternatively, you can simply run `qmake` followed by `make` in the source directory.
 
 # Releases
-Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](http://vulkan.gpuinfo.org/download.php).
+Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](https://vulkan.gpuinfo.org/download.php).
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)

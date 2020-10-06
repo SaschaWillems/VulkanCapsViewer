@@ -167,7 +167,7 @@ string VulkanDatabase::encodeUrl(string url)
 	return urlStr.toStdString();
 }
 
-int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
+int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 {
 	string reply;
 	stringstream urlss;
@@ -178,7 +178,6 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
 		<< "&osversion=" << device.os.version
         << "&osarchitecture=" << device.os.architecture
         << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
-        // << "&reportversion=" << version ;
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
@@ -187,9 +186,9 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device, string version)
 /// <summary>
 /// Checks if the report is present in the online database
 /// </summary>
-bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device, string version)
+bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device)
 {
-    int reportID = getReportId(device, version);
+    int reportID = getReportId(device);
 	return (reportID > -1) ? true : false;
 }
 

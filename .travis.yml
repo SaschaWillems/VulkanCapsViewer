@@ -79,3 +79,25 @@ matrix:
     after_success:
       - chmod +x ./redist/deploy.sh
       - ./redist/deploy.sh          
+  - name: Build Mac OSX
+    os: osx
+    dist: xenial
+    group: stable
+    compiler: clang
+    env: TARGET_PLATFORM=osx
+    addons:
+      homebrew:
+        packages:
+        - qt  
+    install:
+      - brew cask install apenngrace/vulkan/vulkan-sdk
+      - export PATH=$PATH:/usr/local/opt/qt/bin
+      - export CPATH=$CPATH:/usr/local/include/    
+    script:
+      - qmake -config release
+      - make -j$(nproc)
+      - macdeployqt vulkanCapsViewer.app -dmg
+    after_success:
+      - cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
+      - chmod +x ./redist/deploy.sh
+      - ./redist/deploy.sh

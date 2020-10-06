@@ -30,7 +30,7 @@
 #include <QSettings>
 #include <QDialogButtonBox>
 
-submitDialog::submitDialog(QString submitter, QWidget * parent, Qt::WindowFlags f)
+submitDialog::submitDialog(QString submitter)
 {
 	QFormLayout *formLayout = new QFormLayout;
 
