@@ -147,8 +147,7 @@ void VulkanDeviceInfo::readQueueFamilies()
         // On Android all physical devices and queue families must support present
         queueFamilyInfo.supportsPresent = true;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-        // todo
-//            queueFamilyInfo.supportsPresent = PFN_vkGetPhysicalDeviceXcbPresentationSupportKHR(device, index);
+        queueFamilyInfo.supportsPresent = vkGetPhysicalDeviceXcbPresentationSupportKHR(device, index);
 #endif
         queueFamilies.push_back(queueFamilyInfo);
         index++;
