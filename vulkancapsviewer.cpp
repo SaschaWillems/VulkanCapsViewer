@@ -657,7 +657,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->device = device;
 	GPU->readLayers();
 	GPU->readExtensions();
-    GPU->readQueueFamilies((QWindow*)(QApplication::activeWindow()));
+    GPU->readQueueFamilies();
     GPU->readPhysicalProperties();
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();

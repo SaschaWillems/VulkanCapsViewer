@@ -52,7 +52,7 @@
 #endif
 
 #ifdef VK_USE_PLATFORM_XCB_KHR
-#include <QtX11Extras/QX11Info>
+#include <QX11Info>
 #endif
 
 #include "vulkanandroid.h"
@@ -103,7 +103,7 @@ public:
     void readExtensions();
     void readLayers();
     void readSupportedFormats();
-    void readQueueFamilies(QWindow *window);
+    void readQueueFamilies();
     void readPhysicalProperties();
     void readPhysicalFeatures();
     void readPhysicalLimits();

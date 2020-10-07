@@ -128,7 +128,7 @@ void VulkanDeviceInfo::readSupportedFormats()
     }
 }
 
-void VulkanDeviceInfo::readQueueFamilies(QWindow *window)
+void VulkanDeviceInfo::readQueueFamilies()
 {
     assert(device != NULL);
     uint32_t queueCount;
@@ -147,7 +147,8 @@ void VulkanDeviceInfo::readQueueFamilies(QWindow *window)
         // On Android all physical devices and queue families must support present
         queueFamilyInfo.supportsPresent = true;
 #elif defined(VK_USE_PLATFORM_XCB_KHR)
-        QXcbWindow *w = static_cast<QXcbWindow *>(window->handle());
+        // @todo: Not properly working
+        /*
         if (w) {
             xcb_connection_t *connection = w->xcbScreen()->xcb_connection();
             queueFamilyInfo.supportsPresent = vkGetPhysicalDeviceXcbPresentationSupportKHR(device, index, connection, w->visualId());
@@ -155,6 +156,8 @@ void VulkanDeviceInfo::readQueueFamilies(QWindow *window)
             qWarning("Could not get valid XCB Window handle to check queue present support!");
             queueFamilyInfo.supportsPresent = false;
         }
+        */
+        queueFamilyInfo.supportsPresent = false;
 #endif
         queueFamilies.push_back(queueFamilyInfo);
         index++;
