@@ -56,7 +56,7 @@
 #endif
 
 #ifdef VK_USE_PLATFORM_XCB_KHR
-#include "qxcbwindow.h"
+#include <QX11Info>
 #endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
