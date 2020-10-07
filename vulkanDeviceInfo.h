@@ -103,7 +103,7 @@ public:
     void readExtensions();
     void readLayers();
     void readSupportedFormats();
-    void readQueueFamilies();
+    void readQueueFamilies(QWindow *window);
     void readPhysicalProperties();
     void readPhysicalFeatures();
     void readPhysicalLimits();

@@ -41,6 +41,7 @@
 #include <QScroller>
 #include <QEasingCurve>
 #include <QSet>
+#include <QApplication>
 #include <qnamespace.h>
 #include <assert.h>
 #include <settingsDialog.h>
@@ -55,7 +56,7 @@
 #endif
 
 #ifdef VK_USE_PLATFORM_XCB_KHR
-#include <QtX11Extras/QX11Info>
+#include "qxcbwindow.h"
 #endif
 
 #ifdef VK_USE_PLATFORM_ANDROID_KHR
@@ -656,7 +657,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 	GPU->device = device;
 	GPU->readLayers();
 	GPU->readExtensions();
-    GPU->readQueueFamilies();
+    GPU->readQueueFamilies((QWindow*)(QApplication::activeWindow()));
     GPU->readPhysicalProperties();
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();
