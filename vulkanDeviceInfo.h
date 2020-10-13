@@ -75,6 +75,7 @@ class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 private:
     std::vector<VulkanLayerInfo> layers;
     bool vulkan_1_1();
+    bool vulkan_1_2();
     bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)
     std::string getSystemProperty(const char* propname);
@@ -90,8 +91,12 @@ public:
     VkPhysicalDeviceProperties props;
     VkPhysicalDeviceMemoryProperties memoryProperties;
     VkPhysicalDeviceFeatures deviceFeatures;
+    QVariantMap core11Features;
+    QVariantMap core12Features;
     bool hasSubgroupProperties = false;
     QVariantMap subgroupProperties;
+    QVariantMap core11Properties;
+    QVariantMap core12Properties;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
