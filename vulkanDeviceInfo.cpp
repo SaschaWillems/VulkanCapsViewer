@@ -260,7 +260,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core11Properties["maxMultiviewInstanceIndex"] = coreProps.maxMultiviewInstanceIndex;
             core11Properties["protectedNoFault"] = coreProps.protectedNoFault;
             core11Properties["maxPerSetDescriptors"] = coreProps.maxPerSetDescriptors;
-            core11Properties["maxMemoryAllocationSize"] = coreProps.maxMemoryAllocationSize;
+            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(coreProps.maxMemoryAllocationSize);
 
             // Subgroup props (@todo: Still required?)
             VkPhysicalDeviceSubgroupProperties extProps{};
@@ -349,7 +349,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core12Properties["independentResolve"] = coreProps.independentResolve;
             core12Properties["filterMinmaxSingleComponentFormats"] = coreProps.filterMinmaxSingleComponentFormats;
             core12Properties["filterMinmaxImageComponentMapping"] = coreProps.filterMinmaxImageComponentMapping;
-            core12Properties["maxTimelineSemaphoreValueDifference"] = coreProps.maxTimelineSemaphoreValueDifference;
+            core12Properties["maxTimelineSemaphoreValueDifference"] = QVariant::fromValue(coreProps.maxTimelineSemaphoreValueDifference);
             core12Properties["framebufferIntegerColorSampleCounts"] = coreProps.framebufferIntegerColorSampleCounts;
 
         }
