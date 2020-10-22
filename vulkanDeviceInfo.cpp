@@ -436,7 +436,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
 
             core11Features.clear();
             core11Features["storageBuffer16BitAccess"] = coreFeatures.storageBuffer16BitAccess;
-            core11Features["uniformAndStorageBuffer16BitAcces"] = coreFeatures.uniformAndStorageBuffer16BitAccess;
+            core11Features["uniformAndStorageBuffer16BitAccess"] = coreFeatures.uniformAndStorageBuffer16BitAccess;
             core11Features["storagePushConstant16"] = coreFeatures.storagePushConstant16;
             core11Features["storageInputOutput16"] = coreFeatures.storageInputOutput16;
             core11Features["multiview"] = coreFeatures.multiview;
@@ -683,12 +683,6 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonProperties["sparseProperties"] = QJsonObject::fromVariantMap(sparseProperties);
     jsonProperties["subgroupProperties"] = QJsonObject::fromVariantMap(subgroupProperties);
     jsonProperties["limits"] = QJsonObject::fromVariantMap(limits);
-    if (!core11Properties.empty()) {
-        jsonProperties["core11"] = QJsonObject::fromVariantMap(core11Properties);
-    }
-    if (!core12Properties.empty()) {
-        jsonProperties["core12"] = QJsonObject::fromVariantMap(core12Properties);
-    }
     // Pipeline cache UUID
     QJsonArray jsonPipelineCache;
     for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
@@ -697,19 +691,39 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
         jsonPipelineCache.append(jsonVal);
     }
     jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
-
     root["properties"] = jsonProperties;
+
+    if (!core12Properties.empty()) {
+        root["propertiesCore12"] = QJsonObject::fromVariantMap(core12Properties);
+    }
 
     // Device features
     QJsonObject jsonFeatures;
-    jsonFeatures = QJsonObject::fromVariantMap(features);
-    if (!core11Properties.empty()) {
-        jsonFeatures["core11"] = QJsonObject::fromVariantMap(core11Features);
+    root["features"] = QJsonObject::fromVariantMap(features);
+
+    // Core 1.1
+    if ((!core11Properties.empty()) || (!core11Features.empty())) {
+        QJsonObject jsonCore11;
+        if (!core11Properties.empty()) {
+            jsonCore11["properties"] = QJsonObject::fromVariantMap(core11Properties);
+        }
+        if (!core11Features.empty()) {
+            jsonCore11["features"] = QJsonObject::fromVariantMap(core11Features);
+        }
+        root["core11"] = jsonCore11;
     }
-    if (!core12Properties.empty()) {
-        jsonFeatures["core12"] = QJsonObject::fromVariantMap(core12Features);
+
+    // Core 1.2
+    if ((!core11Properties.empty()) || (!core11Features.empty())) {
+        QJsonObject jsonCore12;
+        if (!core12Properties.empty()) {
+            jsonCore12["properties"] = QJsonObject::fromVariantMap(core12Properties);
+        }
+        if (!core12Features.empty()) {
+            jsonCore12["features"] = QJsonObject::fromVariantMap(core12Features);
+        }
+        root["core12"] = jsonCore12;
     }
-    root["features"] = jsonFeatures;
 
     // Extensions
     QJsonArray jsonExtensions;
