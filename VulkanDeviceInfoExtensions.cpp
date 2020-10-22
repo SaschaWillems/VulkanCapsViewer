@@ -407,6 +407,29 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxTimelineSemaphoreValueDifference", QVariant::fromValue(extProps.maxTimelineSemaphoreValueDifference));
 	}
+	if (extensionSupported("VK_KHR_fragment_shading_rate")) {
+		const char* extension("VK_KHR_fragment_shading_rate");
+		VkPhysicalDeviceFragmentShadingRatePropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "minFragmentShadingRateAttachmentTexelSize", QVariant::fromValue(QVariantList({ extProps.minFragmentShadingRateAttachmentTexelSize.width, extProps.minFragmentShadingRateAttachmentTexelSize.height })));
+		pushProperty2(extension, "maxFragmentShadingRateAttachmentTexelSize", QVariant::fromValue(QVariantList({ extProps.maxFragmentShadingRateAttachmentTexelSize.width, extProps.maxFragmentShadingRateAttachmentTexelSize.height })));
+		pushProperty2(extension, "maxFragmentShadingRateAttachmentTexelSizeAspectRatio", QVariant(extProps.maxFragmentShadingRateAttachmentTexelSizeAspectRatio));
+		pushProperty2(extension, "primitiveFragmentShadingRateWithMultipleViewports", QVariant(bool(extProps.primitiveFragmentShadingRateWithMultipleViewports)));
+		pushProperty2(extension, "layeredShadingRateAttachments", QVariant(bool(extProps.layeredShadingRateAttachments)));
+		pushProperty2(extension, "fragmentShadingRateNonTrivialCombinerOps", QVariant(bool(extProps.fragmentShadingRateNonTrivialCombinerOps)));
+		pushProperty2(extension, "maxFragmentSize", QVariant::fromValue(QVariantList({ extProps.maxFragmentSize.width, extProps.maxFragmentSize.height })));
+		pushProperty2(extension, "maxFragmentSizeAspectRatio", QVariant(extProps.maxFragmentSizeAspectRatio));
+		pushProperty2(extension, "maxFragmentShadingRateCoverageSamples", QVariant(extProps.maxFragmentShadingRateCoverageSamples));
+		pushProperty2(extension, "maxFragmentShadingRateRasterizationSamples", QVariant(extProps.maxFragmentShadingRateRasterizationSamples));
+		pushProperty2(extension, "fragmentShadingRateWithShaderDepthStencilWrites", QVariant(bool(extProps.fragmentShadingRateWithShaderDepthStencilWrites)));
+		pushProperty2(extension, "fragmentShadingRateWithSampleMask", QVariant(bool(extProps.fragmentShadingRateWithSampleMask)));
+		pushProperty2(extension, "fragmentShadingRateWithShaderSampleMask", QVariant(bool(extProps.fragmentShadingRateWithShaderSampleMask)));
+		pushProperty2(extension, "fragmentShadingRateWithConservativeRasterization", QVariant(bool(extProps.fragmentShadingRateWithConservativeRasterization)));
+		pushProperty2(extension, "fragmentShadingRateWithFragmentShaderInterlock", QVariant(bool(extProps.fragmentShadingRateWithFragmentShaderInterlock)));
+		pushProperty2(extension, "fragmentShadingRateWithCustomSampleLocations", QVariant(bool(extProps.fragmentShadingRateWithCustomSampleLocations)));
+		pushProperty2(extension, "fragmentShadingRateStrictMultiplyCombiner", QVariant(bool(extProps.fragmentShadingRateStrictMultiplyCombiner)));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 	if (extensionSupported("VK_NV_shader_sm_builtins")) {
@@ -632,6 +655,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "subgroupSizeControl", extFeatures.subgroupSizeControl);
 		pushFeature2(extension, "computeFullSubgroups", extFeatures.computeFullSubgroups);
 	}
+	if (extensionSupported("VK_EXT_shader_image_atomic_int64")) {
+		const char* extension("VK_EXT_shader_image_atomic_int64");
+		VkPhysicalDeviceShaderImageAtomicInt64FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_IMAGE_ATOMIC_INT64_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderImageInt64Atomics", extFeatures.shaderImageInt64Atomics);
+		pushFeature2(extension, "sparseImageInt64Atomics", extFeatures.sparseImageInt64Atomics);
+	}
 	if (extensionSupported("VK_EXT_memory_priority")) {
 		const char* extension("VK_EXT_memory_priority");
 		VkPhysicalDeviceMemoryPriorityFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PRIORITY_FEATURES_EXT };
@@ -728,6 +759,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "texelBufferAlignment", extFeatures.texelBufferAlignment);
+	}
+	if (extensionSupported("VK_EXT_device_memory_report")) {
+		const char* extension("VK_EXT_device_memory_report");
+		VkPhysicalDeviceDeviceMemoryReportFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_MEMORY_REPORT_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "deviceMemoryReport", extFeatures.deviceMemoryReport);
 	}
 	if (extensionSupported("VK_EXT_robustness2")) {
 		const char* extension("VK_EXT_robustness2");
@@ -933,6 +971,22 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "vulkanMemoryModel", extFeatures.vulkanMemoryModel);
 		pushFeature2(extension, "vulkanMemoryModelDeviceScope", extFeatures.vulkanMemoryModelDeviceScope);
 		pushFeature2(extension, "vulkanMemoryModelAvailabilityVisibilityChains", extFeatures.vulkanMemoryModelAvailabilityVisibilityChains);
+	}
+	if (extensionSupported("VK_KHR_shader_terminate_invocation")) {
+		const char* extension("VK_KHR_shader_terminate_invocation");
+		VkPhysicalDeviceShaderTerminateInvocationFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TERMINATE_INVOCATION_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderTerminateInvocation", extFeatures.shaderTerminateInvocation);
+	}
+	if (extensionSupported("VK_KHR_fragment_shading_rate")) {
+		const char* extension("VK_KHR_fragment_shading_rate");
+		VkPhysicalDeviceFragmentShadingRateFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelineFragmentShadingRate", extFeatures.pipelineFragmentShadingRate);
+		pushFeature2(extension, "primitiveFragmentShadingRate", extFeatures.primitiveFragmentShadingRate);
+		pushFeature2(extension, "attachmentFragmentShadingRate", extFeatures.attachmentFragmentShadingRate);
 	}
 	if (extensionSupported("VK_KHR_separate_depth_stencil_layouts")) {
 		const char* extension("VK_KHR_separate_depth_stencil_layouts");
