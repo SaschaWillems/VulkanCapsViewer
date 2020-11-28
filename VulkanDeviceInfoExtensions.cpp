@@ -327,20 +327,33 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "pointClippingBehavior", QVariant(extProps.pointClippingBehavior));
 	}
-	if (extensionSupported("VK_KHR_ray_tracing")) {
-		const char* extension("VK_KHR_ray_tracing");
-		VkPhysicalDeviceRayTracingPropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PROPERTIES_KHR };
+	if (extensionSupported("VK_KHR_acceleration_structure")) {
+		const char* extension("VK_KHR_acceleration_structure");
+		VkPhysicalDeviceAccelerationStructurePropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR };
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "shaderGroupHandleSize", QVariant(extProps.shaderGroupHandleSize));
-		pushProperty2(extension, "maxRecursionDepth", QVariant(extProps.maxRecursionDepth));
-		pushProperty2(extension, "maxShaderGroupStride", QVariant(extProps.maxShaderGroupStride));
-		pushProperty2(extension, "shaderGroupBaseAlignment", QVariant(extProps.shaderGroupBaseAlignment));
 		pushProperty2(extension, "maxGeometryCount", QVariant::fromValue(extProps.maxGeometryCount));
 		pushProperty2(extension, "maxInstanceCount", QVariant::fromValue(extProps.maxInstanceCount));
 		pushProperty2(extension, "maxPrimitiveCount", QVariant::fromValue(extProps.maxPrimitiveCount));
+		pushProperty2(extension, "maxPerStageDescriptorAccelerationStructures", QVariant(extProps.maxPerStageDescriptorAccelerationStructures));
+		pushProperty2(extension, "maxPerStageDescriptorUpdateAfterBindAccelerationStructures", QVariant(extProps.maxPerStageDescriptorUpdateAfterBindAccelerationStructures));
 		pushProperty2(extension, "maxDescriptorSetAccelerationStructures", QVariant(extProps.maxDescriptorSetAccelerationStructures));
+		pushProperty2(extension, "maxDescriptorSetUpdateAfterBindAccelerationStructures", QVariant(extProps.maxDescriptorSetUpdateAfterBindAccelerationStructures));
+		pushProperty2(extension, "minAccelerationStructureScratchOffsetAlignment", QVariant(extProps.minAccelerationStructureScratchOffsetAlignment));
+	}
+	if (extensionSupported("VK_KHR_ray_tracing_pipeline")) {
+		const char* extension("VK_KHR_ray_tracing_pipeline");
+		VkPhysicalDeviceRayTracingPipelinePropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "shaderGroupHandleSize", QVariant(extProps.shaderGroupHandleSize));
+		pushProperty2(extension, "maxRayRecursionDepth", QVariant(extProps.maxRayRecursionDepth));
+		pushProperty2(extension, "maxShaderGroupStride", QVariant(extProps.maxShaderGroupStride));
+		pushProperty2(extension, "shaderGroupBaseAlignment", QVariant(extProps.shaderGroupBaseAlignment));
 		pushProperty2(extension, "shaderGroupHandleCaptureReplaySize", QVariant(extProps.shaderGroupHandleCaptureReplaySize));
+		pushProperty2(extension, "maxRayDispatchInvocationCount", QVariant(extProps.maxRayDispatchInvocationCount));
+		pushProperty2(extension, "shaderGroupHandleAlignment", QVariant(extProps.shaderGroupHandleAlignment));
+		pushProperty2(extension, "maxRayHitAttributeSize", QVariant(extProps.maxRayHitAttributeSize));
 	}
 	if (extensionSupported("VK_KHR_portability_subset")) {
 		const char* extension("VK_KHR_portability_subset");
@@ -881,20 +894,34 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "variablePointersStorageBuffer", extFeatures.variablePointersStorageBuffer);
 		pushFeature2(extension, "variablePointers", extFeatures.variablePointers);
 	}
-	if (extensionSupported("VK_KHR_ray_tracing")) {
-		const char* extension("VK_KHR_ray_tracing");
-		VkPhysicalDeviceRayTracingFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_FEATURES_KHR };
+	if (extensionSupported("VK_KHR_acceleration_structure")) {
+		const char* extension("VK_KHR_acceleration_structure");
+		VkPhysicalDeviceAccelerationStructureFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR };
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
-		pushFeature2(extension, "rayTracing", extFeatures.rayTracing);
-		pushFeature2(extension, "rayTracingShaderGroupHandleCaptureReplay", extFeatures.rayTracingShaderGroupHandleCaptureReplay);
-		pushFeature2(extension, "rayTracingShaderGroupHandleCaptureReplayMixed", extFeatures.rayTracingShaderGroupHandleCaptureReplayMixed);
-		pushFeature2(extension, "rayTracingAccelerationStructureCaptureReplay", extFeatures.rayTracingAccelerationStructureCaptureReplay);
-		pushFeature2(extension, "rayTracingIndirectTraceRays", extFeatures.rayTracingIndirectTraceRays);
-		pushFeature2(extension, "rayTracingIndirectAccelerationStructureBuild", extFeatures.rayTracingIndirectAccelerationStructureBuild);
-		pushFeature2(extension, "rayTracingHostAccelerationStructureCommands", extFeatures.rayTracingHostAccelerationStructureCommands);
+		pushFeature2(extension, "accelerationStructure", extFeatures.accelerationStructure);
+		pushFeature2(extension, "accelerationStructureCaptureReplay", extFeatures.accelerationStructureCaptureReplay);
+		pushFeature2(extension, "accelerationStructureIndirectBuild", extFeatures.accelerationStructureIndirectBuild);
+		pushFeature2(extension, "accelerationStructureHostCommands", extFeatures.accelerationStructureHostCommands);
+		pushFeature2(extension, "descriptorBindingAccelerationStructureUpdateAfterBind", extFeatures.descriptorBindingAccelerationStructureUpdateAfterBind);
+	}
+	if (extensionSupported("VK_KHR_ray_tracing_pipeline")) {
+		const char* extension("VK_KHR_ray_tracing_pipeline");
+		VkPhysicalDeviceRayTracingPipelineFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingPipeline", extFeatures.rayTracingPipeline);
+		pushFeature2(extension, "rayTracingPipelineShaderGroupHandleCaptureReplay", extFeatures.rayTracingPipelineShaderGroupHandleCaptureReplay);
+		pushFeature2(extension, "rayTracingPipelineShaderGroupHandleCaptureReplayMixed", extFeatures.rayTracingPipelineShaderGroupHandleCaptureReplayMixed);
+		pushFeature2(extension, "rayTracingPipelineTraceRaysIndirect", extFeatures.rayTracingPipelineTraceRaysIndirect);
+		pushFeature2(extension, "rayTraversalPrimitiveCulling", extFeatures.rayTraversalPrimitiveCulling);
+	}
+	if (extensionSupported("VK_KHR_ray_query")) {
+		const char* extension("VK_KHR_ray_query");
+		VkPhysicalDeviceRayQueryFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayQuery", extFeatures.rayQuery);
-		pushFeature2(extension, "rayTracingPrimitiveCulling", extFeatures.rayTracingPrimitiveCulling);
 	}
 	if (extensionSupported("VK_KHR_sampler_ycbcr_conversion")) {
 		const char* extension("VK_KHR_sampler_ycbcr_conversion");
