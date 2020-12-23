@@ -58,12 +58,16 @@ private:
 	struct {
 		TreeProxyFilter limits;
 		TreeProxyFilter features;
+        TreeProxyFilter featuresCore11;
+        TreeProxyFilter featuresCore12;
         TreeProxyFilter formats;
         TreeProxyFilter extensions;
 	} filterProxies;
 	struct {
 		QStandardItemModel limits;
 		QStandardItemModel features;
+        QStandardItemModel featuresCore11;
+        QStandardItemModel featuresCore12;
         QStandardItemModel formats;
         QStandardItemModel extensions;
 	} models;
@@ -97,6 +101,8 @@ private Q_SLOTS:
 	void slotSettings();
 	void slotFilterLimits(QString text);
 	void slotFilterFeatures(QString text);
+    void slotFilterFeaturesCore11(QString text);
+    void slotFilterFeaturesCore12(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);
     void slotComboTabChanged(int index);

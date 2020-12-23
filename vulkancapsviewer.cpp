@@ -192,10 +192,18 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	ui.treeViewDeviceLimits->setModel(&filterProxies.limits);
 	filterProxies.limits.setSourceModel(&models.limits);
 	connect(ui.filterLineEditLimits, SIGNAL(textChanged(QString)), this, SLOT(slotFilterLimits(QString)));
-	// Features
+    // Core 1.0 features
 	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
 	filterProxies.features.setSourceModel(&models.features);
 	connect(ui.filterLineEditFeatures, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeatures(QString)));
+    // Core 1.1 features
+    ui.treeViewDeviceFeaturesCore11->setModel(&filterProxies.featuresCore11);
+    filterProxies.featuresCore11.setSourceModel(&models.featuresCore11);
+    connect(ui.filterLineEditFeaturesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore11(QString)));
+    // Core 1.2 features
+    ui.treeViewDeviceFeaturesCore12->setModel(&filterProxies.featuresCore12);
+    filterProxies.featuresCore12.setSourceModel(&models.featuresCore12);
+    connect(ui.filterLineEditFeaturesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore12(QString)));
     // Extensions
     ui.treeViewDeviceExtensions->setModel(&filterProxies.extensions);
     filterProxies.extensions.setSourceModel(&models.extensions);
@@ -366,6 +374,18 @@ void vulkanCapsViewer::slotFilterFeatures(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
 	filterProxies.features.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesCore11(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresCore11.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesCore12(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresCore12.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterExtensions(QString text)
@@ -1024,10 +1044,9 @@ void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
+    // Core 1.0
     models.features.clear();
     QStandardItem *rootItem = models.features.invisibleRootItem();
-
-    // Basic features
     for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
         QList<QStandardItem *> rowItems;
         rowItems << new QStandardItem(iter.key());
@@ -1035,10 +1054,38 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
 		rootItem->appendRow(rowItems);
 	}
-
     ui.treeViewDeviceFeatures->expandAll();
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui.treeViewDeviceFeatures->header()->setStretchLastSection(false);
+
+    // Core 1.1
+    if (!(device->core11Features.empty())) {
+        models.featuresCore11.clear();
+        QStandardItem *rootItem = models.featuresCore11.invisibleRootItem();
+        for(QVariantMap::const_iterator iter = device->core11Features.begin(); iter != device->core11Features.end(); ++iter) {
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            rootItem->appendRow(rowItems);
+        }
+        ui.treeViewDeviceFeaturesCore11->expandAll();
+        ui.treeViewDeviceFeaturesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+
+    // Core 1.2
+    if (!(device->core12Features.empty())) {
+        models.featuresCore12.clear();
+        QStandardItem *rootItem = models.featuresCore12.invisibleRootItem();
+        for(QVariantMap::const_iterator iter = device->core12Features.begin(); iter != device->core12Features.end(); ++iter) {
+            QList<QStandardItem *> rowItems;
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
+            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            rootItem->appendRow(rowItems);
+        }
+        ui.treeViewDeviceFeaturesCore12->expandAll();
+        ui.treeViewDeviceFeaturesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
