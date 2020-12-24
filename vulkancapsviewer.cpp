@@ -930,6 +930,38 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
     parent->appendRow(item);
 }
 
+template<typename BitsType>
+void addBitFlagsItem(QStandardItem* parent, const QString& key, const VkFlags flags, std::string(* const flagToString)(BitsType))
+{
+    QList<QStandardItem*> flagsParentItem;
+    flagsParentItem << new QStandardItem(key);
+    flagsParentItem << new QStandardItem(QString::fromStdString(vulkanResources::toHexString(flags)));
+    parent->appendRow(flagsParentItem);
+    for (typename std::underlying_type<BitsType>::type bit = 0x1; bit != 0; bit <<= 1) {
+        const QString bitName = QString::fromStdString(flagToString(static_cast<BitsType>(bit)));
+        if (flags & bit) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(bitName);
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+    }
+    if (key == "subgroupSupportedStages") {
+        if ((flags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL_GRAPHICS)));
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+        if ((flags & VK_SHADER_STAGE_ALL) == VK_SHADER_STAGE_ALL) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL)));
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+    }
+}
+
 void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     QString key = iterator.key();
@@ -958,6 +990,16 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         addVariantListItem(parent, iterator);
         return;
     }
+    if (key == "subgroupSupportedOperations") {
+        const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
+        addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
+        return;
+    }
+    if (key == "subgroupSupportedStages") {
+        const VkShaderStageFlags flags = iterator.value().toUInt();
+        addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }    
 
     if (vulkanResources::replaceKeyNames.contains(key)) {
         key = vulkanResources::replaceKeyNames[key];
