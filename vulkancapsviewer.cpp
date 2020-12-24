@@ -892,12 +892,26 @@ void addVkBool32Item(QStandardItem* parent, const QVariantMap::const_iterator& i
     parent->appendRow(item);
 }
 
+void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    const auto samples = static_cast<VkSampleCountFlags>(iterator.value().toUInt());
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(vulkanResources::toQStringList(samples));
+    parent->appendRow(item);
+}
+
 void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     if (vulkanResources::boolValueNames.contains(iterator.key())) {
         addVkBool32Item(parent, iterator);
         return;
     };
+    if (vulkanResources::sampleFlagsValueNames.contains(iterator.key())) {
+        addVkSampleCountFlagsItem(parent, iterator);
+        return;
+    }
+
     QList<QStandardItem*> item;
     // @todo: Special treatment for values like UUIDs
     item << new QStandardItem(iterator.key());
