@@ -1046,8 +1046,8 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     ui.treeViewDeviceProperties->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     // Core 1.1
+    models.propertiesCore11.clear();
     if (!(device->core11Properties.empty())) {
-        models.propertiesCore11.clear();
         QStandardItem* rootItem = models.propertiesCore11.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core11Properties.begin(); iter != device->core11Properties.end(); ++iter) {
             addPropertiesRow(rootItem, iter);
@@ -1057,8 +1057,8 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     }
 
     // Core 1.2
+    models.propertiesCore12.clear();
     if (!(device->core12Properties.empty())) {
-        models.propertiesCore12.clear();
         QStandardItem* rootItem = models.propertiesCore12.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core12Properties.begin(); iter != device->core12Properties.end(); ++iter) {
             addPropertiesRow(rootItem, iter);
@@ -1115,8 +1115,8 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     // Core 1.1
+    models.featuresCore11.clear();
     if (!(device->core11Features.empty())) {
-        models.featuresCore11.clear();
         QStandardItem *rootItem = models.featuresCore11.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core11Features.begin(); iter != device->core11Features.end(); ++iter) {
             addVkBool32Item(rootItem, iter);
@@ -1126,8 +1126,8 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     }
 
     // Core 1.2
+    models.featuresCore12.clear();
     if (!(device->core12Features.empty())) {
-        models.featuresCore12.clear();
         QStandardItem *rootItem = models.featuresCore12.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core12Features.begin(); iter != device->core12Features.end(); ++iter) {
             addVkBool32Item(rootItem, iter);
