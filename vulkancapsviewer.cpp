@@ -200,6 +200,10 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
     filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
     connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
+    // Extension properties
+    ui.treeViewDevicePropertiesExtensions->setModel(&filterProxies.propertiesExtensions);
+    filterProxies.propertiesExtensions.setSourceModel(&models.propertiesExtensions);
+    connect(ui.filterLineEditPropertiesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesExtensions(QString)));
     // Core 1.0 features
 	ui.treeViewDeviceFeatures->setModel(&filterProxies.featuresCore10);
 	filterProxies.featuresCore10.setSourceModel(&models.featuresCore10);
@@ -212,6 +216,10 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     ui.treeViewDeviceFeaturesCore12->setModel(&filterProxies.featuresCore12);
     filterProxies.featuresCore12.setSourceModel(&models.featuresCore12);
     connect(ui.filterLineEditFeaturesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore12(QString)));
+    // Extension features
+    ui.treeViewDeviceFeaturesExtensions->setModel(&filterProxies.featuresExtensions);
+    filterProxies.featuresExtensions.setSourceModel(&models.featuresExtensions);
+    connect(ui.filterLineEditFeaturesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesExtensions(QString)));
     // Extensions
     ui.treeViewDeviceExtensions->setModel(&filterProxies.extensions);
     filterProxies.extensions.setSourceModel(&models.extensions);
@@ -390,6 +398,12 @@ void vulkanCapsViewer::slotFilterPropertiesCore12(QString text)
     filterProxies.propertiesCore12.setFilterRegExp(regExp);
 }
 
+void vulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesExtensions.setFilterRegExp(regExp);
+}
+
 void vulkanCapsViewer::slotFilterFeatures(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -406,6 +420,12 @@ void vulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresCore12.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresExtensions.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterExtensions(QString text)
@@ -1018,6 +1038,19 @@ void vulkanCapsViewer::displayDevice(int index)
 	checkReportDatabaseState();
 }
 
+// @todo: replace
+QString arrayToStr(QVariant value) {
+    QList<QVariant> list = value.toList();
+    QString listStr = "[";
+    for (int i = 0; i < list.size(); i++) {
+        listStr += list[i].toString();
+        if (i < list.size() - 1)
+            listStr += ", ";
+    }
+    listStr += "]";
+    return listStr;
+}
+
 void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 {
     // Core 1.0
@@ -1065,6 +1098,49 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         }
         ui.treeViewDevicePropertiesCore12->expandAll();
         ui.treeViewDevicePropertiesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+
+    // Extensions
+    models.propertiesExtensions.clear();
+    if (!(device->properties2.empty())) {
+        QStandardItem* rootItem = models.propertiesExtensions.invisibleRootItem();
+        for (auto& extension : device->extensions) {
+            bool hasProperties = false;
+            QList<QStandardItem*> extItem;
+            for (auto& property : device->properties2) {
+                if (strcmp(property.extension, extension.extensionName) == 0) {
+                    if (!hasProperties) {
+                        hasProperties = true;
+                        extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
+                        extItem << new QStandardItem();
+                    }
+                    QList<QStandardItem*> propertyItem;
+                    propertyItem << new QStandardItem(QString::fromStdString(property.name));
+
+                    if (property.value.canConvert(QVariant::List)) {
+                        propertyItem << new QStandardItem(arrayToStr(property.value));
+                    }
+                    else {
+                        switch (property.value.type()) {
+                        case QVariant::Bool: {
+                            bool boolVal = property.value.toBool();
+                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
+                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                            break;
+                        }
+                        default:
+                            propertyItem << new QStandardItem(property.value.toString());
+                        }
+                    }
+                    extItem.first()->appendRow(propertyItem);
+                }
+            }
+            if (hasProperties) {
+                rootItem->appendRow(extItem);
+            }
+        }
+        ui.treeViewDevicePropertiesExtensions->expandAll();
+        ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
 }
 
@@ -1134,6 +1210,35 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         }
         ui.treeViewDeviceFeaturesCore12->expandAll();
         ui.treeViewDeviceFeaturesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+
+    // Extensions
+    models.featuresExtensions.clear();
+    if (!(device->features2.empty())) {
+        QStandardItem* rootItem = models.featuresExtensions.invisibleRootItem();
+        for (auto& extension : device->extensions) {
+            bool hasFeatures = false;
+            QList<QStandardItem*> extItem;
+            for (auto& feature : device->features2) {
+                if (strcmp(feature.extension, extension.extensionName) == 0) {
+                    if (!hasFeatures) {
+                        hasFeatures = true;
+                        extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
+                        extItem << new QStandardItem();
+                    }
+                    QList<QStandardItem*> featureItem;
+                    featureItem << new QStandardItem(QString::fromStdString(feature.name));
+                    featureItem << new QStandardItem((feature.supported) ? "true" : "false");
+                    featureItem[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                    extItem.first()->appendRow(featureItem);
+                }
+            }
+            if (hasFeatures) {
+                rootItem->appendRow(extItem);
+            }
+        }
+        ui.treeViewDeviceFeaturesExtensions->expandAll();
+        ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
 }
 
@@ -1299,18 +1404,6 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 	ui.treeViewFormats->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
-QString arrayToStr(QVariant value) {
-    QList<QVariant> list = value.toList();
-    QString listStr = "[";
-    for (int i = 0; i < list.size(); i++) {
-        listStr += list[i].toString();
-        if (i < list.size() - 1)
-            listStr += ", ";
-    }
-    listStr += "]";
-    return listStr;
-}
-
 void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
     models.extensions.clear();
@@ -1320,58 +1413,6 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
         QList<QStandardItem *> extItem;
         extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
         extItem << new QStandardItem(QString::fromStdString(vulkanResources::revisionToString(extension.specVersion)));
-
-        // Features
-        bool hasFeatures = false;
-        QList<QStandardItem *> featureRootItem;
-        for (auto& feature : device->features2) {
-            featureRootItem << new QStandardItem("Features");
-            featureRootItem << new QStandardItem(" ");
-            if (strcmp(feature.extension, extension.extensionName) == 0) {
-                hasFeatures = true;
-                QList<QStandardItem *> featureItem;
-                featureItem << new QStandardItem(QString::fromStdString(feature.name));
-                featureItem << new QStandardItem((feature.supported) ? "true" : "false");
-                featureItem[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                featureRootItem.first()->appendRow(featureItem);
-            }
-        }
-        if (hasFeatures) {
-            extItem.first()->appendRow(featureRootItem);
-        }
-
-        // Properties
-        bool hasProperties = false;
-        QList<QStandardItem *> propertiesRootItem;
-        for (auto& property : device->properties2) {
-            propertiesRootItem << new QStandardItem("Properties");
-            propertiesRootItem << new QStandardItem(" ");
-            if (strcmp(property.extension, extension.extensionName) == 0) {
-                hasProperties = true;
-                QList<QStandardItem *> propertyItem;
-                propertyItem << new QStandardItem(QString::fromStdString(property.name));
-
-                if (property.value.canConvert(QVariant::List)) {
-                    propertyItem << new QStandardItem(arrayToStr(property.value));
-                } else {
-                    switch (property.value.type()) {
-                        case QVariant::Bool: {
-                            bool boolVal = property.value.toBool();
-                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
-                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                            break;
-                        }
-                        default:
-                            propertyItem << new QStandardItem(property.value.toString());
-                    }
-                }
-                propertiesRootItem.first()->appendRow(propertyItem);
-            }
-        }
-        if (hasProperties) {
-            extItem.first()->appendRow(propertiesRootItem);
-        }
-
         rootItem->appendRow(extItem);
     }
 
