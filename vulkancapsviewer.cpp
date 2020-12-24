@@ -883,6 +883,15 @@ QTreeWidgetItem *addTreeItemFlags(QTreeWidgetItem *parent, const std::string& fl
     return flagsItem;
 }
 
+void addVkBool32Item(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(iterator.value().toBool() ? "true" : "false");
+    item[1]->setForeground(iterator.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    parent->appendRow(item);
+}
+
 /// <summary>
 ///	Display information on given device
 /// </summary>
@@ -1108,11 +1117,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     models.features.clear();
     QStandardItem *rootItem = models.features.invisibleRootItem();
     for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
-        QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(iter.key());
-        rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-        rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-		rootItem->appendRow(rowItems);
+        addVkBool32Item(rootItem, iter);
 	}
     ui.treeViewDeviceFeatures->expandAll();
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1122,11 +1127,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         models.featuresCore11.clear();
         QStandardItem *rootItem = models.featuresCore11.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core11Features.begin(); iter != device->core11Features.end(); ++iter) {
-            QList<QStandardItem *> rowItems;
-            rowItems << new QStandardItem(iter.key());
-            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-            rootItem->appendRow(rowItems);
+            addVkBool32Item(rootItem, iter);
         }
         ui.treeViewDeviceFeaturesCore11->expandAll();
         ui.treeViewDeviceFeaturesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1137,11 +1138,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         models.featuresCore12.clear();
         QStandardItem *rootItem = models.featuresCore12.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core12Features.begin(); iter != device->core12Features.end(); ++iter) {
-            QList<QStandardItem *> rowItems;
-            rowItems << new QStandardItem(iter.key());
-            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-            rootItem->appendRow(rowItems);
+            addVkBool32Item(rootItem, iter);
         }
         ui.treeViewDeviceFeaturesCore12->expandAll();
         ui.treeViewDeviceFeaturesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
