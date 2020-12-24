@@ -942,19 +942,25 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
 
 void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
-    if (vulkanResources::boolValueNames.contains(iterator.key())) {
+    QString key = iterator.key();
+
+    if (vulkanResources::skipValueNames.contains(key)) {
+        return;
+    }
+
+    if (vulkanResources::boolValueNames.contains(key)) {
         addVkBool32Item(parent, iterator);
         return;
     };
-    if (vulkanResources::sampleFlagsValueNames.contains(iterator.key())) {
+    if (vulkanResources::sampleFlagsValueNames.contains(key)) {
         addVkSampleCountFlagsItem(parent, iterator);
         return;
     }
-    if (vulkanResources::uuidValueNames.contains(iterator.key())) {
+    if (vulkanResources::uuidValueNames.contains(key)) {
         addUUIDItem(parent, iterator);
         return;
     }
-    if (vulkanResources::hexValueNames.contains(iterator.key())) {
+    if (vulkanResources::hexValueNames.contains(key)) {
         addHexItem(parent, iterator);
         return;
     }
@@ -963,9 +969,12 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         return;
     }
 
+    if (vulkanResources::replaceKeyNames.contains(key)) {
+        key = vulkanResources::replaceKeyNames[key];
+    }
+
     QList<QStandardItem*> item;
-    // @todo: Special treatment for values like UUIDs
-    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(key);
     item << new QStandardItem(iterator.value().toString());
     parent->appendRow(item);
 }
