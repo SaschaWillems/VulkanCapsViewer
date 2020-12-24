@@ -1029,7 +1029,6 @@ void vulkanCapsViewer::displayDevice(int index)
 	displayDeviceProperties(&device);
     displayDeviceMemoryProperites(&device);
 	displayDeviceFeatures(&device);
-	displayDeviceLayers(&device);
 	displayDeviceFormats(&device);
     displayDeviceExtensions(&device);
 	displayDeviceQueues(&device);
@@ -1260,29 +1259,6 @@ void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
 	}
 	for (int i = 0; i < tree->columnCount(); i++)
 		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-}
-
-void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
-{
-    using namespace vulkanResources;
-
-	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
-    treeWidget->clear();
-	for (auto& layer : device->getLayers())
-	{
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(treeWidget);
-		treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
-		treeItem->setText(1, QString::fromStdString(versionToString(layer.properties.specVersion)));
-		treeItem->setText(2, QString::fromStdString(revisionToString(layer.properties.implementationVersion)));
-        treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
-		treeItem->setText(4, layer.properties.description);
-		for (auto& layerExt : layer.extensions)
-		{
-			addTreeItem(treeItem, layerExt.extensionName, revisionToString(layerExt.specVersion));
-		}
-	}
-	for (int i = 0; i < treeWidget->columnCount(); i++)
-		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
 void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)

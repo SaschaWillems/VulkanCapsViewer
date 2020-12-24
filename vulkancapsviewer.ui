@@ -532,11 +532,6 @@ height: 24px;
             </item>
             <item>
              <property name="text">
-              <string>Layers</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
               <string>Queue Families</string>
              </property>
             </item>
@@ -1249,57 +1244,6 @@ height: 24px;
              <attribute name="headerMinimumSectionSize">
               <number>250</number>
              </attribute>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tab_9">
-          <attribute name="title">
-           <string>Layers</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QTreeWidget" name="treeWidgetDeviceLayers">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerDefaultSectionSize">
-              <number>200</number>
-             </attribute>
-             <attribute name="headerStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Specification</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Impementation</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Extension count</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Description</string>
-              </property>
-             </column>
             </widget>
            </item>
           </layout>

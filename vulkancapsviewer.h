@@ -109,7 +109,6 @@ private:
 	void displayDeviceProperties(VulkanDeviceInfo *device);
 	void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
 	void displayDeviceFeatures(VulkanDeviceInfo *device);
-	void displayDeviceLayers(VulkanDeviceInfo *device);
 	void displayDeviceFormats(VulkanDeviceInfo *device);
 	void displayDeviceExtensions(VulkanDeviceInfo *device);
 	void displayDeviceQueues(VulkanDeviceInfo *device);
