@@ -195,15 +195,15 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     // Core 1.0 properties
     ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
     filterProxies.features.setSourceModel(&models.propertiesCore10);
-    connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties10(QString)));
+    connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore10(QString)));
     // Core 1.1 properties
     ui.treeViewDevicePropertiesCore11->setModel(&filterProxies.propertiesCore11);
     filterProxies.propertiesCore11.setSourceModel(&models.propertiesCore11);
-    connect(ui.filterLineEditPropertiesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties11(QString)));
+    connect(ui.filterLineEditPropertiesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore11(QString)));
     // Core 1.2 properties
     ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
     filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
-    connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties11(QString)));
+    connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
     // Core 1.0 features
 	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
 	filterProxies.features.setSourceModel(&models.features);
