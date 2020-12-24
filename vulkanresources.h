@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,8 @@
 #include <vector>
 
 #include <QString>
+#include <QSet>
 #include "vulkan/vulkan.h"
-
 
 namespace vulkanResources {
 	template<typename Number>
@@ -615,4 +615,58 @@ namespace vulkanResources {
 
 		return joinString('.', versionAsStringList);
 	}
+
+	// Values that are treated as sample counts
+	const QSet<QString> sampleFlagsValueNames = {
+		"framebufferColorSampleCounts", 
+		"framebufferDepthSampleCounts",
+		"framebufferStencilSampleCounts", 
+		"framebufferNoAttachmentsSampleCounts",
+		"sampledImageColorSampleCounts", 
+		"sampledImageIntegerSampleCounts", 
+		"sampledImageDepthSampleCounts", 
+		"sampledImageStencilSampleCounts",
+		"storageImageSampleCounts",
+		// Core 1.2
+		"framebufferIntegerColorSampleCounts"
+	};
+
+	// Values that are treated as booleans
+	const QSet<QString> boolValueNames = { 
+		"timestampComputeAndGraphics", 
+		"strictLines", 
+		"standardSampleLocations",
+		// Core 1.1
+		"deviceLUIDValid",
+		"subgroupQuadOperationsInAllStages",
+		"protectedNoFault",
+		// Core 1.2
+		"shaderSignedZeroInfNanPreserveFloat16",
+		"shaderSignedZeroInfNanPreserveFloat32",
+		"shaderSignedZeroInfNanPreserveFloat64",
+		"shaderDenormPreserveFloat16",
+		"shaderDenormPreserveFloat32",
+		"shaderDenormPreserveFloat64",
+		"shaderDenormFlushToZeroFloat16",
+		"shaderDenormFlushToZeroFloat32",
+		"shaderDenormFlushToZeroFloat64",
+		"shaderRoundingModeRTEFloat16",
+		"shaderRoundingModeRTEFloat32",
+		"shaderRoundingModeRTEFloat64",
+		"shaderRoundingModeRTZFloat16",
+		"shaderRoundingModeRTZFloat32",
+		"shaderRoundingModeRTZFloat64",
+		"shaderUniformBufferArrayNonUniformIndexingNative",
+		"shaderSampledImageArrayNonUniformIndexingNative",
+		"shaderStorageBufferArrayNonUniformIndexingNative",
+		"shaderStorageImageArrayNonUniformIndexingNative",
+		"shaderInputAttachmentArrayNonUniformIndexingNative",
+		"robustBufferAccessUpdateAfterBind",
+		"quadDivergentImplicitLod",
+		"independentResolveNone",
+		"independentResolve",
+		"filterMinmaxSingleComponentFormats",
+		"filterMinmaxImageComponentMapping"
+	};
+
 };
