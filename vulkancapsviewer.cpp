@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -192,6 +192,18 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	ui.treeViewDeviceLimits->setModel(&filterProxies.limits);
 	filterProxies.limits.setSourceModel(&models.limits);
 	connect(ui.filterLineEditLimits, SIGNAL(textChanged(QString)), this, SLOT(slotFilterLimits(QString)));
+    // Core 1.0 properties
+    ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
+    filterProxies.features.setSourceModel(&models.propertiesCore10);
+    connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties10(QString)));
+    // Core 1.1 properties
+    ui.treeViewDevicePropertiesCore11->setModel(&filterProxies.propertiesCore11);
+    filterProxies.propertiesCore11.setSourceModel(&models.propertiesCore11);
+    connect(ui.filterLineEditPropertiesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties11(QString)));
+    // Core 1.2 properties
+    ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
+    filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
+    connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProperties11(QString)));
     // Core 1.0 features
 	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
 	filterProxies.features.setSourceModel(&models.features);
@@ -368,6 +380,24 @@ void vulkanCapsViewer::slotFilterLimits(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
 	filterProxies.limits.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesCore10(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore10.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesCore11(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore11.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesCore12(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore12.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterFeatures(QString text)
@@ -966,6 +996,36 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 
     for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+
+    // Core 1.1
+    if (!(device->core11Properties.empty())) {
+        models.propertiesCore11.clear();
+        QStandardItem* rootItem = models.propertiesCore11.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core11Properties.begin(); iter != device->core11Properties.end(); ++iter) {
+            QList<QStandardItem*> rowItems;
+            // @todo: Special treatment for values like UUIDs
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toString());
+            rootItem->appendRow(rowItems);
+        }
+        ui.treeViewDevicePropertiesCore11->expandAll();
+        ui.treeViewDevicePropertiesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+
+    // Core 1.2
+    if (!(device->core12Properties.empty())) {
+        models.propertiesCore12.clear();
+        QStandardItem* rootItem = models.propertiesCore12.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core12Properties.begin(); iter != device->core12Properties.end(); ++iter) {
+            QList<QStandardItem*> rowItems;
+            // @todo: Special treatment for values like UUIDs
+            rowItems << new QStandardItem(iter.key());
+            rowItems << new QStandardItem(iter.value().toString());
+            rootItem->appendRow(rowItems);
+        }
+        ui.treeViewDevicePropertiesCore12->expandAll();
+        ui.treeViewDevicePropertiesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
 }
 
 void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
@@ -1114,7 +1174,8 @@ void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
 
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
     treeWidget->clear();
-    ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
+    // @todo: adjust to new structure
+//    ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
 	for (auto& layer : device->getLayers())
 	{
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(treeWidget);
@@ -1268,7 +1329,8 @@ QString arrayToStr(QVariant value) {
 */
 void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
+    // @todo: adjust to new structure
+    //ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
 
     models.extensions.clear();
     QStandardItem *rootItem = models.extensions.invisibleRootItem();
@@ -1338,7 +1400,8 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
+    // @todo: adjust to new structure
+    //ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
     QTreeWidget* treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
     for (auto& queueFamily : device->queueFamilies)
