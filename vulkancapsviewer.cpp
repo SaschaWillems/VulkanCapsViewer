@@ -188,10 +188,6 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	appSettings.restore();
 
 	// Models and filters
-	// Limits
-	ui.treeViewDeviceLimits->setModel(&filterProxies.limits);
-	filterProxies.limits.setSourceModel(&models.limits);
-	connect(ui.filterLineEditLimits, SIGNAL(textChanged(QString)), this, SLOT(slotFilterLimits(QString)));
     // Core 1.0 properties
     ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
     filterProxies.propertiesCore10.setSourceModel(&models.propertiesCore10);
@@ -374,12 +370,6 @@ void vulkanCapsViewer::slotSettings()
 	dialog.setModal(true);
 	dialog.exec();
 	appSettings.restore();
-}
-
-void vulkanCapsViewer::slotFilterLimits(QString text)
-{
-	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-	filterProxies.limits.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterPropertiesCore10(QString text)
@@ -991,7 +981,6 @@ void vulkanCapsViewer::displayDevice(int index)
 	
 	displayDeviceProperties(&device);
     displayDeviceMemoryProperites(&device);
-	displayDeviceLimits(&device);
 	displayDeviceFeatures(&device);
 	displayDeviceLayers(&device);
 	displayDeviceFormats(&device);
@@ -1024,14 +1013,6 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
             const ItemFormat itemFormat = hexList.contains(propName) ? HEX_FORMAT : DEFAULT_FORMAT;
             addTreeItem(treeItem, iter, itemFormat);
         }
-    }
-
-    // Sparse properties
-    QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-    parentItem->setText(0, "sparse properties");
-    treeItem->addChild(parentItem);
-    for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
-        addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
     }
 
     // Subgroup operations properties
@@ -1093,6 +1074,30 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     for (int i = 0; i < treeWidget->columnCount(); i++)
 		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 
+    // Core 1.0
+    models.propertiesCore10.clear();
+    QStandardItem* rootItem = models.propertiesCore10.invisibleRootItem();
+    for (QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
+        addPropertiesRow(rootItem, iter);
+    }
+    // Core 1.0 limits
+    QList<QStandardItem*> core10LimitsItem;
+    core10LimitsItem << new QStandardItem("Limits");
+    rootItem->appendRow(core10LimitsItem);
+    for (QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
+        addPropertiesRow(core10LimitsItem[0], iter);
+    }
+    // Core 1.0 sparse properties
+    QList<QStandardItem*> core10SparseItem;
+    core10SparseItem << new QStandardItem("Sparse properties");
+    rootItem->appendRow(core10SparseItem);
+    for (QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
+        addVkBool32Item(core10SparseItem[0], iter);
+    }
+
+    ui.treeViewDeviceProperties->expandAll();
+    ui.treeViewDeviceProperties->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
     // Core 1.1
     if (!(device->core11Properties.empty())) {
         models.propertiesCore11.clear();
@@ -1149,45 +1154,6 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
     heapTypeItem->setExpanded(true);
     for (int i = 0; i < treeWidget->columnCount(); i++)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-}
-
-void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
-{
-    const QSet<QString> sampleFlagsLims = {
-        "framebufferColorSampleCounts", "framebufferDepthSampleCounts", "framebufferStencilSampleCounts", "framebufferNoAttachmentsSampleCounts",
-        "sampledImageColorSampleCounts", "sampledImageIntegerSampleCounts", "sampledImageDepthSampleCounts", "sampledImageStencilSampleCounts",
-        "storageImageSampleCounts"
-    };
-
-    const QSet<QString> boolLims = {"timestampComputeAndGraphics", "strictLines", "standardSampleLocations"};
-
-    models.limits.clear();
-    QStandardItem *rootItem = models.limits.invisibleRootItem();
-    for(QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
-        QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(iter.key());
-        if (iter.value().canConvert(QVariant::List)) {
-            QList<QVariant> list = iter.value().toList();
-            QString listStr = "[";
-            for (int i = 0; i < list.size(); i++) {
-                listStr += list[i].toString();
-                if (i < list.size() - 1)
-                    listStr += ", ";
-            }
-            listStr += "]";
-            rowItems << new QStandardItem(listStr);
-        } else if (sampleFlagsLims.contains(iter.key())){
-            const auto samples = static_cast<VkSampleCountFlags>(iter.value().toUInt());
-            rowItems << new QStandardItem(vulkanResources::toQStringList(samples));
-        } else if (boolLims.contains(iter.key())){
-            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-        } else {
-            rowItems << new QStandardItem(iter.value().toString());
-        }
-        rootItem->appendRow(rowItems);
-    }
-	ui.treeViewDeviceLimits->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)

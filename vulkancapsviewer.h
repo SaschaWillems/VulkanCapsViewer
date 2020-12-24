@@ -76,7 +76,6 @@ private:
 	Ui::vulkanCapsViewerClass ui;
 	settings appSettings;
 	struct {
-        TreeProxyFilter limits;
         TreeProxyFilter propertiesCore10;
         TreeProxyFilter propertiesCore11;
         TreeProxyFilter propertiesCore12;
@@ -87,7 +86,6 @@ private:
         TreeProxyFilter extensions;
 	} filterProxies;
 	struct {
-		QStandardItemModel limits;
         QStandardItemModel propertiesCore10;
         QStandardItemModel propertiesCore11;
         QStandardItemModel propertiesCore12;
@@ -106,7 +104,6 @@ private:
 	void displayDevice(int index);
 	void displayDeviceProperties(VulkanDeviceInfo *device);
 	void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
-	void displayDeviceLimits(VulkanDeviceInfo *device);
 	void displayDeviceFeatures(VulkanDeviceInfo *device);
 	void displayDeviceLayers(VulkanDeviceInfo *device);
 	void displayDeviceFormats(VulkanDeviceInfo *device);
@@ -125,7 +122,6 @@ private Q_SLOTS:
 	void slotSaveReport();
 	void slotUploadReport();
 	void slotSettings();
-	void slotFilterLimits(QString text);
     void slotFilterPropertiesCore10(QString text);
     void slotFilterPropertiesCore11(QString text);
     void slotFilterPropertiesCore12(QString text);
