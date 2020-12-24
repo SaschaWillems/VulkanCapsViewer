@@ -616,7 +616,7 @@ namespace vulkanResources {
 		return joinString('.', versionAsStringList);
 	}
 
-	// Values that are treated as sample counts
+	// Values to be displayed as sample counts
 	const QSet<QString> sampleFlagsValueNames = {
 		"framebufferColorSampleCounts", 
 		"framebufferDepthSampleCounts",
@@ -631,7 +631,7 @@ namespace vulkanResources {
 		"framebufferIntegerColorSampleCounts"
 	};
 
-	// Values that are treated as booleans
+	// Values to be displayed as booleans
 	const QSet<QString> boolValueNames = { 
 		"timestampComputeAndGraphics", 
 		"strictLines", 
@@ -668,5 +668,20 @@ namespace vulkanResources {
 		"filterMinmaxSingleComponentFormats",
 		"filterMinmaxImageComponentMapping"
 	};
+
+	// Values to be displayed as UUIds
+	const QSet<QString> uuidValueNames = {
+		"deviceUUID",
+		// Core 1.1
+		"driverUUID",
+		"deviceLUID"
+	};
+
+	// Values to be displayed as hex
+	const QSet<QString> hexValueNames = {
+		"vendorID",
+		"deviceID"
+	};
+
 
 };

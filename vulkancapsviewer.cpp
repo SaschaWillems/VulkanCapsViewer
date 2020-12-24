@@ -916,6 +916,30 @@ void addUUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& itera
     parent->appendRow(item);
 }
 
+void addHexItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(vulkanResources::toHexQString(iterator.value().toULongLong()));
+    parent->appendRow(item);
+}
+
+void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QVariant> list = iterator.value().toList();
+    QString listStr = "[";
+    for (int i = 0; i < list.size(); i++) {
+        listStr += list[i].toString();
+        if (i < list.size() - 1)
+            listStr += ", ";
+    }
+    listStr += "]";
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(listStr);
+    parent->appendRow(item);
+}
+
 void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     if (vulkanResources::boolValueNames.contains(iterator.key())) {
@@ -928,6 +952,14 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     }
     if (vulkanResources::uuidValueNames.contains(iterator.key())) {
         addUUIDItem(parent, iterator);
+        return;
+    }
+    if (vulkanResources::hexValueNames.contains(iterator.key())) {
+        addHexItem(parent, iterator);
+        return;
+    }
+    if (iterator.value().canConvert(QVariant::List)) {
+        addVariantListItem(parent, iterator);
         return;
     }
 
