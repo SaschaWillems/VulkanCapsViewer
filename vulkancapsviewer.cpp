@@ -194,7 +194,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 	connect(ui.filterLineEditLimits, SIGNAL(textChanged(QString)), this, SLOT(slotFilterLimits(QString)));
     // Core 1.0 properties
     ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
-    filterProxies.features.setSourceModel(&models.propertiesCore10);
+    filterProxies.propertiesCore10.setSourceModel(&models.propertiesCore10);
     connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore10(QString)));
     // Core 1.1 properties
     ui.treeViewDevicePropertiesCore11->setModel(&filterProxies.propertiesCore11);
