@@ -901,6 +901,21 @@ void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_i
     parent->appendRow(item);
 }
 
+void addUUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    const QJsonArray values = iterator.value().toJsonArray();
+    std::ostringstream uuidSs;
+    uuidSs << std::hex << std::noshowbase << std::uppercase;
+    for (uint32_t i = 0; i < values.size(); i++) {
+        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(values[i].toInt());
+        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    }
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    parent->appendRow(item);
+}
+
 void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     if (vulkanResources::boolValueNames.contains(iterator.key())) {
@@ -909,6 +924,10 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     };
     if (vulkanResources::sampleFlagsValueNames.contains(iterator.key())) {
         addVkSampleCountFlagsItem(parent, iterator);
+        return;
+    }
+    if (vulkanResources::uuidValueNames.contains(iterator.key())) {
+        addUUIDItem(parent, iterator);
         return;
     }
 
