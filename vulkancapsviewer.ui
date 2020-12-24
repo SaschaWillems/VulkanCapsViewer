@@ -580,7 +580,7 @@ height: 24px;
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <property name="documentMode">
           <bool>false</bool>
@@ -588,45 +588,6 @@ height: 24px;
          <property name="tabBarAutoHide">
           <bool>false</bool>
          </property>
-         <widget class="QWidget" name="tabDeviceProperties">
-          <attribute name="title">
-           <string>Device</string>
-          </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout">
-           <item>
-            <widget class="QTreeWidget" name="treeWidgetDeviceProperties">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <property name="headerHidden">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerDefaultSectionSize">
-              <number>200</number>
-             </attribute>
-             <attribute name="headerStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>key</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>value</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
          <widget class="QWidget" name="tab_properties">
           <attribute name="title">
            <string>Properties</string>

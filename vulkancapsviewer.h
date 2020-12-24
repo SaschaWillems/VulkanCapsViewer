@@ -79,7 +79,7 @@ private:
         TreeProxyFilter propertiesCore10;
         TreeProxyFilter propertiesCore11;
         TreeProxyFilter propertiesCore12;
-        TreeProxyFilter features;
+        TreeProxyFilter featuresCore10;
         TreeProxyFilter featuresCore11;
         TreeProxyFilter featuresCore12;
         TreeProxyFilter formats;
@@ -89,7 +89,7 @@ private:
         QStandardItemModel propertiesCore10;
         QStandardItemModel propertiesCore11;
         QStandardItemModel propertiesCore12;
-        QStandardItemModel features;
+        QStandardItemModel featuresCore10;
         QStandardItemModel featuresCore11;
         QStandardItemModel featuresCore12;
         QStandardItemModel formats;

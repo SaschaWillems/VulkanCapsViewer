@@ -201,8 +201,8 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
     connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
     // Core 1.0 features
-	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
-	filterProxies.features.setSourceModel(&models.features);
+	ui.treeViewDeviceFeatures->setModel(&filterProxies.featuresCore10);
+	filterProxies.featuresCore10.setSourceModel(&models.featuresCore10);
 	connect(ui.filterLineEditFeatures, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeatures(QString)));
     // Core 1.1 features
     ui.treeViewDeviceFeaturesCore11->setModel(&filterProxies.featuresCore11);
@@ -282,7 +282,7 @@ void vulkanCapsViewer::slotAbout()
         "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "Build against Vulkan API " + vulkanApiVersion.toStdString() +
         " header version " + to_string(VK_HEADER_VERSION) + "<br/><br/>"
-		"This tool is <b>FREEWARE</b><br/><br/>"
+		"This tool is <b>Free Open Source Software</b><br/><br/>"
 		"For usage and distribution details refer to the readme<br/><br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>";
 	aboutText << "</p>";
@@ -393,7 +393,7 @@ void vulkanCapsViewer::slotFilterPropertiesCore12(QString text)
 void vulkanCapsViewer::slotFilterFeatures(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-	filterProxies.features.setFilterRegExp(regExp);
+	filterProxies.featuresCore10.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterFeaturesCore11(QString text)
@@ -814,32 +814,6 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, const std::string& key, co
 	return newItem;
 }
 
-enum ItemFormat {DEFAULT_FORMAT, HEX_FORMAT};
-QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterator iter, const ItemFormat format = DEFAULT_FORMAT)
-{
-    // Map some key names to different display names
-    QMap<QString, QString> replaceList;
-    replaceList["apiVersionText"] = "apiVersion";
-    replaceList["deviceTypeText"] = "deviceType";
-    replaceList["driverVersionText"] = "driverVersion";
-
-    QString keyName = iter.key();
-    if (replaceList.contains(keyName)) {
-        keyName = replaceList[keyName];
-    }
-
-    QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
-    newItem->setText(0, keyName);
-    if (format == HEX_FORMAT){
-        newItem->setText(1, vulkanResources::toHexQString(iter.value().toULongLong()));
-    } else {
-        assert(format == DEFAULT_FORMAT);
-        newItem->setText(1, iter.value().toString());
-    }
-    parent->addChild(newItem);
-    return newItem;
-}
-
 QTreeWidgetItem *addTreeItemVkBool32(QTreeWidgetItem *parent, const std::string& key, const VkBool32 value)
 {
 	QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
@@ -891,13 +865,27 @@ void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_i
     parent->appendRow(item);
 }
 
+void addUUIDItem(QStandardItem* parent, const QString& key, uint8_t* UUID)
+{
+    std::ostringstream uuidSs;
+    uuidSs << std::hex << std::noshowbase << std::uppercase;
+    for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
+        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(UUID[i]);
+        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    }
+    QList<QStandardItem*> item;
+    item << new QStandardItem(key);
+    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    parent->appendRow(item);
+}
+
 void addUUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     const QJsonArray values = iterator.value().toJsonArray();
     std::ostringstream uuidSs;
     uuidSs << std::hex << std::noshowbase << std::uppercase;
-    for (uint32_t i = 0; i < values.size(); i++) {
-        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(values[i].toInt());
+    for (size_t i = 0; i < values.size(); i++) {
+        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
         if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
     }
     QList<QStandardItem*> item;
@@ -1011,9 +999,6 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     parent->appendRow(item);
 }
 
-/// <summary>
-///	Display information on given device
-/// </summary>
 void vulkanCapsViewer::displayDevice(int index)
 {
 	assert(index < vulkanGPUs.size());
@@ -1035,93 +1020,13 @@ void vulkanCapsViewer::displayDevice(int index)
 
 void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 {
-	QTreeWidget *treeWidget = ui.treeWidgetDeviceProperties;
-    treeWidget->clear();
-	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
-
-
-    {
-        // Some keys are doubled for raw and readable data for vkjson compatiblity, filter them out and display readable versions only
-        const QSet<QString> skipList = {"apiVersion", "deviceType", "driverVersion", "headerversion"};
-
-        // Some values look better as hex int
-        const QSet<QString> hexList = {"vendorID", "deviceID"};
-
-        // Basic properties
-        for(QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
-            const QString& propName = iter.key();
-            if (skipList.contains(propName)) continue;
-
-            const ItemFormat itemFormat = hexList.contains(propName) ? HEX_FORMAT : DEFAULT_FORMAT;
-            addTreeItem(treeItem, iter, itemFormat);
-        }
-    }
-
-    // Subgroup operations properties
-    if (device->hasSubgroupProperties) {
-        QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-        parentItem->setText(0, "subgroup properties");
-        for(QVariantMap::const_iterator iter = device->subgroupProperties.begin(); iter != device->subgroupProperties.end(); ++iter) {
-            QString keyName = iter.key();
-            if (keyName == "quadOperationsInAllStages") {
-                addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
-            }
-            if (keyName == "subgroupSize") {
-                addTreeItem(parentItem, iter);
-            }
-            if (keyName == "supportedOperations") {
-                const VkSubgroupFeatureFlags flags = iter.value().toUInt();
-                addTreeItemFlags(parentItem, iter.key().toStdString(), flags, vulkanResources::subgroupFeatureBitString);
-            }
-            if (keyName == "supportedStages") {
-                VkShaderStageFlags flags = iter.value().toUInt();
-                QTreeWidgetItem *stagesItem = addTreeItemFlags(parentItem, iter.key().toStdString(), flags, vulkanResources::shaderStagesBitString);
-                addTreeItemFlag(stagesItem,
-                                QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL_GRAPHICS)),
-                               (flags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS);
-                addTreeItemFlag(stagesItem,
-                                QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL)),
-                                (flags & VK_SHADER_STAGE_ALL) == VK_SHADER_STAGE_ALL);
-            }
-        }
-    }
-
-    // Pipeline cache UUID
-    std::ostringstream uuidSs;
-    uuidSs << std::hex << std::noshowbase << std::nouppercase;
-    assert(VK_UUID_SIZE == 16);
-    for (uint32_t i = 0; i < VK_UUID_SIZE; ++i){
-        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(device->props.pipelineCacheUUID[i]);
-        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
-    }
-    addTreeItem(treeItem, "pipelineCacheUUID", uuidSs.str());
-
-    // Operating system
-    stringstream ss;
-    ss << device->os.name << " " << device->os.version << " (" << device->os.architecture << ")";
-    addTreeItem(treeItem, "operatingsystem", ss.str());
-
-    // Platform specific info
-    if (device->platformdetails.size() > 0) {
-        QTreeWidgetItem *platformItem = new QTreeWidgetItem(treeItem);
-        platformItem->setText(0, "Platform details");
-        treeItem->addChild(platformItem);
-        for (auto& detail : device->platformdetails) {
-            addTreeItem(platformItem, detail.first, detail.second);
-        }
-    }
-
-    ui.treeWidgetDeviceProperties->expandAll();
-
-    for (int i = 0; i < treeWidget->columnCount(); i++)
-		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-
     // Core 1.0
     models.propertiesCore10.clear();
     QStandardItem* rootItem = models.propertiesCore10.invisibleRootItem();
     for (QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
         addPropertiesRow(rootItem, iter);
     }
+    addUUIDItem(rootItem, "pipelineCacheUUID", device->props.pipelineCacheUUID);
     // Core 1.0 limits
     QList<QStandardItem*> core10LimitsItem;
     core10LimitsItem << new QStandardItem("Limits");
@@ -1201,8 +1106,8 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
 void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
     // Core 1.0
-    models.features.clear();
-    QStandardItem *rootItem = models.features.invisibleRootItem();
+    models.featuresCore10.clear();
+    QStandardItem *rootItem = models.featuresCore10.invisibleRootItem();
     for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
         addVkBool32Item(rootItem, iter);
 	}
@@ -1258,8 +1163,6 @@ void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
 
 	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
     treeWidget->clear();
-    // @todo: adjust to new structure
-//    ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
 	for (auto& layer : device->getLayers())
 	{
 		QTreeWidgetItem *treeItem = new QTreeWidgetItem(treeWidget);
@@ -1408,14 +1311,8 @@ QString arrayToStr(QVariant value) {
     return listStr;
 }
 
-/*
-    Fill extension tree model incudling extension features and properties
-*/
 void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
-    // @todo: adjust to new structure
-    //ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
-
     models.extensions.clear();
     QStandardItem *rootItem = models.extensions.invisibleRootItem();
 
@@ -1484,8 +1381,6 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
-    // @todo: adjust to new structure
-    //ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
     QTreeWidget* treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
     for (auto& queueFamily : device->queueFamilies)
