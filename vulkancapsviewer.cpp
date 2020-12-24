@@ -892,6 +892,19 @@ void addVkBool32Item(QStandardItem* parent, const QVariantMap::const_iterator& i
     parent->appendRow(item);
 }
 
+void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    if (vulkanResources::boolValueNames.contains(iterator.key())) {
+        addVkBool32Item(parent, iterator);
+        return;
+    };
+    QList<QStandardItem*> item;
+    // @todo: Special treatment for values like UUIDs
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(iterator.value().toString());
+    parent->appendRow(item);
+}
+
 /// <summary>
 ///	Display information on given device
 /// </summary>
@@ -1011,11 +1024,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         models.propertiesCore11.clear();
         QStandardItem* rootItem = models.propertiesCore11.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core11Properties.begin(); iter != device->core11Properties.end(); ++iter) {
-            QList<QStandardItem*> rowItems;
-            // @todo: Special treatment for values like UUIDs
-            rowItems << new QStandardItem(iter.key());
-            rowItems << new QStandardItem(iter.value().toString());
-            rootItem->appendRow(rowItems);
+            addPropertiesRow(rootItem, iter);
         }
         ui.treeViewDevicePropertiesCore11->expandAll();
         ui.treeViewDevicePropertiesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1026,11 +1035,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         models.propertiesCore12.clear();
         QStandardItem* rootItem = models.propertiesCore12.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core12Properties.begin(); iter != device->core12Properties.end(); ++iter) {
-            QList<QStandardItem*> rowItems;
-            // @todo: Special treatment for values like UUIDs
-            rowItems << new QStandardItem(iter.key());
-            rowItems << new QStandardItem(iter.value().toString());
-            rootItem->appendRow(rowItems);
+            addPropertiesRow(rootItem, iter);
         }
         ui.treeViewDevicePropertiesCore12->expandAll();
         ui.treeViewDevicePropertiesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
