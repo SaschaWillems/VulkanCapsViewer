@@ -502,7 +502,7 @@ height: 24px;
 </string>
             </property>
             <property name="currentText">
-             <string>Device Info</string>
+             <string>Properties</string>
             </property>
             <property name="maxVisibleItems">
              <number>16</number>
@@ -512,17 +512,12 @@ height: 24px;
             </property>
             <item>
              <property name="text">
-              <string>Device Info</string>
+              <string>Properties</string>
              </property>
             </item>
             <item>
              <property name="text">
               <string>Features</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Limits</string>
              </property>
             </item>
             <item>
