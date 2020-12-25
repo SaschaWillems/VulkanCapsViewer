@@ -37,4 +37,4 @@ jobs:
           chmod a+x linuxdeployqt-continuous-x86_64.AppImage
           export VERSION=${TARGET_PLATFORM}
           cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage -unsupported-allow-new-glibc
