@@ -8,8 +8,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-16.04
+    
     steps:
       - uses: actions/checkout@v2
         with:
@@ -33,3 +33,8 @@ jobs:
           CXX="clang++"
           qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+          export VERSION=${TARGET_PLATFORM}
+          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage -unsupported-allow-new-glibc
