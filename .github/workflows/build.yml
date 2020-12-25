@@ -27,7 +27,6 @@ jobs:
         run: |
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          qt512-env.sh
           qmake CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
           wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
