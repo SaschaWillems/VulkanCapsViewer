@@ -78,9 +78,6 @@ using std::to_string;
 const std::string vulkanCapsViewer::version = "3.0";
 const std::string vulkanCapsViewer::reportVersion = "3.0";
 
-/// <summary>
-///	Returns operating system name
-/// </summary>
 OSInfo getOperatingSystem()
 {
     // QSysInfo works for all supported operating systems
@@ -90,6 +87,19 @@ OSInfo getOperatingSystem()
     osInfo.version = QSysInfo::productVersion().toStdString();
 	return osInfo;
 }
+
+// Convert a list variant into an imploded string
+QString arrayToStr(QVariant value) {
+    QList<QVariant> list = value.toList();
+    QString imploded;
+    for (auto i = 0; i < list.size(); i++) {
+        imploded += list[i].toString();
+        if (i < list.size() - 1)
+            imploded += ", ";
+    }
+    return "[" + imploded + "]";
+}
+
 
 #ifdef __ANDROID__
 void setTouchProps(QWidget *widget) {
@@ -240,40 +250,23 @@ vulkanCapsViewer::~vulkanCapsViewer()
     }
 }
 
-/// <summary>
-///	Close the application
-/// </summary>
 void vulkanCapsViewer::slotClose()
 {
 	close();
 }
 
-/// <summary>
-///	Display database in default browser
-/// </summary>
 void vulkanCapsViewer::slotBrowseDatabase() 
 {
     QString link = "https://vulkan.gpuinfo.org/";
 	QDesktopServices::openUrl(QUrl(link));
 }
 
-/// <summary>
-///	Display device report in default browser
-/// </summary>
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
     int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
 	stringstream ss;
 	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
 	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
-}
-
-/// <summary>
-///	Refresh GPU list
-/// </summary>
-void vulkanCapsViewer::slotRefresh()
-{
-	// getGPUs(); TODO : Clean up before refresh
 }
 
 std::string apiVersionText(uint32_t apiVersion)
@@ -295,9 +288,6 @@ void vulkanCapsViewer::slotAbout()
 	QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
 
-/// <summary>
-///	GPU selection changed
-/// </summary>
 void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 {
 	if (index != selectedDeviceIndex)
@@ -306,9 +296,6 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 	}
 }
 
-/// <summary>
-///	Save report to disk (JSON)
-/// </summary>
 void vulkanCapsViewer::slotSaveReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
@@ -319,9 +306,6 @@ void vulkanCapsViewer::slotSaveReport()
 	}
 }
 
-/// <summary>
-///	Upload report to online database
-/// </summary>
 void vulkanCapsViewer::slotUploadReport()
 {
 	VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
@@ -709,9 +693,6 @@ bool vulkanCapsViewer::initVulkan()
 	return true;
 }
 
-/// <summary>
-///	Get details for the specificed vulkan GPU
-/// </summary>
 void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device)
 {
 	VkResult vkRes;
@@ -755,11 +736,8 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
 	VkDeviceCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	info.pNext = NULL;
 	info.pQueueCreateInfos = queueCreateInfos.data();
     info.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
-	info.pEnabledFeatures = NULL;
-	info.ppEnabledLayerNames = NULL;
     info.enabledLayerCount = 0;
 //    info.enabledExtensionCount = enabledExtensions.size();
 //    info.ppEnabledExtensionNames = enabledExtensions.data();
@@ -779,9 +757,6 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->appVersion = version;
 }
 
-/// <summary>
-///	Get list of all available GPUs that support Vulkan
-/// </summary>
 void vulkanCapsViewer::getGPUs()
 {
 	VkResult vkRes;
@@ -932,17 +907,9 @@ void addHexItem(QStandardItem* parent, const QVariantMap::const_iterator& iterat
 
 void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
-    QList<QVariant> list = iterator.value().toList();
-    QString listStr = "[";
-    for (int i = 0; i < list.size(); i++) {
-        listStr += list[i].toString();
-        if (i < list.size() - 1)
-            listStr += ", ";
-    }
-    listStr += "]";
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
-    item << new QStandardItem(listStr);
+    item << new QStandardItem(arrayToStr(iterator.value()));
     parent->appendRow(item);
 }
 
@@ -1043,19 +1010,6 @@ void vulkanCapsViewer::displayDevice(int index)
     displayDeviceSurfaceInfo(device);
 
 	checkReportDatabaseState();
-}
-
-// @todo: replace
-QString arrayToStr(QVariant value) {
-    QList<QVariant> list = value.toList();
-    QString listStr = "[";
-    for (int i = 0; i < list.size(); i++) {
-        listStr += list[i].toString();
-        if (i < list.size() - 1)
-            listStr += ", ";
-    }
-    listStr += "]";
-    return listStr;
 }
 
 void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
@@ -1585,9 +1539,6 @@ void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string subm
     jsonFile.write(doc.toJson(QJsonDocument::Indented));
 }
 
-/// <summary>
-///	Display database state for the currently selected device
-/// </summary>
 void vulkanCapsViewer::checkReportDatabaseState()
 {
 	ui.labelDevicePresent->setText("<font color='#000000'>Connecting to database...</font>");

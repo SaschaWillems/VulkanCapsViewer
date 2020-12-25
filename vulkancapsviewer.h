@@ -119,7 +119,6 @@ private Q_SLOTS:
 	void slotClose();
 	void slotBrowseDatabase();
 	void slotDisplayOnlineReport();
-	void slotRefresh();
 	void slotAbout();
 	void slotComboBoxGPUIndexChanged(int index);
 	void slotSaveReport();
