@@ -25,7 +25,7 @@ jobs:
 
       - name: Build
         env:
-          TARGET_PLATFORM=X11
+          TARGET_PLATFORM: X11
         run: |
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
