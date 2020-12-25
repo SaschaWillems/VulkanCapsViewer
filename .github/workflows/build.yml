@@ -124,7 +124,4 @@ jobs:
         run: |
           qmake vulkanCapsViewer.pro
           nmake release
-
-      - name: Deploy
-          run: |
-            windeployqt.exe release
+          windeployqt.exe release
