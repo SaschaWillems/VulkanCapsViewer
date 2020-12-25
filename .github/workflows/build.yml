@@ -104,3 +104,25 @@ jobs:
           macdeployqt vulkanCapsViewer.app -dmg
           cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
           curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+
+  build_windows:
+    name: Build Windows
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+
+      - uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.12.9
+          host: windows
+
+      - name: Build
+        env:
+          TARGET_PLATFORM: windows
+        run: |
+          echo ${TARGET_PLATFORM}
+          qmake -config release
+          make -j$(nproc)
