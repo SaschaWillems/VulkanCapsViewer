@@ -517,6 +517,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "minSequencesIndexBufferOffsetAlignment", QVariant(extProps.minSequencesIndexBufferOffsetAlignment));
 		pushProperty2(extension, "minIndirectCommandsBufferOffsetAlignment", QVariant(extProps.minIndirectCommandsBufferOffsetAlignment));
 	}
+	if (extensionSupported("VK_NV_fragment_shading_rate_enums")) {
+		const char* extension("VK_NV_fragment_shading_rate_enums");
+		VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxFragmentShadingRateInvocationCount", QVariant(extProps.maxFragmentShadingRateInvocationCount));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NVX() {
 	if (extensionSupported("VK_NVX_multiview_per_view_attributes")) {
@@ -1149,6 +1156,24 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "diagnosticsConfig", extFeatures.diagnosticsConfig);
 	}
+	if (extensionSupported("VK_NV_fragment_shading_rate_enums")) {
+		const char* extension("VK_NV_fragment_shading_rate_enums");
+		VkPhysicalDeviceFragmentShadingRateEnumsFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "fragmentShadingRateEnums", extFeatures.fragmentShadingRateEnums);
+		pushFeature2(extension, "supersampleFragmentShadingRates", extFeatures.supersampleFragmentShadingRates);
+		pushFeature2(extension, "noInvocationFragmentShadingRates", extFeatures.noInvocationFragmentShadingRates);
+	}
+}
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
+	if (extensionSupported("VK_VALVE_mutable_descriptor_type")) {
+		const char* extension("VK_VALVE_mutable_descriptor_type");
+		VkPhysicalDeviceMutableDescriptorTypeFeaturesVALVE extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MUTABLE_DESCRIPTOR_TYPE_FEATURES_VALVE };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "mutableDescriptorType", extFeatures.mutableDescriptorType);
+	}
 }
 
 
@@ -1158,4 +1183,5 @@ void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_INTEL();
     readPhysicalFeatures_KHR();
     readPhysicalFeatures_NV();
+    readPhysicalFeatures_VALVE();
 }
