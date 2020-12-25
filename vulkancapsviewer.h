@@ -68,7 +68,7 @@ public:
     void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
-    QString vulkanApiVersion;
+    uint32_t instanceApiVersion;
 	int selectedDeviceIndex = 0;
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;

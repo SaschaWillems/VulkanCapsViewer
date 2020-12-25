@@ -75,8 +75,6 @@ extern "C"{
 
 using std::to_string;
 
-#define VK_API_VERSION VK_API_VERSION_1_1
-
 const std::string vulkanCapsViewer::version = "3.0";
 const std::string vulkanCapsViewer::reportVersion = "3.0";
 
@@ -132,13 +130,11 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
     qApp->setStyle(QStyleFactory::create("Fusion"));
 
-    vulkanApiVersion = QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
-
     ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
 #ifdef ANDROID
     // Load Vulkan libraries on Android manually
     if (!loadVulkanLibrary()) {
-        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API!");
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API.");
         exit(EXIT_FAILURE);
     }
     // Adjust toolbar to better fit mobile devices
@@ -181,7 +177,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
     if (!initVulkan())
     {
-        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nMake sure that at least one installed device supports Vulkan and supports at least Version 1.1.");
         exit(EXIT_FAILURE);
 	}
 
@@ -280,21 +276,23 @@ void vulkanCapsViewer::slotRefresh()
 	// getGPUs(); TODO : Clean up before refresh
 }
 
-/// <summary>
-///	Display an about box
-/// </summary>
+std::string apiVersionText(uint32_t apiVersion)
+{
+    return to_string(VK_VERSION_MAJOR(apiVersion)) + "." + to_string(VK_VERSION_MINOR(apiVersion)) + "." + to_string(VK_VERSION_PATCH(apiVersion));
+}
+
 void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
         "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
-        "Build against Vulkan API " + vulkanApiVersion.toStdString() +
-        " header version " + to_string(VK_HEADER_VERSION) + "<br/><br/>"
-		"This tool is <b>Free Open Source Software</b><br/><br/>"
-		"For usage and distribution details refer to the readme<br/><br/><br/>"
-        "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>";
+        "This tool is <b>Free Open Source Software</b><br/><br/>"
+        "For usage and distribution details refer to the readme<br/><br/>"
+        "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
+        "Vulkan instance API version: " + apiVersionText(instanceApiVersion) + "<br/>"
+        "Compiled against Vulkan header version: " + to_string(VK_HEADER_VERSION) + "<br/><br/>";
 	aboutText << "</p>";
-	QMessageBox::about(this, tr("About the Vulkan hardware capability viewer"), QString::fromStdString(aboutText.str()));
+	QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
 
 /// <summary>
@@ -339,7 +337,7 @@ void vulkanCapsViewer::slotUploadReport()
 	if (reportId > -1)
 	{ 
 		QMessageBox::StandardButton reply;
-		reply = QMessageBox::question(this, "Device already present", "A report for the selected device is aleady present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
+		reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
 		if (reply == QMessageBox::Yes) 
 		{
             QString url = QString::fromStdString(databaseConnection.getBaseUrl() + "displayreport.php?id=" + to_string(reportId));
@@ -459,12 +457,17 @@ void vulkanCapsViewer::displayGlobalExtensions()
 	}
 }
 
-/// <summary>
-///	Initialize vulkan and dome some initial setup
-/// </summary>
 bool vulkanCapsViewer::initVulkan()
 {
 	VkResult vkRes;
+
+    // Get the max. supported Vulkan Version if vkEnumerateInstanceVersion is available (loader version 1.1 and up)
+    PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+    if (vkEnumerateInstanceVersion) {
+        vkEnumerateInstanceVersion(&instanceApiVersion);
+    } else {
+        instanceApiVersion = VK_API_VERSION_1_0;
+    }
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -472,7 +475,7 @@ bool vulkanCapsViewer::initVulkan()
     appInfo.applicationVersion = 1;
     appInfo.pEngineName = "VulkanCapsViewer";
     appInfo.engineVersion = 1;
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = instanceApiVersion;
 
 	// Create Vulkan instance
     VkInstanceCreateInfo instanceCreateInfo = {};
@@ -573,7 +576,7 @@ bool vulkanCapsViewer::initVulkan()
 		QString error;
 		if (vkRes == VK_ERROR_INCOMPATIBLE_DRIVER)
 		{
-			error = "No compatible Vulkan driver found!\nThis version requires a Vulkan driver that is compatible with API Level " + QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
+			error = "No compatible Vulkan driver found!\nThis version requires a Vulkan driver that is compatible with at least Vulkan 1.1";
 		}
 		else
 		{
