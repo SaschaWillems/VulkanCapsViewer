@@ -1083,6 +1083,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     // Core 1.1
     models.propertiesCore11.clear();
     if (!(device->core11Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(1, true);
         QStandardItem* rootItem = models.propertiesCore11.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core11Properties.begin(); iter != device->core11Properties.end(); ++iter) {
             addPropertiesRow(rootItem, iter);
@@ -1090,10 +1091,14 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.treeViewDevicePropertiesCore11->expandAll();
         ui.treeViewDevicePropertiesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(1, false);
+    }
 
     // Core 1.2
     models.propertiesCore12.clear();
     if (!(device->core12Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(2, true);
         QStandardItem* rootItem = models.propertiesCore12.invisibleRootItem();
         for (QVariantMap::const_iterator iter = device->core12Properties.begin(); iter != device->core12Properties.end(); ++iter) {
             addPropertiesRow(rootItem, iter);
@@ -1101,10 +1106,14 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.treeViewDevicePropertiesCore12->expandAll();
         ui.treeViewDevicePropertiesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(2, false);
+    }
 
     // Extensions
     models.propertiesExtensions.clear();
     if (!(device->properties2.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(3, true);
         QStandardItem* rootItem = models.propertiesExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasProperties = false;
@@ -1143,6 +1152,9 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         }
         ui.treeViewDevicePropertiesExtensions->expandAll();
         ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(3, false);
     }
 }
 
@@ -1195,6 +1207,7 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
     // Core 1.1
     models.featuresCore11.clear();
     if (!(device->core11Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(1, true);
         QStandardItem *rootItem = models.featuresCore11.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core11Features.begin(); iter != device->core11Features.end(); ++iter) {
             addVkBool32Item(rootItem, iter);
@@ -1202,10 +1215,14 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.treeViewDeviceFeaturesCore11->expandAll();
         ui.treeViewDeviceFeaturesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(1, false);
+    }
 
     // Core 1.2
     models.featuresCore12.clear();
     if (!(device->core12Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(2, true);
         QStandardItem *rootItem = models.featuresCore12.invisibleRootItem();
         for(QVariantMap::const_iterator iter = device->core12Features.begin(); iter != device->core12Features.end(); ++iter) {
             addVkBool32Item(rootItem, iter);
@@ -1213,10 +1230,14 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.treeViewDeviceFeaturesCore12->expandAll();
         ui.treeViewDeviceFeaturesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(2, false);
+    }
 
     // Extensions
     models.featuresExtensions.clear();
     if (!(device->features2.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(3, true);
         QStandardItem* rootItem = models.featuresExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasFeatures = false;
@@ -1242,6 +1263,10 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.treeViewDeviceFeaturesExtensions->expandAll();
         ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(3, false);
+    }
+
 }
 
 void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)

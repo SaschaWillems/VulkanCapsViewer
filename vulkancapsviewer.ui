@@ -19,7 +19,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Vulkan Hardware Capability Viewer 1.0 (beta)</string>
+   <string>Vulkan Hardware Capability Viewer</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -39,6 +39,15 @@ QTabWidget::pane {
 
 QTabWidget::tab-bar { 
 	alignment: center; 
+}
+
+QTabBar::tab:disabled { 
+    min-width: 0 !important;
+	width: 0 !important; 
+	height: 0 !important; 
+	margin: 0 !important; 
+	padding: 0 !important; 
+	border: none !important; 
 }
 
 QTabBar::tab {
@@ -599,7 +608,7 @@ height: 24px;
             <number>0</number>
            </property>
            <item>
-            <widget class="QTabWidget" name="tabWidget_3">
+            <widget class="QTabWidget" name="tabWidgetProperties">
              <property name="currentIndex">
               <number>0</number>
              </property>
@@ -872,7 +881,7 @@ height: 24px;
             <number>0</number>
            </property>
            <item>
-            <widget class="QTabWidget" name="tabWidget">
+            <widget class="QTabWidget" name="tabWidgetFeatures">
              <property name="currentIndex">
               <number>0</number>
              </property>
