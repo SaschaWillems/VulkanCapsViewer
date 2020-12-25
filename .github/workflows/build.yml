@@ -63,7 +63,7 @@ jobs:
 
       - name: Build
         env:
-          TARGET_PLATFORM: X11
+          TARGET_PLATFORM: wayland
         run: |
           echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
