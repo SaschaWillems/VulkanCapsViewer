@@ -22,13 +22,15 @@ win32 {
 }
 linux:!android {
     LIBS += -lvulkan
-    qtHaveModule(waylandclient) {
-        QT += waylandclient
-        DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
-    }
-    qtHaveModule(x11extras) {
+    contains(DEFINES, X11) {
+        message("Building for X11")
         QT += x11extras
         DEFINES += VK_USE_PLATFORM_XCB_KHR
+    }
+    contains(DEFINES, WAYLAND) {
+        message("Building for Wayland")
+        QT += waylandclient
+        DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
     INSTALLS += target
@@ -38,7 +40,6 @@ linux:!android {
     icon.files = vulkanCapsViewer.png
     icon.path = /usr/share/icons/hicolor/256x256/apps/
     INSTALLS += desktop icon
-    #todo: other linux targets
 }
 android {
     DEFINES += VK_NO_PROTOTYPES

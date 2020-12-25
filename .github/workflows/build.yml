@@ -18,8 +18,6 @@ jobs:
         with:
           version: 5.12.9
           host: linux
-          modules:
-            qtx11extras
 
       - name: Install Vulkan SDK      
         run: |
@@ -30,10 +28,10 @@ jobs:
         env:
           TARGET_PLATFORM: X11
         run: |
+          echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          TARGET_PLATFORM="X11"
-          qmake CONFIG+=release PREFIX=/usr
+          qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
           wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
           chmod a+x linuxdeployqt-continuous-x86_64.AppImage
