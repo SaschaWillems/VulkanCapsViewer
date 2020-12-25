@@ -14,7 +14,6 @@ INCLUDEPATH += ./GeneratedFiles \
 INCLUDEPATH += "Vulkan-Headers/include"
 INCLUDEPATH += "/Vulkan-Headers/include"
 win32 {
-    DESTDIR = ./Win32/Release
     DEFINES += WIN64
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
     LIBS += "$$PWD/libs/vulkan/vulkan-1.lib"
