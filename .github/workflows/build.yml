@@ -1,0 +1,39 @@
+name: Build Project
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+      - uses: jurplel/install-qt-action@v2    
+        with:
+          version: 5.12.0
+
+      - name: Install Vulkan SDK      
+        run: |
+          wget -qO - https://packages.lunarg.com/lunarg-signing-key-pub.asc | sudo apt-key add -
+          sudo wget -qO /etc/apt/sources.list.d/lunarg-vulkan-1.2.141-xenial.list https://packages.lunarg.com/vulkan/1.2.141/lunarg-vulkan-1.2.141-xenial.list
+          sudo apt update
+          sudo apt install vulkan-sdk                
+
+      - name: Build
+        run: |
+          PATH="/opt/qt512/bin:$PATH"
+          CXX="clang++"
+          qt512-env.sh
+          qmake CONFIG+=release PREFIX=/usr
+          make INSTALL_ROOT=appdir install ; find appdir/
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+          export VERSION=${TARGET_PLATFORM}
+          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
