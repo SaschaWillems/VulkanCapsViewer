@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: "recursive"
-          
+
       - uses: jurplel/install-qt-action@v2    
         with:
           version: 5.12.9
@@ -40,3 +40,4 @@ jobs:
           export VERSION=${TARGET_PLATFORM}
           cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
           ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+          curl -T Vulkan_Caps_Viewer-X11-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
