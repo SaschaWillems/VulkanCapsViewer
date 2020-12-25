@@ -117,13 +117,10 @@ jobs:
           submodules: "recursive"
 
       - uses: jurplel/install-qt-action@v2
-        with:
-          version: 5.12.9
-          host: windows
 
       - name: Build
         env:
           TARGET_PLATFORM: windows
         run: |
-          qmake -config release
-          make -j$(nproc)
+          qmake vulkanCapsViewer.pro
+          nmake release
