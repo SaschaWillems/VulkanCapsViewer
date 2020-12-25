@@ -7,7 +7,7 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  build_ubuntu_x11:
     name: Build Ubuntu X11
     runs-on: ubuntu-16.04
 
@@ -41,8 +41,8 @@ jobs:
           cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
           ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
           curl -T Vulkan_Caps_Viewer-X11-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
-          
-  build:
+
+  build_ubuntu_wayland:
     name: Build Ubuntu Wayland
     runs-on: ubuntu-16.04
 
