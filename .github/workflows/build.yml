@@ -24,6 +24,8 @@ jobs:
           sudo apt install libvulkan-dev
 
       - name: Build
+        env:
+          TARGET_PLATFORM=X11
         run: |
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
