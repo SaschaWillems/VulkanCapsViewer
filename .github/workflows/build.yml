@@ -123,6 +123,5 @@ jobs:
         env:
           TARGET_PLATFORM: windows
         run: |
-          echo ${TARGET_PLATFORM}
           qmake -config release
           make -j$(nproc)
