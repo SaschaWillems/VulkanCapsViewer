@@ -41,3 +41,38 @@ jobs:
           cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
           ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
           curl -T Vulkan_Caps_Viewer-X11-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+          
+  build:
+    name: Build Ubuntu Wayland
+    runs-on: ubuntu-16.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+
+      - uses: jurplel/install-qt-action@v2    
+        with:
+          version: 5.12.9
+          host: linux
+
+      - name: Install Vulkan SDK      
+        run: |
+          sudo apt update
+          sudo apt install libvulkan-dev
+
+      - name: Build
+        env:
+          TARGET_PLATFORM: X11
+        run: |
+          echo ${TARGET_PLATFORM}
+          PATH="/opt/qt512/bin:$PATH"
+          CXX="clang++"
+          qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
+          make INSTALL_ROOT=appdir install ; find appdir/
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+          export VERSION=${TARGET_PLATFORM}
+          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+          curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
