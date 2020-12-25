@@ -113,8 +113,8 @@ private:
 	void displayDeviceExtensions(VulkanDeviceInfo *device);
 	void displayDeviceQueues(VulkanDeviceInfo *device);
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
-    void displayGlobalLayers(QTreeWidget *tree);
-	void displayGlobalExtensions();
+    void displayInstanceLayers();
+	void displayInstanceExtensions();
 private Q_SLOTS:
 	void slotClose();
 	void slotBrowseDatabase();

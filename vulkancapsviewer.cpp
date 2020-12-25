@@ -427,20 +427,6 @@ void vulkanCapsViewer::slotComboTabChanged(int index)
     ui.tabWidgetDevice->setCurrentIndex(index);
 }
 
-void vulkanCapsViewer::displayGlobalExtensions()
-{
-	QTreeWidget *tree = ui.treeWidgetGlobalExtenssions;
-
-    for (auto& ext : instanceInfo.extensions) {
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
-        treeItem->setText(0, QString::fromUtf8(ext.extensionName));
-        treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
-	}
-    for (int i = 0; i < tree->columnCount(); i++) {
-		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-	}
-}
-
 bool vulkanCapsViewer::initVulkan()
 {
 	VkResult vkRes;
@@ -687,8 +673,8 @@ bool vulkanCapsViewer::initVulkan()
             surface = VK_NULL_HANDLE;
     }
 
-    displayGlobalLayers(ui.treeWidgetGlobalLayers);
-    displayGlobalExtensions();
+    displayInstanceLayers();
+    displayInstanceExtensions();
 
 	return true;
 }
@@ -1228,24 +1214,35 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 
 }
 
-void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
+void vulkanCapsViewer::displayInstanceLayers()
 {
-    using namespace vulkanResources;
-
-    tree->clear();
+    ui.treeWidgetGlobalLayers->clear();
     for (auto& layer : instanceInfo.layers) {
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
+		QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalLayers);
         treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
-        treeItem->setText(1, QString::fromStdString(versionToString(layer.properties.specVersion)));
-        treeItem->setText(2, QString::fromStdString(revisionToString(layer.properties.implementationVersion)));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
+        treeItem->setText(2, QString::fromStdString(vulkanResources::revisionToString(layer.properties.implementationVersion)));
         treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
         treeItem->setText(4, layer.properties.description);
         for (auto& layerExt : layer.extensions) {
-            addTreeItem(treeItem, layerExt.extensionName, revisionToString(layerExt.specVersion));
+            addTreeItem(treeItem, layerExt.extensionName, vulkanResources::revisionToString(layerExt.specVersion));
 		}
 	}
-	for (int i = 0; i < tree->columnCount(); i++)
-		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+	for (int i = 0; i < ui.treeWidgetGlobalLayers->columnCount(); i++)
+        ui.treeWidgetGlobalLayers->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+}
+
+void vulkanCapsViewer::displayInstanceExtensions()
+{
+    ui.treeWidgetGlobalExtenssions->clear();
+    for (auto& ext : instanceInfo.extensions) {
+        QTreeWidgetItem* treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalExtenssions);
+        treeItem->setText(0, QString::fromUtf8(ext.extensionName));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
+    }
+    for (int i = 0; i < ui.treeWidgetGlobalExtenssions->columnCount(); i++) {
+        ui.treeWidgetGlobalExtenssions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
 }
 
 void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)

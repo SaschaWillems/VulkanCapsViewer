@@ -556,7 +556,7 @@ height: 24px;
             </item>
             <item>
              <property name="text">
-              <string>Vulkan Instance</string>
+              <string>Instance</string>
              </property>
             </item>
            </widget>
@@ -1376,7 +1376,7 @@ height: 24px;
          </widget>
          <widget class="QWidget" name="tab_7">
           <attribute name="title">
-           <string>Vulkan</string>
+           <string>Instance</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="spacing">
