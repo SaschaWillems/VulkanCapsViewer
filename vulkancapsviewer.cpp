@@ -826,6 +826,11 @@ void vulkanCapsViewer::getGPUs()
 	{
 		QMessageBox::warning(this, tr("Error"), "Could not find a GPU with Vulkan support!");
 	}
+
+    // Only display device selection of more than once device is present (Android only)
+#ifdef __ANDROID__
+    ui.widgetDeviceSelection->setVisible(vulkanGPUs.size() > 1);
+#endif
 }
 
 QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, const std::string& key, const std::string& value)
