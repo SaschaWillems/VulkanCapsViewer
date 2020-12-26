@@ -163,13 +163,18 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 {
 	string reply;
 	stringstream urlss;
-	urlss << getBaseUrl() << "/services/getreportid.php?"
+	urlss << getBaseUrl() << "/api/v3/getreportid.php?"
 		<< "devicename=" << device.props.deviceName
         << "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
         << "&osarchitecture=" << device.os.architecture
         << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
+#ifdef __ANDROID__
+	// Compare against platform info on Android, as driver version and device name (which is just the GPU name on android) are not sufficient to identify a single report
+	urlss << "&androidproductmodel=" << device.platformdetails["android.ProductModel"];
+	urlss << "&androidproductmanufacturer=" << device.platformdetails["android.ProductManufacturer"];
+#endif;
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
