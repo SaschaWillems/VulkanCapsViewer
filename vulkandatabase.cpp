@@ -31,9 +31,7 @@
 
 QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
-// @todo: do not commit
-//QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
-QString VulkanDatabase::databaseUrl = "http://localhost:8080/";
+QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
 
 /// <summary>
 /// Checks if the online database can be reached
@@ -80,7 +78,7 @@ string VulkanDatabase::httpGet(string url)
 
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
@@ -129,7 +127,7 @@ string VulkanDatabase::httpPost(string url, string data)
 	
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
@@ -178,10 +176,10 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 }
 
 /// Checks if the report is present in the online database
-bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device)
+bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device, int& reportId)
 {
-    int reportID = getReportId(device);
-	return (reportID > -1) ? true : false;
+	reportId = getReportId(device);
+	return (reportId > -1) ? true : false;
 }
 
 /// Posts the given xml for a report to the database	
@@ -210,7 +208,7 @@ bool VulkanDatabase::checkCanUpdateReport(VulkanDeviceInfo& device, int reportId
 	multiPart->setParent(reply);
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
 	bool result = false;
 	if (reply->error() == QNetworkReply::NoError)
 	{

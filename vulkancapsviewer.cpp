@@ -317,41 +317,61 @@ void vulkanCapsViewer::slotUploadReport()
 		return;
 	}
 
-    int reportId = databaseConnection.getReportId(device);
-	if (reportId > -1)
-	{ 
-		QMessageBox::StandardButton reply;
-		reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
-		if (reply == QMessageBox::Yes) 
-		{
+    // Upload new report
+    if (reportState == ReportState::not_present) {
+        submitDialog dialog(appSettings.submitterName, "Submit new report");
+        if (dialog.exec() == QDialog::Accepted) {
+            exportReportAsJSON("vulkanreport.json", dialog.getSubmitter(), dialog.getComment());
+            std::ostringstream sstream(std::ios::out | std::ios::binary);
+            std::ifstream inFile("vulkanreport.json");
+            std::string line;
+            while (std::getline(inFile, line)) sstream << line << "\r\n";
+            string reply = databaseConnection.postReport(sstream.str());
+            if (reply == "res_uploaded")
+            {
+                QMessageBox::information(this, "Report submitted", "Your report has been uploaded to the database!\n\nThank you for your contribution!");
+                checkReportDatabaseState();
+            }
+            else
+            {
+                QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + QString::fromStdString(reply));
+            }
+        }
+        return;
+    }
+
+    // Update existing report
+    if (reportState == ReportState::is_updatable) {
+        submitDialog dialog(appSettings.submitterName, "Update existing report");
+        if (dialog.exec() == QDialog::Accepted) {
+            int reportId = databaseConnection.getReportId(device);
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QString updateLog;
+            bool updateResult = databaseConnection.postReportForUpdate(device, reportId, updateLog);
+            QApplication::restoreOverrideCursor();
+            if (updateResult) {
+                QMessageBox::information(this, "Report updated", "The report has been updated with the following information:\n\n" + updateLog + "\nThank you for your contribution!");
+            }
+            else {
+                QMessageBox::warning(this, "Error", "The report could not be updated : \n" + QString::fromStdString("xxx"));
+            }
+            checkReportDatabaseState();
+        }
+        return;
+    }
+
+    // Show link to database for existing reports
+    if (reportState == ReportState::is_present) {
+        int reportId = databaseConnection.getReportId(device);
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
             QString url = QString::fromStdString(databaseConnection.getBaseUrl() + "displayreport.php?id=" + to_string(reportId));
-			QDesktopServices::openUrl(QUrl(url));
-		}
-		return;
-	}
-
-	submitDialog dialog(appSettings.submitterName);
-	bool ok = (dialog.exec() == QDialog::Accepted);
-
-	if (ok)
-	{
-		exportReportAsJSON("vulkanreport.json", dialog.getSubmitter(), dialog.getComment());
-		std::ostringstream sstream(std::ios::out | std::ios::binary);
-		std::ifstream inFile("vulkanreport.json");
-		std::string line;
-		while (std::getline(inFile, line)) sstream << line << "\r\n";
-
-		string reply = databaseConnection.postReport(sstream.str());
-		if (reply == "res_uploaded")
-		{
-			QMessageBox::information(this, "Report submitted", "Your report has been uploaded to the database!\n\nThanks for your contribution!");
-			checkReportDatabaseState();
-		}
-		else
-		{
-			QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + QString::fromStdString(reply));
-		}
-	}
+            QDesktopServices::openUrl(QUrl(url));
+        }
+        return;
+    }
 }
 
 void vulkanCapsViewer::slotSettings()
@@ -1539,36 +1559,31 @@ void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string subm
 void vulkanCapsViewer::checkReportDatabaseState()
 {
 	ui.labelDevicePresent->setText("<font color='#000000'>Connecting to database...</font>");
-	ui.labelDevicePresent->setVisible(true);
     ui.toolButtonOnlineDevice->setEnabled(false);
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	if (!databaseConnection.checkServerConnection())
 	{
 		ui.labelDevicePresent->setText("<font color='#FF0000'>Could not connect to the database!\n\nPlease check your internet connection and proxy settings!</font>");
-		ui.labelDevicePresent->setVisible(true);
 		QApplication::restoreOverrideCursor();
 		return;
 	}
 
-    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex]))
+    int reportId;
+    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], reportId))
 	{
-        ui.toolButtonOnlineDevice->setEnabled(true);
-        ui.labelDevicePresent->setText("<font color='#00cc63'>Device is already present in the database</font>");
-		// Report present, check if it can be updated
-		// TODO : Update mechanics!
-		/*
-		int reportId = glhttp.getReportId(core.description);
-		if (canUpdateReport(reportId)) {
-			ui.labelDevicePresent->setText("<font color='#0000FF'>Device already present in database, but can be updated with missing values!</font>");
-		}
-		*/
+        // Check if report can be updated with new information not yet stored in the database
+        if (databaseConnection.checkCanUpdateReport(vulkanGPUs[selectedDeviceIndex], reportId)) {
+            setReportState(ReportState::is_updatable);
+        }
+        else {
+            setReportState(ReportState::is_present);
+        }
 	}
 	else
 	{
-        ui.labelDevicePresent->setText("<font color='#80b3ff'>Device can be uploaded to the database</font>");
+        setReportState(ReportState::not_present);
 	}
-	ui.labelDevicePresent->setVisible(true);
 	QApplication::restoreOverrideCursor();
 }
 
@@ -1609,3 +1624,31 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
         return -3;
     }
 }
+
+void vulkanCapsViewer::setReportState(ReportState state)
+{
+    reportState = state;
+    switch (reportState) {
+    case ReportState::is_present:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonOnlineDevice->setEnabled(true);
+        ui.toolButtonUpload->setText("Upload");
+        ui.labelDevicePresent->setText("<font color='#00cc63'>Device is already present in the database</font>");
+        break;
+    case ReportState::not_present:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setText("Upload");
+        ui.labelDevicePresent->setText("<font color='#80b3ff'>Device can be uploaded to the database</font>");
+        break;
+    case ReportState::is_updatable:
+        ui.toolButtonOnlineDevice->setEnabled(true);
+        ui.toolButtonUpload->setText("Update");
+        ui.labelDevicePresent->setText("<font color='#ffcc00'>Device is already present in the database, but can be updated</font>");
+        break;
+    default:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setText("n.a.");
+        ui.labelDevicePresent->setText("<font color='#0000ff'>Could not get report state from database</font>");
+    }
+}
+

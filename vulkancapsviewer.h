@@ -51,6 +51,8 @@ struct vulkanGlobalInfo
     } features;
 };
 
+enum ReportState { unknown, not_present, is_present, is_updatable };
+
 class vulkanCapsViewer : public QMainWindow
 {
 	Q_OBJECT
@@ -58,6 +60,7 @@ class vulkanCapsViewer : public QMainWindow
 public:
     static const std::string version;
     static const std::string reportVersion;
+    ReportState reportState = ReportState::unknown;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
@@ -115,6 +118,7 @@ private:
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
     void displayInstanceLayers();
 	void displayInstanceExtensions();
+    void setReportState(ReportState state);
 private Q_SLOTS:
 	void slotClose();
 	void slotBrowseDatabase();

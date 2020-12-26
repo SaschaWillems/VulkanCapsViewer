@@ -49,7 +49,7 @@ public:
     static QString password;
     static QString databaseUrl;
     int getReportId(VulkanDeviceInfo device);
-    bool checkReportPresent(VulkanDeviceInfo device);
+    bool checkReportPresent(VulkanDeviceInfo device, int &reportId);
 	bool checkCanUpdateReport(VulkanDeviceInfo &device, int reportId);
 	bool checkServerConnection();
     string getBaseUrl();
