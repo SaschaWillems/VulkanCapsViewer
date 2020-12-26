@@ -1554,7 +1554,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
     if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex]))
 	{
         ui.toolButtonOnlineDevice->setEnabled(true);
-        ui.labelDevicePresent->setText("<font color='#00813e'>Device report already present in database</font>");
+        ui.labelDevicePresent->setText("<font color='#00cc63'>Device is already present in the database</font>");
 		// Report present, check if it can be updated
 		// TODO : Update mechanics!
 		/*
@@ -1566,7 +1566,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 	}
 	else
 	{
-        ui.labelDevicePresent->setText("<font color='#bc0003'>Device report not present in database yet</font>");
+        ui.labelDevicePresent->setText("<font color='#80b3ff'>Device can be uploaded to the database</font>");
 	}
 	ui.labelDevicePresent->setVisible(true);
 	QApplication::restoreOverrideCursor();

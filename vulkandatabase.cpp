@@ -1,10 +1,10 @@
 /*
 *
-* OpenGL hardware capability viewer and database
+* Vulkan hardware capability viewer and database
 *
-* Server http communication class implementation
+* Database communication class implementation
 *
-* Copyright (C) 2011-2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or 
 * modify it under the terms of the GNU Lesser General Public
@@ -32,14 +32,6 @@
 QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
 QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
-
-VulkanDatabase::VulkanDatabase()
-{
-}
-
-VulkanDatabase::~VulkanDatabase()
-{
-}
 
 /// <summary>
 /// Checks if the online database can be reached
