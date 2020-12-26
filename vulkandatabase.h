@@ -50,10 +50,10 @@ public:
     static QString databaseUrl;
     int getReportId(VulkanDeviceInfo device);
     bool checkReportPresent(VulkanDeviceInfo device);
+	bool checkCanUpdateReport(VulkanDeviceInfo &device, int reportId);
 	bool checkServerConnection();
     string getBaseUrl();
-	string fetchReport(int reportId);
 	string postReport(string xml);
-	string postReportForUpdate(string xml);
+	bool postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog);
 };
 

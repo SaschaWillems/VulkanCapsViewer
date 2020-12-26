@@ -31,7 +31,9 @@
 
 QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
-QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
+// @todo: do not commit
+//QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
+QString VulkanDatabase::databaseUrl = "http://localhost:8080/";
 
 /// <summary>
 /// Checks if the online database can be reached
@@ -175,33 +177,14 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
 }
 
-/// <summary>
 /// Checks if the report is present in the online database
-/// </summary>
 bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device)
 {
     int reportID = getReportId(device);
 	return (reportID > -1) ? true : false;
 }
 
-/// <summary>
-/// Fechtes an xml with all report data from the online database
-/// </summary>
-/// <param name="reportId">id of the report to get the report xml for</param>
-/// <returns>xml string</returns>
-string VulkanDatabase::fetchReport(int reportId)
-{
-	string reportXml;
-	stringstream urlss;
-    urlss << getBaseUrl() << "services/getreport.php?id=" << reportId;
-	reportXml = httpGet(urlss.str());
-	return reportXml;
-}
-
-/// <summary>
 /// Posts the given xml for a report to the database	
-/// </summary>
-/// <returns>todo</returns>
 string VulkanDatabase::postReport(string xml)
 {
 	string httpReply;
@@ -211,19 +194,76 @@ string VulkanDatabase::postReport(string xml)
 	return httpReply;
 }
 
-/// <summary>
-/// Posts the given url to the db report update script 
-/// </summary>
-/// <returns>Coma separated list of updated caps</returns>
-string VulkanDatabase::postReportForUpdate(string xml)
+// Checks if the report stored in the database can be updated with missing data from the local report
+bool VulkanDatabase::checkCanUpdateReport(VulkanDeviceInfo& device, int reportId)
 {
-	string httpReply;
-	stringstream urlss;
-	urlss << getBaseUrl() << "services/updatereport.php";
-	httpReply = httpPost(urlss.str(), xml);
-	return httpReply;
+	manager = new QNetworkAccessManager(nullptr);
+	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart jsonPart;
+	jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"update_check_report.json\""));
+	QJsonDocument doc(device.toJson("", ""));
+	jsonPart.setBody(doc.toJson());
+	multiPart->append(jsonPart);
+	QUrl qurl(databaseUrl + "api/v3/checkcanupdatereport.php?reportid=" + QString::number(reportId));
+	QNetworkRequest request(qurl);
+	QNetworkReply* reply = manager->post(request, multiPart);
+	multiPart->setParent(reply);
+	QEventLoop loop;
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec();
+	bool result = false;
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QJsonDocument response = QJsonDocument::fromJson(reply->readAll());
+		bool canUpdate = response.isObject() ? response.object()["canupdate"].toBool() : false;
+		result = canUpdate;
+	}
+	else
+	{
+		QString err(reply->errorString());
+		result = false;
+	}
+	delete(manager);
+	return result;
 }
 
+// Upload the current report for updating an existing report
+bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString& updateLog)
+{
+	manager = new QNetworkAccessManager(nullptr);
+	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart jsonPart;
+	jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"update_report.json\""));
+	QJsonDocument doc(device.toJson("", ""));
+	jsonPart.setBody(doc.toJson());
+	multiPart->append(jsonPart);
+	QUrl qurl(databaseUrl + "api/v3/updatereport.php?reportid=" + QString::number(reportId));
+	QNetworkRequest request(qurl);
+	QNetworkReply* reply = manager->post(request, multiPart);
+	multiPart->setParent(reply);
+	QEventLoop loop;
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
+	bool result = false;
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QJsonDocument response = QJsonDocument::fromJson(reply->readAll());
+		if (response.isObject() && response.object()["log"].isArray()) {
+			QJsonArray logArray = response.object()["log"].toArray();
+			foreach(const QJsonValue logEntry, logArray) {
+				updateLog += logEntry.toString() + "\n";
+			}
+		}
+		result = true;
+	}
+	else
+	{
+		QString err(reply->errorString());
+		result = false;
+	}
+	delete(manager);
+	return result;
+}
 
 string VulkanDatabase::getBaseUrl()
 {
