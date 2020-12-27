@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -670,6 +670,7 @@ void VulkanDeviceInfo::readPlatformDetails()
     platformdetails["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
     platformdetails["android.BuildID"] = getSystemProperty("ro.build.id");
     platformdetails["android.BuildVersionIncremental"] = getSystemProperty("ro.build.version.incremental");
+    properties["displayName"] = QString::fromStdString(platformdetails["android.ProductManufacturer"] + " " + platformdetails["android.ProductModel"]);
 #endif
 }
 
@@ -714,7 +715,7 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     }
 
     // Core 1.2
-    if ((!core11Properties.empty()) || (!core11Features.empty())) {
+    if ((!core12Properties.empty()) || (!core12Features.empty())) {
         QJsonObject jsonCore12;
         if (!core12Properties.empty()) {
             jsonCore12["properties"] = QJsonObject::fromVariantMap(core12Properties);
@@ -877,8 +878,6 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonEnv["appversion"] = QString::fromStdString(appVersion);
     root["environment"] = jsonEnv;
 
-#define EXTENDED_PROPS
-#if defined(EXTENDED_PROPS)
     QJsonObject jsonExtended;
 
     // VK_KHR_get_physical_device_properties2
@@ -909,7 +908,6 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonExtended["devicefeatures2"] = jsonFeatures2;
 
     root["extended"] = jsonExtended;
-#endif
 
     return root;
 }

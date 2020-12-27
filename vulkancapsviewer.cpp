@@ -1041,8 +1041,9 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     for (QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
         addVkBool32Item(core10SparseItem[0], iter);
     }
-
+#if !defined(__ANDROID__)
     ui.treeViewDeviceProperties->expandAll();
+#endif
     ui.treeViewDeviceProperties->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
     // Core 1.1
