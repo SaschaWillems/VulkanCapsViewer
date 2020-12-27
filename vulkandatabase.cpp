@@ -40,7 +40,7 @@ bool VulkanDatabase::checkServerConnection()
 {
     manager = new QNetworkAccessManager(nullptr);
 
-	QUrl qurl(QString::fromStdString(getBaseUrl() + "/services/serverstate.php"));
+	QUrl qurl(databaseUrl + "api/v3/serverstate.php");
 
     if (username != "" && password != "")
     {
@@ -163,7 +163,7 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 {
 	string reply;
 	stringstream urlss;
-	urlss << getBaseUrl() << "/api/v3/getreportid.php?"
+	urlss << databaseUrl.toStdString() << "api/v3/getreportid.php?"
 		<< "devicename=" << device.props.deviceName
         << "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
@@ -192,7 +192,7 @@ string VulkanDatabase::postReport(string xml)
 {
 	string httpReply;
 	stringstream urlss;
-    urlss << getBaseUrl() << "api/v2/uploadreport.php";
+    urlss << databaseUrl.toStdString() << "api/v3/uploadreport.php";
 	httpReply = httpPost(urlss.str(), xml);
 	return httpReply;
 }
@@ -231,7 +231,7 @@ bool VulkanDatabase::checkCanUpdateReport(VulkanDeviceInfo& device, int reportId
 }
 
 // Upload the current report for updating an existing report
-bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString& updateLog)
+bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog)
 {
 	manager = new QNetworkAccessManager(nullptr);
 	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
@@ -267,9 +267,3 @@ bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId,
 	delete(manager);
 	return result;
 }
-
-string VulkanDatabase::getBaseUrl()
-{
-    return databaseUrl.toStdString();
-}
-

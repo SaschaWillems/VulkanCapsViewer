@@ -264,9 +264,8 @@ void vulkanCapsViewer::slotBrowseDatabase()
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
     int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
-	stringstream ss;
-	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
-	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
+    QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+	QDesktopServices::openUrl(url);
 }
 
 std::string apiVersionText(uint32_t apiVersion)
@@ -367,8 +366,8 @@ void vulkanCapsViewer::slotUploadReport()
         reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes)
         {
-            QString url = QString::fromStdString(databaseConnection.getBaseUrl() + "displayreport.php?id=" + to_string(reportId));
-            QDesktopServices::openUrl(QUrl(url));
+            QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+            QDesktopServices::openUrl(url);
         }
         return;
     }

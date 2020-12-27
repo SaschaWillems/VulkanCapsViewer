@@ -52,7 +52,6 @@ public:
     bool checkReportPresent(VulkanDeviceInfo device, int &reportId);
 	bool checkCanUpdateReport(VulkanDeviceInfo &device, int reportId);
 	bool checkServerConnection();
-    string getBaseUrl();
 	string postReport(string xml);
 	bool postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog);
 };
