@@ -4,7 +4,7 @@
 *
 * Database communication class implementation
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -49,13 +49,10 @@ public:
     static QString password;
     static QString databaseUrl;
     int getReportId(VulkanDeviceInfo device);
-    bool checkReportPresent(VulkanDeviceInfo device);
+    bool checkReportPresent(VulkanDeviceInfo device, int &reportId);
+	bool checkCanUpdateReport(VulkanDeviceInfo &device, int reportId);
 	bool checkServerConnection();
-    string getBaseUrl();
-	string fetchReport(int reportId);
 	string postReport(string xml);
-	string postReportForUpdate(string xml);
-	VulkanDatabase();
-	~VulkanDatabase();
+	bool postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog);
 };
 

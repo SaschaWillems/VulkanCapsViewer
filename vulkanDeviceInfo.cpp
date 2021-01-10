@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -32,6 +32,13 @@ bool VulkanDeviceInfo::vulkan_1_1()
     uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
     uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
     return ((major > 1) || ((major == 1) && (minor >= 1)));
+}
+
+bool VulkanDeviceInfo::vulkan_1_2()
+{
+    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
+    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
+    return ((major > 1) || ((major == 1) && (minor >= 2)));
 }
 
 void VulkanDeviceInfo::readExtensions()
@@ -188,6 +195,15 @@ std::string VulkanDeviceInfo::getDriverVersion()
     }
 }
 
+QJsonArray UUIDToJson(uint8_t* UUID)
+{
+    QJsonArray jsonArray;
+    for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
+        jsonArray.append(UUID[i]);
+    }
+    return jsonArray;
+}
+
 void VulkanDeviceInfo::readPhysicalProperties()
 {
     assert(device != NULL);
@@ -221,9 +237,9 @@ void VulkanDeviceInfo::readPhysicalProperties()
         // VK 1.1 core
         if (vulkan_1_1()) {
             VkPhysicalDeviceProperties2KHR deviceProps2{};
+            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
             VkPhysicalDeviceSubgroupProperties extProps{};
             extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
-            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
             deviceProps2.pNext = &extProps;
             pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             hasSubgroupProperties = true;
@@ -244,6 +260,100 @@ void VulkanDeviceInfo::readPhysicalProperties()
                 properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
                 properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
             }
+        }
+
+        // VK 1.2 core
+        if (vulkan_1_2()) {
+            // Vulkan 1.2 introduced dedicated structures for properties promoted to core in 1.1 and 1.2
+            // Fetching the core 1.1 properties also requires a Vulkan 1.2 (or later) implementation
+
+            VkPhysicalDeviceProperties2KHR deviceProps2{};
+            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+
+            // Core 1.1
+            VkPhysicalDeviceVulkan11Properties coreProps11{};
+            coreProps11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
+            deviceProps2.pNext = &coreProps11;
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            core11Properties.clear();
+            core11Properties["deviceUUID"] = UUIDToJson(coreProps11.deviceUUID);
+            core11Properties["driverUUID"] = UUIDToJson(coreProps11.driverUUID);
+            core11Properties["deviceLUID"] = UUIDToJson(coreProps11.deviceLUID);
+            core11Properties["deviceNodeMask"] = coreProps11.deviceNodeMask;
+            core11Properties["deviceLUIDValid"] = coreProps11.deviceLUIDValid;
+            core11Properties["subgroupSize"] = coreProps11.subgroupSize;
+            core11Properties["subgroupSupportedStages"] = coreProps11.subgroupSupportedStages;
+            core11Properties["subgroupSupportedOperations"] = coreProps11.subgroupSupportedOperations;
+            core11Properties["subgroupQuadOperationsInAllStages"] = coreProps11.subgroupQuadOperationsInAllStages;
+            core11Properties["pointClippingBehavior"] = coreProps11.pointClippingBehavior;
+            core11Properties["maxMultiviewViewCount"] = coreProps11.maxMultiviewViewCount;
+            core11Properties["maxMultiviewInstanceIndex"] = coreProps11.maxMultiviewInstanceIndex;
+            core11Properties["protectedNoFault"] = coreProps11.protectedNoFault;
+            core11Properties["maxPerSetDescriptors"] = coreProps11.maxPerSetDescriptors;
+            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(coreProps11.maxMemoryAllocationSize);
+
+
+            // Core 1.2
+            VkPhysicalDeviceVulkan12Properties coreProps12{};
+            coreProps12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
+            deviceProps2.pNext = &coreProps12;
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            core12Properties.clear();
+            core12Properties["driverID"] = coreProps12.driverID;
+            core12Properties["driverName"] = QString(coreProps12.driverName);
+            core12Properties["driverInfo"] = QString(coreProps12.driverInfo);
+            core12Properties["conformanceVersion"] =  QString::fromStdString(vulkanResources::conformanceVersionKHRString(coreProps12.conformanceVersion));
+            core12Properties["denormBehaviorIndependence"] = coreProps12.denormBehaviorIndependence;
+            core12Properties["roundingModeIndependence"] = coreProps12.roundingModeIndependence;
+            core12Properties["shaderSignedZeroInfNanPreserveFloat16"] = coreProps12.shaderSignedZeroInfNanPreserveFloat16;
+            core12Properties["shaderSignedZeroInfNanPreserveFloat32"] = coreProps12.shaderSignedZeroInfNanPreserveFloat32;
+            core12Properties["shaderSignedZeroInfNanPreserveFloat64"] = coreProps12.shaderSignedZeroInfNanPreserveFloat64;
+            core12Properties["shaderDenormPreserveFloat16"] = coreProps12.shaderDenormPreserveFloat16;
+            core12Properties["shaderDenormPreserveFloat32"] = coreProps12.shaderDenormPreserveFloat32;
+            core12Properties["shaderDenormPreserveFloat64"] = coreProps12.shaderDenormPreserveFloat64;
+            core12Properties["shaderDenormFlushToZeroFloat16"] = coreProps12.shaderDenormFlushToZeroFloat16;
+            core12Properties["shaderDenormFlushToZeroFloat32"] = coreProps12.shaderDenormFlushToZeroFloat32;
+            core12Properties["shaderDenormFlushToZeroFloat64"] = coreProps12.shaderDenormFlushToZeroFloat64;
+            core12Properties["shaderRoundingModeRTEFloat16"] = coreProps12.shaderRoundingModeRTEFloat16;
+            core12Properties["shaderRoundingModeRTEFloat32"] = coreProps12.shaderRoundingModeRTEFloat32;
+            core12Properties["shaderRoundingModeRTEFloat64"] = coreProps12.shaderRoundingModeRTEFloat64;
+            core12Properties["shaderRoundingModeRTZFloat16"] = coreProps12.shaderRoundingModeRTZFloat16;
+            core12Properties["shaderRoundingModeRTZFloat32"] = coreProps12.shaderRoundingModeRTZFloat32;
+            core12Properties["shaderRoundingModeRTZFloat64"] = coreProps12.shaderRoundingModeRTZFloat64;
+            core12Properties["maxUpdateAfterBindDescriptorsInAllPools"] = coreProps12.maxUpdateAfterBindDescriptorsInAllPools;
+            core12Properties["shaderUniformBufferArrayNonUniformIndexingNative"] = coreProps12.shaderUniformBufferArrayNonUniformIndexingNative;
+            core12Properties["shaderSampledImageArrayNonUniformIndexingNative"] = coreProps12.shaderSampledImageArrayNonUniformIndexingNative;
+            core12Properties["shaderStorageBufferArrayNonUniformIndexingNative"] = coreProps12.shaderStorageBufferArrayNonUniformIndexingNative;
+            core12Properties["shaderStorageImageArrayNonUniformIndexingNative"] = coreProps12.shaderStorageImageArrayNonUniformIndexingNative;
+            core12Properties["shaderInputAttachmentArrayNonUniformIndexingNative"] = coreProps12.shaderInputAttachmentArrayNonUniformIndexingNative;
+            core12Properties["robustBufferAccessUpdateAfterBind"] = coreProps12.robustBufferAccessUpdateAfterBind;
+            core12Properties["quadDivergentImplicitLod"] = coreProps12.quadDivergentImplicitLod;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindSamplers"] = coreProps12.maxPerStageDescriptorUpdateAfterBindSamplers;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindUniformBuffers"] = coreProps12.maxPerStageDescriptorUpdateAfterBindUniformBuffers;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindStorageBuffers"] = coreProps12.maxPerStageDescriptorUpdateAfterBindStorageBuffers;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindSampledImages"] = coreProps12.maxPerStageDescriptorUpdateAfterBindSampledImages;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindStorageImages"] = coreProps12.maxPerStageDescriptorUpdateAfterBindStorageImages;
+            core12Properties["maxPerStageDescriptorUpdateAfterBindInputAttachments"] = coreProps12.maxPerStageDescriptorUpdateAfterBindInputAttachments;
+            core12Properties["maxPerStageUpdateAfterBindResources"] = coreProps12.maxPerStageUpdateAfterBindResources;
+            core12Properties["maxDescriptorSetUpdateAfterBindSamplers"] = coreProps12.maxDescriptorSetUpdateAfterBindSamplers;
+            core12Properties["maxDescriptorSetUpdateAfterBindUniformBuffers"] = coreProps12.maxDescriptorSetUpdateAfterBindUniformBuffers;
+            core12Properties["maxDescriptorSetUpdateAfterBindUniformBuffersDynamic"] = coreProps12.maxDescriptorSetUpdateAfterBindUniformBuffersDynamic;
+            core12Properties["maxDescriptorSetUpdateAfterBindStorageBuffers"] = coreProps12.maxDescriptorSetUpdateAfterBindStorageBuffers;
+            core12Properties["maxDescriptorSetUpdateAfterBindStorageBuffersDynamic"] = coreProps12.maxDescriptorSetUpdateAfterBindStorageBuffersDynamic;
+            core12Properties["maxDescriptorSetUpdateAfterBindSampledImages"] = coreProps12.maxDescriptorSetUpdateAfterBindSampledImages;
+            core12Properties["maxDescriptorSetUpdateAfterBindStorageImages"] = coreProps12.maxDescriptorSetUpdateAfterBindStorageImages;
+            core12Properties["maxDescriptorSetUpdateAfterBindInputAttachments"] = coreProps12.maxDescriptorSetUpdateAfterBindInputAttachments;
+            core12Properties["supportedDepthResolveModes"] = coreProps12.supportedDepthResolveModes;
+            core12Properties["supportedStencilResolveModes"] = coreProps12.supportedStencilResolveModes;
+            core12Properties["independentResolveNone"] = coreProps12.independentResolveNone;
+            core12Properties["independentResolve"] = coreProps12.independentResolve;
+            core12Properties["filterMinmaxSingleComponentFormats"] = coreProps12.filterMinmaxSingleComponentFormats;
+            core12Properties["filterMinmaxImageComponentMapping"] = coreProps12.filterMinmaxImageComponentMapping;
+            core12Properties["maxTimelineSemaphoreValueDifference"] = QVariant::fromValue(coreProps12.maxTimelineSemaphoreValueDifference);
+            core12Properties["framebufferIntegerColorSampleCounts"] = coreProps12.framebufferIntegerColorSampleCounts;
+
         }
     }
 }
@@ -315,18 +425,103 @@ void VulkanDeviceInfo::readPhysicalFeatures()
 
         readExtendedFeatures();
 
-        // VK 1.1 Core
+        // Vulkan 1.1
         if (vulkan_1_1()) {
+            VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+            deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+
             // VK_KHR_shader_draw_parameters
             if (extensionSupported(VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME)) {
-                VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
                 VkPhysicalDeviceShaderDrawParameterFeatures extFeatures{};
                 extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
-                deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
                 deviceFeatures2.pNext = &extFeatures;
                 pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("shaderDrawParameters", extFeatures.shaderDrawParameters, VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME));
             }
+        }
+
+        // Vulkan 1.2
+        if (vulkan_1_2()) {
+            // Vulkan 1.2 introduced dedicated structures for features promoted to core in 1.1 and 1.2
+            // Fetching the core 1.1 features also requires a Vulkan 1.2 (or later) implementation
+
+            VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+            deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+
+            // Core 1.1
+            VkPhysicalDeviceVulkan11Features coreFeatures11{};
+            coreFeatures11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
+            deviceFeatures2.pNext = &coreFeatures11;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+
+            core11Features.clear();
+            core11Features["storageBuffer16BitAccess"] = coreFeatures11.storageBuffer16BitAccess;
+            core11Features["uniformAndStorageBuffer16BitAccess"] = coreFeatures11.uniformAndStorageBuffer16BitAccess;
+            core11Features["storagePushConstant16"] = coreFeatures11.storagePushConstant16;
+            core11Features["storageInputOutput16"] = coreFeatures11.storageInputOutput16;
+            core11Features["multiview"] = coreFeatures11.multiview;
+            core11Features["multiviewGeometryShader"] = coreFeatures11.multiviewGeometryShader;
+            core11Features["multiviewTessellationShader"] = coreFeatures11.multiviewTessellationShader;
+            core11Features["variablePointersStorageBuffer"] = coreFeatures11.variablePointersStorageBuffer;
+            core11Features["variablePointers"] = coreFeatures11.variablePointers;
+            core11Features["protectedMemory"] = coreFeatures11.protectedMemory;
+            core11Features["samplerYcbcrConversion"] = coreFeatures11.samplerYcbcrConversion;
+            core11Features["shaderDrawParameters"] = coreFeatures11.shaderDrawParameters;
+
+            // Core 1.2
+            VkPhysicalDeviceVulkan12Features coreFeatures12{};
+            coreFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
+            deviceFeatures2.pNext = &coreFeatures12;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+
+            core12Features.clear();
+            core12Features["samplerMirrorClampToEdge"] = coreFeatures12.samplerMirrorClampToEdge;
+            core12Features["drawIndirectCount"] = coreFeatures12.drawIndirectCount;
+            core12Features["storageBuffer8BitAccess"] = coreFeatures12.storageBuffer8BitAccess;
+            core12Features["uniformAndStorageBuffer8BitAccess"] = coreFeatures12.uniformAndStorageBuffer8BitAccess;
+            core12Features["storagePushConstant8"] = coreFeatures12.storagePushConstant8;
+            core12Features["shaderBufferInt64Atomics"] = coreFeatures12.shaderBufferInt64Atomics;
+            core12Features["shaderSharedInt64Atomics"] = coreFeatures12.shaderSharedInt64Atomics;
+            core12Features["shaderFloat16"] = coreFeatures12.shaderFloat16;
+            core12Features["shaderInt8"] = coreFeatures12.shaderInt8;
+            core12Features["descriptorIndexing"] = coreFeatures12.descriptorIndexing;
+            core12Features["shaderInputAttachmentArrayDynamicIndexing"] = coreFeatures12.shaderInputAttachmentArrayDynamicIndexing;
+            core12Features["shaderUniformTexelBufferArrayDynamicIndexing"] = coreFeatures12.shaderUniformTexelBufferArrayDynamicIndexing;
+            core12Features["shaderStorageTexelBufferArrayDynamicIndexing"] = coreFeatures12.shaderStorageTexelBufferArrayDynamicIndexing;
+            core12Features["shaderUniformBufferArrayNonUniformIndexing"] = coreFeatures12.shaderUniformBufferArrayNonUniformIndexing;
+            core12Features["shaderSampledImageArrayNonUniformIndexing"] = coreFeatures12.shaderSampledImageArrayNonUniformIndexing;
+            core12Features["shaderStorageBufferArrayNonUniformIndexing"] = coreFeatures12.shaderStorageBufferArrayNonUniformIndexing;
+            core12Features["shaderStorageImageArrayNonUniformIndexing"] = coreFeatures12.shaderStorageImageArrayNonUniformIndexing;
+            core12Features["shaderInputAttachmentArrayNonUniformIndexing"] = coreFeatures12.shaderInputAttachmentArrayNonUniformIndexing;
+            core12Features["shaderUniformTexelBufferArrayNonUniformIndexing"] = coreFeatures12.shaderUniformTexelBufferArrayNonUniformIndexing;
+            core12Features["shaderStorageTexelBufferArrayNonUniformIndexing"] = coreFeatures12.shaderStorageTexelBufferArrayNonUniformIndexing;
+            core12Features["descriptorBindingUniformBufferUpdateAfterBind"] = coreFeatures12.descriptorBindingUniformBufferUpdateAfterBind;
+            core12Features["descriptorBindingSampledImageUpdateAfterBind"] = coreFeatures12.descriptorBindingSampledImageUpdateAfterBind;
+            core12Features["descriptorBindingStorageImageUpdateAfterBind"] = coreFeatures12.descriptorBindingStorageImageUpdateAfterBind;
+            core12Features["descriptorBindingStorageBufferUpdateAfterBind"] = coreFeatures12.descriptorBindingStorageBufferUpdateAfterBind;
+            core12Features["descriptorBindingUniformTexelBufferUpdateAfterBind"] = coreFeatures12.descriptorBindingUniformTexelBufferUpdateAfterBind;
+            core12Features["descriptorBindingStorageTexelBufferUpdateAfterBind"] = coreFeatures12.descriptorBindingStorageTexelBufferUpdateAfterBind;
+            core12Features["descriptorBindingUpdateUnusedWhilePending"] = coreFeatures12.descriptorBindingUpdateUnusedWhilePending;
+            core12Features["descriptorBindingPartiallyBound"] = coreFeatures12.descriptorBindingPartiallyBound;
+            core12Features["descriptorBindingVariableDescriptorCount"] = coreFeatures12.descriptorBindingVariableDescriptorCount;
+            core12Features["runtimeDescriptorArray"] = coreFeatures12.runtimeDescriptorArray;
+            core12Features["samplerFilterMinmax"] = coreFeatures12.samplerFilterMinmax;
+            core12Features["scalarBlockLayout"] = coreFeatures12.scalarBlockLayout;
+            core12Features["imagelessFramebuffer"] = coreFeatures12.imagelessFramebuffer;
+            core12Features["uniformBufferStandardLayout"] = coreFeatures12.uniformBufferStandardLayout;
+            core12Features["shaderSubgroupExtendedTypes"] = coreFeatures12.shaderSubgroupExtendedTypes;
+            core12Features["separateDepthStencilLayouts"] = coreFeatures12.separateDepthStencilLayouts;
+            core12Features["hostQueryReset"] = coreFeatures12.hostQueryReset;
+            core12Features["timelineSemaphore"] = coreFeatures12.timelineSemaphore;
+            core12Features["bufferDeviceAddress"] = coreFeatures12.bufferDeviceAddress;
+            core12Features["bufferDeviceAddressCaptureReplay"] = coreFeatures12.bufferDeviceAddressCaptureReplay;
+            core12Features["bufferDeviceAddressMultiDevice"] = coreFeatures12.bufferDeviceAddressMultiDevice;
+            core12Features["vulkanMemoryModel"] = coreFeatures12.vulkanMemoryModel;
+            core12Features["vulkanMemoryModelDeviceScope"] = coreFeatures12.vulkanMemoryModelDeviceScope;
+            core12Features["vulkanMemoryModelAvailabilityVisibilityChains"] = coreFeatures12.vulkanMemoryModelAvailabilityVisibilityChains;
+            core12Features["shaderOutputViewportIndex"] = coreFeatures12.shaderOutputViewportIndex;
+            core12Features["shaderOutputLayer"] = coreFeatures12.shaderOutputLayer;
+            core12Features["subgroupBroadcastDynamicId"] = coreFeatures12.subgroupBroadcastDynamicId;
         }
 
     }
@@ -480,6 +675,7 @@ void VulkanDeviceInfo::readPlatformDetails()
     platformdetails["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
     platformdetails["android.BuildID"] = getSystemProperty("ro.build.id");
     platformdetails["android.BuildVersionIncremental"] = getSystemProperty("ro.build.version.incremental");
+    properties["displayName"] = QString::fromStdString(platformdetails["android.ProductManufacturer"] + " " + platformdetails["android.ProductModel"]);
 #endif
 }
 
@@ -501,11 +697,39 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
         jsonPipelineCache.append(jsonVal);
     }
     jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
-
     root["properties"] = jsonProperties;
 
+    if (!core12Properties.empty()) {
+        root["propertiesCore12"] = QJsonObject::fromVariantMap(core12Properties);
+    }
+
     // Device features
+    QJsonObject jsonFeatures;
     root["features"] = QJsonObject::fromVariantMap(features);
+
+    // Core 1.1
+    if ((!core11Properties.empty()) || (!core11Features.empty())) {
+        QJsonObject jsonCore11;
+        if (!core11Properties.empty()) {
+            jsonCore11["properties"] = QJsonObject::fromVariantMap(core11Properties);
+        }
+        if (!core11Features.empty()) {
+            jsonCore11["features"] = QJsonObject::fromVariantMap(core11Features);
+        }
+        root["core11"] = jsonCore11;
+    }
+
+    // Core 1.2
+    if ((!core12Properties.empty()) || (!core12Features.empty())) {
+        QJsonObject jsonCore12;
+        if (!core12Properties.empty()) {
+            jsonCore12["properties"] = QJsonObject::fromVariantMap(core12Properties);
+        }
+        if (!core12Features.empty()) {
+            jsonCore12["features"] = QJsonObject::fromVariantMap(core12Features);
+        }
+        root["core12"] = jsonCore12;
+    }
 
     // Extensions
     QJsonArray jsonExtensions;
@@ -659,8 +883,6 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonEnv["appversion"] = QString::fromStdString(appVersion);
     root["environment"] = jsonEnv;
 
-#define EXTENDED_PROPS
-#if defined(EXTENDED_PROPS)
     QJsonObject jsonExtended;
 
     // VK_KHR_get_physical_device_properties2
@@ -691,7 +913,6 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonExtended["devicefeatures2"] = jsonFeatures2;
 
     root["extended"] = jsonExtended;
-#endif
 
     return root;
 }

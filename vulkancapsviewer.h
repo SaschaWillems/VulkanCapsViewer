@@ -1,3 +1,23 @@
+/*
+*
+* Vulkan hardware capability viewer
+*
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+*
+* This code is free software, you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License version 3 as published by the Free Software Foundation.
+*
+* Please review the following information to ensure the GNU Lesser
+* General Public License version 3 requirements will be met:
+* http://opensource.org/licenses/lgpl-3.0.html
+*
+* The code is distributed WITHOUT ANY WARRANTY; without even the
+* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+* PURPOSE.  See the GNU LGPL 3.0 for more details.
+*
+*/
+
 #ifndef VULKANCAPSVIEWER_H
 #define VULKANCAPSVIEWER_H
 
@@ -31,6 +51,8 @@ struct vulkanGlobalInfo
     } features;
 };
 
+enum ReportState { unknown, not_present, is_present, is_updatable };
+
 class vulkanCapsViewer : public QMainWindow
 {
 	Q_OBJECT
@@ -38,6 +60,7 @@ class vulkanCapsViewer : public QMainWindow
 public:
     static const std::string version;
     static const std::string reportVersion;
+    ReportState reportState = ReportState::unknown;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
 	vulkanInstanceInfo instanceInfo;
 	vulkanGlobalInfo globalInfo;
@@ -48,7 +71,7 @@ public:
     void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
-    QString vulkanApiVersion;
+    uint32_t instanceApiVersion;
 	int selectedDeviceIndex = 0;
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
@@ -56,14 +79,26 @@ private:
 	Ui::vulkanCapsViewerClass ui;
 	settings appSettings;
 	struct {
-		TreeProxyFilter limits;
-		TreeProxyFilter features;
+        TreeProxyFilter propertiesCore10;
+        TreeProxyFilter propertiesCore11;
+        TreeProxyFilter propertiesCore12;
+        TreeProxyFilter propertiesExtensions;
+        TreeProxyFilter featuresCore10;
+        TreeProxyFilter featuresCore11;
+        TreeProxyFilter featuresCore12;
+        TreeProxyFilter featuresExtensions;
         TreeProxyFilter formats;
         TreeProxyFilter extensions;
 	} filterProxies;
 	struct {
-		QStandardItemModel limits;
-		QStandardItemModel features;
+        QStandardItemModel propertiesCore10;
+        QStandardItemModel propertiesCore11;
+        QStandardItemModel propertiesCore12;
+        QStandardItemModel propertiesExtensions;
+        QStandardItemModel featuresCore10;
+        QStandardItemModel featuresCore11;
+        QStandardItemModel featuresCore12;
+        QStandardItemModel featuresExtensions;
         QStandardItemModel formats;
         QStandardItemModel extensions;
 	} models;
@@ -76,27 +111,31 @@ private:
 	void displayDevice(int index);
 	void displayDeviceProperties(VulkanDeviceInfo *device);
 	void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
-	void displayDeviceLimits(VulkanDeviceInfo *device);
 	void displayDeviceFeatures(VulkanDeviceInfo *device);
-	void displayDeviceLayers(VulkanDeviceInfo *device);
 	void displayDeviceFormats(VulkanDeviceInfo *device);
 	void displayDeviceExtensions(VulkanDeviceInfo *device);
 	void displayDeviceQueues(VulkanDeviceInfo *device);
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
-    void displayGlobalLayers(QTreeWidget *tree);
-	void displayGlobalExtensions();
+    void displayInstanceLayers();
+	void displayInstanceExtensions();
+    void setReportState(ReportState state);
 private Q_SLOTS:
 	void slotClose();
 	void slotBrowseDatabase();
 	void slotDisplayOnlineReport();
-	void slotRefresh();
 	void slotAbout();
 	void slotComboBoxGPUIndexChanged(int index);
 	void slotSaveReport();
 	void slotUploadReport();
 	void slotSettings();
-	void slotFilterLimits(QString text);
-	void slotFilterFeatures(QString text);
+    void slotFilterPropertiesCore10(QString text);
+    void slotFilterPropertiesCore11(QString text);
+    void slotFilterPropertiesCore12(QString text);
+    void slotFilterPropertiesExtensions(QString text);
+    void slotFilterFeatures(QString text);
+    void slotFilterFeaturesCore11(QString text);
+    void slotFilterFeaturesCore12(QString text);
+    void slotFilterFeaturesExtensions(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);
     void slotComboTabChanged(int index);

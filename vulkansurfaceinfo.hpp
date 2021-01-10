@@ -4,7 +4,7 @@
 *
 * Surface information class
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -43,9 +43,7 @@ struct VulkanSurfaceInfo
            return;
         }
 
-        //todo: error checking
-        VkResult vkRes;
-        vkRes = vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
 
         // Present modes
         uint32_t presentModeCount;
@@ -54,7 +52,7 @@ struct VulkanSurfaceInfo
             presentModes.resize(presentModeCount);
             if (presentModeCount > 0)
             {
-                vkRes = vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+                vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
             }
         }
 
@@ -65,7 +63,7 @@ struct VulkanSurfaceInfo
             formats.resize(surfaceFormatCount);
             if (surfaceFormatCount > 0)
             {
-                vkRes = vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
+                vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
             }
         }
     }

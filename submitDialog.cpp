@@ -1,10 +1,10 @@
 /*
 *
-* OpenGL hardware capability viewer and database
+* Vulkan hardware capability viewer
 *
 * Submit report dialog
 *
-* Copyright (C) 2011-2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -30,14 +30,14 @@
 #include <QSettings>
 #include <QDialogButtonBox>
 
-submitDialog::submitDialog(QString submitter)
+submitDialog::submitDialog(QString submitter, QString caption)
 {
 	QFormLayout *formLayout = new QFormLayout;
 
     // QDialogBox doesn't appear modal on Android which makes it hard to see
     #ifdef ANDROID
         QLabel *labelCaption = new QLabel();
-        labelCaption->setText("Submit report to database");
+        labelCaption->setText(caption);
         formLayout->addRow(labelCaption);
         setStyleSheet("QDialog{ border: 2px solid black; border-style: solid; border-radius: 4px; }");
     #endif
@@ -63,7 +63,7 @@ submitDialog::submitDialog(QString submitter)
 	formLayout->addWidget(buttonBox);
 
 	setLayout(formLayout);
-	setWindowTitle("Submit report");
+	setWindowTitle(caption);
 }
 
 

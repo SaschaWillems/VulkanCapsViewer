@@ -1,10 +1,10 @@
 /*
 *
-* OpenGL hardware capability viewer and database
+* Vulkan hardware capability viewer and database
 *
-* Server http communication class implementation
+* Database communication class implementation
 *
-* Copyright (C) 2011-2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or 
 * modify it under the terms of the GNU Lesser General Public
@@ -33,14 +33,6 @@ QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
 QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
 
-VulkanDatabase::VulkanDatabase()
-{
-}
-
-VulkanDatabase::~VulkanDatabase()
-{
-}
-
 /// <summary>
 /// Checks if the online database can be reached
 /// </summary>
@@ -48,7 +40,7 @@ bool VulkanDatabase::checkServerConnection()
 {
     manager = new QNetworkAccessManager(nullptr);
 
-	QUrl qurl(QString::fromStdString(getBaseUrl() + "/services/serverstate.php"));
+	QUrl qurl(databaseUrl + "api/v3/serverstate.php");
 
     if (username != "" && password != "")
     {
@@ -86,7 +78,7 @@ string VulkanDatabase::httpGet(string url)
 
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
@@ -135,7 +127,7 @@ string VulkanDatabase::httpPost(string url, string data)
 	
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec();
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
 
 	if (reply->error() == QNetworkReply::NoError)
 	{
@@ -171,70 +163,107 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 {
 	string reply;
 	stringstream urlss;
-	urlss << getBaseUrl() << "/services/getreportid.php?"
+	urlss << databaseUrl.toStdString() << "api/v3/getreportid.php?"
 		<< "devicename=" << device.props.deviceName
         << "&driverversion=" << device.getDriverVersion()
 		<< "&osname=" << device.os.name
 		<< "&osversion=" << device.os.version
         << "&osarchitecture=" << device.os.architecture
         << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
+#ifdef __ANDROID__
+	// Compare against platform info on Android, as driver version and device name (which is just the GPU name on android) are not sufficient to identify a single report
+	urlss << "&androidproductmodel=" << device.platformdetails["android.ProductModel"];
+	urlss << "&androidproductmanufacturer=" << device.platformdetails["android.ProductManufacturer"];
+#endif;
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
 }
 
-/// <summary>
 /// Checks if the report is present in the online database
-/// </summary>
-bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device)
+bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device, int& reportId)
 {
-    int reportID = getReportId(device);
-	return (reportID > -1) ? true : false;
+	reportId = getReportId(device);
+	return (reportId > -1) ? true : false;
 }
 
-/// <summary>
-/// Fechtes an xml with all report data from the online database
-/// </summary>
-/// <param name="reportId">id of the report to get the report xml for</param>
-/// <returns>xml string</returns>
-string VulkanDatabase::fetchReport(int reportId)
-{
-	string reportXml;
-	stringstream urlss;
-    urlss << getBaseUrl() << "services/getreport.php?id=" << reportId;
-	reportXml = httpGet(urlss.str());
-	return reportXml;
-}
-
-/// <summary>
 /// Posts the given xml for a report to the database	
-/// </summary>
-/// <returns>todo</returns>
 string VulkanDatabase::postReport(string xml)
 {
 	string httpReply;
 	stringstream urlss;
-    urlss << getBaseUrl() << "api/v2/uploadreport.php";
+    urlss << databaseUrl.toStdString() << "api/v3/uploadreport.php";
 	httpReply = httpPost(urlss.str(), xml);
 	return httpReply;
 }
 
-/// <summary>
-/// Posts the given url to the db report update script 
-/// </summary>
-/// <returns>Coma separated list of updated caps</returns>
-string VulkanDatabase::postReportForUpdate(string xml)
+// Checks if the report stored in the database can be updated with missing data from the local report
+bool VulkanDatabase::checkCanUpdateReport(VulkanDeviceInfo& device, int reportId)
 {
-	string httpReply;
-	stringstream urlss;
-	urlss << getBaseUrl() << "services/updatereport.php";
-	httpReply = httpPost(urlss.str(), xml);
-	return httpReply;
+	manager = new QNetworkAccessManager(nullptr);
+	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart jsonPart;
+	jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"update_check_report.json\""));
+	QJsonDocument doc(device.toJson("", ""));
+	jsonPart.setBody(doc.toJson());
+	multiPart->append(jsonPart);
+	QUrl qurl(databaseUrl + "api/v3/checkcanupdatereport.php?reportid=" + QString::number(reportId));
+	QNetworkRequest request(qurl);
+	QNetworkReply* reply = manager->post(request, multiPart);
+	multiPart->setParent(reply);
+	QEventLoop loop;
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
+	bool result = false;
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QJsonDocument response = QJsonDocument::fromJson(reply->readAll());
+		bool canUpdate = response.isObject() ? response.object()["canupdate"].toBool() : false;
+		result = canUpdate;
+	}
+	else
+	{
+		QString err(reply->errorString());
+		result = false;
+	}
+	delete(manager);
+	return result;
 }
 
-
-string VulkanDatabase::getBaseUrl()
+// Upload the current report for updating an existing report
+bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog)
 {
-    return databaseUrl.toStdString();
+	manager = new QNetworkAccessManager(nullptr);
+	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart jsonPart;
+	jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"update_report.json\""));
+	QJsonDocument doc(device.toJson("", ""));
+	jsonPart.setBody(doc.toJson());
+	multiPart->append(jsonPart);
+	QUrl qurl(databaseUrl + "api/v3/updatereport.php?reportid=" + QString::number(reportId));
+	QNetworkRequest request(qurl);
+	QNetworkReply* reply = manager->post(request, multiPart);
+	multiPart->setParent(reply);
+	QEventLoop loop;
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
+	bool result = false;
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		QJsonDocument response = QJsonDocument::fromJson(reply->readAll());
+		if (response.isObject() && response.object()["log"].isArray()) {
+			QJsonArray logArray = response.object()["log"].toArray();
+			foreach(const QJsonValue logEntry, logArray) {
+				updateLog += logEntry.toString() + "\n";
+			}
+		}
+		result = true;
+	}
+	else
+	{
+		QString err(reply->errorString());
+		result = false;
+	}
+	delete(manager);
+	return result;
 }
-

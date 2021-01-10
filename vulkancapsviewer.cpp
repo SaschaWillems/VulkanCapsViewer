@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -75,14 +75,9 @@ extern "C"{
 
 using std::to_string;
 
-#define VK_API_VERSION VK_API_VERSION_1_1
+const std::string vulkanCapsViewer::version = "3.0";
+const std::string vulkanCapsViewer::reportVersion = "3.0";
 
-const std::string vulkanCapsViewer::version = "2.23";
-const std::string vulkanCapsViewer::reportVersion = "2.0";
-
-/// <summary>
-///	Returns operating system name
-/// </summary>
 OSInfo getOperatingSystem()
 {
     // QSysInfo works for all supported operating systems
@@ -92,6 +87,19 @@ OSInfo getOperatingSystem()
     osInfo.version = QSysInfo::productVersion().toStdString();
 	return osInfo;
 }
+
+// Convert a list variant into an imploded string
+QString arrayToStr(QVariant value) {
+    QList<QVariant> list = value.toList();
+    QString imploded;
+    for (auto i = 0; i < list.size(); i++) {
+        imploded += list[i].toString();
+        if (i < list.size() - 1)
+            imploded += ", ";
+    }
+    return "[" + imploded + "]";
+}
+
 
 #ifdef __ANDROID__
 void setTouchProps(QWidget *widget) {
@@ -132,13 +140,11 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
     qApp->setStyle(QStyleFactory::create("Fusion"));
 
-    vulkanApiVersion = QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
-
     ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
 #ifdef ANDROID
     // Load Vulkan libraries on Android manually
     if (!loadVulkanLibrary()) {
-        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API!");
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API.");
         exit(EXIT_FAILURE);
     }
     // Adjust toolbar to better fit mobile devices
@@ -181,21 +187,45 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 
     if (!initVulkan())
     {
-        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\nDevice must support Vulkan API version " + vulkanApiVersion + "!");
+        QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nMake sure that at least one installed device supports Vulkan and supports at least Version 1.1.");
         exit(EXIT_FAILURE);
 	}
 
 	appSettings.restore();
 
 	// Models and filters
-	// Limits
-	ui.treeViewDeviceLimits->setModel(&filterProxies.limits);
-	filterProxies.limits.setSourceModel(&models.limits);
-	connect(ui.filterLineEditLimits, SIGNAL(textChanged(QString)), this, SLOT(slotFilterLimits(QString)));
-	// Features
-	ui.treeViewDeviceFeatures->setModel(&filterProxies.features);
-	filterProxies.features.setSourceModel(&models.features);
+    // Core 1.0 properties
+    ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
+    filterProxies.propertiesCore10.setSourceModel(&models.propertiesCore10);
+    connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore10(QString)));
+    // Core 1.1 properties
+    ui.treeViewDevicePropertiesCore11->setModel(&filterProxies.propertiesCore11);
+    filterProxies.propertiesCore11.setSourceModel(&models.propertiesCore11);
+    connect(ui.filterLineEditPropertiesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore11(QString)));
+    // Core 1.2 properties
+    ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
+    filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
+    connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
+    // Extension properties
+    ui.treeViewDevicePropertiesExtensions->setModel(&filterProxies.propertiesExtensions);
+    filterProxies.propertiesExtensions.setSourceModel(&models.propertiesExtensions);
+    connect(ui.filterLineEditPropertiesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesExtensions(QString)));
+    // Core 1.0 features
+	ui.treeViewDeviceFeatures->setModel(&filterProxies.featuresCore10);
+	filterProxies.featuresCore10.setSourceModel(&models.featuresCore10);
 	connect(ui.filterLineEditFeatures, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeatures(QString)));
+    // Core 1.1 features
+    ui.treeViewDeviceFeaturesCore11->setModel(&filterProxies.featuresCore11);
+    filterProxies.featuresCore11.setSourceModel(&models.featuresCore11);
+    connect(ui.filterLineEditFeaturesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore11(QString)));
+    // Core 1.2 features
+    ui.treeViewDeviceFeaturesCore12->setModel(&filterProxies.featuresCore12);
+    filterProxies.featuresCore12.setSourceModel(&models.featuresCore12);
+    connect(ui.filterLineEditFeaturesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore12(QString)));
+    // Extension features
+    ui.treeViewDeviceFeaturesExtensions->setModel(&filterProxies.featuresExtensions);
+    filterProxies.featuresExtensions.setSourceModel(&models.featuresExtensions);
+    connect(ui.filterLineEditFeaturesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesExtensions(QString)));
     // Extensions
     ui.treeViewDeviceExtensions->setModel(&filterProxies.extensions);
     filterProxies.extensions.setSourceModel(&models.extensions);
@@ -220,62 +250,43 @@ vulkanCapsViewer::~vulkanCapsViewer()
     }
 }
 
-/// <summary>
-///	Close the application
-/// </summary>
 void vulkanCapsViewer::slotClose()
 {
 	close();
 }
 
-/// <summary>
-///	Display database in default browser
-/// </summary>
 void vulkanCapsViewer::slotBrowseDatabase() 
 {
     QString link = "https://vulkan.gpuinfo.org/";
 	QDesktopServices::openUrl(QUrl(link));
 }
 
-/// <summary>
-///	Display device report in default browser
-/// </summary>
 void vulkanCapsViewer::slotDisplayOnlineReport()
 {
     int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
-	stringstream ss;
-	ss << databaseConnection.getBaseUrl() << "displayreport.php?id=" << reportId;
-	QDesktopServices::openUrl(QUrl(QString::fromStdString(ss.str())));
+    QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+	QDesktopServices::openUrl(url);
 }
 
-/// <summary>
-///	Refresh GPU list
-/// </summary>
-void vulkanCapsViewer::slotRefresh()
+std::string apiVersionText(uint32_t apiVersion)
 {
-	// getGPUs(); TODO : Clean up before refresh
+    return to_string(VK_VERSION_MAJOR(apiVersion)) + "." + to_string(VK_VERSION_MINOR(apiVersion)) + "." + to_string(VK_VERSION_PATCH(apiVersion));
 }
 
-/// <summary>
-///	Display an about box
-/// </summary>
 void vulkanCapsViewer::slotAbout()
 {
 	std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
         "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
-        "Build against Vulkan API " + vulkanApiVersion.toStdString() +
-        " header version " + to_string(VK_HEADER_VERSION) + "<br/><br/>"
-		"This tool is <b>FREEWARE</b><br/><br/>"
-		"For usage and distribution details refer to the readme<br/><br/><br/>"
-        "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>";
+        "This tool is <b>Free Open Source Software</b><br/><br/>"
+        "For usage and distribution details refer to the readme<br/><br/>"
+        "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
+        "Vulkan instance API version: " + apiVersionText(instanceApiVersion) + "<br/>"
+        "Compiled against Vulkan header version: " + to_string(VK_HEADER_VERSION) + "<br/><br/>";
 	aboutText << "</p>";
-	QMessageBox::about(this, tr("About the Vulkan hardware capability viewer"), QString::fromStdString(aboutText.str()));
+	QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
 
-/// <summary>
-///	GPU selection changed
-/// </summary>
 void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 {
 	if (index != selectedDeviceIndex)
@@ -284,9 +295,6 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 	}
 }
 
-/// <summary>
-///	Save report to disk (JSON)
-/// </summary>
 void vulkanCapsViewer::slotSaveReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
@@ -297,9 +305,6 @@ void vulkanCapsViewer::slotSaveReport()
 	}
 }
 
-/// <summary>
-///	Upload report to online database
-/// </summary>
 void vulkanCapsViewer::slotUploadReport()
 {
 	VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
@@ -311,41 +316,61 @@ void vulkanCapsViewer::slotUploadReport()
 		return;
 	}
 
-    int reportId = databaseConnection.getReportId(device);
-	if (reportId > -1)
-	{ 
-		QMessageBox::StandardButton reply;
-		reply = QMessageBox::question(this, "Device already present", "A report for the selected device is aleady present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
-		if (reply == QMessageBox::Yes) 
-		{
-            QString url = QString::fromStdString(databaseConnection.getBaseUrl() + "displayreport.php?id=" + to_string(reportId));
-			QDesktopServices::openUrl(QUrl(url));
-		}
-		return;
-	}
+    // Upload new report
+    if (reportState == ReportState::not_present) {
+        submitDialog dialog(appSettings.submitterName, "Submit new report");
+        if (dialog.exec() == QDialog::Accepted) {
+            exportReportAsJSON("vulkanreport.json", dialog.getSubmitter(), dialog.getComment());
+            std::ostringstream sstream(std::ios::out | std::ios::binary);
+            std::ifstream inFile("vulkanreport.json");
+            std::string line;
+            while (std::getline(inFile, line)) sstream << line << "\r\n";
+            string reply = databaseConnection.postReport(sstream.str());
+            if (reply == "res_uploaded")
+            {
+                QMessageBox::information(this, "Report submitted", "Your report has been uploaded to the database!\n\nThank you for your contribution!");
+                checkReportDatabaseState();
+            }
+            else
+            {
+                QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + QString::fromStdString(reply));
+            }
+        }
+        return;
+    }
 
-	submitDialog dialog(appSettings.submitterName);
-	bool ok = (dialog.exec() == QDialog::Accepted);
+    // Update existing report
+    if (reportState == ReportState::is_updatable) {
+        submitDialog dialog(appSettings.submitterName, "Update existing report");
+        if (dialog.exec() == QDialog::Accepted) {
+            int reportId = databaseConnection.getReportId(device);
+            QApplication::setOverrideCursor(Qt::WaitCursor);
+            QString updateLog;
+            bool updateResult = databaseConnection.postReportForUpdate(device, reportId, updateLog);
+            QApplication::restoreOverrideCursor();
+            if (updateResult) {
+                QMessageBox::information(this, "Report updated", "The report has been updated with the following information:\n\n" + updateLog + "\nThank you for your contribution!");
+            }
+            else {
+                QMessageBox::warning(this, "Error", "The report could not be updated : \n" + QString::fromStdString("xxx"));
+            }
+            checkReportDatabaseState();
+        }
+        return;
+    }
 
-	if (ok)
-	{
-		exportReportAsJSON("vulkanreport.json", dialog.getSubmitter(), dialog.getComment());
-		std::ostringstream sstream(std::ios::out | std::ios::binary);
-		std::ifstream inFile("vulkanreport.json");
-		std::string line;
-		while (std::getline(inFile, line)) sstream << line << "\r\n";
-
-		string reply = databaseConnection.postReport(sstream.str());
-		if (reply == "res_uploaded")
-		{
-			QMessageBox::information(this, "Report submitted", "Your report has been uploaded to the database!\n\nThanks for your contribution!");
-			checkReportDatabaseState();
-		}
-		else
-		{
-			QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + QString::fromStdString(reply));
-		}
-	}
+    // Show link to database for existing reports
+    if (reportState == ReportState::is_present) {
+        int reportId = databaseConnection.getReportId(device);
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
+            QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+            QDesktopServices::openUrl(url);
+        }
+        return;
+    }
 }
 
 void vulkanCapsViewer::slotSettings()
@@ -356,16 +381,52 @@ void vulkanCapsViewer::slotSettings()
 	appSettings.restore();
 }
 
-void vulkanCapsViewer::slotFilterLimits(QString text)
+void vulkanCapsViewer::slotFilterPropertiesCore10(QString text)
 {
-	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-	filterProxies.limits.setFilterRegExp(regExp);
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore10.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesCore11(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore11.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesCore12(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore12.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesExtensions.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterFeatures(QString text)
 {
 	QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-	filterProxies.features.setFilterRegExp(regExp);
+	filterProxies.featuresCore10.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesCore11(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresCore11.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesCore12(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresCore12.setFilterRegExp(regExp);
+}
+
+void vulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresExtensions.setFilterRegExp(regExp);
 }
 
 void vulkanCapsViewer::slotFilterExtensions(QString text)
@@ -385,26 +446,17 @@ void vulkanCapsViewer::slotComboTabChanged(int index)
     ui.tabWidgetDevice->setCurrentIndex(index);
 }
 
-void vulkanCapsViewer::displayGlobalExtensions()
-{
-	QTreeWidget *tree = ui.treeWidgetGlobalExtenssions;
-
-    for (auto& ext : instanceInfo.extensions) {
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
-        treeItem->setText(0, QString::fromUtf8(ext.extensionName));
-        treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
-	}
-    for (int i = 0; i < tree->columnCount(); i++) {
-		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
-	}
-}
-
-/// <summary>
-///	Initialize vulkan and dome some initial setup
-/// </summary>
 bool vulkanCapsViewer::initVulkan()
 {
 	VkResult vkRes;
+
+    // Get the max. supported Vulkan Version if vkEnumerateInstanceVersion is available (loader version 1.1 and up)
+    PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+    if (vkEnumerateInstanceVersion) {
+        vkEnumerateInstanceVersion(&instanceApiVersion);
+    } else {
+        instanceApiVersion = VK_API_VERSION_1_0;
+    }
 
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -412,7 +464,7 @@ bool vulkanCapsViewer::initVulkan()
     appInfo.applicationVersion = 1;
     appInfo.pEngineName = "VulkanCapsViewer";
     appInfo.engineVersion = 1;
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = instanceApiVersion;
 
 	// Create Vulkan instance
     VkInstanceCreateInfo instanceCreateInfo = {};
@@ -513,7 +565,7 @@ bool vulkanCapsViewer::initVulkan()
 		QString error;
 		if (vkRes == VK_ERROR_INCOMPATIBLE_DRIVER)
 		{
-			error = "No compatible Vulkan driver found!\nThis version requires a Vulkan driver that is compatible with API Level " + QString::fromStdString(vulkanResources::versionToString(VK_API_VERSION));
+			error = "No compatible Vulkan driver found!\nThis version requires a Vulkan driver that is compatible with at least Vulkan 1.1";
 		}
 		else
 		{
@@ -640,15 +692,12 @@ bool vulkanCapsViewer::initVulkan()
             surface = VK_NULL_HANDLE;
     }
 
-    displayGlobalLayers(ui.treeWidgetGlobalLayers);
-    displayGlobalExtensions();
+    displayInstanceLayers();
+    displayInstanceExtensions();
 
 	return true;
 }
 
-/// <summary>
-///	Get details for the specificed vulkan GPU
-/// </summary>
 void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device)
 {
 	VkResult vkRes;
@@ -692,11 +741,8 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
 	VkDeviceCreateInfo info = {};
 	info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-	info.pNext = NULL;
 	info.pQueueCreateInfos = queueCreateInfos.data();
     info.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
-	info.pEnabledFeatures = NULL;
-	info.ppEnabledLayerNames = NULL;
     info.enabledLayerCount = 0;
 //    info.enabledExtensionCount = enabledExtensions.size();
 //    info.ppEnabledExtensionNames = enabledExtensions.data();
@@ -716,9 +762,6 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->appVersion = version;
 }
 
-/// <summary>
-///	Get list of all available GPUs that support Vulkan
-/// </summary>
 void vulkanCapsViewer::getGPUs()
 {
 	VkResult vkRes;
@@ -763,6 +806,11 @@ void vulkanCapsViewer::getGPUs()
 	{
 		QMessageBox::warning(this, tr("Error"), "Could not find a GPU with Vulkan support!");
 	}
+
+    // Only display device selection of more than once device is present (Android only)
+#ifdef __ANDROID__
+    ui.widgetDeviceSelection->setVisible(vulkanGPUs.size() > 1);
+#endif
 }
 
 QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, const std::string& key, const std::string& value)
@@ -772,32 +820,6 @@ QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, const std::string& key, co
 	newItem->setText(1, QString::fromStdString(value));
 	parent->addChild(newItem);
 	return newItem;
-}
-
-enum ItemFormat {DEFAULT_FORMAT, HEX_FORMAT};
-QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, QVariantMap::const_iterator iter, const ItemFormat format = DEFAULT_FORMAT)
-{
-    // Map some key names to different display names
-    QMap<QString, QString> replaceList;
-    replaceList["apiVersionText"] = "apiVersion";
-    replaceList["deviceTypeText"] = "deviceType";
-    replaceList["driverVersionText"] = "driverVersion";
-
-    QString keyName = iter.key();
-    if (replaceList.contains(keyName)) {
-        keyName = replaceList[keyName];
-    }
-
-    QTreeWidgetItem *newItem = new QTreeWidgetItem(parent);
-    newItem->setText(0, keyName);
-    if (format == HEX_FORMAT){
-        newItem->setText(1, vulkanResources::toHexQString(iter.value().toULongLong()));
-    } else {
-        assert(format == DEFAULT_FORMAT);
-        newItem->setText(1, iter.value().toString());
-    }
-    parent->addChild(newItem);
-    return newItem;
 }
 
 QTreeWidgetItem *addTreeItemVkBool32(QTreeWidgetItem *parent, const std::string& key, const VkBool32 value)
@@ -833,9 +855,150 @@ QTreeWidgetItem *addTreeItemFlags(QTreeWidgetItem *parent, const std::string& fl
     return flagsItem;
 }
 
-/// <summary>
-///	Display information on given device
-/// </summary>
+void addVkBool32Item(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(iterator.value().toBool() ? "true" : "false");
+    item[1]->setForeground(iterator.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    parent->appendRow(item);
+}
+
+void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    const auto samples = static_cast<VkSampleCountFlags>(iterator.value().toUInt());
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(vulkanResources::toQStringList(samples));
+    parent->appendRow(item);
+}
+
+void addUUIDItem(QStandardItem* parent, const QString& key, uint8_t* UUID)
+{
+    std::ostringstream uuidSs;
+    uuidSs << std::hex << std::noshowbase << std::uppercase;
+    for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
+        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(UUID[i]);
+        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    }
+    QList<QStandardItem*> item;
+    item << new QStandardItem(key);
+    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    parent->appendRow(item);
+}
+
+void addUUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    const QJsonArray values = iterator.value().toJsonArray();
+    std::ostringstream uuidSs;
+    uuidSs << std::hex << std::noshowbase << std::uppercase;
+    for (size_t i = 0; i < values.size(); i++) {
+        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
+        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    }
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    parent->appendRow(item);
+}
+
+void addHexItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(vulkanResources::toHexQString(iterator.value().toULongLong()));
+    parent->appendRow(item);
+}
+
+void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(arrayToStr(iterator.value()));
+    parent->appendRow(item);
+}
+
+template<typename BitsType>
+void addBitFlagsItem(QStandardItem* parent, const QString& key, const VkFlags flags, std::string(* const flagToString)(BitsType))
+{
+    QList<QStandardItem*> flagsParentItem;
+    flagsParentItem << new QStandardItem(key);
+    flagsParentItem << new QStandardItem(QString::fromStdString(vulkanResources::toHexString(flags)));
+    parent->appendRow(flagsParentItem);
+    for (typename std::underlying_type<BitsType>::type bit = 0x1; bit != 0; bit <<= 1) {
+        const QString bitName = QString::fromStdString(flagToString(static_cast<BitsType>(bit)));
+        if (flags & bit) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(bitName);
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+    }
+    if (key == "subgroupSupportedStages") {
+        if ((flags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL_GRAPHICS)));
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+        if ((flags & VK_SHADER_STAGE_ALL) == VK_SHADER_STAGE_ALL) {
+            QList<QStandardItem*> flagItem;
+            flagItem << new QStandardItem(QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL)));
+            flagItem << new QStandardItem();
+            flagsParentItem[0]->appendRow(flagItem);
+        }
+    }
+}
+
+void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    QString key = iterator.key();
+
+    if (vulkanResources::skipValueNames.contains(key)) {
+        return;
+    }
+
+    if (vulkanResources::boolValueNames.contains(key)) {
+        addVkBool32Item(parent, iterator);
+        return;
+    };
+    if (vulkanResources::sampleFlagsValueNames.contains(key)) {
+        addVkSampleCountFlagsItem(parent, iterator);
+        return;
+    }
+    if (vulkanResources::uuidValueNames.contains(key)) {
+        addUUIDItem(parent, iterator);
+        return;
+    }
+    if (vulkanResources::hexValueNames.contains(key)) {
+        addHexItem(parent, iterator);
+        return;
+    }
+    if (iterator.value().canConvert(QVariant::List)) {
+        addVariantListItem(parent, iterator);
+        return;
+    }
+    if (key == "subgroupSupportedOperations") {
+        const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
+        addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
+        return;
+    }
+    if (key == "subgroupSupportedStages") {
+        const VkShaderStageFlags flags = iterator.value().toUInt();
+        addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }    
+
+    if (vulkanResources::replaceKeyNames.contains(key)) {
+        key = vulkanResources::replaceKeyNames[key];
+    }
+
+    QList<QStandardItem*> item;
+    item << new QStandardItem(key);
+    item << new QStandardItem(iterator.value().toString());
+    parent->appendRow(item);
+}
+
 void vulkanCapsViewer::displayDevice(int index)
 {
 	assert(index < vulkanGPUs.size());
@@ -845,9 +1008,7 @@ void vulkanCapsViewer::displayDevice(int index)
 	
 	displayDeviceProperties(&device);
     displayDeviceMemoryProperites(&device);
-	displayDeviceLimits(&device);
 	displayDeviceFeatures(&device);
-	displayDeviceLayers(&device);
 	displayDeviceFormats(&device);
     displayDeviceExtensions(&device);
 	displayDeviceQueues(&device);
@@ -858,94 +1019,108 @@ void vulkanCapsViewer::displayDevice(int index)
 
 void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 {
-	QTreeWidget *treeWidget = ui.treeWidgetDeviceProperties;
-    treeWidget->clear();
-	QTreeWidgetItem *treeItem = treeWidget->invisibleRootItem();
+    // Core 1.0
+    models.propertiesCore10.clear();
+    QStandardItem* rootItem = models.propertiesCore10.invisibleRootItem();
+    for (QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
+        addPropertiesRow(rootItem, iter);
+    }
+    addUUIDItem(rootItem, "pipelineCacheUUID", device->props.pipelineCacheUUID);
+    // Core 1.0 limits
+    QList<QStandardItem*> core10LimitsItem;
+    core10LimitsItem << new QStandardItem("Limits");
+    rootItem->appendRow(core10LimitsItem);
+    for (QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
+        addPropertiesRow(core10LimitsItem[0], iter);
+    }
+    // Core 1.0 sparse properties
+    QList<QStandardItem*> core10SparseItem;
+    core10SparseItem << new QStandardItem("Sparse properties");
+    rootItem->appendRow(core10SparseItem);
+    for (QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
+        addVkBool32Item(core10SparseItem[0], iter);
+    }
+#if !defined(__ANDROID__)
+    ui.treeViewDeviceProperties->expandAll();
+#endif
+    ui.treeViewDeviceProperties->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
-
-    {
-        // Some keys are doubled for raw and readable data for vkjson compatiblity, filter them out and display readable versions only
-        const QSet<QString> skipList = {"apiVersion", "deviceType", "driverVersion", "headerversion"};
-
-        // Some values look better as hex int
-        const QSet<QString> hexList = {"vendorID", "deviceID"};
-
-        // Basic properties
-        for(QVariantMap::const_iterator iter = device->properties.begin(); iter != device->properties.end(); ++iter) {
-            const QString& propName = iter.key();
-            if (skipList.contains(propName)) continue;
-
-            const ItemFormat itemFormat = hexList.contains(propName) ? HEX_FORMAT : DEFAULT_FORMAT;
-            addTreeItem(treeItem, iter, itemFormat);
+    // Core 1.1
+    models.propertiesCore11.clear();
+    if (!(device->core11Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(1, true);
+        QStandardItem* rootItem = models.propertiesCore11.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core11Properties.begin(); iter != device->core11Properties.end(); ++iter) {
+            addPropertiesRow(rootItem, iter);
         }
+        ui.treeViewDevicePropertiesCore11->expandAll();
+        ui.treeViewDevicePropertiesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(1, false);
     }
 
-    // Sparse properties
-    QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-    parentItem->setText(0, "sparse properties");
-    treeItem->addChild(parentItem);
-    for(QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
-        addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
+    // Core 1.2
+    models.propertiesCore12.clear();
+    if (!(device->core12Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(2, true);
+        QStandardItem* rootItem = models.propertiesCore12.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core12Properties.begin(); iter != device->core12Properties.end(); ++iter) {
+            addPropertiesRow(rootItem, iter);
+        }
+        ui.treeViewDevicePropertiesCore12->expandAll();
+        ui.treeViewDevicePropertiesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(2, false);
     }
 
-    // Subgroup operations properties
-    if (device->hasSubgroupProperties) {
-        QTreeWidgetItem *parentItem = new QTreeWidgetItem(treeItem);
-        parentItem->setText(0, "subgroup properties");
-        for(QVariantMap::const_iterator iter = device->subgroupProperties.begin(); iter != device->subgroupProperties.end(); ++iter) {
-            QString keyName = iter.key();
-            if (keyName == "quadOperationsInAllStages") {
-                addTreeItemVkBool32(parentItem, iter.key().toStdString(), iter.value().toBool());
+    // Extensions
+    models.propertiesExtensions.clear();
+    if (!(device->properties2.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(3, true);
+        QStandardItem* rootItem = models.propertiesExtensions.invisibleRootItem();
+        for (auto& extension : device->extensions) {
+            bool hasProperties = false;
+            QList<QStandardItem*> extItem;
+            for (auto& property : device->properties2) {
+                if (strcmp(property.extension, extension.extensionName) == 0) {
+                    if (!hasProperties) {
+                        hasProperties = true;
+                        extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
+                        extItem << new QStandardItem();
+                    }
+                    QList<QStandardItem*> propertyItem;
+                    propertyItem << new QStandardItem(QString::fromStdString(property.name));
+
+                    if (property.value.canConvert(QVariant::List)) {
+                        propertyItem << new QStandardItem(arrayToStr(property.value));
+                    }
+                    else {
+                        switch (property.value.type()) {
+                        case QVariant::Bool: {
+                            bool boolVal = property.value.toBool();
+                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
+                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                            break;
+                        }
+                        default:
+                            propertyItem << new QStandardItem(property.value.toString());
+                        }
+                    }
+                    extItem.first()->appendRow(propertyItem);
+                }
             }
-            if (keyName == "subgroupSize") {
-                addTreeItem(parentItem, iter);
-            }
-            if (keyName == "supportedOperations") {
-                const VkSubgroupFeatureFlags flags = iter.value().toUInt();
-                addTreeItemFlags(parentItem, iter.key().toStdString(), flags, vulkanResources::subgroupFeatureBitString);
-            }
-            if (keyName == "supportedStages") {
-                VkShaderStageFlags flags = iter.value().toUInt();
-                QTreeWidgetItem *stagesItem = addTreeItemFlags(parentItem, iter.key().toStdString(), flags, vulkanResources::shaderStagesBitString);
-                addTreeItemFlag(stagesItem,
-                                QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL_GRAPHICS)),
-                               (flags & VK_SHADER_STAGE_ALL_GRAPHICS) == VK_SHADER_STAGE_ALL_GRAPHICS);
-                addTreeItemFlag(stagesItem,
-                                QString::fromStdString(vulkanResources::shaderStagesBitString(VK_SHADER_STAGE_ALL)),
-                                (flags & VK_SHADER_STAGE_ALL) == VK_SHADER_STAGE_ALL);
+            if (hasProperties) {
+                rootItem->appendRow(extItem);
             }
         }
+        ui.treeViewDevicePropertiesExtensions->expandAll();
+        ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
-
-    // Pipeline cache UUID
-    std::ostringstream uuidSs;
-    uuidSs << std::hex << std::noshowbase << std::nouppercase;
-    assert(VK_UUID_SIZE == 16);
-    for (uint32_t i = 0; i < VK_UUID_SIZE; ++i){
-        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(device->props.pipelineCacheUUID[i]);
-        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    else {
+        ui.tabWidgetProperties->setTabEnabled(3, false);
     }
-    addTreeItem(treeItem, "pipelineCacheUUID", uuidSs.str());
-
-    // Operating system
-    stringstream ss;
-    ss << device->os.name << " " << device->os.version << " (" << device->os.architecture << ")";
-    addTreeItem(treeItem, "operatingsystem", ss.str());
-
-    // Platform specific info
-    if (device->platformdetails.size() > 0) {
-        QTreeWidgetItem *platformItem = new QTreeWidgetItem(treeItem);
-        platformItem->setText(0, "Platform details");
-        treeItem->addChild(platformItem);
-        for (auto& detail : device->platformdetails) {
-            addTreeItem(platformItem, detail.first, detail.second);
-        }
-    }
-
-    ui.treeWidgetDeviceProperties->expandAll();
-
-    for (int i = 0; i < treeWidget->columnCount(); i++)
-		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
 void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
@@ -983,106 +1158,111 @@ void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayDeviceLimits(VulkanDeviceInfo *device)
-{
-    const QSet<QString> sampleFlagsLims = {
-        "framebufferColorSampleCounts", "framebufferDepthSampleCounts", "framebufferStencilSampleCounts", "framebufferNoAttachmentsSampleCounts",
-        "sampledImageColorSampleCounts", "sampledImageIntegerSampleCounts", "sampledImageDepthSampleCounts", "sampledImageStencilSampleCounts",
-        "storageImageSampleCounts"
-    };
-
-    const QSet<QString> boolLims = {"timestampComputeAndGraphics", "strictLines", "standardSampleLocations"};
-
-    models.limits.clear();
-    QStandardItem *rootItem = models.limits.invisibleRootItem();
-    for(QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
-        QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(iter.key());
-        if (iter.value().canConvert(QVariant::List)) {
-            QList<QVariant> list = iter.value().toList();
-            QString listStr = "[";
-            for (int i = 0; i < list.size(); i++) {
-                listStr += list[i].toString();
-                if (i < list.size() - 1)
-                    listStr += ", ";
-            }
-            listStr += "]";
-            rowItems << new QStandardItem(listStr);
-        } else if (sampleFlagsLims.contains(iter.key())){
-            const auto samples = static_cast<VkSampleCountFlags>(iter.value().toUInt());
-            rowItems << new QStandardItem(vulkanResources::toQStringList(samples));
-        } else if (boolLims.contains(iter.key())){
-            rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-            rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-        } else {
-            rowItems << new QStandardItem(iter.value().toString());
-        }
-        rootItem->appendRow(rowItems);
-    }
-	ui.treeViewDeviceLimits->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-}
-
 void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
-    models.features.clear();
-    QStandardItem *rootItem = models.features.invisibleRootItem();
-
-    // Basic features
+    // Core 1.0
+    models.featuresCore10.clear();
+    QStandardItem *rootItem = models.featuresCore10.invisibleRootItem();
     for(QVariantMap::const_iterator iter = device->features.begin(); iter != device->features.end(); ++iter) {
-        QList<QStandardItem *> rowItems;
-        rowItems << new QStandardItem(iter.key());
-        rowItems << new QStandardItem(iter.value().toBool() ? "true" : "false");
-        rowItems[1]->setForeground(iter.value().toBool() ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-		rootItem->appendRow(rowItems);
+        addVkBool32Item(rootItem, iter);
 	}
-
     ui.treeViewDeviceFeatures->expandAll();
     ui.treeViewDeviceFeatures->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
-    ui.treeViewDeviceFeatures->header()->setStretchLastSection(false);
+
+    // Core 1.1
+    models.featuresCore11.clear();
+    if (!(device->core11Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(1, true);
+        QStandardItem *rootItem = models.featuresCore11.invisibleRootItem();
+        for(QVariantMap::const_iterator iter = device->core11Features.begin(); iter != device->core11Features.end(); ++iter) {
+            addVkBool32Item(rootItem, iter);
+        }
+        ui.treeViewDeviceFeaturesCore11->expandAll();
+        ui.treeViewDeviceFeaturesCore11->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(1, false);
+    }
+
+    // Core 1.2
+    models.featuresCore12.clear();
+    if (!(device->core12Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(2, true);
+        QStandardItem *rootItem = models.featuresCore12.invisibleRootItem();
+        for(QVariantMap::const_iterator iter = device->core12Features.begin(); iter != device->core12Features.end(); ++iter) {
+            addVkBool32Item(rootItem, iter);
+        }
+        ui.treeViewDeviceFeaturesCore12->expandAll();
+        ui.treeViewDeviceFeaturesCore12->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(2, false);
+    }
+
+    // Extensions
+    models.featuresExtensions.clear();
+    if (!(device->features2.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(3, true);
+        QStandardItem* rootItem = models.featuresExtensions.invisibleRootItem();
+        for (auto& extension : device->extensions) {
+            bool hasFeatures = false;
+            QList<QStandardItem*> extItem;
+            for (auto& feature : device->features2) {
+                if (strcmp(feature.extension, extension.extensionName) == 0) {
+                    if (!hasFeatures) {
+                        hasFeatures = true;
+                        extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
+                        extItem << new QStandardItem();
+                    }
+                    QList<QStandardItem*> featureItem;
+                    featureItem << new QStandardItem(QString::fromStdString(feature.name));
+                    featureItem << new QStandardItem((feature.supported) ? "true" : "false");
+                    featureItem[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+                    extItem.first()->appendRow(featureItem);
+                }
+            }
+            if (hasFeatures) {
+                rootItem->appendRow(extItem);
+            }
+        }
+        ui.treeViewDeviceFeaturesExtensions->expandAll();
+        ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(3, false);
+    }
+
 }
 
-void vulkanCapsViewer::displayGlobalLayers(QTreeWidget *tree)
+void vulkanCapsViewer::displayInstanceLayers()
 {
-    using namespace vulkanResources;
-
-    tree->clear();
+    ui.treeWidgetGlobalLayers->clear();
     for (auto& layer : instanceInfo.layers) {
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(tree);
+		QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalLayers);
         treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
-        treeItem->setText(1, QString::fromStdString(versionToString(layer.properties.specVersion)));
-        treeItem->setText(2, QString::fromStdString(revisionToString(layer.properties.implementationVersion)));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
+        treeItem->setText(2, QString::fromStdString(vulkanResources::revisionToString(layer.properties.implementationVersion)));
         treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
         treeItem->setText(4, layer.properties.description);
         for (auto& layerExt : layer.extensions) {
-            addTreeItem(treeItem, layerExt.extensionName, revisionToString(layerExt.specVersion));
+            addTreeItem(treeItem, layerExt.extensionName, vulkanResources::revisionToString(layerExt.specVersion));
 		}
 	}
-	for (int i = 0; i < tree->columnCount(); i++)
-		tree->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+	for (int i = 0; i < ui.treeWidgetGlobalLayers->columnCount(); i++)
+        ui.treeWidgetGlobalLayers->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayDeviceLayers(VulkanDeviceInfo *device)
+void vulkanCapsViewer::displayInstanceExtensions()
 {
-    using namespace vulkanResources;
-
-	QTreeWidget *treeWidget = ui.treeWidgetDeviceLayers;
-    treeWidget->clear();
-    ui.tabWidgetDevice->setTabText(5, "Layers (" + QString::number(device->getLayers().size()) + ")");
-	for (auto& layer : device->getLayers())
-	{
-		QTreeWidgetItem *treeItem = new QTreeWidgetItem(treeWidget);
-		treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
-		treeItem->setText(1, QString::fromStdString(versionToString(layer.properties.specVersion)));
-		treeItem->setText(2, QString::fromStdString(revisionToString(layer.properties.implementationVersion)));
-        treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
-		treeItem->setText(4, layer.properties.description);
-		for (auto& layerExt : layer.extensions)
-		{
-			addTreeItem(treeItem, layerExt.extensionName, revisionToString(layerExt.specVersion));
-		}
-	}
-	for (int i = 0; i < treeWidget->columnCount(); i++)
-		treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    ui.treeWidgetGlobalExtenssions->clear();
+    for (auto& ext : instanceInfo.extensions) {
+        QTreeWidgetItem* treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalExtenssions);
+        treeItem->setText(0, QString::fromUtf8(ext.extensionName));
+        treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
+    }
+    for (int i = 0; i < ui.treeWidgetGlobalExtenssions->columnCount(); i++) {
+        ui.treeWidgetGlobalExtenssions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
 }
 
 void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)
@@ -1204,25 +1384,8 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 	ui.treeViewFormats->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
-QString arrayToStr(QVariant value) {
-    QList<QVariant> list = value.toList();
-    QString listStr = "[";
-    for (int i = 0; i < list.size(); i++) {
-        listStr += list[i].toString();
-        if (i < list.size() - 1)
-            listStr += ", ";
-    }
-    listStr += "]";
-    return listStr;
-}
-
-/*
-    Fill extension tree model incudling extension features and properties
-*/
 void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(3, "Extensions (" + QString::number(device->extensions.size()) + ")");
-
     models.extensions.clear();
     QStandardItem *rootItem = models.extensions.invisibleRootItem();
 
@@ -1230,58 +1393,6 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
         QList<QStandardItem *> extItem;
         extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
         extItem << new QStandardItem(QString::fromStdString(vulkanResources::revisionToString(extension.specVersion)));
-
-        // Features
-        bool hasFeatures = false;
-        QList<QStandardItem *> featureRootItem;
-        for (auto& feature : device->features2) {
-            featureRootItem << new QStandardItem("Features");
-            featureRootItem << new QStandardItem(" ");
-            if (strcmp(feature.extension, extension.extensionName) == 0) {
-                hasFeatures = true;
-                QList<QStandardItem *> featureItem;
-                featureItem << new QStandardItem(QString::fromStdString(feature.name));
-                featureItem << new QStandardItem((feature.supported) ? "true" : "false");
-                featureItem[1]->setForeground((feature.supported) ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                featureRootItem.first()->appendRow(featureItem);
-            }
-        }
-        if (hasFeatures) {
-            extItem.first()->appendRow(featureRootItem);
-        }
-
-        // Properties
-        bool hasProperties = false;
-        QList<QStandardItem *> propertiesRootItem;
-        for (auto& property : device->properties2) {
-            propertiesRootItem << new QStandardItem("Properties");
-            propertiesRootItem << new QStandardItem(" ");
-            if (strcmp(property.extension, extension.extensionName) == 0) {
-                hasProperties = true;
-                QList<QStandardItem *> propertyItem;
-                propertyItem << new QStandardItem(QString::fromStdString(property.name));
-
-                if (property.value.canConvert(QVariant::List)) {
-                    propertyItem << new QStandardItem(arrayToStr(property.value));
-                } else {
-                    switch (property.value.type()) {
-                        case QVariant::Bool: {
-                            bool boolVal = property.value.toBool();
-                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
-                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                            break;
-                        }
-                        default:
-                            propertyItem << new QStandardItem(property.value.toString());
-                    }
-                }
-                propertiesRootItem.first()->appendRow(propertyItem);
-            }
-        }
-        if (hasProperties) {
-            extItem.first()->appendRow(propertiesRootItem);
-        }
-
         rootItem->appendRow(extItem);
     }
 
@@ -1291,7 +1402,6 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 
 void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
-    ui.tabWidgetDevice->setTabText(6, "Queues Families (" + QString::number(device->queueFamilies.size()) + ")");
     QTreeWidget* treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
     for (auto& queueFamily : device->queueFamilies)
@@ -1446,42 +1556,34 @@ void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string subm
     jsonFile.write(doc.toJson(QJsonDocument::Indented));
 }
 
-/// <summary>
-///	Display database state for the currently selected device
-/// </summary>
 void vulkanCapsViewer::checkReportDatabaseState()
 {
 	ui.labelDevicePresent->setText("<font color='#000000'>Connecting to database...</font>");
-	ui.labelDevicePresent->setVisible(true);
     ui.toolButtonOnlineDevice->setEnabled(false);
 
 	QApplication::setOverrideCursor(Qt::WaitCursor);
 	if (!databaseConnection.checkServerConnection())
 	{
 		ui.labelDevicePresent->setText("<font color='#FF0000'>Could not connect to the database!\n\nPlease check your internet connection and proxy settings!</font>");
-		ui.labelDevicePresent->setVisible(true);
 		QApplication::restoreOverrideCursor();
 		return;
 	}
 
-    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex]))
+    int reportId;
+    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], reportId))
 	{
-        ui.toolButtonOnlineDevice->setEnabled(true);
-        ui.labelDevicePresent->setText("<font color='#00813e'>Device report already present in database</font>");
-		// Report present, check if it can be updated
-		// TODO : Update mechanics!
-		/*
-		int reportId = glhttp.getReportId(core.description);
-		if (canUpdateReport(reportId)) {
-			ui.labelDevicePresent->setText("<font color='#0000FF'>Device already present in database, but can be updated with missing values!</font>");
-		}
-		*/
+        // Check if report can be updated with new information not yet stored in the database
+        if (databaseConnection.checkCanUpdateReport(vulkanGPUs[selectedDeviceIndex], reportId)) {
+            setReportState(ReportState::is_updatable);
+        }
+        else {
+            setReportState(ReportState::is_present);
+        }
 	}
 	else
 	{
-        ui.labelDevicePresent->setText("<font color='#bc0003'>Device report not present in database yet</font>");
+        setReportState(ReportState::not_present);
 	}
-	ui.labelDevicePresent->setVisible(true);
 	QApplication::restoreOverrideCursor();
 }
 
@@ -1522,3 +1624,31 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
         return -3;
     }
 }
+
+void vulkanCapsViewer::setReportState(ReportState state)
+{
+    reportState = state;
+    switch (reportState) {
+    case ReportState::is_present:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonOnlineDevice->setEnabled(true);
+        ui.toolButtonUpload->setText("Upload");
+        ui.labelDevicePresent->setText("<font color='#00cc63'>Device is already present in the database</font>");
+        break;
+    case ReportState::not_present:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setText("Upload");
+        ui.labelDevicePresent->setText("<font color='#80b3ff'>Device can be uploaded to the database</font>");
+        break;
+    case ReportState::is_updatable:
+        ui.toolButtonOnlineDevice->setEnabled(true);
+        ui.toolButtonUpload->setText("Update");
+        ui.labelDevicePresent->setText("<font color='#ffcc00'>Device is already present in the database, but can be updated</font>");
+        break;
+    default:
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setText("n.a.");
+        ui.labelDevicePresent->setText("<font color='#0000ff'>Could not get report state from database</font>");
+    }
+}
+

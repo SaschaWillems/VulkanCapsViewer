@@ -19,7 +19,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Vulkan Hardware Capability Viewer 1.0 (beta)</string>
+   <string>Vulkan Hardware Capability Viewer</string>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -39,6 +39,15 @@ QTabWidget::pane {
 
 QTabWidget::tab-bar { 
 	alignment: center; 
+}
+
+QTabBar::tab:disabled { 
+    min-width: 0 !important;
+	width: 0 !important; 
+	height: 0 !important; 
+	margin: 0 !important; 
+	padding: 0 !important; 
+	border: none !important; 
 }
 
 QTabBar::tab {
@@ -82,6 +91,10 @@ QTreeView::item {
 
 QTreeView {
 	font-size: 12px;
+}
+
+QTreeView {
+	alternate-background-color: #F6F6F6;
 }</string>
   </property>
   <property name="documentMode">
@@ -370,7 +383,7 @@ QTreeView {
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="widget" native="true">
+        <widget class="QWidget" name="widgetDeviceSelection" native="true">
          <property name="styleSheet">
           <string notr="true">background-color: rgb(68, 68, 68);</string>
          </property>
@@ -498,7 +511,7 @@ height: 24px;
 </string>
             </property>
             <property name="currentText">
-             <string>Device Info</string>
+             <string>Properties</string>
             </property>
             <property name="maxVisibleItems">
              <number>16</number>
@@ -508,17 +521,12 @@ height: 24px;
             </property>
             <item>
              <property name="text">
-              <string>Device Info</string>
+              <string>Properties</string>
              </property>
             </item>
             <item>
              <property name="text">
               <string>Features</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Limits</string>
              </property>
             </item>
             <item>
@@ -529,11 +537,6 @@ height: 24px;
             <item>
              <property name="text">
               <string>Formats</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Layers</string>
              </property>
             </item>
             <item>
@@ -553,7 +556,7 @@ height: 24px;
             </item>
             <item>
              <property name="text">
-              <string>Vulkan Instance</string>
+              <string>Instance</string>
              </property>
             </item>
            </widget>
@@ -584,160 +587,548 @@ height: 24px;
          <property name="tabBarAutoHide">
           <bool>false</bool>
          </property>
-         <widget class="QWidget" name="tabDeviceProperties">
+         <widget class="QWidget" name="tab_properties">
           <attribute name="title">
-           <string>Device</string>
+           <string>Properties</string>
           </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout_21">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QTreeWidget" name="treeWidgetDeviceProperties">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+            <widget class="QTabWidget" name="tabWidgetProperties">
+             <property name="currentIndex">
+              <number>0</number>
              </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <property name="headerHidden">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerDefaultSectionSize">
-              <number>200</number>
-             </attribute>
-             <attribute name="headerStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>key</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>value</string>
-              </property>
-             </column>
+             <widget class="QWidget" name="tab_10">
+              <attribute name="title">
+               <string>Core 1.0</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_18">
+               <item>
+                <widget class="QWidget" name="widget_11" native="true">
+                 <layout class="QFormLayout" name="formLayout_8">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditProperties">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_7">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceProperties">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_13">
+              <attribute name="title">
+               <string>Core 1.1</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_19">
+               <item>
+                <widget class="QWidget" name="widget_12" native="true">
+                 <layout class="QFormLayout" name="formLayout_9">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditPropertiesCore11">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_8">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDevicePropertiesCore11">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_14">
+              <attribute name="title">
+               <string>Core 1.2</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_20">
+               <item>
+                <widget class="QWidget" name="widget_13" native="true">
+                 <layout class="QFormLayout" name="formLayout_10">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditPropertiesCore12">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_9">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDevicePropertiesCore12">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>Extensions</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_4">
+               <item>
+                <widget class="QWidget" name="widget_14" native="true">
+                 <layout class="QFormLayout" name="formLayout_11">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditPropertiesExtensions">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_10">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDevicePropertiesExtensions">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_3">
+         <widget class="QWidget" name="tab_features">
           <attribute name="title">
            <string>Features</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_13">
+          <layout class="QVBoxLayout" name="verticalLayout_12">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item>
-            <widget class="QWidget" name="widget_3" native="true">
-             <layout class="QFormLayout" name="formLayout_3">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>2</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>2</number>
-              </property>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="filterLineEditFeatures">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="0">
-               <widget class="QLabel" name="filterLabel_2">
-                <property name="text">
-                 <string>Filter :</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTreeView" name="treeViewDeviceFeatures">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+            <widget class="QTabWidget" name="tabWidgetFeatures">
+             <property name="currentIndex">
+              <number>0</number>
              </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerVisible">
-              <bool>false</bool>
-             </attribute>
-             <attribute name="headerMinimumSectionSize">
-              <number>200</number>
-             </attribute>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-         <widget class="QWidget" name="tabDeviceLimits">
-          <attribute name="title">
-           <string>Limits</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <widget class="QWidget" name="widget_2" native="true">
-             <layout class="QFormLayout" name="formLayout_2">
-              <property name="leftMargin">
-               <number>0</number>
-              </property>
-              <property name="topMargin">
-               <number>2</number>
-              </property>
-              <property name="rightMargin">
-               <number>0</number>
-              </property>
-              <property name="bottomMargin">
-               <number>2</number>
-              </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="filterLabel">
-                <property name="text">
-                 <string>Filter :</string>
-                </property>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QLineEdit" name="filterLineEditLimits">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QTreeView" name="treeViewDeviceLimits">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <property name="headerHidden">
-              <bool>true</bool>
-             </property>
+             <widget class="QWidget" name="tab_5">
+              <attribute name="title">
+               <string>Core 1.0</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <widget class="QWidget" name="widget_3" native="true">
+                 <layout class="QFormLayout" name="formLayout_3">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditFeatures">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_2">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceFeatures">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_6">
+              <attribute name="title">
+               <string>Core 1.1</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <item>
+                <widget class="QWidget" name="widget_9" native="true">
+                 <layout class="QFormLayout" name="formLayout_5">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditFeaturesCore11">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_4">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceFeaturesCore11">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_8">
+              <attribute name="title">
+               <string>Core 1.2</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_16">
+               <item>
+                <widget class="QWidget" name="widget_10" native="true">
+                 <layout class="QFormLayout" name="formLayout_7">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditFeaturesCore12">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_6">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceFeaturesCore12">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_15">
+              <attribute name="title">
+               <string>Extensions</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_22">
+               <item>
+                <widget class="QWidget" name="widget_15" native="true">
+                 <layout class="QFormLayout" name="formLayout_12">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditFeaturesExtensions">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_11">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceFeaturesExtensions">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -866,57 +1257,6 @@ height: 24px;
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_9">
-          <attribute name="title">
-           <string>Layers</string>
-          </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <widget class="QTreeWidget" name="treeWidgetDeviceLayers">
-             <property name="styleSheet">
-              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
-             </property>
-             <property name="editTriggers">
-              <set>QAbstractItemView::NoEditTriggers</set>
-             </property>
-             <property name="alternatingRowColors">
-              <bool>true</bool>
-             </property>
-             <attribute name="headerDefaultSectionSize">
-              <number>200</number>
-             </attribute>
-             <attribute name="headerStretchLastSection">
-              <bool>true</bool>
-             </attribute>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Specification</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Impementation</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Extension count</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Description</string>
-              </property>
-             </column>
-            </widget>
-           </item>
-          </layout>
-         </widget>
          <widget class="QWidget" name="tab_12">
           <attribute name="title">
            <string>Queue families</string>
@@ -1036,7 +1376,7 @@ height: 24px;
          </widget>
          <widget class="QWidget" name="tab_7">
           <attribute name="title">
-           <string>Vulkan</string>
+           <string>Instance</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <property name="spacing">
@@ -1046,7 +1386,7 @@ height: 24px;
             <number>0</number>
            </property>
            <property name="topMargin">
-            <number>5</number>
+            <number>0</number>
            </property>
            <property name="rightMargin">
             <number>0</number>
@@ -1163,7 +1503,7 @@ height: 24px;
      <x>0</x>
      <y>0</y>
      <width>927</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

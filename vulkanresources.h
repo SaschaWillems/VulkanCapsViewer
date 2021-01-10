@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2020 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -31,8 +31,8 @@
 #include <vector>
 
 #include <QString>
+#include <QSet>
 #include "vulkan/vulkan.h"
-
 
 namespace vulkanResources {
 	template<typename Number>
@@ -118,7 +118,7 @@ namespace vulkanResources {
 			STR(VIRTUAL_GPU);
 			STR(CPU);
 #undef STR
-			default: return "UNKNOWN_DEVICE_TYPE (" + toHexString(type) + ")";
+		default: return "UNKNOWN_DEVICE_TYPE (" + toHexString(type) + ")";
 		}
 	}
 
@@ -160,7 +160,7 @@ namespace vulkanResources {
 			STR(ERROR_INVALID_DEVICE_ADDRESS_EXT);
 			STR(ERROR_FULL_SCREEN_EXCLUSIVE_MODE_LOST_EXT);
 #undef STR
-			default: return "UNKNOWN_RESULT (" + toHexString(result) + ")";
+		default: return "UNKNOWN_RESULT (" + toHexString(result) + ")";
 		}
 	}
 
@@ -389,7 +389,7 @@ namespace vulkanResources {
 			STR(G16_B16R16_2PLANE_422_UNORM);
 			STR(G16_B16_R16_3PLANE_444_UNORM);
 #undef STR
-			default: return "UNKNOWN_ENUM (" + toHexString(format) + ")";
+		default: return "UNKNOWN_ENUM (" + toHexString(format) + ")";
 		}
 	}
 
@@ -405,7 +405,7 @@ namespace vulkanResources {
 			STR(SHARED_DEMAND_REFRESH);
 			STR(SHARED_CONTINUOUS_REFRESH);
 #undef STR
-			default: return "UNKNOWN_ENUM (" + toHexString(presentMode) + ")";
+		default: return "UNKNOWN_ENUM (" + toHexString(presentMode) + ")";
 		}
 	}
 
@@ -431,13 +431,13 @@ namespace vulkanResources {
 			STR(EXTENDED_SRGB_NONLINEAR_EXT);
 			STR(DISPLAY_NATIVE_AMD);
 #undef STR
-			default: return "UNKNOWN_ENUM (" + toHexString(colorSpace) + ")";
+		default: return "UNKNOWN_ENUM (" + toHexString(colorSpace) + ")";
 		}
 	}
 
 	inline std::string driverIdKHRString(const VkDriverIdKHR driverId)
 	{
-		switch(driverId){
+		switch (driverId) {
 #define STR(r) case VK_DRIVER_ID_##r##_KHR: return #r
 			STR(AMD_PROPRIETARY);
 			STR(AMD_OPEN_SOURCE);
@@ -452,13 +452,13 @@ namespace vulkanResources {
 			STR(GGP_PROPRIETARY);
 			STR(BROADCOM_PROPRIETARY);
 #undef STR
-			default: return "UNKNOWN_ENUM (" + toHexString(driverId) + ")";
+		default: return "UNKNOWN_ENUM (" + toHexString(driverId) + ")";
 		};
 	}
 
 	inline std::string imageUsageBitString(const VkImageUsageFlagBits usageBit)
 	{
-		switch(usageBit){
+		switch (usageBit) {
 #define STR(r) case VK_IMAGE_USAGE_##r: return #r
 			STR(TRANSFER_SRC_BIT);
 			STR(TRANSFER_DST_BIT);
@@ -471,13 +471,13 @@ namespace vulkanResources {
 			STR(SHADING_RATE_IMAGE_BIT_NV);
 			STR(FRAGMENT_DENSITY_MAP_BIT_EXT);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(usageBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(usageBit) + ")";
 		};
 	}
 
 	inline std::string surfaceTransformBitString(const VkSurfaceTransformFlagBitsKHR transformBit)
 	{
-		switch(transformBit){
+		switch (transformBit) {
 #define STR(r) case VK_SURFACE_TRANSFORM_##r##_KHR: return #r
 			STR(IDENTITY_BIT);
 			STR(ROTATE_90_BIT);
@@ -489,26 +489,26 @@ namespace vulkanResources {
 			STR(HORIZONTAL_MIRROR_ROTATE_270_BIT);
 			STR(INHERIT_BIT);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(transformBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(transformBit) + ")";
 		};
 	}
 
 	inline std::string compositeAlphaBitString(const VkCompositeAlphaFlagBitsKHR alphaBit)
 	{
-		switch(alphaBit){
+		switch (alphaBit) {
 #define STR(r) case VK_COMPOSITE_ALPHA_##r##_KHR: return #r
 			STR(OPAQUE_BIT);
 			STR(PRE_MULTIPLIED_BIT);
 			STR(POST_MULTIPLIED_BIT);
 			STR(INHERIT_BIT);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(alphaBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(alphaBit) + ")";
 		};
 	}
 
 	inline std::string memoryPropBitString(const VkMemoryPropertyFlagBits memoryPropBit)
 	{
-		switch(memoryPropBit){
+		switch (memoryPropBit) {
 #define STR(r) case VK_MEMORY_PROPERTY_##r: return #r
 			STR(DEVICE_LOCAL_BIT);
 			STR(HOST_VISIBLE_BIT);
@@ -519,24 +519,24 @@ namespace vulkanResources {
 			STR(DEVICE_COHERENT_BIT_AMD);
 			STR(DEVICE_UNCACHED_BIT_AMD);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(memoryPropBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(memoryPropBit) + ")";
 		};
 	}
 
 	inline std::string memoryHeapBitString(const VkMemoryPropertyFlagBits heapBit)
 	{
-		switch(heapBit){
+		switch (heapBit) {
 #define STR(r) case VK_MEMORY_HEAP_##r: return #r
 			STR(DEVICE_LOCAL_BIT);
 			STR(MULTI_INSTANCE_BIT);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(heapBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(heapBit) + ")";
 		};
 	}
 
 	inline std::string queueBitString(const VkQueueFlagBits queueBit)
 	{
-		switch(queueBit){
+		switch (queueBit) {
 #define STR(r) case VK_QUEUE_##r: return #r
 			STR(GRAPHICS_BIT);
 			STR(COMPUTE_BIT);
@@ -544,13 +544,13 @@ namespace vulkanResources {
 			STR(SPARSE_BINDING_BIT);
 			STR(PROTECTED_BIT);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
 		};
 	}
 
 	inline std::string subgroupFeatureBitString(const VkSubgroupFeatureFlagBits subgroupBit)
 	{
-		switch(subgroupBit){
+		switch (subgroupBit) {
 #define STR(r) case VK_SUBGROUP_FEATURE_##r: return #r
 			STR(BASIC_BIT);
 			STR(VOTE_BIT);
@@ -562,13 +562,13 @@ namespace vulkanResources {
 			STR(QUAD_BIT);
 			STR(PARTITIONED_BIT_NV);
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(subgroupBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(subgroupBit) + ")";
 		};
 	}
 
 	inline std::string shaderStagesBitString(const VkShaderStageFlagBits stageBit)
 	{
-		switch(stageBit){
+		switch (stageBit) {
 #define STR(r) case VK_SHADER_STAGE_##r: return #r
 			STR(VERTEX_BIT);
 			STR(TESSELLATION_CONTROL_BIT);
@@ -587,7 +587,7 @@ namespace vulkanResources {
 			STR(MESH_BIT_NV);
 			STR(ALL); // technically not a single bit, but it should work here
 #undef STR
-			default: return "UNKNOWN_FLAG (" + toHexString(stageBit) + ")";
+		default: return "UNKNOWN_FLAG (" + toHexString(stageBit) + ")";
 		};
 	}
 
@@ -606,7 +606,7 @@ namespace vulkanResources {
 
 	inline std::string conformanceVersionKHRString(const VkConformanceVersionKHR& conformanceVersion)
 	{
-		const std::vector<uint8_t> versionAsList = {conformanceVersion.major, conformanceVersion.minor, conformanceVersion.subminor, conformanceVersion.patch};
+		const std::vector<uint8_t> versionAsList = { conformanceVersion.major, conformanceVersion.minor, conformanceVersion.subminor, conformanceVersion.patch };
 		std::vector<std::string> versionAsStringList;
 		const auto u8ToString = [](const uint8_t num) {
 			return std::to_string(static_cast<unsigned>(num));
@@ -615,4 +615,87 @@ namespace vulkanResources {
 
 		return joinString('.', versionAsStringList);
 	}
+
+	// Values to be displayed as sample counts
+	const QSet<QString> sampleFlagsValueNames = {
+		"framebufferColorSampleCounts",
+		"framebufferDepthSampleCounts",
+		"framebufferStencilSampleCounts",
+		"framebufferNoAttachmentsSampleCounts",
+		"sampledImageColorSampleCounts",
+		"sampledImageIntegerSampleCounts",
+		"sampledImageDepthSampleCounts",
+		"sampledImageStencilSampleCounts",
+		"storageImageSampleCounts",
+		// Core 1.2
+		"framebufferIntegerColorSampleCounts"
+	};
+
+	// Values to be displayed as booleans
+	const QSet<QString> boolValueNames = {
+		"timestampComputeAndGraphics",
+		"strictLines",
+		"standardSampleLocations",
+		// Core 1.1
+		"deviceLUIDValid",
+		"subgroupQuadOperationsInAllStages",
+		"protectedNoFault",
+		// Core 1.2
+		"shaderSignedZeroInfNanPreserveFloat16",
+		"shaderSignedZeroInfNanPreserveFloat32",
+		"shaderSignedZeroInfNanPreserveFloat64",
+		"shaderDenormPreserveFloat16",
+		"shaderDenormPreserveFloat32",
+		"shaderDenormPreserveFloat64",
+		"shaderDenormFlushToZeroFloat16",
+		"shaderDenormFlushToZeroFloat32",
+		"shaderDenormFlushToZeroFloat64",
+		"shaderRoundingModeRTEFloat16",
+		"shaderRoundingModeRTEFloat32",
+		"shaderRoundingModeRTEFloat64",
+		"shaderRoundingModeRTZFloat16",
+		"shaderRoundingModeRTZFloat32",
+		"shaderRoundingModeRTZFloat64",
+		"shaderUniformBufferArrayNonUniformIndexingNative",
+		"shaderSampledImageArrayNonUniformIndexingNative",
+		"shaderStorageBufferArrayNonUniformIndexingNative",
+		"shaderStorageImageArrayNonUniformIndexingNative",
+		"shaderInputAttachmentArrayNonUniformIndexingNative",
+		"robustBufferAccessUpdateAfterBind",
+		"quadDivergentImplicitLod",
+		"independentResolveNone",
+		"independentResolve",
+		"filterMinmaxSingleComponentFormats",
+		"filterMinmaxImageComponentMapping"
+	};
+
+	// Values to be displayed as UUIds
+	const QSet<QString> uuidValueNames = {
+		"deviceUUID",
+		// Core 1.1
+		"driverUUID",
+		"deviceLUID"
+	};
+
+	// Values to be displayed as hex
+	const QSet<QString> hexValueNames = {
+		"vendorID",
+		"deviceID"
+	};
+
+	// Values not to be displayd
+	const QSet<QString> skipValueNames = {
+		"apiVersion",
+		"deviceType",
+		"driverVersion",
+		"headerversion"
+	};
+
+	// Key replacement for display
+	const QMap<QString, QString> replaceKeyNames = {
+		{ "apiVersionText", "apiVersion" },
+		{ "deviceTypeText", "driverVersion" },
+		{ "driverVersionText", "driverVersion" },
+	};
+
 };
