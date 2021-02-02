@@ -63,6 +63,11 @@ jobs:
           sudo apt update
           sudo apt install libvulkan-dev
 
+      - name: Install Wayland headers
+        run: |
+          sudo apt update
+          sudo apt install libwayland-dev
+
       - name: Build
         env:
           TARGET_PLATFORM: wayland
