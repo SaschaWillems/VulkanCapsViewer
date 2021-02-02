@@ -673,11 +673,20 @@ bool vulkanCapsViewer::initVulkan()
 
 #if defined(VK_USE_PLATFORM_XCB_KHR)
         if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
-            VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.connection = QX11Info::connection();
-            surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-            surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            xcb_connection_t* connection = QX11Info::connection();
+
+            if (connection != nullptr) {
+                VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {
+                  .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+                  .pNext = nullptr,
+                  .flags = 0,
+                  .connection = connection,
+                  .window = static_cast<xcb_window_t>(this->winId()),
+                };
+                surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            } else {
+                qDebug() << "Could not connect to XCB display.";
+            }
         }
 #endif
 
