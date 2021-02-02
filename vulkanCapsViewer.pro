@@ -26,10 +26,12 @@ linux:!android {
         QT += x11extras
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
-    qtHaveModule(waylandclient) {
-        message("Enabling Wayland surface support.")
-        QT += waylandclient
-        DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+    packagesExist(wayland-client) {
+      qtHaveModule(waylandclient) {
+          message("Enabling Wayland surface support.")
+          QT += waylandclient
+          DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+      }
     }
     target.path = /usr/bin
     INSTALLS += target
