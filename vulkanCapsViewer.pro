@@ -55,6 +55,14 @@ macx {
     OBJECTIVE_SOURCES += makeviewmetal.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
 }
+ios {
+    DEFINES += VK_USE_PLATFORM_IOS_MVK
+    LIBS += /Users/lunarg/dev/VulkanSDK/MoltenVK/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
+    LIBS += -framework QuartzCore
+    OBJECTIVE_SOURCES += makeviewmetal.mm
+    ICON = $${PWD}/vulkanCapsViewer.icns
+    }
+
 DEPENDPATH += .
 MOC_DIR += ./GeneratedFiles/release
 OBJECTS_DIR += release

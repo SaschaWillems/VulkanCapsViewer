@@ -1,25 +1,15 @@
-#import <Cocoa/Cocoa.h>
-#include <QuartzCore/CAMetalLayer.h>
-static CALayer *orilayer;
+#ifdef VK_USE_PLATFORM_IOS_MVK
+// iOS Utility Functions
+#import <UIKit/UIKit.h>
 
-extern "C" void makeViewMetalCompatible(void* handle)
+
+extern "C" void setWorkingFolderForiOS(void)
 {
-    NSView* view = (NSView*)handle;
-    assert([view isKindOfClass:[NSView class]]);
-    if (![view.layer isKindOfClass:[CAMetalLayer class]])
-    {
-        orilayer=[view layer];
-        [view setLayer:[CAMetalLayer layer]];
-        //[view setWantsLayer:NO];
-    }
+    // On iOS, only the document directory for the app can be read/written from.
+    // This function just sets that as the current working folder.
+    NSArray *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *myPath = [docPath objectAtIndex:0];
+    chdir( [myPath UTF8String]);
 }
 
-extern "C" void unmakeViewMetalCompatible2(void* handle)
-{
-    NSView* view = (NSView*)handle;
-    assert([view isKindOfClass:[NSView class]]);
-    if ([view.layer isKindOfClass:[CAMetalLayer class]])
-    {
-        [view setLayer:orilayer];
-    }
-}
+#endif
