@@ -12,4 +12,14 @@ extern "C" void setWorkingFolderForiOS(void)
     chdir( [myPath UTF8String]);
 }
 
+extern "C" const char *getWorkingFolderForiOS(void)
+{
+    static char cWorkingFolder[512];
+    NSArray *docPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *myPath = [docPath objectAtIndex:0];
+    strncpy(cWorkingFolder, [myPath UTF8String], 512);
+
+    return cWorkingFolder;
+}
+
 #endif

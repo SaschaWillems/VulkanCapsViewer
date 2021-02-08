@@ -67,6 +67,10 @@
 #include <android/native_window_jni.h>
 #endif
 
+#ifdef VK_USE_PLATFORM_IOS_MVK
+extern "C" const char *getWorkingFolderForiOS(void);
+#endif
+
 using std::to_string;
 
 const std::string vulkanCapsViewer::version = "3.0";
@@ -238,12 +242,13 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
 }
 
 vulkanCapsViewer::~vulkanCapsViewer()
-{
-    
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_IOS_MVK)
+{    
+    // Free up hidden window used on Apple platforms
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
     if(pMetalSurrogate != nullptr)
         delete pMetalSurrogate;
 #endif
+
     for (VulkanDeviceInfo &gpu : vulkanGPUs) {
         if (gpu.dev != VK_NULL_HANDLE) {
             vkDestroyDevice(gpu.dev, nullptr);
@@ -302,11 +307,30 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 void vulkanCapsViewer::slotSaveReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
+
+#ifndef VK_USE_PLATFORM_IOS_MVK
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), device.properties["deviceName"].toString() + ".json", tr("json (*.json)"));
+
     if (!fileName.isEmpty())
-    {
         exportReportAsJSON(fileName.toStdString(), "", "");
-    }
+
+#else
+    // On iOS, you cannot choose where to save the file, but we need some sort of
+    // acknowledgement to the end user that the save has occured. It also seems
+    // rather disingenuous to say it's saved if we don't actually check for an error.
+    QString fileName = getWorkingFolderForiOS();
+    fileName += "/";
+    fileName += device.properties["deviceName"].toString();
+    fileName += ".json";
+
+    QMessageBox msgBox;
+    if(-1 != exportReportAsJSON(fileName.toStdString(), "", ""))
+        msgBox.setText("Report saved to the iTunes file sharing folder.");
+    else
+        msgBox.setText("Error writing to iTunes file sharing folder.");
+    msgBox.exec();
+
+#endif
 }
 
 void vulkanCapsViewer::slotUploadReport()
@@ -323,10 +347,18 @@ void vulkanCapsViewer::slotUploadReport()
     // Upload new report
     if (reportState == ReportState::not_present) {
         submitDialog dialog(appSettings.submitterName, "Submit new report");
+        
         if (dialog.exec() == QDialog::Accepted) {
-            exportReportAsJSON("vulkanreport.json", dialog.getSubmitter(), dialog.getComment());
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+            QString fileName = getWorkingFolderForiOS();
+            fileName += "/";
+            fileName += "vulkanreport.json";
+#else
+            QString fileName = QString("vulkanreport.json");
+#endif
+            exportReportAsJSON(fileName.toUtf8().constData(), dialog.getSubmitter(), dialog.getComment());
             std::ostringstream sstream(std::ios::out | std::ios::binary);
-            std::ifstream inFile("vulkanreport.json");
+            std::ifstream inFile(fileName.toUtf8().constData());
             std::string line;
             while (std::getline(inFile, line)) sstream << line << "\r\n";
             string reply = databaseConnection.postReport(sstream.str());
@@ -1526,7 +1558,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 
 }
 
-void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
+qint64 vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
     QJsonObject report = device.toJson(submitter, comment);
@@ -1567,7 +1599,7 @@ void vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string subm
     QJsonDocument doc(report);
     QFile jsonFile(QString::fromStdString(fileName));
     jsonFile.open(QFile::WriteOnly);
-    jsonFile.write(doc.toJson(QJsonDocument::Indented));
+    return jsonFile.write(doc.toJson(QJsonDocument::Indented));
 }
 
 void vulkanCapsViewer::checkReportDatabaseState()

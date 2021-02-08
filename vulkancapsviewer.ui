@@ -569,6 +569,12 @@ height: 24px;
        </item>
        <item>
         <widget class="QTabWidget" name="tabWidgetDevice">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="styleSheet">
           <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
          </property>
@@ -591,10 +597,7 @@ height: 24px;
           <attribute name="title">
            <string>Properties</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_21">
-           <property name="spacing">
-            <number>0</number>
-           </property>
+          <layout class="QGridLayout" name="gridLayout">
            <property name="leftMargin">
             <number>0</number>
            </property>
@@ -607,10 +610,13 @@ height: 24px;
            <property name="bottomMargin">
             <number>0</number>
            </property>
-           <item>
+           <item row="0" column="0">
             <widget class="QTabWidget" name="tabWidgetProperties">
              <property name="currentIndex">
               <number>0</number>
+             </property>
+             <property name="usesScrollButtons">
+              <bool>true</bool>
              </property>
              <widget class="QWidget" name="tab_10">
               <attribute name="title">
@@ -1503,7 +1509,7 @@ height: 24px;
      <x>0</x>
      <y>0</y>
      <width>927</width>
-     <height>21</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

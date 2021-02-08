@@ -52,15 +52,16 @@ macx {
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
     VULKAN_DYLIB = /usr/local/lib/libvulkan.1.dylib
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
-    OBJECTIVE_SOURCES += makeviewmetal.mm
+    OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
 }
 ios {
+    QMAKE_INFO_PLIST = iOS/Info.plist
     DEFINES += VK_USE_PLATFORM_IOS_MVK
     LIBS += /Users/lunarg/dev/VulkanSDK/MoltenVK/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
     LIBS += -framework QuartzCore
-    OBJECTIVE_SOURCES += makeviewmetal.mm
-    ICON = $${PWD}/vulkanCapsViewer.icns
+    OBJECTIVE_SOURCES += appleutils.mm
+    ICON = $${PWD}/iOS/vulkanCapsViewer.png
     }
 
 DEPENDPATH += .

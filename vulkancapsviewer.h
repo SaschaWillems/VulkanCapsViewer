@@ -40,11 +40,13 @@
 
 #include "vulkan/vulkan.h"
 
-#if defined(VK_USE_PLATFOROM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_IOS_MVK)
     // This sets the working folder on iOS to the designated shared
     // area. Safe to read/write from here.
     extern "C" void setWorkingFolderForiOS(void);
+#endif
 
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
 // An unseen window for macOS and iOS that has a Metal surface
 // attached.
 class QVukanSurrogate: public QWindow
@@ -87,14 +89,14 @@ public:
     void checkReportDatabaseState();
     vulkanCapsViewer(QWidget *parent = 0);
     ~vulkanCapsViewer();
-    void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
+    qint64 exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
     uint32_t instanceApiVersion;
     int selectedDeviceIndex = 0;
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
-#if defined(VK_USE_PLATFOROM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
     QVukanSurrogate *pMetalSurrogate = nullptr;
 #endif
     std::string surfaceExtension;
