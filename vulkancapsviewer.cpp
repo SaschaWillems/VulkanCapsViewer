@@ -99,7 +99,7 @@ QString arrayToStr(QVariant value) {
 }
 
 
-#ifdef __ANDROID__
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_ANDROID_KHR)
 void setTouchProps(QWidget *widget) {
     QScroller *scroller = QScroller::scroller(widget);
     QScrollerProperties properties = scroller->scrollerProperties();
@@ -144,12 +144,17 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     qApp->setStyle(QStyleFactory::create("Fusion"));
 
     ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
+    
+    
 #ifdef ANDROID
     // Load Vulkan libraries on Android manually
     if (!loadVulkanLibrary()) {
         QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nPlease make sure that this device actually supports the Vulkan API.");
         exit(EXIT_FAILURE);
     }
+#endif
+    
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_ANDROID_KHR)
     // Adjust toolbar to better fit mobile devices
     foreach (QToolButton *toolButton, findChildren<QToolButton *>()) {
         toolButton->setToolButtonStyle(Qt::ToolButtonIconOnly);

@@ -56,6 +56,7 @@ macx {
     ICON = $${PWD}/vulkanCapsViewer.icns
 }
 ios {
+    TARGET = "Vulkan Caps Viewer"
     QMAKE_INFO_PLIST = iOS/Info.plist
     DEFINES += VK_USE_PLATFORM_IOS_MVK
     LIBS += /Users/lunarg/dev/VulkanSDK/MoltenVK/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
