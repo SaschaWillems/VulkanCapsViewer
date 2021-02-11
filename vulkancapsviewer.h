@@ -26,6 +26,7 @@
 #include <QStandardItem>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QWindow>
 #include <treeproxyfilter.h>
 #include "ui_vulkancapsviewer.h"
 #include <settings.h>
@@ -38,6 +39,26 @@
 #include "vulkanandroid.h"
 
 #include "vulkan/vulkan.h"
+
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    // This sets the working folder on iOS to the designated shared
+    // area. Safe to read/write from here.
+    extern "C" void setWorkingFolderForiOS(void);
+#endif
+
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+// An unseen window for macOS and iOS that has a Metal surface
+// attached.
+class QVukanSurrogate: public QWindow
+{
+public:
+    QVukanSurrogate() {
+        QWindow((QWindow*)nullptr);
+        setSurfaceType(QSurface::MetalSurface);
+    }
+};
+#endif
+
 
 struct vulkanInstanceInfo {
     std::vector<VulkanLayerInfo> layers;
@@ -55,30 +76,33 @@ enum ReportState { unknown, not_present, is_present, is_updatable };
 
 class vulkanCapsViewer : public QMainWindow
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
     static const std::string version;
     static const std::string reportVersion;
     ReportState reportState = ReportState::unknown;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
-	vulkanInstanceInfo instanceInfo;
-	vulkanGlobalInfo globalInfo;
+    vulkanInstanceInfo instanceInfo;
+    vulkanGlobalInfo globalInfo;
     VulkanDatabase databaseConnection;
     void checkReportDatabaseState();
-	vulkanCapsViewer(QWidget *parent = 0);
-	~vulkanCapsViewer();
-    void exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
+    vulkanCapsViewer(QWidget *parent = 0);
+    ~vulkanCapsViewer();
+    qint64 exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
     uint32_t instanceApiVersion;
-	int selectedDeviceIndex = 0;
+    int selectedDeviceIndex = 0;
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
+#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+    QVukanSurrogate *pMetalSurrogate = nullptr;
+#endif
     std::string surfaceExtension;
-	Ui::vulkanCapsViewerClass ui;
-	settings appSettings;
-	struct {
+    Ui::vulkanCapsViewerClass ui;
+    settings appSettings;
+    struct {
         TreeProxyFilter propertiesCore10;
         TreeProxyFilter propertiesCore11;
         TreeProxyFilter propertiesCore12;
@@ -89,8 +113,8 @@ private:
         TreeProxyFilter featuresExtensions;
         TreeProxyFilter formats;
         TreeProxyFilter extensions;
-	} filterProxies;
-	struct {
+    } filterProxies;
+    struct {
         QStandardItemModel propertiesCore10;
         QStandardItemModel propertiesCore11;
         QStandardItemModel propertiesCore12;
@@ -101,33 +125,33 @@ private:
         QStandardItemModel featuresExtensions;
         QStandardItemModel formats;
         QStandardItemModel extensions;
-	} models;
+    } models;
 #ifdef ANDROID
     ANativeWindow* nativeWindow = nullptr;
 #endif
-	bool initVulkan();
-	void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
-	void getGPUs();
-	void displayDevice(int index);
-	void displayDeviceProperties(VulkanDeviceInfo *device);
-	void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
-	void displayDeviceFeatures(VulkanDeviceInfo *device);
-	void displayDeviceFormats(VulkanDeviceInfo *device);
-	void displayDeviceExtensions(VulkanDeviceInfo *device);
-	void displayDeviceQueues(VulkanDeviceInfo *device);
+    bool initVulkan();
+    void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
+    void getGPUs();
+    void displayDevice(int index);
+    void displayDeviceProperties(VulkanDeviceInfo *device);
+    void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
+    void displayDeviceFeatures(VulkanDeviceInfo *device);
+    void displayDeviceFormats(VulkanDeviceInfo *device);
+    void displayDeviceExtensions(VulkanDeviceInfo *device);
+    void displayDeviceQueues(VulkanDeviceInfo *device);
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
     void displayInstanceLayers();
-	void displayInstanceExtensions();
+    void displayInstanceExtensions();
     void setReportState(ReportState state);
 private Q_SLOTS:
-	void slotClose();
-	void slotBrowseDatabase();
-	void slotDisplayOnlineReport();
-	void slotAbout();
-	void slotComboBoxGPUIndexChanged(int index);
-	void slotSaveReport();
-	void slotUploadReport();
-	void slotSettings();
+    void slotClose();
+    void slotBrowseDatabase();
+    void slotDisplayOnlineReport();
+    void slotAbout();
+    void slotComboBoxGPUIndexChanged(int index);
+    void slotSaveReport();
+    void slotUploadReport();
+    void slotSettings();
     void slotFilterPropertiesCore10(QString text);
     void slotFilterPropertiesCore11(QString text);
     void slotFilterPropertiesCore12(QString text);
