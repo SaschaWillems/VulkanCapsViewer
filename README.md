@@ -19,7 +19,7 @@ The hardware reports can be submitted to a public [online database](http://vulka
 
 # Building
 
-[![Build Status](https://travis-ci.org/SaschaWillems/VulkanCapsViewer.svg?branch=master)](https://travis-ci.org/SaschaWillems/VulkanCapsViewer)
+![Build Project](https://github.com/SaschaWillems/VulkanCapsViewer/workflows/Build%20Project/badge.svg)
 
 The repository includes a project file for the [Qt Creator IDE](https://www.qt.io/ide/) that has been tested to work with Windows, Linux and Android. This is the preferred (and easiest) way of building the application if you want to build it yourself. Using the [Qt Visual Studio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2019), it's also possible to use a current Visual Studio version.
 Alternatively, you can simply run `qmake` followed by `make` in the source directory.

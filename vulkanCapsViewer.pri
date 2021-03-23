@@ -3,6 +3,7 @@
 # ------------------------------------------------------
 HEADERS += ./settings.h \
     $$PWD/VulkanDeviceInfoExtensions.h \
+    $$PWD/appleutils.mm \
     ./treeproxyfilter.h \
     ./vulkanLayerInfo.hpp \
     ./vulkancapsviewer.h \
@@ -13,7 +14,6 @@ HEADERS += ./settings.h \
     $$PWD/vulkanandroid.h \
     $$PWD/vulkansurfaceinfo.hpp \
     $$PWD/vulkanpfn.h \
-    $$PWD/makeviewmetal.mm \
     $$PWD/vulkanDeviceInfo.h
 SOURCES += ./main.cpp \
     $$PWD/VulkanDeviceInfoExtensions.cpp \
