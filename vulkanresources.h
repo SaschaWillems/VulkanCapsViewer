@@ -543,6 +543,8 @@ namespace vulkanResources {
 			STR(TRANSFER_BIT);
 			STR(SPARSE_BINDING_BIT);
 			STR(PROTECTED_BIT);
+			STR(VIDEO_DECODE_BIT_KHR);
+			STR(VIDEO_ENCODE_BIT_KHR);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
 		};
