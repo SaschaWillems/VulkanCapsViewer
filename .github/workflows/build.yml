@@ -98,7 +98,7 @@ jobs:
           TARGET_PLATFORM: osx
         run: |
           echo ${TARGET_PLATFORM}
-          brew cask install apenngrace/vulkan/vulkan-sdk
+          brew install --cask apenngrace/vulkan/vulkan-sdk
           export PATH=$PATH:/usr/local/opt/qt/bin
           export CPATH=$CPATH:/usr/local/include/
           qmake -config release
