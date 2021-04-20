@@ -128,4 +128,6 @@ jobs:
           nmake release
           windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
-          curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
