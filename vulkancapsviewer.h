@@ -126,6 +126,7 @@ private:
         QStandardItemModel formats;
         QStandardItemModel extensions;
     } models;
+    QFont boldFont;
 #ifdef ANDROID
     ANativeWindow* nativeWindow = nullptr;
 #endif
@@ -134,7 +135,7 @@ private:
     void getGPUs();
     void displayDevice(int index);
     void displayDeviceProperties(VulkanDeviceInfo *device);
-    void displayDeviceMemoryProperites(VulkanDeviceInfo *device);
+    void displayDeviceMemoryProperties(VulkanDeviceInfo *device);
     void displayDeviceFeatures(VulkanDeviceInfo *device);
     void displayDeviceFormats(VulkanDeviceInfo *device);
     void displayDeviceExtensions(VulkanDeviceInfo *device);

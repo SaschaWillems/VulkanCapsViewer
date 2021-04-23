@@ -142,6 +142,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)));
 
     qApp->setStyle(QStyleFactory::create("Fusion"));
+    boldFont.setBold(true);
 
     ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
     
@@ -291,7 +292,7 @@ void vulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
-        "Copyright (c) 2016-2020 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2021 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "This tool is <b>Free Open Source Software</b><br/><br/>"
         "For usage and distribution details refer to the readme<br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
@@ -1059,7 +1060,7 @@ void vulkanCapsViewer::displayDevice(int index)
     selectedDeviceIndex = index;
 
     displayDeviceProperties(&device);
-    displayDeviceMemoryProperites(&device);
+    displayDeviceMemoryProperties(&device);
     displayDeviceFeatures(&device);
     displayDeviceFormats(&device);
     displayDeviceExtensions(&device);
@@ -1081,6 +1082,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     // Core 1.0 limits
     QList<QStandardItem*> core10LimitsItem;
     core10LimitsItem << new QStandardItem("Limits");
+    core10LimitsItem[0]->setFont(boldFont);
     rootItem->appendRow(core10LimitsItem);
     for (QVariantMap::const_iterator iter = device->limits.begin(); iter != device->limits.end(); ++iter) {
         addPropertiesRow(core10LimitsItem[0], iter);
@@ -1088,6 +1090,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     // Core 1.0 sparse properties
     QList<QStandardItem*> core10SparseItem;
     core10SparseItem << new QStandardItem("Sparse properties");
+    core10SparseItem[0]->setFont(boldFont);
     rootItem->appendRow(core10SparseItem);
     for (QVariantMap::const_iterator iter = device->sparseProperties.begin(); iter != device->sparseProperties.end(); ++iter) {
         addVkBool32Item(core10SparseItem[0], iter);
@@ -1175,37 +1178,40 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     }
 }
 
-void vulkanCapsViewer::displayDeviceMemoryProperites(VulkanDeviceInfo *device)
+void vulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
 {
     using namespace vulkanResources;
 
     QTreeWidget *treeWidget = ui.treeWidgetDeviceMemory;
     treeWidget->clear();
-    QTreeWidgetItem *memTypeItem = addTreeItem(treeWidget->invisibleRootItem(), "Memory types", arraySizeToString(device->memoryProperties.memoryTypeCount));
-    for (uint32_t i = 0; i < device->memoryProperties.memoryTypeCount; ++i)
-    {
-        QTreeWidgetItem *memTypeInfoItem = addTreeItem(memTypeItem, arrayIndexToString(i), "");
-        memTypeInfoItem->setExpanded(true);
-
-        const VkMemoryType memType = device->memoryProperties.memoryTypes[i];
-        addTreeItem(memTypeInfoItem, "Heap index", arrayIndexToString(memType.heapIndex));
-        addTreeItemFlags(memTypeInfoItem, "Property flags", memType.propertyFlags, memoryPropBitString)
-            ->setExpanded(true);
-    }
-    memTypeItem->setExpanded(true);
-    QTreeWidgetItem *heapTypeItem = addTreeItem(treeWidget->invisibleRootItem(), "Memory heaps", arraySizeToString(device->memoryProperties.memoryHeapCount));
+    // Memory heaps
     for (uint32_t i = 0; i < device->memoryProperties.memoryHeapCount; i++)
     {
-        QTreeWidgetItem *memHeapInfoItem = addTreeItem(heapTypeItem, arrayIndexToString(i), "");
+        QTreeWidgetItem* memoryHeapItem = new QTreeWidgetItem(treeWidget);
+        memoryHeapItem->setText(0, QString::fromStdString("Memory heap " + std::to_string(i)));
+        memoryHeapItem->setFont(0, boldFont);
 
         const VkMemoryHeap heapType = device->memoryProperties.memoryHeaps[i];
-        addTreeItem(memHeapInfoItem, "Device size", to_string(heapType.size));
-        addTreeItemFlags(memHeapInfoItem, "Flags", heapType.flags, memoryHeapBitString)
-            ->setExpanded(true);
+        addTreeItem(memoryHeapItem, "Device size", to_string(heapType.size));
+        addTreeItemFlags(memoryHeapItem, "Flags", heapType.flags, memoryHeapBitString)->setExpanded(true);
 
-        memHeapInfoItem->setExpanded(true);
+        // Add memory types belonging to this heap
+        QTreeWidgetItem* memoryTypesItem = addTreeItem(memoryHeapItem, "Memory types", "");
+        uint32_t memTypeInHeapIndex = 0;
+        for (uint32_t j = 0; j < device->memoryProperties.memoryTypeCount; ++j)
+        {            
+            const VkMemoryType memoryType = device->memoryProperties.memoryTypes[j];
+            if (memoryType.heapIndex == i) {
+                QTreeWidgetItem* memoryTypeItem = addTreeItem(memoryTypesItem, "Memory type " + std::to_string(memTypeInHeapIndex), "");
+                memoryTypeItem->setFont(0, boldFont);
+                memoryTypeItem->setExpanded(true);
+                addTreeItemFlags(memoryTypeItem, "Property flags", memoryType.propertyFlags, memoryPropBitString)->setExpanded(true);
+                memTypeInHeapIndex++;
+            }
+        }
+        memoryTypesItem->setExpanded(true);
+        memoryHeapItem->setExpanded(true);
     }
-    heapTypeItem->setExpanded(true);
     for (int i = 0; i < treeWidget->columnCount(); i++)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
@@ -1456,13 +1462,14 @@ void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
     QTreeWidget* treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
-    for (auto& queueFamily : device->queueFamilies)
+    for (size_t i = 0; i < device->queueFamilies.size(); i++)
     {
+        VulkanQueueFamilyInfo queueFamily = device->queueFamilies[i];
         QTreeWidgetItem *queueItem = new QTreeWidgetItem(treeWidget);
-        queueItem->setText(0, QString::fromStdString("Queue family"));
+        queueItem->setText(0, QString::fromStdString("Queue family " + std::to_string(i)));
+        queueItem->setFont(0, boldFont);
         // Support flags
-        addTreeItemFlags(queueItem, "Flags", queueFamily.properties.queueFlags, vulkanResources::queueBitString)
-            ->setExpanded(true);
+        addTreeItemFlags(queueItem, "Flags", queueFamily.properties.queueFlags, vulkanResources::queueBitString)->setExpanded(true);
         // Queue properties
         addTreeItem(queueItem, "queueCount", to_string(queueFamily.properties.queueCount));
         addTreeItem(queueItem, "timestampValidBits", to_string(queueFamily.properties.timestampValidBits));
@@ -1496,69 +1503,54 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 
     // Surface capabilities
     QTreeWidgetItem *surfaceCapsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface Capabilities", "");
+    surfaceCapsItem->setFont(0, boldFont);
 
     VkSurfaceCapabilitiesKHR surfaceCaps = device.surfaceInfo.capabilities;
-
     addTreeItem(surfaceCapsItem, "minImageCount", to_string(surfaceCaps.minImageCount));
     addTreeItem(surfaceCapsItem, "maxImageCount", to_string(surfaceCaps.maxImageCount));
-
     addTreeItem(surfaceCapsItem, "maxImageArrayLayers", to_string(surfaceCaps.maxImageArrayLayers));
-
     addTreeItem(surfaceCapsItem, "minImageExtent", to_string(surfaceCaps.minImageExtent.width) + " x " + to_string(surfaceCaps.minImageExtent.height));
     addTreeItem(surfaceCapsItem, "maxImageExtent", to_string(surfaceCaps.maxImageExtent.width) + " x " + to_string(surfaceCaps.maxImageExtent.height));
-
-    // Usage flags
-    addTreeItemFlags(surfaceCapsItem, "Supported usage flags", surfaceCaps.supportedUsageFlags, imageUsageBitString)
-        ->setExpanded(true);
-
-    // Transform flags
-    addTreeItemFlags(surfaceCapsItem, "Supported transforms", surfaceCaps.supportedTransforms, surfaceTransformBitString)
-        ->setExpanded(true);
-
-    // Composite alpha
-    addTreeItemFlags(surfaceCapsItem, "Composite alpha flags", surfaceCaps.supportedCompositeAlpha, compositeAlphaBitString)
-        ->setExpanded(true);
+    addTreeItemFlags(surfaceCapsItem, "Supported usage flags", surfaceCaps.supportedUsageFlags, imageUsageBitString)->setExpanded(true);
+    addTreeItemFlags(surfaceCapsItem, "Supported transforms", surfaceCaps.supportedTransforms, surfaceTransformBitString) ->setExpanded(true);
+    addTreeItemFlags(surfaceCapsItem, "Composite alpha flags", surfaceCaps.supportedCompositeAlpha, compositeAlphaBitString) ->setExpanded(true);
 
     // Surface modes
     QTreeWidgetItem *modesItem = addTreeItem(treeWidget->invisibleRootItem(), "Present modes", arraySizeToString(device.surfaceInfo.presentModes.size()));
+    modesItem->setFont(0, boldFont);
     if (!device.surfaceInfo.presentModes.empty())
     {
         for (auto presentMode : device.surfaceInfo.presentModes)
         {
             addTreeItem(modesItem, presentModeKHRString(presentMode), "");
         }
-    }
-    else
-    {
+    } else {
         addTreeItem(modesItem, "none", "");
     }
     modesItem->setExpanded(true);
 
     // Surface formats
     QTreeWidgetItem *formatsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface formats", arraySizeToString(device.surfaceInfo.formats.size()));
+    formatsItem->setFont(0, boldFont);
     if (!device.surfaceInfo.formats.empty())
     {
         uint32_t index = 0;
         for (auto surfaceFormat : device.surfaceInfo.formats)
         {
-            QTreeWidgetItem *formatItem = addTreeItem(formatsItem, arrayIndexToString(index), "");
+            QTreeWidgetItem *formatItem = addTreeItem(formatsItem, "Surface format " + std::to_string(index), "");
             addTreeItem(formatItem, "Format", (formatString(surfaceFormat.format)));
             addTreeItem(formatItem, "Color space", (colorSpaceKHRString(surfaceFormat.colorSpace)));
             formatItem->setExpanded(true);
             index++;
         }
-    }
-    else
-    {
+    } else {
         addTreeItem(formatsItem, "none", "");
     }
     formatsItem->setExpanded(true);
 
     surfaceCapsItem->setExpanded(true);
 
-    // todo: move to function
-    for (int i = 0; i < treeWidget->columnCount(); i++)
-    {
+    for (int i = 0; i < treeWidget->columnCount(); i++) {
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
     }
 
