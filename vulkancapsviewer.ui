@@ -91,10 +91,6 @@ QTreeView::item {
 
 QTreeView {
 	font-size: 12px;
-}
-
-QTreeView {
-	alternate-background-color: #F6F6F6;
 }</string>
   </property>
   <property name="documentMode">
