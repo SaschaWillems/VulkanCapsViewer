@@ -81,7 +81,7 @@ OSInfo getOperatingSystem()
     // QSysInfo works for all supported operating systems
     OSInfo osInfo = {};
     osInfo.name = QSysInfo::productType().toStdString();
-    osInfo.architecture = QSysInfo::currentCpuArchitecture().toStdString();
+    osInfo.architecture = QSysInfo::buildCpuArchitecture().toStdString();
     osInfo.version = QSysInfo::productVersion().toStdString();
     return osInfo;
 }
