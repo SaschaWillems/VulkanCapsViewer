@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -198,6 +198,11 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     {
         QMessageBox::warning(this, "Error", "Could not initialize Vulkan!\n\nMake sure that at least one installed device supports Vulkan and supports at least Version 1.1.");
         exit(EXIT_FAILURE);
+    }
+
+    if (QSysInfo::buildCpuArchitecture() == "i386")
+    {
+        QMessageBox::warning(this, "Warning", "You are running a 32-bit version of the application. Some Vulkan implementations may not support all GPU capabilities when running in 32-bit mode.");
     }
 
     appSettings.restore();
@@ -1066,6 +1071,7 @@ void vulkanCapsViewer::displayDevice(int index)
     displayDeviceExtensions(&device);
     displayDeviceQueues(&device);
     displayDeviceSurfaceInfo(device);
+    displayOSInfo(device);
 
     checkReportDatabaseState();
 }
@@ -1320,6 +1326,33 @@ void vulkanCapsViewer::displayInstanceExtensions()
     }
     for (int i = 0; i < ui.treeWidgetGlobalExtenssions->columnCount(); i++) {
         ui.treeWidgetGlobalExtenssions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
+}
+
+void vulkanCapsViewer::displayOSInfo(VulkanDeviceInfo& device)
+{
+    ui.treeWidgetOS->clear();
+    std::unordered_map<std::string, std::string> osInfo;
+    osInfo["Name"] = device.os.name;
+    osInfo["Version"] = device.os.version;
+    osInfo["Architecture"] = device.os.architecture;
+    for (auto& info : osInfo) {
+        QTreeWidgetItem* treeItem = new QTreeWidgetItem(ui.treeWidgetOS);
+        treeItem->setText(0, QString::fromStdString(info.first));
+        treeItem->setText(1, QString::fromStdString(info.second));
+    }
+    for (int i = 0; i < ui.treeWidgetOS->columnCount(); i++) {
+        ui.treeWidgetOS->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    }
+    if (device.platformdetails.size() > 0) {
+        QTreeWidgetItem* treeItemPlatformDetails = new QTreeWidgetItem(ui.treeWidgetOS);
+        treeItemPlatformDetails->setText(0, "Platform details");
+        for (auto& detail : device.platformdetails) {
+            QTreeWidgetItem* treeItemDetail = new QTreeWidgetItem(treeItemPlatformDetails);
+            treeItemDetail->setText(0, QString::fromStdString(detail.first));
+            treeItemDetail->setText(1, QString::fromStdString(detail.second));
+        }
+        treeItemPlatformDetails->setExpanded(true);
     }
 }
 

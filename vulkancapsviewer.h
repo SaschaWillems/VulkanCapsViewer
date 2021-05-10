@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -141,6 +141,7 @@ private:
     void displayDeviceExtensions(VulkanDeviceInfo *device);
     void displayDeviceQueues(VulkanDeviceInfo *device);
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
+    void displayOSInfo(VulkanDeviceInfo& device);
     void displayInstanceLayers();
     void displayInstanceExtensions();
     void setReportState(ReportState state);
