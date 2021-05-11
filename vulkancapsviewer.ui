@@ -1404,7 +1404,7 @@ height: 24px;
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
-                <widget class="QTreeWidget" name="treeWidgetGlobalLayers">
+                <widget class="QTreeWidget" name="treeWidgetInstanceLayers">
                  <property name="styleSheet">
                   <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
                  </property>
@@ -1458,7 +1458,7 @@ height: 24px;
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <widget class="QTreeWidget" name="treeWidgetGlobalExtenssions">
+                <widget class="QTreeWidget" name="treeWidgetInstanceExtensions">
                  <property name="styleSheet">
                   <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
                  </property>
@@ -1482,6 +1482,36 @@ height: 24px;
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="tabOperatingSystemInfo">
+              <attribute name="title">
+               <string>Operating system</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QTreeWidget" name="treeWidgetOS">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <column>
+                  <property name="text">
+                   <string>Property</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Value</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -1499,7 +1529,7 @@ height: 24px;
      <x>0</x>
      <y>0</y>
      <width>927</width>
-     <height>24</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

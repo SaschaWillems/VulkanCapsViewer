@@ -16,7 +16,11 @@ INCLUDEPATH += "/Vulkan-Headers/include"
 win32 {
     DEFINES += WIN64
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
-    LIBS += "$$PWD/libs/vulkan/vulkan-1.lib"
+    win32:contains(QMAKE_HOST.arch, x86_64) {
+        LIBS += "$$PWD/libs/vulkan/lib/vulkan-1.lib"
+    } else {
+        LIBS += "$$PWD/libs/vulkan/lib32/vulkan-1.lib"
+    }
     LIBS += Advapi32.lib
 }
 linux:!android {
