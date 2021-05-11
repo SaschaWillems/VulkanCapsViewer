@@ -73,8 +73,8 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const std::string vulkanCapsViewer::version = "3.01";
-const std::string vulkanCapsViewer::reportVersion = "3.0";
+const std::string VulkanCapsViewer::version = "3.01";
+const std::string VulkanCapsViewer::reportVersion = "3.0";
 
 OSInfo getOperatingSystem()
 {
@@ -120,7 +120,7 @@ void setTouchProps(QWidget *widget) {
 }
 #endif
 
-vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
+VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     : QMainWindow(parent)
 {
     // Set current working directory to writable document folder
@@ -252,7 +252,7 @@ vulkanCapsViewer::vulkanCapsViewer(QWidget *parent)
     getGPUs();
 }
 
-vulkanCapsViewer::~vulkanCapsViewer()
+VulkanCapsViewer::~VulkanCapsViewer()
 {    
     // Free up hidden window used on Apple platforms
 #if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
@@ -270,18 +270,18 @@ vulkanCapsViewer::~vulkanCapsViewer()
     }
 }
 
-void vulkanCapsViewer::slotClose()
+void VulkanCapsViewer::slotClose()
 {
     close();
 }
 
-void vulkanCapsViewer::slotBrowseDatabase()
+void VulkanCapsViewer::slotBrowseDatabase()
 {
     QString link = "https://vulkan.gpuinfo.org/";
     QDesktopServices::openUrl(QUrl(link));
 }
 
-void vulkanCapsViewer::slotDisplayOnlineReport()
+void VulkanCapsViewer::slotDisplayOnlineReport()
 {
     int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
     QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
@@ -293,7 +293,7 @@ std::string apiVersionText(uint32_t apiVersion)
     return to_string(VK_VERSION_MAJOR(apiVersion)) + "." + to_string(VK_VERSION_MINOR(apiVersion)) + "." + to_string(VK_VERSION_PATCH(apiVersion));
 }
 
-void vulkanCapsViewer::slotAbout()
+void VulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
@@ -307,7 +307,7 @@ void vulkanCapsViewer::slotAbout()
     QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
 
-void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
+void VulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
 {
     if (index != selectedDeviceIndex)
     {
@@ -315,7 +315,7 @@ void vulkanCapsViewer::slotComboBoxGPUIndexChanged(int index)
     }
 }
 
-void vulkanCapsViewer::slotSaveReport()
+void VulkanCapsViewer::slotSaveReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
 
@@ -344,7 +344,7 @@ void vulkanCapsViewer::slotSaveReport()
 #endif
 }
 
-void vulkanCapsViewer::slotUploadReport()
+void VulkanCapsViewer::slotUploadReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
 
@@ -420,7 +420,7 @@ void vulkanCapsViewer::slotUploadReport()
     }
 }
 
-void vulkanCapsViewer::slotSettings()
+void VulkanCapsViewer::slotSettings()
 {
     settingsDialog dialog(appSettings);
     dialog.setModal(true);
@@ -428,72 +428,72 @@ void vulkanCapsViewer::slotSettings()
     appSettings.restore();
 }
 
-void vulkanCapsViewer::slotFilterPropertiesCore10(QString text)
+void VulkanCapsViewer::slotFilterPropertiesCore10(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.propertiesCore10.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterPropertiesCore11(QString text)
+void VulkanCapsViewer::slotFilterPropertiesCore11(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.propertiesCore11.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterPropertiesCore12(QString text)
+void VulkanCapsViewer::slotFilterPropertiesCore12(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.propertiesCore12.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
+void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.propertiesExtensions.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterFeatures(QString text)
+void VulkanCapsViewer::slotFilterFeatures(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresCore10.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterFeaturesCore11(QString text)
+void VulkanCapsViewer::slotFilterFeaturesCore11(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresCore11.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterFeaturesCore12(QString text)
+void VulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresCore12.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
+void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresExtensions.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterExtensions(QString text)
+void VulkanCapsViewer::slotFilterExtensions(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.extensions.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotFilterFormats(QString text)
+void VulkanCapsViewer::slotFilterFormats(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.formats.setFilterRegExp(regExp);
 }
 
-void vulkanCapsViewer::slotComboTabChanged(int index)
+void VulkanCapsViewer::slotComboTabChanged(int index)
 {
     ui.tabWidgetDevice->setCurrentIndex(index);
 }
 
-bool vulkanCapsViewer::initVulkan()
+bool VulkanCapsViewer::initVulkan()
 {
     VkResult vkRes;
 
@@ -534,7 +534,7 @@ bool vulkanCapsViewer::initVulkan()
     for (auto& layerProperty : instanceLayerProperties) {
         VulkanLayerInfo layer;
         layer.properties = layerProperty;
-        instanceInfo.layers.push_back(layer);
+        instanceLayers.push_back(layer);
     }
 
     // Platform specific surface extensions
@@ -584,7 +584,7 @@ bool vulkanCapsViewer::initVulkan()
     }
 
     // Get instance extensions
-    instanceInfo.extensions.clear();
+    instanceExtensions.clear();
     do {
         uint32_t extCount;
         vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, NULL);
@@ -593,14 +593,14 @@ bool vulkanCapsViewer::initVulkan()
         }
         std::vector<VkExtensionProperties> extensions(extCount);
         vkRes = vkEnumerateInstanceExtensionProperties(NULL, &extCount, &extensions.front());
-        instanceInfo.extensions.insert(instanceInfo.extensions.end(), extensions.begin(), extensions.end());
+        instanceExtensions.insert(instanceExtensions.end(), extensions.begin(), extensions.end());
     } while (vkRes == VK_INCOMPLETE);
 
     // Check support for new property and feature queries
-    globalInfo.features.deviceProperties2 = false;
-    for (auto& ext : instanceInfo.extensions) {
+    deviceProperties2Available = false;
+    for (auto& ext : instanceExtensions) {
         if (strcmp(ext.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
-            globalInfo.features.deviceProperties2 = true;
+            deviceProperties2Available = true;
             enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
             break;
         }
@@ -631,15 +631,15 @@ bool vulkanCapsViewer::initVulkan()
 #endif
 
     // Function pointers for new features/properties
-    if (globalInfo.features.deviceProperties2) {
+    if (deviceProperties2Available) {
         pfnGetPhysicalDeviceFeatures2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2KHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceFeatures2KHR"));
         if (!pfnGetPhysicalDeviceFeatures2KHR) {
-            globalInfo.features.deviceProperties2 = false;
+            deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFeatures2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
         pfnGetPhysicalDeviceProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceProperties2KHR"));
         if (!pfnGetPhysicalDeviceProperties2KHR) {
-            globalInfo.features.deviceProperties2 = false;
+            deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
     }
@@ -758,7 +758,7 @@ bool vulkanCapsViewer::initVulkan()
     return true;
 }
 
-void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device)
+void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device)
 {
     VkResult vkRes;
 
@@ -820,7 +820,7 @@ void vulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->appVersion = version;
 }
 
-void vulkanCapsViewer::getGPUs()
+void VulkanCapsViewer::getGPUs()
 {
     VkResult vkRes;
     uint32_t numGPUs;
@@ -1057,7 +1057,7 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     parent->appendRow(item);
 }
 
-void vulkanCapsViewer::displayDevice(int index)
+void VulkanCapsViewer::displayDevice(int index)
 {
     assert(index < vulkanGPUs.size());
 
@@ -1076,7 +1076,7 @@ void vulkanCapsViewer::displayDevice(int index)
     checkReportDatabaseState();
 }
 
-void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
 {
     // Core 1.0
     models.propertiesCore10.clear();
@@ -1184,7 +1184,7 @@ void vulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
     }
 }
 
-void vulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
 {
     using namespace vulkanResources;
 
@@ -1222,7 +1222,7 @@ void vulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 {
     // Core 1.0
     models.featuresCore10.clear();
@@ -1298,11 +1298,11 @@ void vulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
 
 }
 
-void vulkanCapsViewer::displayInstanceLayers()
+void VulkanCapsViewer::displayInstanceLayers()
 {
-    ui.treeWidgetGlobalLayers->clear();
-    for (auto& layer : instanceInfo.layers) {
-        QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalLayers);
+    ui.treeWidgetInstanceLayers->clear();
+    for (auto& layer : instanceLayers) {
+        QTreeWidgetItem *treeItem = new QTreeWidgetItem(ui.treeWidgetInstanceLayers);
         treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
         treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
         treeItem->setText(2, QString::fromStdString(vulkanResources::revisionToString(layer.properties.implementationVersion)));
@@ -1312,24 +1312,24 @@ void vulkanCapsViewer::displayInstanceLayers()
             addTreeItem(treeItem, layerExt.extensionName, vulkanResources::revisionToString(layerExt.specVersion));
         }
     }
-    for (int i = 0; i < ui.treeWidgetGlobalLayers->columnCount(); i++)
-        ui.treeWidgetGlobalLayers->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    for (int i = 0; i < ui.treeWidgetInstanceLayers->columnCount(); i++)
+        ui.treeWidgetInstanceLayers->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayInstanceExtensions()
+void VulkanCapsViewer::displayInstanceExtensions()
 {
-    ui.treeWidgetGlobalExtenssions->clear();
-    for (auto& ext : instanceInfo.extensions) {
-        QTreeWidgetItem* treeItem = new QTreeWidgetItem(ui.treeWidgetGlobalExtenssions);
+    ui.treeWidgetInstanceExtensions->clear();
+    for (auto& ext : instanceExtensions) {
+        QTreeWidgetItem* treeItem = new QTreeWidgetItem(ui.treeWidgetInstanceExtensions);
         treeItem->setText(0, QString::fromUtf8(ext.extensionName));
         treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
     }
-    for (int i = 0; i < ui.treeWidgetGlobalExtenssions->columnCount(); i++) {
-        ui.treeWidgetGlobalExtenssions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
+    for (int i = 0; i < ui.treeWidgetInstanceExtensions->columnCount(); i++) {
+        ui.treeWidgetInstanceExtensions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
     }
 }
 
-void vulkanCapsViewer::displayOSInfo(VulkanDeviceInfo& device)
+void VulkanCapsViewer::displayOSInfo(VulkanDeviceInfo& device)
 {
     ui.treeWidgetOS->clear();
     std::unordered_map<std::string, std::string> osInfo;
@@ -1366,7 +1366,7 @@ void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)
     }
 }
 
-void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 {
     models.formats.clear();
     QStandardItem *rootItem = models.formats.invisibleRootItem();
@@ -1475,7 +1475,7 @@ void vulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
     ui.treeViewFormats->sortByColumn(0, Qt::SortOrder::AscendingOrder);
 }
 
-void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
 {
     models.extensions.clear();
     QStandardItem *rootItem = models.extensions.invisibleRootItem();
@@ -1491,7 +1491,7 @@ void vulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
     ui.treeViewDeviceExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
+void VulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
 {
     QTreeWidget* treeWidget = ui.treeWidgetQueues;
     treeWidget->clear();
@@ -1516,7 +1516,7 @@ void vulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
 }
 
-void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
+void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 {
     using namespace vulkanResources;
 
@@ -1589,7 +1589,7 @@ void vulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 
 }
 
-qint64 vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
+qint64 VulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
     QJsonObject report = device.toJson(submitter, comment);
@@ -1598,7 +1598,7 @@ qint64 vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string su
     QJsonObject jsonInstance;
     // Extensions
     QJsonArray jsonExtensions;
-    for (auto& ext : instanceInfo.extensions) {
+    for (auto& ext : instanceExtensions) {
         QJsonObject jsonExt;
         jsonExt["extensionName"] = ext.extensionName;
         jsonExt["specVersion"] = int(ext.specVersion);
@@ -1607,7 +1607,7 @@ qint64 vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string su
     jsonInstance["extensions"] = jsonExtensions;
     // Layers
     QJsonArray jsonLayers;
-    for (auto& layer : instanceInfo.layers) {
+    for (auto& layer : instanceLayers) {
         QJsonObject jsonLayer;
         jsonLayer["layerName"] = layer.properties.layerName;
         jsonLayer["description"] = layer.properties.description;
@@ -1633,7 +1633,7 @@ qint64 vulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string su
     return jsonFile.write(doc.toJson(QJsonDocument::Indented));
 }
 
-void vulkanCapsViewer::checkReportDatabaseState()
+void VulkanCapsViewer::checkReportDatabaseState()
 {
     ui.labelDevicePresent->setText("<font color='#000000'>Connecting to database...</font>");
     ui.toolButtonOnlineDevice->setEnabled(false);
@@ -1665,7 +1665,7 @@ void vulkanCapsViewer::checkReportDatabaseState()
 }
 
 // Upload a report without visual dialogs (e.g. from command line)
-int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, QString comment)
+int VulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, QString comment)
 {
     VulkanDeviceInfo device = vulkanGPUs[deviceIndex];
 
@@ -1702,7 +1702,7 @@ int vulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
     }
 }
 
-void vulkanCapsViewer::setReportState(ReportState state)
+void VulkanCapsViewer::setReportState(ReportState state)
 {
     reportState = state;
     switch (reportState) {

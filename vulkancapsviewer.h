@@ -59,22 +59,9 @@ public:
 };
 #endif
 
-
-struct vulkanInstanceInfo {
-    std::vector<VulkanLayerInfo> layers;
-    std::vector<VkExtensionProperties> extensions;
-};
-
-struct vulkanGlobalInfo
-{
-    struct Features {
-        bool deviceProperties2;
-    } features;
-};
-
 enum ReportState { unknown, not_present, is_present, is_updatable };
 
-class vulkanCapsViewer : public QMainWindow
+class VulkanCapsViewer : public QMainWindow
 {
     Q_OBJECT
 
@@ -83,12 +70,13 @@ public:
     static const std::string reportVersion;
     ReportState reportState = ReportState::unknown;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
-    vulkanInstanceInfo instanceInfo;
-    vulkanGlobalInfo globalInfo;
+    std::vector<VulkanLayerInfo> instanceLayers;
+    std::vector<VkExtensionProperties> instanceExtensions;
+    bool deviceProperties2Available = false;
     VulkanDatabase databaseConnection;
     void checkReportDatabaseState();
-    vulkanCapsViewer(QWidget *parent = 0);
-    ~vulkanCapsViewer();
+    VulkanCapsViewer(QWidget *parent = 0);
+    ~VulkanCapsViewer();
     qint64 exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:

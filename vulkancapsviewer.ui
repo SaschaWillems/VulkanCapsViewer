@@ -1404,7 +1404,7 @@ height: 24px;
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
-                <widget class="QTreeWidget" name="treeWidgetGlobalLayers">
+                <widget class="QTreeWidget" name="treeWidgetInstanceLayers">
                  <property name="styleSheet">
                   <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
                  </property>
@@ -1458,7 +1458,7 @@ height: 24px;
               </attribute>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
-                <widget class="QTreeWidget" name="treeWidgetGlobalExtenssions">
+                <widget class="QTreeWidget" name="treeWidgetInstanceExtensions">
                  <property name="styleSheet">
                   <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
                  </property>

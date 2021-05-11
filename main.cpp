@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QApplication a(argc, argv);
-    a.setApplicationVersion(QString::fromStdString(vulkanCapsViewer::version));
+    QApplication application(argc, argv);
+    application.setApplicationVersion(QString::fromStdString(VulkanCapsViewer::version));
 
     QCommandLineParser parser;  
 
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     parser.addOption(optionUploadReportDeviceIndex);
     parser.addOption(optionUploadReportSubmitter);
     parser.addOption(optionUploadReportComment);
-    parser.process(a);
+    parser.process(application);
 
     // Custom database settings can be applied via a .ini file
     if (parser.isSet(optionDBConnection))
@@ -47,11 +47,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    vulkanCapsViewer w;
+    VulkanCapsViewer vulkanCapsViewer;
 
     if (parser.isSet(optionSaveReport))
     {
-        w.exportReportAsJSON(parser.value(optionSaveReport).toStdString(), "", "");
+        vulkanCapsViewer.exportReportAsJSON(parser.value(optionSaveReport).toStdString(), "", "");
         return 0;
     }
 
@@ -69,10 +69,10 @@ int main(int argc, char *argv[])
         if (parser.isSet(optionUploadReportComment)) {
             comment = parser.value(optionUploadReportComment);
         }
-        int res = w.uploadReportNonVisual(deviceIndex, submitter, comment);
+        int res = vulkanCapsViewer.uploadReportNonVisual(deviceIndex, submitter, comment);
         return res;
     }
 
-    w.show();
-    return a.exec();
+    vulkanCapsViewer.show();
+    return application.exec();
 }
