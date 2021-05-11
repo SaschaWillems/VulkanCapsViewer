@@ -221,6 +221,14 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "maxComputeWorkgroupSubgroups", QVariant(extProps.maxComputeWorkgroupSubgroups));
 		pushProperty2(extension, "requiredSubgroupSizeStages", QVariant(extProps.requiredSubgroupSizeStages));
 	}
+	if (extensionSupported("VK_EXT_provoking_vertex")) {
+		const char* extension("VK_EXT_provoking_vertex");
+		VkPhysicalDeviceProvokingVertexPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "provokingVertexModePerPipeline", QVariant(bool(extProps.provokingVertexModePerPipeline)));
+		pushProperty2(extension, "transformFeedbackPreservesTriangleFanProvokingVertex", QVariant(bool(extProps.transformFeedbackPreservesTriangleFanProvokingVertex)));
+	}
 	if (extensionSupported("VK_EXT_line_rasterization")) {
 		const char* extension("VK_EXT_line_rasterization");
 		VkPhysicalDeviceLineRasterizationPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_PROPERTIES_EXT };
@@ -715,6 +723,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "ycbcrImageArrays", extFeatures.ycbcrImageArrays);
 	}
+	if (extensionSupported("VK_EXT_provoking_vertex")) {
+		const char* extension("VK_EXT_provoking_vertex");
+		VkPhysicalDeviceProvokingVertexFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROVOKING_VERTEX_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "provokingVertexLast", extFeatures.provokingVertexLast);
+		pushFeature2(extension, "transformFeedbackPreservesProvokingVertex", extFeatures.transformFeedbackPreservesProvokingVertex);
+	}
 	if (extensionSupported("VK_EXT_line_rasterization")) {
 		const char* extension("VK_EXT_line_rasterization");
 		VkPhysicalDeviceLineRasterizationFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_FEATURES_EXT };
@@ -853,6 +869,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "vertexInputDynamicState", extFeatures.vertexInputDynamicState);
+	}
+	if (extensionSupported("VK_EXT_extended_dynamic_state2")) {
+		const char* extension("VK_EXT_extended_dynamic_state2");
+		VkPhysicalDeviceExtendedDynamicState2FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_2_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "extendedDynamicState2", extFeatures.extendedDynamicState2);
+		pushFeature2(extension, "extendedDynamicState2LogicOp", extFeatures.extendedDynamicState2LogicOp);
+		pushFeature2(extension, "extendedDynamicState2PatchControlPoints", extFeatures.extendedDynamicState2PatchControlPoints);
 	}
 	if (extensionSupported("VK_EXT_color_write_enable")) {
 		const char* extension("VK_EXT_color_write_enable");
