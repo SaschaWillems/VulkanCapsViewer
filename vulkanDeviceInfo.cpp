@@ -114,10 +114,7 @@ void VulkanDeviceInfo::readSupportedFormats()
         VulkanFormatInfo formatInfo = {};
         formatInfo.format = (VkFormat)format;
         vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-        formatInfo.supported =
-            (formatInfo.properties.linearTilingFeatures != 0) |
-            (formatInfo.properties.optimalTilingFeatures != 0) |
-            (formatInfo.properties.bufferFeatures != 0);
+        formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
         formats.push_back(formatInfo);
     }
     // VK_KHR_sampler_ycbcr_conversion
@@ -126,10 +123,7 @@ void VulkanDeviceInfo::readSupportedFormats()
             VulkanFormatInfo formatInfo = {};
             formatInfo.format = (VkFormat)format;
             vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported =
-                (formatInfo.properties.linearTilingFeatures != 0) |
-                (formatInfo.properties.optimalTilingFeatures != 0) |
-                (formatInfo.properties.bufferFeatures != 0);
+            formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
             formats.push_back(formatInfo);
         }
     }
