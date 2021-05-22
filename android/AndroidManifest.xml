@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <manifest package="de.saschawillems.vulkancapsviewer" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="3.01" android:versionCode="18" android:installLocation="auto">
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="Vulkan Caps Viewer" android:icon="@drawable/icon" android:banner="@drawable/banner">&gt;
-        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="vulkanCapsViewer" android:screenOrientation="unspecified" android:launchMode="singleTop">
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.qtproject.qt5.android.bindings.QtActivity" android:label="Vulkan Hardware Capability Viewer" android:screenOrientation="unspecified" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -28,13 +28,11 @@
             <meta-data android:value="@string/ministro_needed_msg" android:name="android.app.ministro_needed_msg"/>
             <meta-data android:value="@string/fatal_error_msg" android:name="android.app.fatal_error_msg"/>
             <!--  Messages maps -->
-
             <!-- Splash screen -->
             <!--
             <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/logo"/>
             -->
             <!-- Splash screen -->
-
             <!-- Background running -->
             <!-- Warning: changing this value to true may cause unexpected crashes if the
                           application still try to draw after
