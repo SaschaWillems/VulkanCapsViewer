@@ -696,7 +696,7 @@ namespace vulkanResources {
 	// Key replacement for display
 	const QMap<QString, QString> replaceKeyNames = {
 		{ "apiVersionText", "apiVersion" },
-		{ "deviceTypeText", "driverVersion" },
+		{ "deviceTypeText", "deviceType" },
 		{ "driverVersionText", "driverVersion" },
 	};
 
