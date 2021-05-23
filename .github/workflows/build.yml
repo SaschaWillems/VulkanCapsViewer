@@ -150,6 +150,8 @@ jobs:
           submodules: "recursive"
 
       - uses: jurplel/install-qt-action@v2
+        with:
+          arch: win32_msvc2015
 
       - name: Preparing nmake    
         uses: ilammy/msvc-dev-cmd@v1
