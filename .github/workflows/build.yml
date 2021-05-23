@@ -114,7 +114,7 @@ jobs:
         run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
 
   build_windows:
-    name: Build Windows
+    name: Build Windows (64 bit)
     runs-on: windows-latest
 
     steps:
@@ -137,3 +137,34 @@ jobs:
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+
+  build_windows_x86:
+    name: Build Windows (32 bit)
+    runs-on: windows-latest
+
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - uses: jurplel/install-qt-action@v2
+        with:
+          setup-python: 'false'
+          version: '5.12.9'
+          arch: 'win32_msvc2017'
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+
+      - name: Build
+        env:
+          TARGET_PLATFORM: windows
+        run: |
+          qmake vulkanCapsViewer.pro
+          nmake release
+          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-windows_x86.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
