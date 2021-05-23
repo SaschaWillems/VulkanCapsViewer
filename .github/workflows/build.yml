@@ -18,6 +18,11 @@ jobs:
         with:
           arch: x86
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+          architecture: 'x86'
+
       - uses: jurplel/install-qt-action@v2
         with:
           version: '5.15.9'
