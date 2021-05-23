@@ -151,6 +151,11 @@ jobs:
 
       - uses: jurplel/install-qt-action@v2
 
+      - name: Preparing nmake    
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86      
+
       - name: Build
         env:
           TARGET_PLATFORM: windows
