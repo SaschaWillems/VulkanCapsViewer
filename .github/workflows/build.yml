@@ -22,7 +22,7 @@ jobs:
 
       - uses: jurplel/install-qt-action@v2
         with:
-          version: 5.12.9
+          version: '5.12.9'
           arch: win32_msvc2017
 
       - name: Build
