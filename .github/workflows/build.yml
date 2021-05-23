@@ -155,8 +155,7 @@ jobs:
         env:
           TARGET_PLATFORM: windows
         run: |
-          configure -platform win32-msvc
-          qmake vulkanCapsViewer.pro
+          qmake vulkanCapsViewerWin32.pro
           nmake release
           windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
