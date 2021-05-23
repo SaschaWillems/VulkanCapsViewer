@@ -19,9 +19,9 @@ jobs:
           arch: x86
 
       - uses: jurplel/install-qt-action@v2
-          with:
-            version: '5.15.9'
-            arch: 'win32_msvc2017'
+        with:
+          version: '5.15.9'
+          arch: 'win32_msvc2017'
 
       - uses: actions/checkout@v2
         with:
