@@ -14,7 +14,7 @@ INCLUDEPATH += ./GeneratedFiles \
 INCLUDEPATH += "Vulkan-Headers/include"
 INCLUDEPATH += "/Vulkan-Headers/include"
 win32 {
-#    DEFINES += WIN64
+    DEFINES += WIN64
     DEFINES += VK_USE_PLATFORM_WIN32_KHR
     win32:contains(QMAKE_HOST.arch, x86_64) {
         LIBS += "$$PWD/libs/vulkan/lib/vulkan-1.lib"
