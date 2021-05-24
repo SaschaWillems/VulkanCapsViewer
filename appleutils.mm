@@ -22,4 +22,14 @@ extern "C" const char *getWorkingFolderForiOS(void)
     return cWorkingFolder;
 }
 
+extern "C" const void *getMetalLayerForiOS(void)
+{
+    return CFBridgingRetain([CAMetalLayer layer]);
+}
+
+extern "C" void freeMetalLayerForiOS(const void *layer)
+{
+    CFRelease(layer);
+}
+
 #endif

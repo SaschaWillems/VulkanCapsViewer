@@ -44,6 +44,8 @@
     // This sets the working folder on iOS to the designated shared
     // area. Safe to read/write from here.
     extern "C" void setWorkingFolderForiOS(void);
+    extern "C" const void *getMetalLayerForiOS(void);
+    extern "C" void freeMetalLayerForiOS(const void *);
 #endif
 
 #if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
@@ -84,7 +86,10 @@ private:
     int selectedDeviceIndex = 0;
     VkInstance vkInstance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    const void *pMetalSurrogate = nullptr;
+#endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
     QVukanSurrogate *pMetalSurrogate = nullptr;
 #endif
     std::string surfaceExtension;

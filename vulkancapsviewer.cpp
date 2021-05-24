@@ -255,7 +255,11 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 VulkanCapsViewer::~VulkanCapsViewer()
 {    
     // Free up hidden window used on Apple platforms
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    if(pMetalSurrogate != nullptr)
+        freeMetalLayerForiOS(pMetalSurrogate);
+#endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
     if(pMetalSurrogate != nullptr)
         delete pMetalSurrogate;
 #endif
@@ -739,8 +743,8 @@ bool VulkanCapsViewer::initVulkan()
         if (surface_extension == VK_MVK_IOS_SURFACE_EXTENSION_NAME) {
             VkIOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-            pMetalSurrogate = new QVukanSurrogate();
-            surfaceCreateInfo.pView = (void*)pMetalSurrogate->winId();
+            pMetalSurrogate = getMetalLayerForiOS();
+            surfaceCreateInfo.pView = pMetalSurrogate;
             surfaceResult = vkCreateIOSSurfaceMVK(vkInstance, &surfaceCreateInfo, nullptr, &surface);
         }
 #endif
