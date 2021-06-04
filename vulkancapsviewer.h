@@ -121,6 +121,7 @@ private:
     bool initVulkan();
     void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
     void getGPUs();
+    void connectFilterAndModel(QStandardItemModel& model, TreeProxyFilter& filter);
     void displayDevice(int index);
     void displayDeviceProperties(VulkanDeviceInfo *device);
     void displayDeviceMemoryProperties(VulkanDeviceInfo *device);

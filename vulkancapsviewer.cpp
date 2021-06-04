@@ -210,43 +210,43 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     // Models and filters
     // Core 1.0 properties
     ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
-    filterProxies.propertiesCore10.setSourceModel(&models.propertiesCore10);
+    connectFilterAndModel(models.propertiesCore10, filterProxies.propertiesCore10);
     connect(ui.filterLineEditProperties, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore10(QString)));
     // Core 1.1 properties
     ui.treeViewDevicePropertiesCore11->setModel(&filterProxies.propertiesCore11);
-    filterProxies.propertiesCore11.setSourceModel(&models.propertiesCore11);
+    connectFilterAndModel(models.propertiesCore11, filterProxies.propertiesCore11);
     connect(ui.filterLineEditPropertiesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore11(QString)));
     // Core 1.2 properties
     ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
-    filterProxies.propertiesCore12.setSourceModel(&models.propertiesCore12);
+    connectFilterAndModel(models.propertiesCore12, filterProxies.propertiesCore12);
     connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
     // Extension properties
     ui.treeViewDevicePropertiesExtensions->setModel(&filterProxies.propertiesExtensions);
-    filterProxies.propertiesExtensions.setSourceModel(&models.propertiesExtensions);
+    connectFilterAndModel(models.propertiesExtensions, filterProxies.propertiesExtensions);
     connect(ui.filterLineEditPropertiesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesExtensions(QString)));
     // Core 1.0 features
     ui.treeViewDeviceFeatures->setModel(&filterProxies.featuresCore10);
-    filterProxies.featuresCore10.setSourceModel(&models.featuresCore10);
+    connectFilterAndModel(models.featuresCore10, filterProxies.featuresCore10);
     connect(ui.filterLineEditFeatures, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeatures(QString)));
     // Core 1.1 features
     ui.treeViewDeviceFeaturesCore11->setModel(&filterProxies.featuresCore11);
-    filterProxies.featuresCore11.setSourceModel(&models.featuresCore11);
+    connectFilterAndModel(models.featuresCore11, filterProxies.featuresCore11);
     connect(ui.filterLineEditFeaturesCore11, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore11(QString)));
     // Core 1.2 features
     ui.treeViewDeviceFeaturesCore12->setModel(&filterProxies.featuresCore12);
-    filterProxies.featuresCore12.setSourceModel(&models.featuresCore12);
+    connectFilterAndModel(models.featuresCore12, filterProxies.featuresCore12);
     connect(ui.filterLineEditFeaturesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore12(QString)));
     // Extension features
     ui.treeViewDeviceFeaturesExtensions->setModel(&filterProxies.featuresExtensions);
-    filterProxies.featuresExtensions.setSourceModel(&models.featuresExtensions);
+    connectFilterAndModel(models.featuresExtensions, filterProxies.featuresExtensions);
     connect(ui.filterLineEditFeaturesExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesExtensions(QString)));
     // Extensions
     ui.treeViewDeviceExtensions->setModel(&filterProxies.extensions);
-    filterProxies.extensions.setSourceModel(&models.extensions);
+    connectFilterAndModel(models.extensions, filterProxies.extensions);
     connect(ui.filterLineEditExtensions, SIGNAL(textChanged(QString)), this, SLOT(slotFilterExtensions(QString)));
     // Formats
     ui.treeViewFormats->setModel(&filterProxies.formats);
-    filterProxies.formats.setSourceModel(&models.formats);
+    connectFilterAndModel(models.formats, filterProxies.formats);
     connect(ui.filterLineEditFormats, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFormats(QString)));
 
     getGPUs();
@@ -869,6 +869,13 @@ void VulkanCapsViewer::getGPUs()
 #ifdef __ANDROID__
     ui.widgetDeviceSelection->setVisible(vulkanGPUs.size() > 1);
 #endif
+}
+
+void VulkanCapsViewer::connectFilterAndModel(QStandardItemModel& model, TreeProxyFilter& filter)
+{
+    filter.setSourceModel(&model);
+    filter.setFilterKeyColumn(-1);
+    filter.setRecursiveFilteringEnabled(true);
 }
 
 QTreeWidgetItem *addTreeItem(QTreeWidgetItem *parent, const std::string& key, const std::string& value)
