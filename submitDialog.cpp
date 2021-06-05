@@ -4,7 +4,7 @@
 *
 * Submit report dialog
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -30,7 +30,7 @@
 #include <QSettings>
 #include <QDialogButtonBox>
 
-submitDialog::submitDialog(QString submitter, QString caption)
+SubmitDialog::SubmitDialog(QString submitter, QString caption)
 {
 	QFormLayout *formLayout = new QFormLayout;
 
@@ -67,26 +67,26 @@ submitDialog::submitDialog(QString submitter, QString caption)
 }
 
 
-submitDialog::~submitDialog()
+SubmitDialog::~SubmitDialog()
 {
 }
 
-void submitDialog::slotAccept()
+void SubmitDialog::slotAccept()
 {
 	this->accept();
 }
 
-void submitDialog::slotCancel()
+void SubmitDialog::slotCancel()
 {
 	this->reject();
 }
 
-std::string submitDialog::getSubmitter()
+QString SubmitDialog::getSubmitter()
 {
-	return editSubmitter->text().toStdString();
+	return editSubmitter->text();
 }
 
-std::string submitDialog::getComment()
+QString SubmitDialog::getComment()
 {
-	return editComment->text().toStdString();
+	return editComment->text();
 }

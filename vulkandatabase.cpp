@@ -33,27 +33,20 @@ QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
 QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
 
-/// <summary>
-/// Checks if the online database can be reached
-/// </summary>
-bool VulkanDatabase::checkServerConnection()
+bool VulkanDatabase::checkServerConnection(QString& message)
 {
     manager = new QNetworkAccessManager(nullptr);
-
 	QUrl qurl(databaseUrl + "api/v3/serverstate.php");
-
     if (username != "" && password != "")
     {
         qurl.setUserName(username);
         qurl.setPassword(password);
     }
-
 	QNetworkReply* reply = manager->get(QNetworkRequest(qurl));
-
 	QEventLoop loop;
 	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
 	loop.exec(QEventLoop::ExcludeUserInputEvents);
-
+	message = reply->errorString();
 	return (reply->error() == QNetworkReply::NoError);
 }
 
@@ -93,55 +86,6 @@ string VulkanDatabase::httpGet(string url)
 		err = reply->errorString();
 		delete(manager);
 		return "";
-	}
-}
-
-/// <summary>
-/// Execute http post
-/// </summary>
-/// <param name="url">url for the http post</param>
-/// <param name="data">string data to post</param>
-/// <returns>Server answer</returns>
-string VulkanDatabase::httpPost(string url, string data)
-{
-	manager = new QNetworkAccessManager(NULL);
-
-	QHttpMultiPart *multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
-
-	QHttpPart jsonPart;
-	jsonPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"vulkanreport.json\""));
-	jsonPart.setBody(QString::fromStdString(data).toLatin1());
-	multiPart->append(jsonPart);
-
-	QUrl qurl(QString::fromStdString(url));
-
-    if (username != "" && password != "")
-    {
-        qurl.setUserName(username);
-        qurl.setPassword(password);
-    }
-
-	QNetworkRequest request(qurl);
-	QNetworkReply *reply = manager->post(request, multiPart);
-	multiPart->setParent(reply);
-	
-	QEventLoop loop;
-	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
-	loop.exec(QEventLoop::ExcludeUserInputEvents);
-
-	if (reply->error() == QNetworkReply::NoError)
-	{
-		QByteArray bytes = reply->readAll();
-		QString replyStr(bytes);
-		delete(manager);
-		return replyStr.toStdString();
-	}
-	else
-	{
-		QString err;
-		err = reply->errorString();
-		delete(manager);
-		return err.toStdString();
 	}
 }
 
@@ -187,14 +131,33 @@ bool VulkanDatabase::checkReportPresent(VulkanDeviceInfo device, int& reportId)
 	return (reportId > -1) ? true : false;
 }
 
-/// Posts the given xml for a report to the database	
-string VulkanDatabase::postReport(string xml)
+bool VulkanDatabase::uploadReport(QJsonObject json, QString& message)
 {
-	string httpReply;
-	stringstream urlss;
-    urlss << databaseUrl.toStdString() << "api/v3/uploadreport.php";
-	httpReply = httpPost(urlss.str(), xml);
-	return httpReply;
+	manager = new QNetworkAccessManager(nullptr);
+	QHttpMultiPart* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+	QHttpPart httpPart;
+	httpPart.setHeader(QNetworkRequest::ContentDispositionHeader, QVariant("form-data; name=\"data\"; filename=\"vulkanreport.json\""));
+	QJsonDocument doc(json);
+	httpPart.setBody(doc.toJson());
+	multiPart->append(httpPart);
+	QUrl qurl(databaseUrl + "api/v3/uploadreport.php");
+	QNetworkRequest request(qurl);
+	QNetworkReply* reply = manager->post(request, multiPart);
+	multiPart->setParent(reply);
+	QEventLoop loop;
+	connect(reply, SIGNAL(finished()), &loop, SLOT(quit()));
+	loop.exec(QEventLoop::ExcludeUserInputEvents);
+	bool result = false;
+	if (reply->error() == QNetworkReply::NoError)
+	{
+		result = true;
+	}
+	else {
+		message = reply->errorString();
+		result = false;
+	}
+	delete(manager);
+	return result;
 }
 
 // Checks if the report stored in the database can be updated with missing data from the local report

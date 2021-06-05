@@ -66,18 +66,19 @@ class VulkanCapsViewer : public QMainWindow
     Q_OBJECT
 
 public:
-    static const std::string version;
-    static const std::string reportVersion;
+    static const QString version;
+    static const QString reportVersion;
     ReportState reportState = ReportState::unknown;
     std::vector<VulkanDeviceInfo> vulkanGPUs;
     std::vector<VulkanLayerInfo> instanceLayers;
     std::vector<VkExtensionProperties> instanceExtensions;
     bool deviceProperties2Available = false;
-    VulkanDatabase databaseConnection;
+    VulkanDatabase database;
     void checkReportDatabaseState();
     VulkanCapsViewer(QWidget *parent = 0);
     ~VulkanCapsViewer();
-    qint64 exportReportAsJSON(std::string fileName, std::string submitter, std::string comment);
+    void reportToJson(QString submitter, QString comment, QJsonObject& jsonObject);
+    bool saveReport(QString fileName, QString submitter, QString comment);
     int uploadReportNonVisual(int deviceIndex, QString submitter, QString comment);
 private:
     uint32_t instanceApiVersion;

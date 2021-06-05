@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -673,7 +673,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
-QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
+QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
 {
     QJsonObject root;
 
@@ -871,10 +871,10 @@ QJsonObject VulkanDeviceInfo::toJson(std::string submitter, std::string comment)
     jsonEnv["name"] = QString::fromStdString(os.name);
     jsonEnv["version"] = QString::fromStdString(os.version);
     jsonEnv["architecture"] = QString::fromStdString(os.architecture);
-    jsonEnv["submitter"] = QString::fromStdString(submitter);
-    jsonEnv["comment"] = QString::fromStdString(comment);
-    jsonEnv["reportversion"] = QString::fromStdString(reportVersion);
-    jsonEnv["appversion"] = QString::fromStdString(appVersion);
+    jsonEnv["submitter"] = submitter;
+    jsonEnv["comment"] = comment;
+    jsonEnv["reportversion"] = reportVersion;
+    jsonEnv["appversion"] = appVersion;
     root["environment"] = jsonEnv;
 
     QJsonObject jsonExtended;

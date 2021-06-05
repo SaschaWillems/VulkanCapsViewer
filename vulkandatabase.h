@@ -42,7 +42,6 @@ private:
 	QNetworkProxy *proxy;
 	QNetworkAccessManager *manager;
 	string httpGet(string url);
-	string httpPost(string url, string data);
 	string encodeUrl(string url);
 public:
     static QString username;
@@ -51,8 +50,8 @@ public:
     int getReportId(VulkanDeviceInfo device);
     bool checkReportPresent(VulkanDeviceInfo device, int &reportId);
 	bool checkCanUpdateReport(VulkanDeviceInfo &device, int reportId);
-	bool checkServerConnection();
-	string postReport(string xml);
+	bool checkServerConnection(QString& message);
+	bool uploadReport(QJsonObject json, QString& message);
 	bool postReportForUpdate(VulkanDeviceInfo &device, int reportId, QString &updateLog);
 };
 

@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -101,8 +101,8 @@ public:
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
     OSInfo os;
-    std::string appVersion;
-    std::string reportVersion;
+    QString appVersion;
+    QString reportVersion;
     std::vector<VulkanLayerInfo> getLayers();
     std::string getDriverVersion();
     void readExtensions();
@@ -115,7 +115,7 @@ public:
     void readPhysicalMemoryProperties();
     void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
     void readPlatformDetails();
-    QJsonObject toJson(std::string submitter, std::string comment);
+    QJsonObject toJson(QString submitter, QString comment);
 };
 
 #endif // VULKANDEVICEINFO_H

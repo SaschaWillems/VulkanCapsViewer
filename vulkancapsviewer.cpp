@@ -73,8 +73,8 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const std::string VulkanCapsViewer::version = "3.01";
-const std::string VulkanCapsViewer::reportVersion = "3.0";
+const QString VulkanCapsViewer::version = "3.02";
+const QString VulkanCapsViewer::reportVersion = "3.0";
 
 OSInfo getOperatingSystem()
 {
@@ -129,7 +129,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 #endif
 
     ui.setupUi(this);
-    setWindowTitle("Vulkan Hardware Capability Viewer " + QString::fromStdString(version));
+    setWindowTitle("Vulkan Hardware Capability Viewer " + version);
     // Connect slots
     connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)));
     connect(ui.toolButtonUpload, SIGNAL(pressed()), this, SLOT(slotUploadReport()));
@@ -144,7 +144,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     qApp->setStyle(QStyleFactory::create("Fusion"));
     boldFont.setBold(true);
 
-    ui.label_header_top->setText(ui.label_header_top->text() + " " + QString::fromStdString(version));
+    ui.label_header_top->setText(ui.label_header_top->text() + " " + version);
     
     
 #ifdef ANDROID
@@ -283,8 +283,8 @@ void VulkanCapsViewer::slotBrowseDatabase()
 
 void VulkanCapsViewer::slotDisplayOnlineReport()
 {
-    int reportId = databaseConnection.getReportId(vulkanGPUs[selectedDeviceIndex]);
-    QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+    int reportId = database.getReportId(vulkanGPUs[selectedDeviceIndex]);
+    QUrl url(database.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
     QDesktopServices::openUrl(url);
 }
 
@@ -296,7 +296,7 @@ std::string apiVersionText(uint32_t apiVersion)
 void VulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
-    aboutText << "<p>Vulkan Hardware Capability Viewer " << version << "<br/><br/>"
+    aboutText << "<p>Vulkan Hardware Capability Viewer " << version.toStdString() << "<br/><br/>"
         "Copyright (c) 2016-2021 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "This tool is <b>Free Open Source Software</b><br/><br/>"
         "For usage and distribution details refer to the readme<br/><br/>"
@@ -322,8 +322,9 @@ void VulkanCapsViewer::slotSaveReport()
 #ifndef VK_USE_PLATFORM_IOS_MVK
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Report to disk"), device.properties["deviceName"].toString() + ".json", tr("json (*.json)"));
 
-    if (!fileName.isEmpty())
-        exportReportAsJSON(fileName.toStdString(), "", "");
+    if (!fileName.isEmpty()) {
+        saveReport(fileName, "", "");
+    }
 
 #else
     // On iOS, you cannot choose where to save the file, but we need some sort of
@@ -335,10 +336,11 @@ void VulkanCapsViewer::slotSaveReport()
     fileName += ".json";
 
     QMessageBox msgBox;
-    if(-1 != exportReportAsJSON(fileName.toStdString(), "", ""))
+    if (!saveReport(fileName, "", "")) {
         msgBox.setText("Report saved to the iTunes file sharing folder.");
-    else
+    } else {
         msgBox.setText("Error writing to iTunes file sharing folder.");
+    }
     msgBox.exec();
 
 #endif
@@ -348,39 +350,27 @@ void VulkanCapsViewer::slotUploadReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
 
-    bool dbstatus = databaseConnection.checkServerConnection();
-    if (!dbstatus)
+    QString error;
+    if (!database.checkServerConnection(error))
     {
-        QMessageBox::warning(this, "Error", "Database unreachable!");
+        QMessageBox::warning(this, "Error", "Could not connect to database:<br>" + error);
         return;
     }
-
     // Upload new report
     if (reportState == ReportState::not_present) {
-        submitDialog dialog(appSettings.submitterName, "Submit new report");
-        
+        SubmitDialog dialog(appSettings.submitterName, "Submit new report");
         if (dialog.exec() == QDialog::Accepted) {
-#if defined(VK_USE_PLATFORM_IOS_MVK)
-            QString fileName = getWorkingFolderForiOS();
-            fileName += "/";
-            fileName += "vulkanreport.json";
-#else
-            QString fileName = QString("vulkanreport.json");
-#endif
-            exportReportAsJSON(fileName.toUtf8().constData(), dialog.getSubmitter(), dialog.getComment());
-            std::ostringstream sstream(std::ios::out | std::ios::binary);
-            std::ifstream inFile(fileName.toUtf8().constData());
-            std::string line;
-            while (std::getline(inFile, line)) sstream << line << "\r\n";
-            string reply = databaseConnection.postReport(sstream.str());
-            if (reply == "res_uploaded")
+            QString message;
+            QJsonObject reportJson;
+            reportToJson(dialog.getSubmitter(), dialog.getComment(), reportJson);
+            if (database.uploadReport(reportJson, message))
             {
                 QMessageBox::information(this, "Report submitted", "Your report has been uploaded to the database!\n\nThank you for your contribution!");
                 checkReportDatabaseState();
             }
             else
             {
-                QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + QString::fromStdString(reply));
+                QMessageBox::warning(this, "Error", "The report could not be uploaded : \n" + message);
             }
         }
         return;
@@ -388,17 +378,19 @@ void VulkanCapsViewer::slotUploadReport()
 
     // Update existing report
     if (reportState == ReportState::is_updatable) {
-        submitDialog dialog(appSettings.submitterName, "Update existing report");
+        SubmitDialog dialog(appSettings.submitterName, "Update existing report");
         if (dialog.exec() == QDialog::Accepted) {
-            int reportId = databaseConnection.getReportId(device);
+            int reportId = database.getReportId(device);
             QApplication::setOverrideCursor(Qt::WaitCursor);
             QString updateLog;
-            bool updateResult = databaseConnection.postReportForUpdate(device, reportId, updateLog);
+            bool updateResult = database.postReportForUpdate(device, reportId, updateLog);
             QApplication::restoreOverrideCursor();
-            if (updateResult) {
+            if (updateResult)
+            {
                 QMessageBox::information(this, "Report updated", "The report has been updated with the following information:\n\n" + updateLog + "\nThank you for your contribution!");
             }
-            else {
+            else
+            {
                 QMessageBox::warning(this, "Error", "The report could not be updated : \n" + QString::fromStdString("xxx"));
             }
             checkReportDatabaseState();
@@ -408,12 +400,12 @@ void VulkanCapsViewer::slotUploadReport()
 
     // Show link to database for existing reports
     if (reportState == ReportState::is_present) {
-        int reportId = databaseConnection.getReportId(device);
+        int reportId = database.getReportId(device);
         QMessageBox::StandardButton reply;
         reply = QMessageBox::question(this, "Device already present", "A report for the selected device is already present in the database.\n\nDo you want to open the report in your browser?", QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes)
         {
-            QUrl url(databaseConnection.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
+            QUrl url(database.databaseUrl + "displayreport.php?id=" + QString::number(reportId));
             QDesktopServices::openUrl(url);
         }
         return;
@@ -1596,10 +1588,10 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
 
 }
 
-qint64 VulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string submitter, std::string comment)
+void VulkanCapsViewer::reportToJson(QString submitter, QString comment, QJsonObject& jsonObject)
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
-    QJsonObject report = device.toJson(submitter, comment);
+    jsonObject = device.toJson(submitter, comment);
 
     // Add instance information
     QJsonObject jsonInstance;
@@ -1632,12 +1624,19 @@ qint64 VulkanCapsViewer::exportReportAsJSON(std::string fileName, std::string su
     }
     jsonInstance["layers"] = jsonLayers;
 
-    report["instance"] = jsonInstance;
+    jsonObject["instance"] = jsonInstance;
+}
 
-    QJsonDocument doc(report);
-    QFile jsonFile(QString::fromStdString(fileName));
+bool VulkanCapsViewer::saveReport(QString fileName, QString submitter, QString comment)
+{
+    QJsonObject jsonReport;
+    reportToJson(submitter, comment, jsonReport);
+    QJsonDocument doc(jsonReport);
+    qint64 bytesWritten;
+    QFile jsonFile(fileName);
     jsonFile.open(QFile::WriteOnly);
-    return jsonFile.write(doc.toJson(QJsonDocument::Indented));
+    bytesWritten = jsonFile.write(doc.toJson(QJsonDocument::Indented));
+    return (bytesWritten > -1);
 }
 
 void VulkanCapsViewer::checkReportDatabaseState()
@@ -1646,7 +1645,8 @@ void VulkanCapsViewer::checkReportDatabaseState()
     ui.toolButtonOnlineDevice->setEnabled(false);
 
     QApplication::setOverrideCursor(Qt::WaitCursor);
-    if (!databaseConnection.checkServerConnection())
+    QString message;
+    if (!database.checkServerConnection(message))
     {
         ui.labelDevicePresent->setText("<font color='#FF0000'>Could not connect to the database!\n\nPlease check your internet connection and proxy settings!</font>");
         QApplication::restoreOverrideCursor();
@@ -1654,10 +1654,10 @@ void VulkanCapsViewer::checkReportDatabaseState()
     }
 
     int reportId;
-    if (databaseConnection.checkReportPresent(vulkanGPUs[selectedDeviceIndex], reportId))
+    if (database.checkReportPresent(vulkanGPUs[selectedDeviceIndex], reportId))
     {
         // Check if report can be updated with new information not yet stored in the database
-        if (databaseConnection.checkCanUpdateReport(vulkanGPUs[selectedDeviceIndex], reportId)) {
+        if (database.checkCanUpdateReport(vulkanGPUs[selectedDeviceIndex], reportId)) {
             setReportState(ReportState::is_updatable);
         }
         else {
@@ -1676,35 +1676,31 @@ int VulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
 {
     VulkanDeviceInfo device = vulkanGPUs[deviceIndex];
 
-    bool dbstatus = databaseConnection.checkServerConnection();
+    QString message;
+    bool dbstatus = database.checkServerConnection(message);
     if (!dbstatus)
     {
         qWarning() << "Database unreachable";
         return -1;
     }
 
-    int reportId = databaseConnection.getReportId(device);
+    int reportId = database.getReportId(device);
     if (reportId > -1)
     {
         qWarning() << "Device already present in database";
         return -2;
     }
 
-    exportReportAsJSON("vulkanreport.json", submitter.toStdString(), comment.toStdString());
-    std::ostringstream sstream(std::ios::out | std::ios::binary);
-    std::ifstream inFile("vulkanreport.json");
-    std::string line;
-    while (std::getline(inFile, line)) sstream << line << "\r\n";
-
-    string reply = databaseConnection.postReport(sstream.str());
-    if (reply == "res_uploaded")
+    QJsonObject reportJson;
+    reportToJson(submitter, comment, reportJson);
+    if (database.uploadReport(reportJson, message))
     {
         qInfo() << "Report successfully submitted. Thanks for your contribution!";
         return 0;
     }
     else
     {
-        qInfo() << "The report could not be uploaded : \n" + QString::fromStdString(reply);
+        qInfo() << "The report could not be uploaded : \n" << message;
         return -3;
     }
 }

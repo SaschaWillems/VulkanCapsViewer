@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication application(argc, argv);
-    application.setApplicationVersion(QString::fromStdString(VulkanCapsViewer::version));
+    application.setApplicationVersion(VulkanCapsViewer::version);
 
     QCommandLineParser parser;  
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(optionSaveReport))
     {
-        vulkanCapsViewer.exportReportAsJSON(parser.value(optionSaveReport).toStdString(), "", "");
+        vulkanCapsViewer.saveReport(parser.value(optionSaveReport), "", "");
         return 0;
     }
 
