@@ -47,6 +47,10 @@
 #include <assert.h>
 #include <settingsDialog.h>
 #include "submitDialog.h"
+#if !defined(_WIN32) && !defined(__ANDROID__)
+#define USE_UTSNAME
+#include <sys/utsname.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -80,9 +84,16 @@ OSInfo getOperatingSystem()
 {
     // QSysInfo works for all supported operating systems
     OSInfo osInfo = {};
+    // GhostBSD - QSysInfo::productType().toStdString() returs "unknown"
+#ifndef USE_UTSNAME
     osInfo.name = QSysInfo::productType().toStdString();
-    osInfo.architecture = QSysInfo::buildCpuArchitecture().toStdString();
     osInfo.version = QSysInfo::productVersion().toStdString();
+#else
+    struct utsname n;
+    uname(&n);
+    osInfo.name = n.sysname;
+    osInfo.version = n.version;
+#endif
     return osInfo;
 }
 
