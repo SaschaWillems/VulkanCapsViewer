@@ -698,22 +698,38 @@ bool VulkanCapsViewer::initVulkan()
 
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
         if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
-            VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.pNext = nullptr;
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.display = wl_display_connect(NULL);
-            surfaceCreateInfo.surface = nullptr;
-            surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            struct wl_display* display = wl_display_connect(NULL);
+            if (display != NULL) {
+                VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {
+                  .sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR,
+                  .pNext = nullptr,
+                  .flags = 0,
+                  .display = display,
+                  .surface = nullptr
+                };
+                surfaceResult = vkCreateWaylandSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            } else {
+                qDebug() << "Could not connect to Wayland display.";
+            }
         }
 #endif
 
 #if defined(VK_USE_PLATFORM_XCB_KHR)
         if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
-            VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.connection = QX11Info::connection();
-            surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-            surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            xcb_connection_t* connection = QX11Info::connection();
+
+            if (connection != nullptr) {
+                VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {
+                  .sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR,
+                  .pNext = nullptr,
+                  .flags = 0,
+                  .connection = connection,
+                  .window = static_cast<xcb_window_t>(this->winId()),
+                };
+                surfaceResult = vkCreateXcbSurfaceKHR(vkInstance, &surfaceCreateInfo, nullptr, &surface);
+            } else {
+                qDebug() << "Could not connect to XCB display.";
+            }
         }
 #endif
 

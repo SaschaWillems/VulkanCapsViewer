@@ -25,15 +25,17 @@ win32 {
 }
 linux:!android {
     LIBS += -lvulkan
-    contains(DEFINES, X11) {
-        message("Building for X11")
+    qtHaveModule(x11extras) {
+        message("Enabling XCB surface support.")
         QT += x11extras
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
-    contains(DEFINES, WAYLAND) {
-        message("Building for Wayland")
-        QT += waylandclient
-        DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+    packagesExist(wayland-client) {
+      qtHaveModule(waylandclient) {
+          message("Enabling Wayland surface support.")
+          QT += waylandclient
+          DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+      }
     }
     target.path = /usr/bin
     INSTALLS += target

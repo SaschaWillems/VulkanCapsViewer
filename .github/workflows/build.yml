@@ -35,7 +35,7 @@ jobs:
           echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
+          qmake CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
           wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
           chmod a+x linuxdeployqt-continuous-x86_64.AppImage
@@ -65,6 +65,11 @@ jobs:
           sudo apt update
           sudo apt install libvulkan-dev
 
+      - name: Install Wayland headers
+        run: |
+          sudo apt update
+          sudo apt install libwayland-dev
+
       - name: Build
         env:
           TARGET_PLATFORM: wayland
@@ -72,7 +77,7 @@ jobs:
           echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          qmake DEFINES+=wayland CONFIG+=release PREFIX=/usr
+          qmake CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
           wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
           chmod a+x linuxdeployqt-continuous-x86_64.AppImage
