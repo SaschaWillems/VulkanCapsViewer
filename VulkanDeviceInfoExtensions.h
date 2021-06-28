@@ -72,6 +72,8 @@ private:
     void readPhysicalProperties_AMD();
     void readPhysicalFeatures_EXT();
     void readPhysicalProperties_EXT();
+    void readPhysicalFeatures_HUAWEI();
+    void readPhysicalProperties_HUAWEI();
     void readPhysicalFeatures_INTEL();
     void readPhysicalFeatures_KHR();
     void readPhysicalProperties_KHR();
@@ -81,7 +83,7 @@ private:
     void readPhysicalFeatures_VALVE();
 
 public:
-    const uint32_t vkHeaderVersion = 178;
+    const uint32_t vkHeaderVersion = 183;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;
