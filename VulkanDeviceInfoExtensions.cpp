@@ -278,10 +278,10 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "hasPrimary", QVariant(bool(extProps.hasPrimary)));
 		pushProperty2(extension, "hasRender", QVariant(bool(extProps.hasRender)));
-		pushProperty2(extension, "primaryMajor", QVariant(extProps.primaryMajor));
-		pushProperty2(extension, "primaryMinor", QVariant(extProps.primaryMinor));
-		pushProperty2(extension, "renderMajor", QVariant(extProps.renderMajor));
-		pushProperty2(extension, "renderMinor", QVariant(extProps.renderMinor));
+        pushProperty2(extension, "primaryMajor", QVariant::fromValue(extProps.primaryMajor));
+        pushProperty2(extension, "primaryMinor", QVariant::fromValue(extProps.primaryMinor));
+        pushProperty2(extension, "renderMajor", QVariant::fromValue(extProps.renderMajor));
+        pushProperty2(extension, "renderMinor", QVariant::fromValue(extProps.renderMinor));
 	}
 	if (extensionSupported("VK_EXT_multi_draw")) {
 		const char* extension("VK_EXT_multi_draw");

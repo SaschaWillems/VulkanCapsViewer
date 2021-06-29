@@ -523,7 +523,7 @@ namespace vulkanResources {
 		};
 	}
 
-	inline std::string memoryHeapBitString(const VkMemoryPropertyFlagBits heapBit)
+    inline std::string memoryHeapBitString(const VkMemoryHeapFlagBits heapBit)
 	{
 		switch (heapBit) {
 #define STR(r) case VK_MEMORY_HEAP_##r: return #r
