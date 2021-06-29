@@ -94,6 +94,7 @@ OSInfo getOperatingSystem()
     osInfo.name = n.sysname;
     osInfo.version = n.version;
 #endif
+    osInfo.architecture = QSysInfo::buildCpuArchitecture().toStdString();
     return osInfo;
 }
 
