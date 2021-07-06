@@ -1309,6 +1309,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pushFeature2(extension, "rayTracingMotionBlur", extFeatures.rayTracingMotionBlur);
 		pushFeature2(extension, "rayTracingMotionBlurPipelineTraceRaysIndirect", extFeatures.rayTracingMotionBlurPipelineTraceRaysIndirect);
 	}
+	if (extensionSupported("VK_NV_external_memory_rdma")) {
+		const char* extension("VK_NV_external_memory_rdma");
+		VkPhysicalDeviceExternalMemoryRDMAFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_RDMA_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "externalMemoryRDMA", extFeatures.externalMemoryRDMA);
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 	if (extensionSupported("VK_VALVE_mutable_descriptor_type")) {
