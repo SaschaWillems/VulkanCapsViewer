@@ -636,6 +636,8 @@ bool VulkanCapsViewer::initVulkan()
         }
     }
 
+    pfnGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vkInstance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
+
     // Create a surface
     for (auto surface_extension : surfaceExtensionsAvailable) {
         VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
@@ -758,7 +760,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->device = device;
     GPU->readLayers();
     GPU->readExtensions();
-    GPU->readQueueFamilies();
+    GPU->readQueueFamilies(surface);
     GPU->readPhysicalProperties();
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();

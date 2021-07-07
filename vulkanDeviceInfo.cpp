@@ -129,37 +129,22 @@ void VulkanDeviceInfo::readSupportedFormats()
     }
 }
 
-void VulkanDeviceInfo::readQueueFamilies()
+void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
 {
     assert(device != NULL);
-    uint32_t queueCount;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, NULL);
-    assert(queueCount > 0);
-    std::vector<VkQueueFamilyProperties> qs(queueCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueCount, &qs.front());
+    uint32_t queueFamilyCount;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, NULL);
+    assert(queueFamilyCount > 0);
+    std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, &queueFamilyProperties.front());
     uint32_t index = 0;
-    for (auto& q : qs)
+    for (auto& queueFamilyProperty : queueFamilyProperties)
     {
         VulkanQueueFamilyInfo queueFamilyInfo{};
-        queueFamilyInfo.properties = q;
-#if defined(VK_USE_PLATFORM_WIN32_KHR)
-        queueFamilyInfo.supportsPresent = vkGetPhysicalDeviceWin32PresentationSupportKHR(device, index);
-#elif defined(VK_USE_PLATFORM_ANDROID_KHR)
-        // On Android all physical devices and queue families must support present
-        queueFamilyInfo.supportsPresent = true;
-#elif defined(VK_USE_PLATFORM_XCB_KHR)
-        // @todo: Not properly working
-        /*
-        if (w) {
-            xcb_connection_t *connection = w->xcbScreen()->xcb_connection();
-            queueFamilyInfo.supportsPresent = vkGetPhysicalDeviceXcbPresentationSupportKHR(device, index, connection, w->visualId());
-        } else {
-            qWarning("Could not get valid XCB Window handle to check queue present support!");
-            queueFamilyInfo.supportsPresent = false;
+        queueFamilyInfo.properties = queueFamilyProperty;
+        if ((surface != VK_NULL_HANDLE) && (pfnGetPhysicalDeviceSurfaceSupportKHR)) {
+            pfnGetPhysicalDeviceSurfaceSupportKHR(device, index, surface, &queueFamilyInfo.supportsPresent);
         }
-        */
-        queueFamilyInfo.supportsPresent = false;
-#endif
         queueFamilies.push_back(queueFamilyInfo);
         index++;
     }

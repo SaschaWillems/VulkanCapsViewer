@@ -108,7 +108,7 @@ public:
     void readExtensions();
     void readLayers();
     void readSupportedFormats();
-    void readQueueFamilies();
+    void readQueueFamilies(VkSurfaceKHR surface);
     void readPhysicalProperties();
     void readPhysicalFeatures();
     void readPhysicalLimits();
