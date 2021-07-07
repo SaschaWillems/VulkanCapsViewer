@@ -83,7 +83,7 @@ public:
 private:
     uint32_t instanceApiVersion;
     int selectedDeviceIndex = 0;
-    VkInstance vkInstance = VK_NULL_HANDLE;
+    VkInstance instance = VK_NULL_HANDLE;
     VkSurfaceKHR surface;
 #if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
     QVukanSurrogate *pMetalSurrogate = nullptr;

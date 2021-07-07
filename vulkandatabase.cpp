@@ -118,7 +118,7 @@ int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 	// Compare against platform info on Android, as driver version and device name (which is just the GPU name on android) are not sufficient to identify a single report
 	urlss << "&androidproductmodel=" << device.platformdetails["android.ProductModel"];
 	urlss << "&androidproductmanufacturer=" << device.platformdetails["android.ProductManufacturer"];
-#endif;
+#endif
 	string url = encodeUrl(urlss.str());
 	reply = httpGet(url);
 	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
