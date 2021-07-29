@@ -639,6 +639,7 @@ bool VulkanCapsViewer::initVulkan()
     pfnGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 
     // Create a surface
+    surface = VK_NULL_HANDLE;
     for (auto surface_extension : surfaceExtensionsAvailable) {
         VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
         surface = VK_NULL_HANDLE;
