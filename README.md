@@ -8,7 +8,6 @@ The hardware reports can be submitted to a public [online database](http://vulka
 
 
 <img src="images/windows.png" height="320px"> <img src="images/android.png" height="320px">
-<!-- <img src="images/android_tv.png" height="320px"> -->
 
 # Supported platforms
 **A Vulkan compatible device is required**
@@ -29,4 +28,4 @@ Current releases for all platforms will be provided on a regular basis at [vulka
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-- [Qt 5.8](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
+- [Qt 5.12](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
