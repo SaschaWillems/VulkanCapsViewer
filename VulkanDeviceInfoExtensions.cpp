@@ -811,6 +811,24 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "extendedDynamicState", extFeatures.extendedDynamicState);
 	}
+	if (extensionSupported("VK_EXT_shader_atomic_float2")) {
+		const char* extension("VK_EXT_shader_atomic_float2");
+		VkPhysicalDeviceShaderAtomicFloat2FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT_2_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderBufferFloat16Atomics", extFeatures.shaderBufferFloat16Atomics);
+		pushFeature2(extension, "shaderBufferFloat16AtomicAdd", extFeatures.shaderBufferFloat16AtomicAdd);
+		pushFeature2(extension, "shaderBufferFloat16AtomicMinMax", extFeatures.shaderBufferFloat16AtomicMinMax);
+		pushFeature2(extension, "shaderBufferFloat32AtomicMinMax", extFeatures.shaderBufferFloat32AtomicMinMax);
+		pushFeature2(extension, "shaderBufferFloat64AtomicMinMax", extFeatures.shaderBufferFloat64AtomicMinMax);
+		pushFeature2(extension, "shaderSharedFloat16Atomics", extFeatures.shaderSharedFloat16Atomics);
+		pushFeature2(extension, "shaderSharedFloat16AtomicAdd", extFeatures.shaderSharedFloat16AtomicAdd);
+		pushFeature2(extension, "shaderSharedFloat16AtomicMinMax", extFeatures.shaderSharedFloat16AtomicMinMax);
+		pushFeature2(extension, "shaderSharedFloat32AtomicMinMax", extFeatures.shaderSharedFloat32AtomicMinMax);
+		pushFeature2(extension, "shaderSharedFloat64AtomicMinMax", extFeatures.shaderSharedFloat64AtomicMinMax);
+		pushFeature2(extension, "shaderImageFloat32AtomicMinMax", extFeatures.shaderImageFloat32AtomicMinMax);
+		pushFeature2(extension, "sparseImageFloat32AtomicMinMax", extFeatures.sparseImageFloat32AtomicMinMax);
+	}
 	if (extensionSupported("VK_EXT_shader_demote_to_helper_invocation")) {
 		const char* extension("VK_EXT_shader_demote_to_helper_invocation");
 		VkPhysicalDeviceShaderDemoteToHelperInvocationFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES_EXT };
@@ -937,6 +955,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "subpassShading", extFeatures.subpassShading);
+	}
+	if (extensionSupported("VK_HUAWEI_invocation_mask")) {
+		const char* extension("VK_HUAWEI_invocation_mask");
+		VkPhysicalDeviceInvocationMaskFeaturesHUAWEI extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INVOCATION_MASK_FEATURES_HUAWEI };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "invocationMask", extFeatures.invocationMask);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_INTEL() {
@@ -1127,6 +1152,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "separateDepthStencilLayouts", extFeatures.separateDepthStencilLayouts);
 	}
+	if (extensionSupported("VK_KHR_present_wait")) {
+		const char* extension("VK_KHR_present_wait");
+		VkPhysicalDevicePresentWaitFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_WAIT_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentWait", extFeatures.presentWait);
+	}
 	if (extensionSupported("VK_KHR_uniform_buffer_standard_layout")) {
 		const char* extension("VK_KHR_uniform_buffer_standard_layout");
 		VkPhysicalDeviceUniformBufferStandardLayoutFeatures extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_UNIFORM_BUFFER_STANDARD_LAYOUT_FEATURES };
@@ -1149,6 +1181,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineExecutableInfo", extFeatures.pipelineExecutableInfo);
+	}
+	if (extensionSupported("VK_KHR_present_id")) {
+		const char* extension("VK_KHR_present_id");
+		VkPhysicalDevicePresentIdFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_ID_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentId", extFeatures.presentId);
 	}
 	if (extensionSupported("VK_KHR_synchronization2")) {
 		const char* extension("VK_KHR_synchronization2");
