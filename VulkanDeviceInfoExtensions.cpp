@@ -479,6 +479,42 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "fragmentShadingRateWithCustomSampleLocations", QVariant(bool(extProps.fragmentShadingRateWithCustomSampleLocations)));
 		pushProperty2(extension, "fragmentShadingRateStrictMultiplyCombiner", QVariant(bool(extProps.fragmentShadingRateStrictMultiplyCombiner)));
 	}
+	if (extensionSupported("VK_KHR_shader_integer_dot_product")) {
+		const char* extension("VK_KHR_shader_integer_dot_product");
+		VkPhysicalDeviceShaderIntegerDotProductPropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "integerDotProduct8BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProduct8BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct8BitSignedAccelerated", QVariant(bool(extProps.integerDotProduct8BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct8BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProduct8BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProduct4x8BitPackedUnsignedAccelerated", QVariant(bool(extProps.integerDotProduct4x8BitPackedUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct4x8BitPackedSignedAccelerated", QVariant(bool(extProps.integerDotProduct4x8BitPackedSignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct4x8BitPackedMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProduct4x8BitPackedMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProduct16BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProduct16BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct16BitSignedAccelerated", QVariant(bool(extProps.integerDotProduct16BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct16BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProduct16BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProduct32BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProduct32BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct32BitSignedAccelerated", QVariant(bool(extProps.integerDotProduct32BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct32BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProduct32BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProduct64BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProduct64BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct64BitSignedAccelerated", QVariant(bool(extProps.integerDotProduct64BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProduct64BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProduct64BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating8BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating8BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating8BitSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating8BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating16BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating16BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating16BitSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating16BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating32BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating32BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating32BitSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating32BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating64BitUnsignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating64BitUnsignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating64BitSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating64BitSignedAccelerated)));
+		pushProperty2(extension, "integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated)));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 	if (extensionSupported("VK_NV_shader_sm_builtins")) {
@@ -917,6 +953,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "vertexInputDynamicState", extFeatures.vertexInputDynamicState);
 	}
+	if (extensionSupported("VK_EXT_primitive_topology_list_restart")) {
+		const char* extension("VK_EXT_primitive_topology_list_restart");
+		VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_TOPOLOGY_LIST_RESTART_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "primitiveTopologyListRestart", extFeatures.primitiveTopologyListRestart);
+		pushFeature2(extension, "primitiveTopologyPatchListRestart", extFeatures.primitiveTopologyPatchListRestart);
+	}
 	if (extensionSupported("VK_EXT_extended_dynamic_state2")) {
 		const char* extension("VK_EXT_extended_dynamic_state2");
 		VkPhysicalDeviceExtendedDynamicState2FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_DYNAMIC_STATE_2_FEATURES_EXT };
@@ -946,6 +990,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "multiDraw", extFeatures.multiDraw);
+	}
+	if (extensionSupported("VK_EXT_pageable_device_local_memory")) {
+		const char* extension("VK_EXT_pageable_device_local_memory");
+		VkPhysicalDevicePageableDeviceLocalMemoryFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PAGEABLE_DEVICE_LOCAL_MEMORY_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pageableDeviceLocalMemory", extFeatures.pageableDeviceLocalMemory);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
@@ -1181,6 +1232,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineExecutableInfo", extFeatures.pipelineExecutableInfo);
+	}
+	if (extensionSupported("VK_KHR_shader_integer_dot_product")) {
+		const char* extension("VK_KHR_shader_integer_dot_product");
+		VkPhysicalDeviceShaderIntegerDotProductFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_INTEGER_DOT_PRODUCT_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderIntegerDotProduct", extFeatures.shaderIntegerDotProduct);
 	}
 	if (extensionSupported("VK_KHR_present_id")) {
 		const char* extension("VK_KHR_present_id");
