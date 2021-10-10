@@ -128,7 +128,7 @@ void VulkanDeviceInfo::readSupportedFormats()
         }
     }
     // VK_IMG_FORMAT_PVRTC_EXTENSION_NAME
-    //if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
+    if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
         for (int32_t format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format < VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; format++) {
             VulkanFormatInfo formatInfo = {};
             formatInfo.format = (VkFormat)format;
@@ -136,7 +136,7 @@ void VulkanDeviceInfo::readSupportedFormats()
             formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
             formats.push_back(formatInfo);
         }
-    //}
+    }
 }
 
 void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
