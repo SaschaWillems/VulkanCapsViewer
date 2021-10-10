@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2021 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -388,6 +388,14 @@ namespace vulkanResources {
 			STR(G16_B16_R16_3PLANE_422_UNORM);
 			STR(G16_B16R16_2PLANE_422_UNORM);
 			STR(G16_B16_R16_3PLANE_444_UNORM);
+			STR(PVRTC1_2BPP_UNORM_BLOCK_IMG);
+			STR(PVRTC1_4BPP_UNORM_BLOCK_IMG);
+			STR(PVRTC2_2BPP_UNORM_BLOCK_IMG);
+			STR(PVRTC2_4BPP_UNORM_BLOCK_IMG);
+			STR(PVRTC1_2BPP_SRGB_BLOCK_IMG);
+			STR(PVRTC1_4BPP_SRGB_BLOCK_IMG);
+			STR(PVRTC2_2BPP_SRGB_BLOCK_IMG);
+			STR(PVRTC2_4BPP_SRGB_BLOCK_IMG);
 #undef STR
 		default: return "UNKNOWN_ENUM (" + toHexString(format) + ")";
 		}
@@ -523,7 +531,7 @@ namespace vulkanResources {
 		};
 	}
 
-    inline std::string memoryHeapBitString(const VkMemoryHeapFlagBits heapBit)
+	inline std::string memoryHeapBitString(const VkMemoryHeapFlagBits heapBit)
 	{
 		switch (heapBit) {
 #define STR(r) case VK_MEMORY_HEAP_##r: return #r
