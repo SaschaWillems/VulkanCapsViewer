@@ -5,6 +5,35 @@
 #include <QApplication>
 #include <QtGlobal>
 
+void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+    QString msgType;
+    switch (type) {
+    case QtInfoMsg:
+        msgType = "Info";
+        break;
+    case QtDebugMsg:
+        msgType = "Debug";
+        break;
+    case QtWarningMsg:
+        msgType = "Warning";
+        break;
+    case QtCriticalMsg:
+        msgType = "Critical";
+        break;
+    case QtFatalMsg:
+        msgType = "Fatal";
+        break;
+    }
+    QDateTime timeStamp = QDateTime::currentDateTime();
+    QString logMessage = QString("%1: %2: %3").arg(timeStamp.toString("yyyy-MM-dd hh:mm:ss.zzz")).arg(msgType).arg(msg);
+    QFile logFile("log.txt");
+    if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream textStream(&logFile);
+        textStream << logMessage << endl;
+    };
+}
+
 int main(int argc, char *argv[])
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
@@ -22,6 +51,7 @@ int main(int argc, char *argv[])
     QCommandLineOption optionUploadReportSubmitter("submitter", "Set optional submitter name for report upload", "submitter", "");
     QCommandLineOption optionUploadReportComment("comment", "Set optional comment for report upload", "comment", "");
     QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "db.ini", "");
+    QCommandLineOption optionLogFile("log", "Write log messages to a text file for debugging (log.txt)");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
     parser.addHelpOption();
@@ -32,6 +62,7 @@ int main(int argc, char *argv[])
     parser.addOption(optionUploadReportDeviceIndex);
     parser.addOption(optionUploadReportSubmitter);
     parser.addOption(optionUploadReportComment);
+    parser.addOption(optionLogFile);
     parser.process(application);
 
     // Custom database settings can be applied via a .ini file
@@ -45,6 +76,10 @@ int main(int argc, char *argv[])
             VulkanDatabase::password = dbSettings.value("password").toString();
             VulkanDatabase::databaseUrl = dbSettings.value("databaseUrl").toString();
         }
+    }
+
+    if (parser.isSet(optionLogFile)) {
+        qInstallMessageHandler(logMessageHandler);
     }
 
     VulkanCapsViewer vulkanCapsViewer;
@@ -73,6 +108,7 @@ int main(int argc, char *argv[])
         return res;
     }
 
+    qInfo() << "Application start";
     vulkanCapsViewer.show();
     return application.exec();
 }
