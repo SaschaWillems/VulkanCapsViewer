@@ -90,7 +90,6 @@ private:
 #endif
     std::string surfaceExtension;
     Ui::vulkanCapsViewerClass ui;
-    settings appSettings;
     struct {
         TreeProxyFilter propertiesCore10;
         TreeProxyFilter propertiesCore11;

@@ -205,8 +205,6 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
         QMessageBox::warning(this, "Warning", "You are running a 32-bit version of the application. Some Vulkan implementations may not support all GPU capabilities when running in 32-bit mode.");
     }
 
-    appSettings.restore();
-
     // Models and filters
     // Core 1.0 properties
     ui.treeViewDeviceProperties->setModel(&filterProxies.propertiesCore10);
@@ -358,7 +356,7 @@ void VulkanCapsViewer::slotUploadReport()
     }
     // Upload new report
     if (reportState == ReportState::not_present) {
-        SubmitDialog dialog(appSettings.submitterName, "Submit new report");
+        SubmitDialog dialog(settings.submitterName, "Submit new report");
         if (dialog.exec() == QDialog::Accepted) {
             QString message;
             QJsonObject reportJson;
@@ -378,7 +376,7 @@ void VulkanCapsViewer::slotUploadReport()
 
     // Update existing report
     if (reportState == ReportState::is_updatable) {
-        SubmitDialog dialog(appSettings.submitterName, "Update existing report");
+        SubmitDialog dialog(settings.submitterName, "Update existing report");
         if (dialog.exec() == QDialog::Accepted) {
             int reportId = database.getReportId(device);
             QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -414,10 +412,11 @@ void VulkanCapsViewer::slotUploadReport()
 
 void VulkanCapsViewer::slotSettings()
 {
-    settingsDialog dialog(appSettings);
+    settingsDialog dialog(settings);
     dialog.setModal(true);
     dialog.exec();
-    appSettings.restore();
+    settings.restore();
+    checkReportDatabaseState();
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore10(QString text)

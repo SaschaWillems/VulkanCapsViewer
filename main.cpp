@@ -52,6 +52,7 @@ int main(int argc, char *argv[])
     QCommandLineOption optionUploadReportComment("comment", "Set optional comment for report upload", "comment", "");
     QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "db.ini", "");
     QCommandLineOption optionLogFile("log", "Write log messages to a text file for debugging (log.txt)");
+    QCommandLineOption optionDisableProxy("noproxy", "Run withouth proxy (overrides setting)");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
     parser.addHelpOption();
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
     parser.addOption(optionUploadReportSubmitter);
     parser.addOption(optionUploadReportComment);
     parser.addOption(optionLogFile);
+    parser.addOption(optionDisableProxy);
     parser.process(application);
 
     // Custom database settings can be applied via a .ini file
@@ -80,6 +82,12 @@ int main(int argc, char *argv[])
 
     if (parser.isSet(optionLogFile)) {
         qInstallMessageHandler(logMessageHandler);
+    }
+
+    settings.restore();
+    if (parser.isSet(optionDisableProxy)) {
+        settings.proxyEnabled = false;
+        settings.applyProxySettings();
     }
 
     VulkanCapsViewer vulkanCapsViewer;
