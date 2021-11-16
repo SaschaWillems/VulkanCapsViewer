@@ -998,6 +998,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "globalPriorityQuery", extFeatures.globalPriorityQuery);
 	}
+	if (extensionSupported("VK_EXT_image_view_min_lod")) {
+		const char* extension("VK_EXT_image_view_min_lod");
+		VkPhysicalDeviceImageViewMinLodFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_VIEW_MIN_LOD_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "minLod", extFeatures.minLod);
+	}
 	if (extensionSupported("VK_EXT_multi_draw")) {
 		const char* extension("VK_EXT_multi_draw");
 		VkPhysicalDeviceMultiDrawFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTI_DRAW_FEATURES_EXT };
