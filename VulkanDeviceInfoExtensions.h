@@ -70,6 +70,7 @@ private:
     bool extensionSupported(const char* extensionName);
     void readPhysicalFeatures_AMD();
     void readPhysicalProperties_AMD();
+    void readPhysicalFeatures_ARM();
     void readPhysicalFeatures_EXT();
     void readPhysicalProperties_EXT();
     void readPhysicalFeatures_HUAWEI();

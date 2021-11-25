@@ -644,6 +644,17 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMD() {
 		pushFeature2(extension, "deviceCoherentMemory", extFeatures.deviceCoherentMemory);
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
+	if (extensionSupported("VK_ARM_rasterization_order_attachment_access")) {
+		const char* extension("VK_ARM_rasterization_order_attachment_access");
+		VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesARM extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_ARM };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rasterizationOrderColorAttachmentAccess", extFeatures.rasterizationOrderColorAttachmentAccess);
+		pushFeature2(extension, "rasterizationOrderDepthAttachmentAccess", extFeatures.rasterizationOrderDepthAttachmentAccess);
+		pushFeature2(extension, "rasterizationOrderStencilAttachmentAccess", extFeatures.rasterizationOrderStencilAttachmentAccess);
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 	if (extensionSupported("VK_EXT_transform_feedback")) {
 		const char* extension("VK_EXT_transform_feedback");
@@ -1477,6 +1488,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 
 void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_AMD();
+    readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
     readPhysicalFeatures_HUAWEI();
     readPhysicalFeatures_INTEL();
