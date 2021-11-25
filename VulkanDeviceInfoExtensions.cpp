@@ -967,6 +967,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "vertexInputDynamicState", extFeatures.vertexInputDynamicState);
 	}
+	if (extensionSupported("VK_EXT_depth_clip_control")) {
+		const char* extension("VK_EXT_depth_clip_control");
+		VkPhysicalDeviceDepthClipControlFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLIP_CONTROL_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "depthClipControl", extFeatures.depthClipControl);
+	}
 	if (extensionSupported("VK_EXT_primitive_topology_list_restart")) {
 		const char* extension("VK_EXT_primitive_topology_list_restart");
 		VkPhysicalDevicePrimitiveTopologyListRestartFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_TOPOLOGY_LIST_RESTART_FEATURES_EXT };
