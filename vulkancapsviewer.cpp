@@ -73,7 +73,6 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "3.04";
 const QString VulkanCapsViewer::version = "3.05";
 const QString VulkanCapsViewer::reportVersion = "3.0";
 
