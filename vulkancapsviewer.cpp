@@ -73,8 +73,8 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "3.04";
-const QString VulkanCapsViewer::reportVersion = "3.0";
+const QString VulkanCapsViewer::version = "3.1";
+const QString VulkanCapsViewer::reportVersion = "3.1";
 
 OSInfo getOperatingSystem()
 {
@@ -218,6 +218,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.treeViewDevicePropertiesCore12->setModel(&filterProxies.propertiesCore12);
     connectFilterAndModel(models.propertiesCore12, filterProxies.propertiesCore12);
     connect(ui.filterLineEditPropertiesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore12(QString)));
+    // Core 1.3 properties
+    ui.treeViewDevicePropertiesCore13->setModel(&filterProxies.propertiesCore13);
+    connectFilterAndModel(models.propertiesCore13, filterProxies.propertiesCore13);
+    connect(ui.filterLineEditPropertiesCore13, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore13(QString)));
     // Extension properties
     ui.treeViewDevicePropertiesExtensions->setModel(&filterProxies.propertiesExtensions);
     connectFilterAndModel(models.propertiesExtensions, filterProxies.propertiesExtensions);
@@ -234,6 +238,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.treeViewDeviceFeaturesCore12->setModel(&filterProxies.featuresCore12);
     connectFilterAndModel(models.featuresCore12, filterProxies.featuresCore12);
     connect(ui.filterLineEditFeaturesCore12, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore12(QString)));
+    // Core 1.3 features
+    ui.treeViewDeviceFeaturesCore13->setModel(&filterProxies.featuresCore13);
+    connectFilterAndModel(models.featuresCore13, filterProxies.featuresCore13);
+    connect(ui.filterLineEditFeaturesCore13, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore13(QString)));
     // Extension features
     ui.treeViewDeviceFeaturesExtensions->setModel(&filterProxies.featuresExtensions);
     connectFilterAndModel(models.featuresExtensions, filterProxies.featuresExtensions);
@@ -295,7 +303,7 @@ void VulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version.toStdString() << "<br/><br/>"
-        "Copyright (c) 2016-2021 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2022 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "This tool is <b>Free Open Source Software</b><br/><br/>"
         "For usage and distribution details refer to the readme<br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
@@ -389,7 +397,7 @@ void VulkanCapsViewer::slotUploadReport()
             }
             else
             {
-                QMessageBox::warning(this, "Error", "The report could not be updated : \n" + QString::fromStdString("xxx"));
+                QMessageBox::warning(this, "Error", "The report could not be updated");
             }
             checkReportDatabaseState();
         }
@@ -437,6 +445,12 @@ void VulkanCapsViewer::slotFilterPropertiesCore12(QString text)
     filterProxies.propertiesCore12.setFilterRegExp(regExp);
 }
 
+void VulkanCapsViewer::slotFilterPropertiesCore13(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.propertiesCore13.setFilterRegExp(regExp);
+}
+
 void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
@@ -459,6 +473,12 @@ void VulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.featuresCore12.setFilterRegExp(regExp);
+}
+
+void VulkanCapsViewer::slotFilterFeaturesCore13(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.featuresCore13.setFilterRegExp(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
@@ -1137,10 +1157,25 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.tabWidgetProperties->setTabEnabled(2, false);
     }
 
+    // Core 1.3
+    models.propertiesCore13.clear();
+    if (!(device->core13Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(3, true);
+        QStandardItem* rootItem = models.propertiesCore13.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core13Properties.begin(); iter != device->core13Properties.end(); ++iter) {
+            addPropertiesRow(rootItem, iter);
+        }
+        ui.treeViewDevicePropertiesCore13->expandAll();
+        ui.treeViewDevicePropertiesCore13->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(3, false);
+    }
+
     // Extensions
     models.propertiesExtensions.clear();
     if (!(device->properties2.empty())) {
-        ui.tabWidgetProperties->setTabEnabled(3, true);
+        ui.tabWidgetProperties->setTabEnabled(4, true);
         QStandardItem* rootItem = models.propertiesExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasProperties = false;
@@ -1181,7 +1216,7 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
     else {
-        ui.tabWidgetProperties->setTabEnabled(3, false);
+        ui.tabWidgetProperties->setTabEnabled(4, false);
     }
 }
 
@@ -1264,10 +1299,25 @@ void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.tabWidgetFeatures->setTabEnabled(2, false);
     }
 
+    // Core 1.3
+    models.featuresCore13.clear();
+    if (!(device->core13Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(3, true);
+        QStandardItem* rootItem = models.featuresCore13.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core13Features.begin(); iter != device->core13Features.end(); ++iter) {
+            addVkBool32Item(rootItem, iter);
+        }
+        ui.treeViewDeviceFeaturesCore13->expandAll();
+        ui.treeViewDeviceFeaturesCore13->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(3, false);
+    }
+
     // Extensions
     models.featuresExtensions.clear();
     if (!(device->features2.empty())) {
-        ui.tabWidgetFeatures->setTabEnabled(3, true);
+        ui.tabWidgetFeatures->setTabEnabled(4, true);
         QStandardItem* rootItem = models.featuresExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasFeatures = false;
@@ -1294,7 +1344,7 @@ void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
     else {
-        ui.tabWidgetFeatures->setTabEnabled(3, false);
+        ui.tabWidgetFeatures->setTabEnabled(4, false);
     }
 
 }

@@ -791,6 +791,67 @@ height: 24px;
                </item>
               </layout>
              </widget>
+             <widget class="QWidget" name="tab_16">
+              <attribute name="title">
+               <string>Core 1.3</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_24">
+               <item>
+                <widget class="QWidget" name="widget_17" native="true">
+                 <layout class="QFormLayout" name="formLayout_14">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditPropertiesCore13">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_13">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDevicePropertiesCore13">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
              <widget class="QWidget" name="tab_3">
               <attribute name="title">
                <string>Extensions</string>
@@ -1045,6 +1106,67 @@ height: 24px;
                </item>
                <item>
                 <widget class="QTreeView" name="treeViewDeviceFeaturesCore12">
+                 <property name="styleSheet">
+                  <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="alternatingRowColors">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="headerVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="headerMinimumSectionSize">
+                  <number>200</number>
+                 </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_9">
+              <attribute name="title">
+               <string>Core 1.3</string>
+              </attribute>
+              <layout class="QVBoxLayout" name="verticalLayout_23">
+               <item>
+                <widget class="QWidget" name="widget_16" native="true">
+                 <layout class="QFormLayout" name="formLayout_13">
+                  <property name="leftMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>2</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>2</number>
+                  </property>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="filterLineEditFeaturesCore13">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="filterLabel_12">
+                    <property name="text">
+                     <string>Filter :</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QTreeView" name="treeViewDeviceFeaturesCore13">
                  <property name="styleSheet">
                   <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
                  </property>
@@ -1523,16 +1645,6 @@ height: 24px;
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>927</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
   <action name="actionRefresh">
    <property name="enabled">
     <bool>true</bool>
@@ -1636,6 +1748,11 @@ height: 24px;
    </property>
    <property name="toolTip">
     <string>Save current device info to disk</string>
+   </property>
+  </action>
+  <action name="actionCheck_profile">
+   <property name="text">
+    <string>Check profile</string>
    </property>
   </action>
  </widget>

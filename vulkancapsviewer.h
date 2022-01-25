@@ -94,10 +94,12 @@ private:
         TreeProxyFilter propertiesCore10;
         TreeProxyFilter propertiesCore11;
         TreeProxyFilter propertiesCore12;
+        TreeProxyFilter propertiesCore13;
         TreeProxyFilter propertiesExtensions;
         TreeProxyFilter featuresCore10;
         TreeProxyFilter featuresCore11;
         TreeProxyFilter featuresCore12;
+        TreeProxyFilter featuresCore13;
         TreeProxyFilter featuresExtensions;
         TreeProxyFilter formats;
         TreeProxyFilter extensions;
@@ -106,10 +108,12 @@ private:
         QStandardItemModel propertiesCore10;
         QStandardItemModel propertiesCore11;
         QStandardItemModel propertiesCore12;
+        QStandardItemModel propertiesCore13;
         QStandardItemModel propertiesExtensions;
         QStandardItemModel featuresCore10;
         QStandardItemModel featuresCore11;
         QStandardItemModel featuresCore12;
+        QStandardItemModel featuresCore13;
         QStandardItemModel featuresExtensions;
         QStandardItemModel formats;
         QStandardItemModel extensions;
@@ -146,10 +150,12 @@ private Q_SLOTS:
     void slotFilterPropertiesCore10(QString text);
     void slotFilterPropertiesCore11(QString text);
     void slotFilterPropertiesCore12(QString text);
+    void slotFilterPropertiesCore13(QString text);
     void slotFilterPropertiesExtensions(QString text);
     void slotFilterFeatures(QString text);
     void slotFilterFeaturesCore11(QString text);
     void slotFilterFeaturesCore12(QString text);
+    void slotFilterFeaturesCore13(QString text);
     void slotFilterFeaturesExtensions(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);
