@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -39,6 +39,13 @@ bool VulkanDeviceInfo::vulkan_1_2()
     uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
     uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
     return ((major > 1) || ((major == 1) && (minor >= 2)));
+}
+
+bool VulkanDeviceInfo::vulkan_1_3()
+{
+    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
+    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
+    return ((major > 1) || ((major == 1) && (minor >= 3)));
 }
 
 void VulkanDeviceInfo::readExtensions()
@@ -260,6 +267,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
             deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
 
             // Core 1.1
+            qInfo() << "Reading Vulkan 1.1 core properties";
+
             VkPhysicalDeviceVulkan11Properties coreProps11{};
             coreProps11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
             deviceProps2.pNext = &coreProps11;
@@ -284,6 +293,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
 
             // Core 1.2
+            qInfo() << "Reading Vulkan 1.2 core properties";
+
             VkPhysicalDeviceVulkan12Properties coreProps12{};
             coreProps12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
             deviceProps2.pNext = &coreProps12;
@@ -343,6 +354,67 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core12Properties["maxTimelineSemaphoreValueDifference"] = QVariant::fromValue(coreProps12.maxTimelineSemaphoreValueDifference);
             core12Properties["framebufferIntegerColorSampleCounts"] = coreProps12.framebufferIntegerColorSampleCounts;
 
+        }
+
+        // Vulkan 1.3
+        if (vulkan_1_3()) {
+            // Core 1.3
+            qInfo() << "Reading Vulkan 1.3 core properties";
+
+            VkPhysicalDeviceProperties2KHR deviceProps2{};
+            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+
+            VkPhysicalDeviceVulkan13Properties coreProps13{};
+            coreProps13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES;
+            deviceProps2.pNext = &coreProps13;
+            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            core13Properties.clear();
+			core13Properties["minSubgroupSize"] = coreProps13.minSubgroupSize;
+			core13Properties["maxSubgroupSize"] = coreProps13.maxSubgroupSize;
+			core13Properties["maxComputeWorkgroupSubgroups"] = coreProps13.maxComputeWorkgroupSubgroups;
+			core13Properties["requiredSubgroupSizeStages"] = coreProps13.requiredSubgroupSizeStages;
+			core13Properties["maxInlineUniformBlockSize"] = coreProps13.maxInlineUniformBlockSize;
+			core13Properties["maxPerStageDescriptorInlineUniformBlocks"] = coreProps13.maxPerStageDescriptorInlineUniformBlocks;
+			core13Properties["maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks"] = coreProps13.maxPerStageDescriptorUpdateAfterBindInlineUniformBlocks;
+			core13Properties["maxDescriptorSetInlineUniformBlocks"] = coreProps13.maxDescriptorSetInlineUniformBlocks;
+			core13Properties["maxDescriptorSetUpdateAfterBindInlineUniformBlocks"] = coreProps13.maxDescriptorSetUpdateAfterBindInlineUniformBlocks;
+			core13Properties["maxInlineUniformTotalSize"] = coreProps13.maxInlineUniformTotalSize;
+			core13Properties["integerDotProduct8BitUnsignedAccelerated"] = coreProps13.integerDotProduct8BitUnsignedAccelerated;
+			core13Properties["integerDotProduct8BitSignedAccelerated"] = coreProps13.integerDotProduct8BitSignedAccelerated;
+			core13Properties["integerDotProduct8BitMixedSignednessAccelerated"] = coreProps13.integerDotProduct8BitMixedSignednessAccelerated;
+			core13Properties["integerDotProduct4x8BitPackedUnsignedAccelerated"] = coreProps13.integerDotProduct4x8BitPackedUnsignedAccelerated;
+			core13Properties["integerDotProduct4x8BitPackedSignedAccelerated"] = coreProps13.integerDotProduct4x8BitPackedSignedAccelerated;
+			core13Properties["integerDotProduct4x8BitPackedMixedSignednessAccelerated"] = coreProps13.integerDotProduct4x8BitPackedMixedSignednessAccelerated;
+			core13Properties["integerDotProduct16BitUnsignedAccelerated"] = coreProps13.integerDotProduct16BitUnsignedAccelerated;
+			core13Properties["integerDotProduct16BitSignedAccelerated"] = coreProps13.integerDotProduct16BitSignedAccelerated;
+			core13Properties["integerDotProduct16BitMixedSignednessAccelerated"] = coreProps13.integerDotProduct16BitMixedSignednessAccelerated;
+			core13Properties["integerDotProduct32BitUnsignedAccelerated"] = coreProps13.integerDotProduct32BitUnsignedAccelerated;
+			core13Properties["integerDotProduct32BitSignedAccelerated"] = coreProps13.integerDotProduct32BitSignedAccelerated;
+			core13Properties["integerDotProduct32BitMixedSignednessAccelerated"] = coreProps13.integerDotProduct32BitMixedSignednessAccelerated;
+			core13Properties["integerDotProduct64BitUnsignedAccelerated"] = coreProps13.integerDotProduct64BitUnsignedAccelerated;
+			core13Properties["integerDotProduct64BitSignedAccelerated"] = coreProps13.integerDotProduct64BitSignedAccelerated;
+			core13Properties["integerDotProduct64BitMixedSignednessAccelerated"] = coreProps13.integerDotProduct64BitMixedSignednessAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating8BitUnsignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating8BitSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating8BitSignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating4x8BitPackedUnsignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating4x8BitPackedSignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating4x8BitPackedMixedSignednessAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating16BitUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating16BitUnsignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating16BitSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating16BitSignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating16BitMixedSignednessAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating32BitUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating32BitUnsignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating32BitSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating32BitSignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating32BitMixedSignednessAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating64BitUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitUnsignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating64BitSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitSignedAccelerated;
+			core13Properties["integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated;
+            core13Properties["storageTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.storageTexelBufferOffsetAlignmentBytes);
+			core13Properties["storageTexelBufferOffsetSingleTexelAlignment"] = coreProps13.storageTexelBufferOffsetSingleTexelAlignment;
+            core13Properties["uniformTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetAlignmentBytes);
+            core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetSingleTexelAlignment);
+            core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize);
         }
     }
 }
@@ -438,6 +510,8 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
 
             // Core 1.1
+            qInfo() << "Reading Vulkan 1.1 core features";
+
             VkPhysicalDeviceVulkan11Features coreFeatures11{};
             coreFeatures11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
             deviceFeatures2.pNext = &coreFeatures11;
@@ -458,6 +532,8 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             core11Features["shaderDrawParameters"] = coreFeatures11.shaderDrawParameters;
 
             // Core 1.2
+            qInfo() << "Reading Vulkan 1.2 core features";
+
             VkPhysicalDeviceVulkan12Features coreFeatures12{};
             coreFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
             deviceFeatures2.pNext = &coreFeatures12;
@@ -511,6 +587,37 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             core12Features["shaderOutputViewportIndex"] = coreFeatures12.shaderOutputViewportIndex;
             core12Features["shaderOutputLayer"] = coreFeatures12.shaderOutputLayer;
             core12Features["subgroupBroadcastDynamicId"] = coreFeatures12.subgroupBroadcastDynamicId;
+        }
+
+        // Vulkan 1.3
+        if (vulkan_1_3()) {
+            // Core 1.3
+            qInfo() << "Reading Vulkan 1.3 core features";
+
+            VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+            deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+
+            VkPhysicalDeviceVulkan13Features coreFeatures13{};
+            coreFeatures13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
+            deviceFeatures2.pNext = &coreFeatures13;
+            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+
+            core13Features.clear();
+            core13Features["robustImageAccess"] = coreFeatures13.robustImageAccess;
+            core13Features["inlineUniformBlock"] = coreFeatures13.inlineUniformBlock;
+            core13Features["descriptorBindingInlineUniformBlockUpdateAfterBind"] = coreFeatures13.descriptorBindingInlineUniformBlockUpdateAfterBind;
+            core13Features["pipelineCreationCacheControl"] = coreFeatures13.pipelineCreationCacheControl;
+            core13Features["privateData"] = coreFeatures13.privateData;
+            core13Features["shaderDemoteToHelperInvocation"] = coreFeatures13.shaderDemoteToHelperInvocation;
+            core13Features["shaderTerminateInvocation"] = coreFeatures13.shaderTerminateInvocation;
+            core13Features["subgroupSizeControl"] = coreFeatures13.subgroupSizeControl;
+            core13Features["computeFullSubgroups"] = coreFeatures13.computeFullSubgroups;
+            core13Features["synchronization2"] = coreFeatures13.synchronization2;
+            core13Features["textureCompressionASTC_HDR"] = coreFeatures13.textureCompressionASTC_HDR;
+            core13Features["shaderZeroInitializeWorkgroupMemory"] = coreFeatures13.shaderZeroInitializeWorkgroupMemory;
+            core13Features["dynamicRendering"] = coreFeatures13.dynamicRendering;
+            core13Features["shaderIntegerDotProduct"] = coreFeatures13.shaderIntegerDotProduct;
+            core13Features["maintenance4"] = coreFeatures13.maintenance4;
         }
 
     }
@@ -718,6 +825,18 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
             jsonCore12["features"] = QJsonObject::fromVariantMap(core12Features);
         }
         root["core12"] = jsonCore12;
+    }
+
+    // Core 1.3
+    if ((!core13Properties.empty()) || (!core13Features.empty())) {
+        QJsonObject jsonCore13;
+        if (!core13Properties.empty()) {
+            jsonCore13["properties"] = QJsonObject::fromVariantMap(core13Properties);
+        }
+        if (!core13Features.empty()) {
+            jsonCore13["features"] = QJsonObject::fromVariantMap(core13Features);
+        }
+        root["core13"] = jsonCore13;
     }
 
     // Extensions
