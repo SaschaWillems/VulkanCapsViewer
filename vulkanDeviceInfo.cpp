@@ -410,11 +410,11 @@ void VulkanDeviceInfo::readPhysicalProperties()
 			core13Properties["integerDotProductAccumulatingSaturating64BitUnsignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitUnsignedAccelerated;
 			core13Properties["integerDotProductAccumulatingSaturating64BitSignedAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitSignedAccelerated;
 			core13Properties["integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated"] = coreProps13.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated;
-			core13Properties["storageTexelBufferOffsetAlignmentBytes"] = coreProps13.storageTexelBufferOffsetAlignmentBytes;
+            core13Properties["storageTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.storageTexelBufferOffsetAlignmentBytes);
 			core13Properties["storageTexelBufferOffsetSingleTexelAlignment"] = coreProps13.storageTexelBufferOffsetSingleTexelAlignment;
-			core13Properties["uniformTexelBufferOffsetAlignmentBytes"] = coreProps13.uniformTexelBufferOffsetAlignmentBytes;
-			core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = coreProps13.uniformTexelBufferOffsetSingleTexelAlignment;
-			core13Properties["maxBufferSize"] = coreProps13.maxBufferSize;
+            core13Properties["uniformTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetAlignmentBytes);
+            core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetSingleTexelAlignment);
+            core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize);
         }
     }
 }
