@@ -414,7 +414,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
 			core13Properties["storageTexelBufferOffsetSingleTexelAlignment"] = coreProps13.storageTexelBufferOffsetSingleTexelAlignment;
             core13Properties["uniformTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetAlignmentBytes);
             core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetSingleTexelAlignment);
-            core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize);
+            core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize).toString();
         }
     }
 }
