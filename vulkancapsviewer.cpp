@@ -254,6 +254,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.treeViewFormats->setModel(&filterProxies.formats);
     connectFilterAndModel(models.formats, filterProxies.formats);
     connect(ui.filterLineEditFormats, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFormats(QString)));
+    // Profiles
+    ui.treeViewDeviceProfiles->setModel(&filterProxies.profiles);
+    connectFilterAndModel(models.profiles, filterProxies.profiles);
+    connect(ui.filterLineEditProfiles, SIGNAL(textChanged(QString)), this, SLOT(slotFilterProfiles(QString)));
 
     getGPUs();
 }
@@ -497,6 +501,12 @@ void VulkanCapsViewer::slotFilterFormats(QString text)
 {
     QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
     filterProxies.formats.setFilterRegExp(regExp);
+}
+
+void VulkanCapsViewer::slotFilterProfiles(QString text)
+{
+    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
+    filterProxies.profiles.setFilterRegExp(regExp);
 }
 
 void VulkanCapsViewer::slotComboTabChanged(int index)
@@ -787,6 +797,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->readPhysicalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
     GPU->readPlatformDetails();
+    GPU->readProfiles(instance);
     // Request all available queues
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)
@@ -1093,6 +1104,7 @@ void VulkanCapsViewer::displayDevice(int index)
     displayDeviceQueues(&device);
     displayDeviceSurfaceInfo(device);
     displayOSInfo(device);
+    displayDeviceProfiles(&device);
 
     checkReportDatabaseState();
 }
@@ -1638,6 +1650,29 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
         treeWidget->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
     }
 
+}
+
+void VulkanCapsViewer::displayDeviceProfiles(VulkanDeviceInfo* device)
+{
+    models.profiles.clear();
+    QStandardItem* rootItem = models.profiles.invisibleRootItem();
+
+    for (auto& profile : device->profiles) {
+        QList<QStandardItem*> extItem;
+        extItem << new QStandardItem(QString::fromStdString(profile.profileName));
+        extItem << new QStandardItem(QString::fromStdString(vulkanResources::revisionToString(profile.specVersion)));
+        extItem << new QStandardItem(profile.supported ? "true" : "false");
+        extItem[2]->setForeground(profile.supported ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+        rootItem->appendRow(extItem);
+    }
+
+    QStringList headers;
+    headers << "Profile" << "Spec Version" << "Supported";
+    models.profiles.setHorizontalHeaderLabels(headers);
+
+    ui.treeViewDeviceProfiles->setHeaderHidden(false);
+    ui.treeViewDeviceProfiles->expandAll();
+    ui.treeViewDeviceProfiles->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void VulkanCapsViewer::reportToJson(QString submitter, QString comment, QJsonObject& jsonObject)

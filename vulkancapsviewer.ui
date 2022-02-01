@@ -489,7 +489,7 @@ padding-bottom:5px;</string>
           <item>
            <widget class="QComboBox" name="comboBox">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -548,6 +548,11 @@ height: 24px;
             <item>
              <property name="text">
               <string>Surface</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Profiles</string>
              </property>
             </item>
             <item>
@@ -1488,6 +1493,67 @@ height: 24px;
                <string>value</string>
               </property>
              </column>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_17">
+          <attribute name="title">
+           <string>Profiles</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_25">
+           <item>
+            <widget class="QWidget" name="widget_18" native="true">
+             <layout class="QFormLayout" name="formLayout_15">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>2</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>2</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="filterLabel_14">
+                <property name="text">
+                 <string>Filter :</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="filterLineEditProfiles">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTreeView" name="treeViewDeviceProfiles">
+             <property name="styleSheet">
+              <string notr="true">QTreeView::item { 	height: 1.25em;  }</string>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="alternatingRowColors">
+              <bool>true</bool>
+             </property>
+             <property name="sortingEnabled">
+              <bool>true</bool>
+             </property>
+             <attribute name="headerMinimumSectionSize">
+              <number>250</number>
+             </attribute>
             </widget>
            </item>
           </layout>

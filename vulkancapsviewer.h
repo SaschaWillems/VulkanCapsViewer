@@ -103,6 +103,7 @@ private:
         TreeProxyFilter featuresExtensions;
         TreeProxyFilter formats;
         TreeProxyFilter extensions;
+        TreeProxyFilter profiles;
     } filterProxies;
     struct {
         QStandardItemModel propertiesCore10;
@@ -117,6 +118,7 @@ private:
         QStandardItemModel featuresExtensions;
         QStandardItemModel formats;
         QStandardItemModel extensions;
+        QStandardItemModel profiles;
     } models;
     QFont boldFont;
 #ifdef ANDROID
@@ -134,6 +136,7 @@ private:
     void displayDeviceExtensions(VulkanDeviceInfo *device);
     void displayDeviceQueues(VulkanDeviceInfo *device);
     void displayDeviceSurfaceInfo(VulkanDeviceInfo &device);
+    void displayDeviceProfiles(VulkanDeviceInfo* device);
     void displayOSInfo(VulkanDeviceInfo& device);
     void displayInstanceLayers();
     void displayInstanceExtensions();
@@ -159,6 +162,7 @@ private Q_SLOTS:
     void slotFilterFeaturesExtensions(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);
+    void slotFilterProfiles(QString text);
     void slotComboTabChanged(int index);
 };
 
