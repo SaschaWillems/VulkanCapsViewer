@@ -46,6 +46,7 @@
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
 #include "vulkanpfn.h"
+#include "profiles/vulkan_profiles.hpp"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
@@ -68,6 +69,13 @@ struct VulkanQueueFamilyInfo
 {
     VkQueueFamilyProperties properties;
     VkBool32 supportsPresent;
+};
+
+struct VulkanProfileInfo
+{
+    std::string profileName;
+    uint32_t specVersion;
+    bool supported = false;
 };
 
 class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
@@ -103,6 +111,7 @@ public:
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
+    std::vector<VulkanProfileInfo> profiles;
     OSInfo os;
     QString appVersion;
     QString reportVersion;
@@ -118,6 +127,7 @@ public:
     void readPhysicalMemoryProperties();
     void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
     void readPlatformDetails();
+    void readProfiles(VkInstance instance);
     QJsonObject toJson(QString submitter, QString comment);
 };
 

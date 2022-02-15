@@ -775,6 +775,29 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
+void VulkanDeviceInfo::readProfiles(VkInstance instance)
+{
+    qInfo() << "Reading profiles";
+
+    std::vector<VpProfileProperties> availableProfiles{};
+    uint32_t profilesCount;
+    if (vpGetProfiles(&profilesCount, nullptr) == VK_SUCCESS) {
+        availableProfiles.resize(profilesCount);
+        vpGetProfiles(&profilesCount, availableProfiles.data());
+    }
+
+    profiles.clear();
+    for (VpProfileProperties& profile : availableProfiles) {
+        VkBool32 supported = VK_FALSE;
+        vpGetPhysicalDeviceProfileSupport(instance, device, &profile, &supported);
+        VulkanProfileInfo profileInfo{};
+        profileInfo.profileName = profile.profileName;
+        profileInfo.specVersion = profile.specVersion;
+        profileInfo.supported = supported;
+        profiles.push_back(profileInfo);
+    }
+}
+
 QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
 {
     QJsonObject root;
@@ -971,6 +994,18 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         jsonSurfaceCaps["surfaceformats"] = surfaceFormats;
     }
     root["surfacecapabilites"] = jsonSurfaceCaps;
+
+    // Profiles
+    QJsonArray jsonProfiles;
+    for (auto& profile : profiles)
+    {
+        QJsonObject jsonProfile;
+        jsonProfile["profileName"] = QString::fromStdString(profile.profileName);
+        jsonProfile["specVersion"] = int(profile.specVersion);
+        jsonProfile["supported"] = profile.supported;
+        jsonProfiles.append(jsonProfile);
+    }
+    root["profiles"] = jsonProfiles;
 
     // Platform specific details
     QJsonObject jsonPlatformDetail;
