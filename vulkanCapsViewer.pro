@@ -83,6 +83,7 @@ SOURCES +=
 
 DISTFILES += \
     android/AndroidManifest.xml \
+    android/gradle.properties \
     android/gradle/wrapper/gradle-wrapper.jar \
     android/gradlew \
     android/res/values/libs.xml \
