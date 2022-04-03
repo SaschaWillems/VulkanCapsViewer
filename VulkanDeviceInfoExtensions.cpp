@@ -261,6 +261,14 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxCustomBorderColorSamplers", QVariant(extProps.maxCustomBorderColorSamplers));
 	}
+	if (extensionSupported("VK_EXT_graphics_pipeline_library")) {
+		const char* extension("VK_EXT_graphics_pipeline_library");
+		VkPhysicalDeviceGraphicsPipelineLibraryPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "graphicsPipelineLibraryFastLinking", QVariant(bool(extProps.graphicsPipelineLibraryFastLinking)));
+		pushProperty2(extension, "graphicsPipelineLibraryIndependentInterpolationDecoration", QVariant(bool(extProps.graphicsPipelineLibraryIndependentInterpolationDecoration)));
+	}
 	if (extensionSupported("VK_EXT_fragment_density_map2")) {
 		const char* extension("VK_EXT_fragment_density_map2");
 		VkPhysicalDeviceFragmentDensityMap2PropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT };
@@ -945,6 +953,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineCreationCacheControl", extFeatures.pipelineCreationCacheControl);
 	}
+	if (extensionSupported("VK_EXT_graphics_pipeline_library")) {
+		const char* extension("VK_EXT_graphics_pipeline_library");
+		VkPhysicalDeviceGraphicsPipelineLibraryFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_GRAPHICS_PIPELINE_LIBRARY_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "graphicsPipelineLibrary", extFeatures.graphicsPipelineLibrary);
+	}
 	if (extensionSupported("VK_EXT_ycbcr_2plane_444_formats")) {
 		const char* extension("VK_EXT_ycbcr_2plane_444_formats");
 		VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_YCBCR_2_PLANE_444_FORMATS_FEATURES_EXT };
@@ -1018,6 +1033,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "colorWriteEnable", extFeatures.colorWriteEnable);
+	}
+	if (extensionSupported("VK_EXT_primitives_generated_query")) {
+		const char* extension("VK_EXT_primitives_generated_query");
+		VkPhysicalDevicePrimitivesGeneratedQueryFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVES_GENERATED_QUERY_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "primitivesGeneratedQuery", extFeatures.primitivesGeneratedQuery);
+		pushFeature2(extension, "primitivesGeneratedQueryWithRasterizerDiscard", extFeatures.primitivesGeneratedQueryWithRasterizerDiscard);
+		pushFeature2(extension, "primitivesGeneratedQueryWithNonZeroStreams", extFeatures.primitivesGeneratedQueryWithNonZeroStreams);
 	}
 	if (extensionSupported("VK_EXT_global_priority_query")) {
 		const char* extension("VK_EXT_global_priority_query");
@@ -1515,6 +1539,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "mutableDescriptorType", extFeatures.mutableDescriptorType);
+	}
+	if (extensionSupported("VK_VALVE_descriptor_set_host_mapping")) {
+		const char* extension("VK_VALVE_descriptor_set_host_mapping");
+		VkPhysicalDeviceDescriptorSetHostMappingFeaturesVALVE extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_SET_HOST_MAPPING_FEATURES_VALVE };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "descriptorSetHostMapping", extFeatures.descriptorSetHostMapping);
 	}
 }
 
