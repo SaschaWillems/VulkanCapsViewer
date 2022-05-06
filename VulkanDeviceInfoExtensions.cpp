@@ -1064,6 +1064,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "multiDraw", extFeatures.multiDraw);
 	}
+	if (extensionSupported("VK_EXT_image_2d_view_of_3d")) {
+		const char* extension("VK_EXT_image_2d_view_of_3d");
+		VkPhysicalDeviceImage2DViewOf3DFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_2D_VIEW_OF_3D_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "image2DViewOf3D", extFeatures.image2DViewOf3D);
+		pushFeature2(extension, "sampler2DViewOf3D", extFeatures.sampler2DViewOf3D);
+	}
 	if (extensionSupported("VK_EXT_border_color_swizzle")) {
 		const char* extension("VK_EXT_border_color_swizzle");
 		VkPhysicalDeviceBorderColorSwizzleFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BORDER_COLOR_SWIZZLE_FEATURES_EXT };
