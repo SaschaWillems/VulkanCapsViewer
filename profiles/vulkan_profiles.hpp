@@ -2998,6 +2998,7 @@ static const VpFeatureDesc featureDesc = {
                     VkPhysicalDeviceVulkan13Features* s = static_cast<VkPhysicalDeviceVulkan13Features*>(static_cast<void*>(p));
                     s->computeFullSubgroups = VK_TRUE;
                     s->descriptorBindingInlineUniformBlockUpdateAfterBind = VK_TRUE;
+                    s->dynamicRendering = VK_TRUE;
                     s->inlineUniformBlock = VK_TRUE;
                     s->maintenance4 = VK_TRUE;
                     s->pipelineCreationCacheControl = VK_TRUE;
@@ -3077,6 +3078,7 @@ static const VpFeatureDesc featureDesc = {
                     VkPhysicalDeviceVulkan13Features* s = static_cast<VkPhysicalDeviceVulkan13Features*>(static_cast<void*>(p));
                     ret = ret && (s->computeFullSubgroups == VK_TRUE);
                     ret = ret && (s->descriptorBindingInlineUniformBlockUpdateAfterBind == VK_TRUE);
+                    ret = ret && (s->dynamicRendering == VK_TRUE);
                     ret = ret && (s->inlineUniformBlock == VK_TRUE);
                     ret = ret && (s->maintenance4 == VK_TRUE);
                     ret = ret && (s->pipelineCreationCacheControl == VK_TRUE);
@@ -8076,8 +8078,6 @@ VPAPI_ATTR VkResult vpCreateInstance(const VpInstanceCreateInfo *pCreateInfo,
     VkApplicationInfo appInfo{ VK_STRUCTURE_TYPE_APPLICATION_INFO };
     std::vector<const char*> extensions;
     VkInstanceCreateInfo* pInstanceCreateInfo = nullptr;
-    VkExtensionProperties* pProfileExtensions = nullptr;
-    uint32_t profileExtensionCount = 0;
 
     if (pCreateInfo != nullptr && pCreateInfo->pCreateInfo != nullptr) {
         createInfo = *pCreateInfo->pCreateInfo;
@@ -8683,8 +8683,6 @@ VPAPI_ATTR VkResult vpGetProfileFormats(const VpProfileProperties *pProfile, uin
 }
 
 VPAPI_ATTR void vpGetProfileFormatProperties(const VpProfileProperties *pProfile, VkFormat format, void *pNext) {
-    VkResult result = VK_SUCCESS;
-
     const detail::VpProfileDesc* pDesc = detail::vpGetProfileDesc(pProfile->profileName);
     if (pDesc == nullptr) return;
 
