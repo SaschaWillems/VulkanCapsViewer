@@ -13,7 +13,7 @@ Required file structure:
             └── vulkanCapsViewer.png
 ```
 
-Use the latests release from https://github.com/probonopd/linuxdeployqt
+Use the latest release from https://github.com/probonopd/linuxdeployqt
 
 Run from where the ```linuxdeployqt``` is located
 
