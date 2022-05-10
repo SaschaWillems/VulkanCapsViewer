@@ -981,6 +981,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "robustImageAccess", extFeatures.robustImageAccess);
 	}
+	if (extensionSupported("VK_EXT_image_compression_control")) {
+		const char* extension("VK_EXT_image_compression_control");
+		VkPhysicalDeviceImageCompressionControlFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "imageCompressionControl", extFeatures.imageCompressionControl);
+	}
 	if (extensionSupported("VK_EXT_4444_formats")) {
 		const char* extension("VK_EXT_4444_formats");
 		VkPhysicalDevice4444FormatsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT };
@@ -1017,6 +1024,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "primitiveTopologyListRestart", extFeatures.primitiveTopologyListRestart);
 		pushFeature2(extension, "primitiveTopologyPatchListRestart", extFeatures.primitiveTopologyPatchListRestart);
+	}
+	if (extensionSupported("VK_EXT_pipeline_properties")) {
+		const char* extension("VK_EXT_pipeline_properties");
+		VkPhysicalDevicePipelinePropertiesFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_PROPERTIES_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelinePropertiesIdentifier", extFeatures.pipelinePropertiesIdentifier);
 	}
 	if (extensionSupported("VK_EXT_extended_dynamic_state2")) {
 		const char* extension("VK_EXT_extended_dynamic_state2");
@@ -1086,6 +1100,20 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pageableDeviceLocalMemory", extFeatures.pageableDeviceLocalMemory);
+	}
+	if (extensionSupported("VK_EXT_image_compression_control_swapchain")) {
+		const char* extension("VK_EXT_image_compression_control_swapchain");
+		VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "imageCompressionControlSwapchain", extFeatures.imageCompressionControlSwapchain);
+	}
+	if (extensionSupported("VK_EXT_subpass_merge_feedback")) {
+		const char* extension("VK_EXT_subpass_merge_feedback");
+		VkPhysicalDeviceSubpassMergeFeedbackFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBPASS_MERGE_FEEDBACK_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "subpassMergeFeedback", extFeatures.subpassMergeFeedback);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
@@ -1380,6 +1408,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "workgroupMemoryExplicitLayoutScalarBlockLayout", extFeatures.workgroupMemoryExplicitLayoutScalarBlockLayout);
 		pushFeature2(extension, "workgroupMemoryExplicitLayout8BitAccess", extFeatures.workgroupMemoryExplicitLayout8BitAccess);
 		pushFeature2(extension, "workgroupMemoryExplicitLayout16BitAccess", extFeatures.workgroupMemoryExplicitLayout16BitAccess);
+	}
+	if (extensionSupported("VK_KHR_ray_tracing_maintenance1")) {
+		const char* extension("VK_KHR_ray_tracing_maintenance1");
+		VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingMaintenance1", extFeatures.rayTracingMaintenance1);
+		pushFeature2(extension, "rayTracingPipelineTraceRaysIndirect2", extFeatures.rayTracingPipelineTraceRaysIndirect2);
 	}
 	if (extensionSupported("VK_KHR_maintenance4")) {
 		const char* extension("VK_KHR_maintenance4");
