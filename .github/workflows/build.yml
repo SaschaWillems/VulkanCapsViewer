@@ -125,7 +125,9 @@ jobs:
           submodules: "recursive"
 
       - uses: jurplel/install-qt-action@v2
-
+        with:
+            version: '5.15.9'
+            
       - name: Build
         env:
           TARGET_PLATFORM: windows
@@ -152,7 +154,7 @@ jobs:
       - uses: jurplel/install-qt-action@v2
         with:
           setup-python: 'false'
-          version: '5.12.9'
+          version: '5.15.9'
           arch: 'win32_msvc2017'
 
       - uses: actions/checkout@v2
