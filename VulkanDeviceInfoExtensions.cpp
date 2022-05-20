@@ -661,6 +661,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMD() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "deviceCoherentMemory", extFeatures.deviceCoherentMemory);
 	}
+	if (extensionSupported("VK_AMD_shader_early_and_late_fragment_tests")) {
+		const char* extension("VK_AMD_shader_early_and_late_fragment_tests");
+		VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderEarlyAndLateFragmentTests", extFeatures.shaderEarlyAndLateFragmentTests);
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 	if (extensionSupported("VK_ARM_rasterization_order_attachment_access")) {
