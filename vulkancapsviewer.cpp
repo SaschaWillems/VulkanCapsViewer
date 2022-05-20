@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -359,6 +359,11 @@ void VulkanCapsViewer::slotSaveReport()
 void VulkanCapsViewer::slotUploadReport()
 {
     VulkanDeviceInfo device = vulkanGPUs[selectedDeviceIndex];
+
+    if (device.hasFeaturModifyingTool) {
+        QMessageBox::warning(this, "Upload disabled", "A feature modifying tool was detected (e.g. an active profiles layer)! Report uploads are disabled. Please disable any feature modifying tool and restart the application.");
+        return;
+    }
 
     QString error;
     if (!database.checkServerConnection(error))
@@ -843,6 +848,25 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->os = getOperatingSystem();
     GPU->reportVersion = reportVersion;
     GPU->appVersion = version;
+
+    // Check if any feature modifying tool is active for this device (e.g. profiles layer)
+    // This information is used to disable uploads to the database
+    GPU->hasFeaturModifyingTool = false;
+    PFN_vkGetPhysicalDeviceToolPropertiesEXT vkGetPhysicalDeviceToolPropertiesEXT{};
+    vkGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolPropertiesEXT"));
+    if (vkGetPhysicalDeviceToolPropertiesEXT) {
+        uint32_t numTools;
+        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, nullptr);
+        std::vector<VkPhysicalDeviceToolPropertiesEXT> toolProperties{};
+        toolProperties.resize(numTools);
+        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, toolProperties.data());
+        for (auto& toolProps : toolProperties) {
+            if (toolProps.purposes & VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT) {
+                qWarning().nospace() << "Found feature modifying tool \"" << toolProps.description << "\" for \"" << GPU->props.deviceName << "\", uploads for this device will be disabled";
+                GPU->hasFeaturModifyingTool = true;
+            }
+        }
+    }
 }
 
 void VulkanCapsViewer::getGPUs()
@@ -1728,6 +1752,11 @@ bool VulkanCapsViewer::saveReport(QString fileName, QString submitter, QString c
 
 void VulkanCapsViewer::checkReportDatabaseState()
 {
+    if (vulkanGPUs[selectedDeviceIndex].hasFeaturModifyingTool) {
+        setReportState(ReportState::update_disabled);
+        return;
+    }
+
     ui.labelDevicePresent->setText("<font color='#000000'>Connecting to database...</font>");
     ui.toolButtonOnlineDevice->setEnabled(false);
 
@@ -1763,6 +1792,11 @@ int VulkanCapsViewer::uploadReportNonVisual(int deviceIndex, QString submitter, 
 {
     VulkanDeviceInfo device = vulkanGPUs[deviceIndex];
 
+    if (vulkanGPUs[deviceIndex].hasFeaturModifyingTool) {
+        qWarning() << "Feature modifying tool detected, upload disabled";
+        return -4;
+    }
+
     QString message;
     bool dbstatus = database.checkServerConnection(message);
     if (!dbstatus)
@@ -1797,22 +1831,31 @@ void VulkanCapsViewer::setReportState(ReportState state)
     reportState = state;
     switch (reportState) {
     case ReportState::is_present:
-        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setEnabled(false);
         ui.toolButtonOnlineDevice->setEnabled(true);
         ui.toolButtonUpload->setText("Upload");
         ui.labelDevicePresent->setText("<font color='#00cc63'>Device is already present in the database</font>");
         break;
     case ReportState::not_present:
+        ui.toolButtonUpload->setEnabled(true);
         ui.toolButtonOnlineDevice->setEnabled(false);
         ui.toolButtonUpload->setText("Upload");
         ui.labelDevicePresent->setText("<font color='#80b3ff'>Device can be uploaded to the database</font>");
         break;
     case ReportState::is_updatable:
+        ui.toolButtonUpload->setEnabled(true);
         ui.toolButtonOnlineDevice->setEnabled(true);
         ui.toolButtonUpload->setText("Update");
         ui.labelDevicePresent->setText("<font color='#ffcc00'>Device is already present in the database, but can be updated</font>");
         break;
+    case ReportState::update_disabled:
+        ui.toolButtonUpload->setEnabled(false);
+        ui.toolButtonOnlineDevice->setEnabled(false);
+        ui.toolButtonUpload->setText("Disabled");
+        ui.labelDevicePresent->setText("<font color='#fc7703'>Feature modifying tool detected, upload disabled</font>");
+        break;
     default:
+        ui.toolButtonUpload->setEnabled(false);
         ui.toolButtonOnlineDevice->setEnabled(false);
         ui.toolButtonUpload->setText("n.a.");
         ui.labelDevicePresent->setText("<font color='#0000ff'>Could not get report state from database</font>");

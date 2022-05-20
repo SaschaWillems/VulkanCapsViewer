@@ -788,7 +788,7 @@ void VulkanDeviceInfo::readProfiles(VkInstance instance)
 
     profiles.clear();
     for (VpProfileProperties& profile : availableProfiles) {
-        qInfo() << "Reading profile " << profile.profileName;
+        qInfo() << "Reading profile" << profile.profileName;
         VkBool32 supported = VK_FALSE;
         vpGetPhysicalDeviceProfileSupport(instance, device, &profile, &supported);
         VulkanProfileInfo profileInfo{};

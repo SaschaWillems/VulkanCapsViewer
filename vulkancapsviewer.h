@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -59,7 +59,7 @@ public:
 };
 #endif
 
-enum ReportState { unknown, not_present, is_present, is_updatable };
+enum ReportState { unknown, not_present, is_present, is_updatable, update_disabled };
 
 class VulkanCapsViewer : public QMainWindow
 {

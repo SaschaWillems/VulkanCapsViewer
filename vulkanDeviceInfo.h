@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -104,6 +104,7 @@ public:
     QVariantMap core12Features;
     QVariantMap core13Features;
     bool hasSubgroupProperties = false;
+    bool hasFeaturModifyingTool = false;
     QVariantMap subgroupProperties;
     QVariantMap core11Properties;
     QVariantMap core12Properties;
