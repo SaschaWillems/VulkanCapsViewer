@@ -1248,6 +1248,7 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
                 rootItem->appendRow(extItem);
             }
         }
+        models.propertiesExtensions.sort(0);
         ui.treeViewDevicePropertiesExtensions->expandAll();
         ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
@@ -1376,6 +1377,7 @@ void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
                 rootItem->appendRow(extItem);
             }
         }
+        models.featuresExtensions.sort(0);
         ui.treeViewDeviceFeaturesExtensions->expandAll();
         ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
@@ -1411,6 +1413,7 @@ void VulkanCapsViewer::displayInstanceExtensions()
         treeItem->setText(0, QString::fromUtf8(ext.extensionName));
         treeItem->setText(1, QString::fromStdString(vulkanResources::revisionToString(ext.specVersion)));
     }
+    ui.treeWidgetInstanceExtensions->sortByColumn(0, Qt::SortOrder::AscendingOrder);
     for (int i = 0; i < ui.treeWidgetInstanceExtensions->columnCount(); i++) {
         ui.treeWidgetInstanceExtensions->header()->setSectionResizeMode(i, QHeaderView::ResizeToContents);
     }
@@ -1573,6 +1576,7 @@ void VulkanCapsViewer::displayDeviceExtensions(VulkanDeviceInfo *device)
         extItem << new QStandardItem(QString::fromStdString(vulkanResources::revisionToString(extension.specVersion)));
         rootItem->appendRow(extItem);
     }
+    models.extensions.sort(0);
 
     ui.treeViewDeviceExtensions->expandAll();
     ui.treeViewDeviceExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -1689,6 +1693,7 @@ void VulkanCapsViewer::displayDeviceProfiles(VulkanDeviceInfo* device)
         extItem[2]->setForeground(profile.supported ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
         rootItem->appendRow(extItem);
     }
+    models.profiles.sort(0, Qt::SortOrder::AscendingOrder);
 
     QStringList headers;
     headers << "Profile" << "Spec Version" << "Supported";
