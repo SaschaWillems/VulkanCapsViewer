@@ -523,6 +523,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "integerDotProductAccumulatingSaturating64BitSignedAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating64BitSignedAccelerated)));
 		pushProperty2(extension, "integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated", QVariant(bool(extProps.integerDotProductAccumulatingSaturating64BitMixedSignednessAccelerated)));
 	}
+	if (extensionSupported("VK_KHR_fragment_shader_barycentric")) {
+		const char* extension("VK_KHR_fragment_shader_barycentric");
+		VkPhysicalDeviceFragmentShaderBarycentricPropertiesKHR extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_PROPERTIES_KHR };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "triStripVertexOrderIndependentOfProvokingVertex", QVariant(bool(extProps.triStripVertexOrderIndependentOfProvokingVertex)));
+	}
 	if (extensionSupported("VK_KHR_maintenance4")) {
 		const char* extension("VK_KHR_maintenance4");
 		VkPhysicalDeviceMaintenance4Properties extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_4_PROPERTIES };
@@ -663,7 +670,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMD() {
 	}
 	if (extensionSupported("VK_AMD_shader_early_and_late_fragment_tests")) {
 		const char* extension("VK_AMD_shader_early_and_late_fragment_tests");
-		VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_EXT };
+		VkPhysicalDeviceShaderEarlyAndLateFragmentTestsFeaturesAMD extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EARLY_AND_LATE_FRAGMENT_TESTS_FEATURES_AMD };
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderEarlyAndLateFragmentTests", extFeatures.shaderEarlyAndLateFragmentTests);
@@ -1391,6 +1398,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "synchronization2", extFeatures.synchronization2);
+	}
+	if (extensionSupported("VK_KHR_fragment_shader_barycentric")) {
+		const char* extension("VK_KHR_fragment_shader_barycentric");
+		VkPhysicalDeviceFragmentShaderBarycentricFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADER_BARYCENTRIC_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "fragmentShaderBarycentric", extFeatures.fragmentShaderBarycentric);
 	}
 	if (extensionSupported("VK_KHR_shader_subgroup_uniform_control_flow")) {
 		const char* extension("VK_KHR_shader_subgroup_uniform_control_flow");
