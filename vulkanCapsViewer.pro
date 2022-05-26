@@ -51,6 +51,12 @@ android {
     CONFIG += mobility
     MOBILITY =
     LIBS += -landroid
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+
+    DISTFILES += \
+        android/AndroidManifest.xml \
+        android/build.gradle \
+        android/res/values/libs.xml
 }
 macx {
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
@@ -76,11 +82,6 @@ UI_DIR += ./GeneratedFiles
 RCC_DIR += ./GeneratedFiles
 include(vulkanCapsViewer.pri)
 win32:RC_FILE = vulkanCapsViewer.rc
-
-# Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
 
 HEADERS +=
 
