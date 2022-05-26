@@ -97,8 +97,6 @@ DISTFILES += \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-
 contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
     ANDROID_EXTRA_LIBS = \
         $$PWD/libs/openssl/armeabi-v7a/libcrypto.so \
