@@ -77,6 +77,11 @@ RCC_DIR += ./GeneratedFiles
 include(vulkanCapsViewer.pri)
 win32:RC_FILE = vulkanCapsViewer.rc
 
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
 HEADERS +=
 
 SOURCES +=
