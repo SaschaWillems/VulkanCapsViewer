@@ -51,6 +51,7 @@ bool VulkanDeviceInfo::vulkan_1_3()
 void VulkanDeviceInfo::readExtensions()
 {
     assert(device != NULL);
+    qInfo() << "Reading extensions";
     VkResult vkRes;
     do {
         uint32_t extCount;
@@ -77,6 +78,7 @@ bool VulkanDeviceInfo::extensionSupported(const char* extensionName)
 void VulkanDeviceInfo::readLayers()
 {
     assert(device != NULL);
+    qInfo() << "Reading layers";
     VkResult vkRes;
     do {
         uint32_t layerCount;
@@ -114,6 +116,7 @@ void VulkanDeviceInfo::readLayers()
 void VulkanDeviceInfo::readSupportedFormats()
 {
     assert(device != NULL);
+    qInfo() << "Reading formats";
     // Base formats
     int32_t firstFormat = VK_FORMAT_R4G4_UNORM_PACK8;
     int32_t lastFormat = VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
@@ -149,6 +152,7 @@ void VulkanDeviceInfo::readSupportedFormats()
 void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
 {
     assert(device != NULL);
+    qInfo() << "Reading queue families";
     uint32_t queueFamilyCount;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, NULL);
     assert(queueFamilyCount > 0);
@@ -204,6 +208,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 {
     assert(device != NULL);
     vkGetPhysicalDeviceProperties(device, &props);
+
+    qInfo().nospace() << "Device \"" << props.deviceName << "\"";
 
     properties.clear();
     properties["deviceName"] = props.deviceName;
@@ -422,6 +428,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
 void VulkanDeviceInfo::readPhysicalFeatures()
 {
     assert(device != NULL);
+    qInfo() << "Reading physical feattures";
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
     features.clear();
@@ -625,6 +632,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
 
 void VulkanDeviceInfo::readPhysicalLimits()
 {
+    qInfo() << "Reading limits";
     using vulkanResources::toHexQString;
 
     limits.clear();
@@ -739,12 +747,14 @@ void VulkanDeviceInfo::readPhysicalLimits()
 void VulkanDeviceInfo::readPhysicalMemoryProperties()
 {
     assert(device != NULL);
+    qInfo() << "Reading memory properties";
     vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
 }
 
 void VulkanDeviceInfo::readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension)
 {
     assert(device != NULL);
+    qInfo() << "Reading surface info";
     surfaceInfo.validSurface = (surface != VK_NULL_HANDLE);
     surfaceInfo.surfaceExtension = surfaceExtension;
     surfaceInfo.get(device, surface);
@@ -767,6 +777,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 {
     // Android specific build info
 #if defined(__ANDROID__)
+    qInfo() << "Reading platform details";
     platformdetails["android.ProductModel"] = getSystemProperty("ro.product.model");
     platformdetails["android.ProductManufacturer"] = getSystemProperty("ro.product.manufacturer");
     platformdetails["android.BuildID"] = getSystemProperty("ro.build.id");

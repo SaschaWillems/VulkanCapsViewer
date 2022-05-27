@@ -793,10 +793,10 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
     GPU->id = id;
     GPU->device = device;
+    GPU->readPhysicalProperties();
     GPU->readLayers();
     GPU->readExtensions();
     GPU->readQueueFamilies(surface);
-    GPU->readPhysicalProperties();
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();
     GPU->readPhysicalMemoryProperties();
