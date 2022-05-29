@@ -69,6 +69,11 @@ android {
         noCompress 'rcc'
     }
 
+    packagingOptions{
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
+    }    
+
     defaultConfig {
         resConfig "en"
         minSdkVersion = 24
