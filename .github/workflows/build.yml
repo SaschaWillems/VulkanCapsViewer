@@ -186,7 +186,6 @@ jobs:
         with:
           version: 5.12.9
           target: android
-          arch: android_arm64_v8a 
 
       - name: Build
         env:
