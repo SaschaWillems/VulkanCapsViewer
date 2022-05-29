@@ -186,6 +186,7 @@ jobs:
         with:
           version: 5.12.9
           target: android
+          arch: android_armv7 
 
       - name: Build
         env:
