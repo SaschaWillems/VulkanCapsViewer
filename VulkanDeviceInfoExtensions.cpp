@@ -1115,6 +1115,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pageableDeviceLocalMemory", extFeatures.pageableDeviceLocalMemory);
 	}
+	if (extensionSupported("VK_EXT_non_seamless_cube_map")) {
+		const char* extension("VK_EXT_non_seamless_cube_map");
+		VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NON_SEAMLESS_CUBE_MAP_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "nonSeamlessCubeMap", extFeatures.nonSeamlessCubeMap);
+	}
 	if (extensionSupported("VK_EXT_image_compression_control_swapchain")) {
 		const char* extension("VK_EXT_image_compression_control_swapchain");
 		VkPhysicalDeviceImageCompressionControlSwapchainFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_COMPRESSION_CONTROL_SWAPCHAIN_FEATURES_EXT };
