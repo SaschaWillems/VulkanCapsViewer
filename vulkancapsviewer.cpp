@@ -632,6 +632,12 @@ bool VulkanCapsViewer::initVulkan()
         }
     }
 
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (VK_HEADER_VERSION >= 216)
+    instanceCreateInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+    enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+    enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+#endif
+
     instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
     instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
 
@@ -816,14 +822,10 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    // Enable all available extensions
-    /*
     std::vector<const char*> enabledExtensions;
-    for (auto& ext : GPU->extensions)
-    {
-        enabledExtensions.push_back(ext.extensionName);
-    }
-    */
+#if defined(VK_USE_PLATFORM_MACOS_MVK) && (VK_HEADER_VERSION >= 216)
+    deviceExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+#endif
 
     // Init device
 
@@ -832,8 +834,10 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     info.pQueueCreateInfos = queueCreateInfos.data();
     info.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
     info.enabledLayerCount = 0;
-//    info.enabledExtensionCount = enabledExtensions.size();
-//    info.ppEnabledExtensionNames = enabledExtensions.data();
+    if (enabledExtensions.size() > 0) {
+        info.enabledExtensionCount = enabledExtensions.size();
+        info.ppEnabledExtensionNames = enabledExtensions.data();
+    };
 
     vkRes = vkCreateDevice(GPU->device, &info, nullptr, &GPU->dev);
 
