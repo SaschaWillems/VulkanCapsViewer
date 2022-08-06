@@ -1036,6 +1036,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "imageCompressionControl", extFeatures.imageCompressionControl);
 	}
+	if (extensionSupported("VK_EXT_attachment_feedback_loop_layout")) {
+		const char* extension("VK_EXT_attachment_feedback_loop_layout");
+		VkPhysicalDeviceAttachmentFeedbackLoopLayoutFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_LAYOUT_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "attachmentFeedbackLoopLayout", extFeatures.attachmentFeedbackLoopLayout);
+	}
 	if (extensionSupported("VK_EXT_4444_formats")) {
 		const char* extension("VK_EXT_4444_formats");
 		VkPhysicalDevice4444FormatsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_4444_FORMATS_FEATURES_EXT };
@@ -1668,6 +1675,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 		pushFeature2(extension, "tileProperties", extFeatures.tileProperties);
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_SEC() {
+	if (extensionSupported("VK_SEC_amigo_profiling")) {
+		const char* extension("VK_SEC_amigo_profiling");
+		VkPhysicalDeviceAmigoProfilingFeaturesSEC extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_AMIGO_PROFILING_FEATURES_SEC };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "amigoProfiling", extFeatures.amigoProfiling);
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 	if (extensionSupported("VK_VALVE_mutable_descriptor_type")) {
 		const char* extension("VK_VALVE_mutable_descriptor_type");
@@ -1695,5 +1711,6 @@ void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_KHR();
     readPhysicalFeatures_NV();
     readPhysicalFeatures_QCOM();
+    readPhysicalFeatures_SEC();
     readPhysicalFeatures_VALVE();
 }
