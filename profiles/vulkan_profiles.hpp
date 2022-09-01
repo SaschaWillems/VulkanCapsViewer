@@ -107,7 +107,7 @@
 #define VP_LUNARG_desktop_baseline_2022 1
 #define VP_LUNARG_DESKTOP_BASELINE_2022_NAME "VP_LUNARG_desktop_baseline_2022"
 #define VP_LUNARG_DESKTOP_BASELINE_2022_SPEC_VERSION 1
-#define VP_LUNARG_DESKTOP_BASELINE_2022_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 162)
+#define VP_LUNARG_DESKTOP_BASELINE_2022_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 139)
 #endif
 
 #if defined(VK_VERSION_1_1) && \
@@ -138,6 +138,7 @@
     defined(VK_KHR_maintenance2) && \
     defined(VK_KHR_maintenance3) && \
     defined(VK_KHR_multiview) && \
+    defined(VK_KHR_portability_enumeration) && \
     defined(VK_KHR_portability_subset) && \
     defined(VK_KHR_relaxed_block_layout) && \
     defined(VK_KHR_sampler_mirror_clamp_to_edge) && \
@@ -149,10 +150,10 @@
     defined(VK_KHR_timeline_semaphore) && \
     defined(VK_KHR_uniform_buffer_standard_layout) && \
     defined(VK_KHR_variable_pointers)
-#define VP_LUNARG_desktop_baseline_2022_subset 1
-#define VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_NAME "VP_LUNARG_desktop_baseline_2022_subset"
-#define VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_SPEC_VERSION 1
-#define VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 162)
+#define VP_LUNARG_desktop_portability_2022 1
+#define VP_LUNARG_DESKTOP_PORTABILITY_2022_NAME "VP_LUNARG_desktop_portability_2022"
+#define VP_LUNARG_DESKTOP_PORTABILITY_2022_SPEC_VERSION 1
+#define VP_LUNARG_DESKTOP_PORTABILITY_2022_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 208)
 #endif
 
 #define VP_MAX_PROFILE_NAME_SIZE 256U
@@ -3269,7 +3270,7 @@ static const VpPropertyDesc propertyDesc = {
                     VkPhysicalDeviceVulkan11Properties* s = static_cast<VkPhysicalDeviceVulkan11Properties*>(static_cast<void*>(p));
                     ret = ret && (s->maxMultiviewInstanceIndex >= 134217727);
                     ret = ret && (s->maxMultiviewViewCount >= 6);
-                    ret = ret && (s->subgroupSize <= 4);
+                    ret = ret && (s->subgroupSize >= 4);
                     ret = ret && ((s->subgroupSize & (s->subgroupSize - 1)) == 0);
                     ret = ret && (vpCheckFlags(s->subgroupSupportedOperations, (VK_SUBGROUP_FEATURE_BASIC_BIT | VK_SUBGROUP_FEATURE_VOTE_BIT | VK_SUBGROUP_FEATURE_ARITHMETIC_BIT | VK_SUBGROUP_FEATURE_BALLOT_BIT | VK_SUBGROUP_FEATURE_SHUFFLE_BIT | VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT | VK_SUBGROUP_FEATURE_QUAD_BIT)));
                     ret = ret && (vpCheckFlags(s->subgroupSupportedStages, (VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)));
@@ -3798,22 +3799,14 @@ static const VpPropertyDesc propertyDesc = {
                     s->properties.limits.sampledImageIntegerSampleCounts |= (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT);
                     s->properties.limits.sampledImageStencilSampleCounts |= (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT);
                     s->properties.limits.sparseAddressSpaceSize = 0;
-                    s->properties.limits.standardSampleLocations = VK_TRUE;
                     s->properties.limits.storageImageSampleCounts |= (VK_SAMPLE_COUNT_1_BIT);
-                    s->properties.limits.strictLines = VK_TRUE;
                     s->properties.limits.subPixelInterpolationOffsetBits = 4;
                     s->properties.limits.subPixelPrecisionBits = 4;
                     s->properties.limits.subTexelPrecisionBits = 4;
                     s->properties.limits.timestampComputeAndGraphics = VK_TRUE;
-                    s->properties.limits.timestampPeriod = 83.3333f;
                     s->properties.limits.viewportBoundsRange[0] = -32768;
                     s->properties.limits.viewportBoundsRange[1] = 32767;
                     s->properties.limits.viewportSubPixelBits = 0;
-                    s->properties.sparseProperties.residencyAlignedMipSize = VK_TRUE;
-                    s->properties.sparseProperties.residencyNonResidentStrict = VK_FALSE;
-                    s->properties.sparseProperties.residencyStandard2DBlockShape = VK_TRUE;
-                    s->properties.sparseProperties.residencyStandard2DMultisampleBlockShape = VK_TRUE;
-                    s->properties.sparseProperties.residencyStandard3DBlockShape = VK_TRUE;
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT: {
                     VkPhysicalDeviceRobustness2PropertiesEXT* s = static_cast<VkPhysicalDeviceRobustness2PropertiesEXT*>(static_cast<void*>(p));
@@ -3829,9 +3822,7 @@ static const VpPropertyDesc propertyDesc = {
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT: {
                     VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT* s = static_cast<VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(static_cast<void*>(p));
                     s->storageTexelBufferOffsetAlignmentBytes = 256;
-                    s->storageTexelBufferOffsetSingleTexelAlignment = VK_TRUE;
                     s->uniformTexelBufferOffsetAlignmentBytes = 256;
-                    s->uniformTexelBufferOffsetSingleTexelAlignment = VK_TRUE;
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR: {
                     VkPhysicalDeviceTimelineSemaphorePropertiesKHR* s = static_cast<VkPhysicalDeviceTimelineSemaphorePropertiesKHR*>(static_cast<void*>(p));
@@ -4010,23 +4001,14 @@ static const VpPropertyDesc propertyDesc = {
                     ret = ret && (vpCheckFlags(s->properties.limits.sampledImageIntegerSampleCounts, (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT)));
                     ret = ret && (vpCheckFlags(s->properties.limits.sampledImageStencilSampleCounts, (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT)));
                     ret = ret && (s->properties.limits.sparseAddressSpaceSize >= 0);
-                    ret = ret && (s->properties.limits.standardSampleLocations == VK_TRUE);
                     ret = ret && (vpCheckFlags(s->properties.limits.storageImageSampleCounts, (VK_SAMPLE_COUNT_1_BIT)));
-                    ret = ret && (s->properties.limits.strictLines == VK_TRUE);
                     ret = ret && (s->properties.limits.subPixelInterpolationOffsetBits >= 4);
                     ret = ret && (s->properties.limits.subPixelPrecisionBits >= 4);
                     ret = ret && (s->properties.limits.subTexelPrecisionBits >= 4);
                     ret = ret && (vpCheckFlags(s->properties.limits.timestampComputeAndGraphics, VK_TRUE));
-                    ret = ret && (s->properties.limits.timestampPeriod <= 83.3333);
-                    ret = ret && (isMultiple(83.3333, s->properties.limits.timestampPeriod));
                     ret = ret && (s->properties.limits.viewportBoundsRange[0] <= -32768);
                     ret = ret && (s->properties.limits.viewportBoundsRange[1] >= 32767);
                     ret = ret && (s->properties.limits.viewportSubPixelBits >= 0);
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyAlignedMipSize, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyNonResidentStrict, VK_FALSE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard2DBlockShape, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard2DMultisampleBlockShape, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard3DBlockShape, VK_TRUE));
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT: {
                     VkPhysicalDeviceRobustness2PropertiesEXT* s = static_cast<VkPhysicalDeviceRobustness2PropertiesEXT*>(static_cast<void*>(p));
@@ -4047,10 +4029,8 @@ static const VpPropertyDesc propertyDesc = {
                     VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT* s = static_cast<VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(static_cast<void*>(p));
                     ret = ret && (s->storageTexelBufferOffsetAlignmentBytes <= 256);
                     ret = ret && ((s->storageTexelBufferOffsetAlignmentBytes & (s->storageTexelBufferOffsetAlignmentBytes - 1)) == 0);
-                    ret = ret && (s->storageTexelBufferOffsetSingleTexelAlignment == VK_TRUE);
                     ret = ret && (s->uniformTexelBufferOffsetAlignmentBytes <= 256);
                     ret = ret && ((s->uniformTexelBufferOffsetAlignmentBytes & (s->uniformTexelBufferOffsetAlignmentBytes - 1)) == 0);
-                    ret = ret && (s->uniformTexelBufferOffsetSingleTexelAlignment == VK_TRUE);
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR: {
                     VkPhysicalDeviceTimelineSemaphorePropertiesKHR* s = static_cast<VkPhysicalDeviceTimelineSemaphorePropertiesKHR*>(static_cast<void*>(p));
@@ -6281,8 +6261,12 @@ static const VpStructChainerDesc chainerDesc = {
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2022
 #endif
 
-#ifdef VP_LUNARG_desktop_baseline_2022_subset
-namespace VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET {
+#ifdef VP_LUNARG_desktop_portability_2022
+namespace VP_LUNARG_DESKTOP_PORTABILITY_2022 {
+
+static const VkExtensionProperties instanceExtensions[] = {
+    VkExtensionProperties{ VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME, 1 },
+};
 
 static const VkExtensionProperties deviceExtensions[] = {
     VkExtensionProperties{ VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME, 2 },
@@ -6771,22 +6755,14 @@ static const VpPropertyDesc propertyDesc = {
                     s->properties.limits.sampledImageIntegerSampleCounts |= (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT);
                     s->properties.limits.sampledImageStencilSampleCounts |= (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT);
                     s->properties.limits.sparseAddressSpaceSize = 0;
-                    s->properties.limits.standardSampleLocations = VK_TRUE;
                     s->properties.limits.storageImageSampleCounts |= (VK_SAMPLE_COUNT_1_BIT);
-                    s->properties.limits.strictLines = VK_TRUE;
                     s->properties.limits.subPixelInterpolationOffsetBits = 4;
                     s->properties.limits.subPixelPrecisionBits = 4;
                     s->properties.limits.subTexelPrecisionBits = 4;
                     s->properties.limits.timestampComputeAndGraphics = VK_TRUE;
-                    s->properties.limits.timestampPeriod = 83.3333f;
                     s->properties.limits.viewportBoundsRange[0] = -32768;
                     s->properties.limits.viewportBoundsRange[1] = 32767;
                     s->properties.limits.viewportSubPixelBits = 0;
-                    s->properties.sparseProperties.residencyAlignedMipSize = VK_TRUE;
-                    s->properties.sparseProperties.residencyNonResidentStrict = VK_FALSE;
-                    s->properties.sparseProperties.residencyStandard2DBlockShape = VK_TRUE;
-                    s->properties.sparseProperties.residencyStandard2DMultisampleBlockShape = VK_TRUE;
-                    s->properties.sparseProperties.residencyStandard3DBlockShape = VK_TRUE;
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT: {
                     VkPhysicalDeviceRobustness2PropertiesEXT* s = static_cast<VkPhysicalDeviceRobustness2PropertiesEXT*>(static_cast<void*>(p));
@@ -6802,9 +6778,7 @@ static const VpPropertyDesc propertyDesc = {
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES_EXT: {
                     VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT* s = static_cast<VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(static_cast<void*>(p));
                     s->storageTexelBufferOffsetAlignmentBytes = 256;
-                    s->storageTexelBufferOffsetSingleTexelAlignment = VK_TRUE;
                     s->uniformTexelBufferOffsetAlignmentBytes = 256;
-                    s->uniformTexelBufferOffsetSingleTexelAlignment = VK_TRUE;
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR: {
                     VkPhysicalDeviceTimelineSemaphorePropertiesKHR* s = static_cast<VkPhysicalDeviceTimelineSemaphorePropertiesKHR*>(static_cast<void*>(p));
@@ -6988,23 +6962,14 @@ static const VpPropertyDesc propertyDesc = {
                     ret = ret && (vpCheckFlags(s->properties.limits.sampledImageIntegerSampleCounts, (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT)));
                     ret = ret && (vpCheckFlags(s->properties.limits.sampledImageStencilSampleCounts, (VK_SAMPLE_COUNT_1_BIT | VK_SAMPLE_COUNT_2_BIT | VK_SAMPLE_COUNT_4_BIT)));
                     ret = ret && (s->properties.limits.sparseAddressSpaceSize >= 0);
-                    ret = ret && (s->properties.limits.standardSampleLocations == VK_TRUE);
                     ret = ret && (vpCheckFlags(s->properties.limits.storageImageSampleCounts, (VK_SAMPLE_COUNT_1_BIT)));
-                    ret = ret && (s->properties.limits.strictLines == VK_TRUE);
                     ret = ret && (s->properties.limits.subPixelInterpolationOffsetBits >= 4);
                     ret = ret && (s->properties.limits.subPixelPrecisionBits >= 4);
                     ret = ret && (s->properties.limits.subTexelPrecisionBits >= 4);
                     ret = ret && (vpCheckFlags(s->properties.limits.timestampComputeAndGraphics, VK_TRUE));
-                    ret = ret && (s->properties.limits.timestampPeriod <= 83.3333);
-                    ret = ret && (isMultiple(83.3333, s->properties.limits.timestampPeriod));
                     ret = ret && (s->properties.limits.viewportBoundsRange[0] <= -32768);
                     ret = ret && (s->properties.limits.viewportBoundsRange[1] >= 32767);
                     ret = ret && (s->properties.limits.viewportSubPixelBits >= 0);
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyAlignedMipSize, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyNonResidentStrict, VK_FALSE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard2DBlockShape, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard2DMultisampleBlockShape, VK_TRUE));
-                    ret = ret && (vpCheckFlags(s->properties.sparseProperties.residencyStandard3DBlockShape, VK_TRUE));
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ROBUSTNESS_2_PROPERTIES_EXT: {
                     VkPhysicalDeviceRobustness2PropertiesEXT* s = static_cast<VkPhysicalDeviceRobustness2PropertiesEXT*>(static_cast<void*>(p));
@@ -7025,10 +6990,8 @@ static const VpPropertyDesc propertyDesc = {
                     VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT* s = static_cast<VkPhysicalDeviceTexelBufferAlignmentPropertiesEXT*>(static_cast<void*>(p));
                     ret = ret && (s->storageTexelBufferOffsetAlignmentBytes <= 256);
                     ret = ret && ((s->storageTexelBufferOffsetAlignmentBytes & (s->storageTexelBufferOffsetAlignmentBytes - 1)) == 0);
-                    ret = ret && (s->storageTexelBufferOffsetSingleTexelAlignment == VK_TRUE);
                     ret = ret && (s->uniformTexelBufferOffsetAlignmentBytes <= 256);
                     ret = ret && ((s->uniformTexelBufferOffsetAlignmentBytes & (s->uniformTexelBufferOffsetAlignmentBytes - 1)) == 0);
-                    ret = ret && (s->uniformTexelBufferOffsetSingleTexelAlignment == VK_TRUE);
                 } break;
                 case VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_PROPERTIES_KHR: {
                     VkPhysicalDeviceTimelineSemaphorePropertiesKHR* s = static_cast<VkPhysicalDeviceTimelineSemaphorePropertiesKHR*>(static_cast<void*>(p));
@@ -9258,7 +9221,7 @@ static const VpStructChainerDesc chainerDesc = {
     },
 };
 
-} // namespace VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET
+} // namespace VP_LUNARG_DESKTOP_PORTABILITY_2022
 #endif
 
 static const VpProfileDesc vpProfiles[] = {
@@ -9316,22 +9279,22 @@ static const VpProfileDesc vpProfiles[] = {
         VP_LUNARG_DESKTOP_BASELINE_2022::chainerDesc,
     },
 #endif
-#ifdef VP_LUNARG_desktop_baseline_2022_subset
+#ifdef VP_LUNARG_desktop_portability_2022
     VpProfileDesc{
-        VpProfileProperties{ VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_NAME, VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_SPEC_VERSION },
-        VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET_MIN_API_VERSION,
+        VpProfileProperties{ VP_LUNARG_DESKTOP_PORTABILITY_2022_NAME, VP_LUNARG_DESKTOP_PORTABILITY_2022_SPEC_VERSION },
+        VP_LUNARG_DESKTOP_PORTABILITY_2022_MIN_API_VERSION,
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::instanceExtensions[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::instanceExtensions) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::instanceExtensions[0])),
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::deviceExtensions[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::deviceExtensions) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::deviceExtensions[0])),
         nullptr, 0,
-        &VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::deviceExtensions[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::deviceExtensions) / sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::deviceExtensions[0])),
-        nullptr, 0,
-        &VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::featureStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::featureStructTypes) / sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::featureStructTypes[0])),
-        VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::featureDesc,
-        &VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::propertyStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::propertyStructTypes) / sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::propertyStructTypes[0])),
-        VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::propertyDesc,
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::featureStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::featureStructTypes) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::featureStructTypes[0])),
+        VP_LUNARG_DESKTOP_PORTABILITY_2022::featureDesc,
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::propertyStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::propertyStructTypes) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::propertyStructTypes[0])),
+        VP_LUNARG_DESKTOP_PORTABILITY_2022::propertyDesc,
         nullptr, 0,
         nullptr, 0,
-        &VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatStructTypes) / sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatStructTypes[0])),
-        &VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatDesc[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatDesc) / sizeof(VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::formatDesc[0])),
-        VP_LUNARG_DESKTOP_BASELINE_2022_SUBSET::chainerDesc,
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::formatStructTypes[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::formatStructTypes) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::formatStructTypes[0])),
+        &VP_LUNARG_DESKTOP_PORTABILITY_2022::formatDesc[0], static_cast<uint32_t>(sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::formatDesc) / sizeof(VP_LUNARG_DESKTOP_PORTABILITY_2022::formatDesc[0])),
+        VP_LUNARG_DESKTOP_PORTABILITY_2022::chainerDesc,
     },
 #endif
 };
