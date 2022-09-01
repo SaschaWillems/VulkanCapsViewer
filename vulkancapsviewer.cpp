@@ -73,7 +73,7 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "3.24";
+const QString VulkanCapsViewer::version = "3.25";
 const QString VulkanCapsViewer::reportVersion = "3.2";
 
 OSInfo getOperatingSystem()
@@ -799,9 +799,9 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
     GPU->id = id;
     GPU->device = device;
+    GPU->readExtensions();
     GPU->readPhysicalProperties();
     GPU->readLayers();
-    GPU->readExtensions();
     GPU->readQueueFamilies(surface);
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();
