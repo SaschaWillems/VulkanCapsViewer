@@ -279,6 +279,40 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "graphicsPipelineLibraryFastLinking", QVariant(bool(extProps.graphicsPipelineLibraryFastLinking)));
 		pushProperty2(extension, "graphicsPipelineLibraryIndependentInterpolationDecoration", QVariant(bool(extProps.graphicsPipelineLibraryIndependentInterpolationDecoration)));
 	}
+	if (extensionSupported("VK_EXT_mesh_shader")) {
+		const char* extension("VK_EXT_mesh_shader");
+		VkPhysicalDeviceMeshShaderPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxTaskWorkGroupTotalCount", QVariant(extProps.maxTaskWorkGroupTotalCount));
+		pushProperty2(extension, "maxTaskWorkGroupCount", QVariant::fromValue(QVariantList({ extProps.maxTaskWorkGroupCount[0], extProps.maxTaskWorkGroupCount[1], extProps.maxTaskWorkGroupCount[2] })));
+		pushProperty2(extension, "maxTaskWorkGroupInvocations", QVariant(extProps.maxTaskWorkGroupInvocations));
+		pushProperty2(extension, "maxTaskWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxTaskWorkGroupSize[0], extProps.maxTaskWorkGroupSize[1], extProps.maxTaskWorkGroupSize[2] })));
+		pushProperty2(extension, "maxTaskPayloadSize", QVariant(extProps.maxTaskPayloadSize));
+		pushProperty2(extension, "maxTaskSharedMemorySize", QVariant(extProps.maxTaskSharedMemorySize));
+		pushProperty2(extension, "maxTaskPayloadAndSharedMemorySize", QVariant(extProps.maxTaskPayloadAndSharedMemorySize));
+		pushProperty2(extension, "maxMeshWorkGroupTotalCount", QVariant(extProps.maxMeshWorkGroupTotalCount));
+		pushProperty2(extension, "maxMeshWorkGroupCount", QVariant::fromValue(QVariantList({ extProps.maxMeshWorkGroupCount[0], extProps.maxMeshWorkGroupCount[1], extProps.maxMeshWorkGroupCount[2] })));
+		pushProperty2(extension, "maxMeshWorkGroupInvocations", QVariant(extProps.maxMeshWorkGroupInvocations));
+		pushProperty2(extension, "maxMeshWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxMeshWorkGroupSize[0], extProps.maxMeshWorkGroupSize[1], extProps.maxMeshWorkGroupSize[2] })));
+		pushProperty2(extension, "maxMeshSharedMemorySize", QVariant(extProps.maxMeshSharedMemorySize));
+		pushProperty2(extension, "maxMeshPayloadAndSharedMemorySize", QVariant(extProps.maxMeshPayloadAndSharedMemorySize));
+		pushProperty2(extension, "maxMeshOutputMemorySize", QVariant(extProps.maxMeshOutputMemorySize));
+		pushProperty2(extension, "maxMeshPayloadAndOutputMemorySize", QVariant(extProps.maxMeshPayloadAndOutputMemorySize));
+		pushProperty2(extension, "maxMeshOutputComponents", QVariant(extProps.maxMeshOutputComponents));
+		pushProperty2(extension, "maxMeshOutputVertices", QVariant(extProps.maxMeshOutputVertices));
+		pushProperty2(extension, "maxMeshOutputPrimitives", QVariant(extProps.maxMeshOutputPrimitives));
+		pushProperty2(extension, "maxMeshOutputLayers", QVariant(extProps.maxMeshOutputLayers));
+		pushProperty2(extension, "maxMeshMultiviewViewCount", QVariant(extProps.maxMeshMultiviewViewCount));
+		pushProperty2(extension, "meshOutputPerVertexGranularity", QVariant(extProps.meshOutputPerVertexGranularity));
+		pushProperty2(extension, "meshOutputPerPrimitiveGranularity", QVariant(extProps.meshOutputPerPrimitiveGranularity));
+		pushProperty2(extension, "maxPreferredTaskWorkGroupInvocations", QVariant(extProps.maxPreferredTaskWorkGroupInvocations));
+		pushProperty2(extension, "maxPreferredMeshWorkGroupInvocations", QVariant(extProps.maxPreferredMeshWorkGroupInvocations));
+		pushProperty2(extension, "prefersLocalInvocationVertexOutput", QVariant(bool(extProps.prefersLocalInvocationVertexOutput)));
+		pushProperty2(extension, "prefersLocalInvocationPrimitiveOutput", QVariant(bool(extProps.prefersLocalInvocationPrimitiveOutput)));
+		pushProperty2(extension, "prefersCompactVertexOutput", QVariant(bool(extProps.prefersCompactVertexOutput)));
+		pushProperty2(extension, "prefersCompactPrimitiveOutput", QVariant(bool(extProps.prefersCompactPrimitiveOutput)));
+	}
 	if (extensionSupported("VK_EXT_fragment_density_map2")) {
 		const char* extension("VK_EXT_fragment_density_map2");
 		VkPhysicalDeviceFragmentDensityMap2PropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_2_PROPERTIES_EXT };
@@ -1008,6 +1042,17 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "graphicsPipelineLibrary", extFeatures.graphicsPipelineLibrary);
 	}
+	if (extensionSupported("VK_EXT_mesh_shader")) {
+		const char* extension("VK_EXT_mesh_shader");
+		VkPhysicalDeviceMeshShaderFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "taskShader", extFeatures.taskShader);
+		pushFeature2(extension, "meshShader", extFeatures.meshShader);
+		pushFeature2(extension, "multiviewMeshShader", extFeatures.multiviewMeshShader);
+		pushFeature2(extension, "primitiveFragmentShadingRateMeshShader", extFeatures.primitiveFragmentShadingRateMeshShader);
+		pushFeature2(extension, "meshShaderQueries", extFeatures.meshShaderQueries);
+	}
 	if (extensionSupported("VK_EXT_ycbcr_2plane_444_formats")) {
 		const char* extension("VK_EXT_ycbcr_2plane_444_formats");
 		VkPhysicalDeviceYcbcr2Plane444FormatsFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_YCBCR_2_PLANE_444_FORMATS_FEATURES_EXT };
@@ -1163,6 +1208,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pageableDeviceLocalMemory", extFeatures.pageableDeviceLocalMemory);
 	}
+	if (extensionSupported("VK_EXT_depth_clamp_zero_one")) {
+		const char* extension("VK_EXT_depth_clamp_zero_one");
+		VkPhysicalDeviceDepthClampZeroOneFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "depthClampZeroOne", extFeatures.depthClampZeroOne);
+	}
 	if (extensionSupported("VK_EXT_non_seamless_cube_map")) {
 		const char* extension("VK_EXT_non_seamless_cube_map");
 		VkPhysicalDeviceNonSeamlessCubeMapFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NON_SEAMLESS_CUBE_MAP_FEATURES_EXT };
@@ -1190,6 +1242,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderModuleIdentifier", extFeatures.shaderModuleIdentifier);
+	}
+	if (extensionSupported("VK_EXT_rasterization_order_attachment_access")) {
+		const char* extension("VK_EXT_rasterization_order_attachment_access");
+		VkPhysicalDeviceRasterizationOrderAttachmentAccessFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RASTERIZATION_ORDER_ATTACHMENT_ACCESS_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rasterizationOrderColorAttachmentAccess", extFeatures.rasterizationOrderColorAttachmentAccess);
+		pushFeature2(extension, "rasterizationOrderDepthAttachmentAccess", extFeatures.rasterizationOrderDepthAttachmentAccess);
+		pushFeature2(extension, "rasterizationOrderStencilAttachmentAccess", extFeatures.rasterizationOrderStencilAttachmentAccess);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
