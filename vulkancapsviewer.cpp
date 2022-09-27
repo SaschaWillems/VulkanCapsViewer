@@ -83,6 +83,24 @@ OSInfo getOperatingSystem()
     osInfo.name = QSysInfo::productType().toStdString();
     osInfo.architecture = QSysInfo::buildCpuArchitecture().toStdString();
     osInfo.version = QSysInfo::productVersion().toStdString();
+    // The Qt version used does not detect Windows 11, so we use Win32 API to detect it via the build version
+#if defined(_WIN32)
+    HMODULE hModule = LoadLibrary(TEXT("ntdll.dll"));
+    if (hModule) {
+        typedef NTSTATUS(WINAPI* RtlGetVersionFN)(PRTL_OSVERSIONINFOW);
+        RtlGetVersionFN RtlGetVersion = reinterpret_cast<RtlGetVersionFN>(GetProcAddress(hModule, "RtlGetVersion"));
+        if (RtlGetVersion) {
+            RTL_OSVERSIONINFOW osVersionInfo = { 0 };
+            osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+            if (RtlGetVersion(&osVersionInfo) == S_OK) {
+                if (osVersionInfo.dwBuildNumber >= 22000) {
+                    osInfo.version = "11";
+                }
+            }
+        }
+        FreeLibrary(hModule);
+    }
+#endif
     return osInfo;
 }
 
@@ -835,7 +853,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     info.queueCreateInfoCount = (uint32_t)queueCreateInfos.size();
     info.enabledLayerCount = 0;
     if (enabledExtensions.size() > 0) {
-        info.enabledExtensionCount = enabledExtensions.size();
+        info.enabledExtensionCount = static_cast<uint32_t>(enabledExtensions.size());
         info.ppEnabledExtensionNames = enabledExtensions.data();
     };
 
