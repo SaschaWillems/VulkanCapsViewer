@@ -357,7 +357,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core12Properties["independentResolve"] = coreProps12.independentResolve;
             core12Properties["filterMinmaxSingleComponentFormats"] = coreProps12.filterMinmaxSingleComponentFormats;
             core12Properties["filterMinmaxImageComponentMapping"] = coreProps12.filterMinmaxImageComponentMapping;
-            core12Properties["maxTimelineSemaphoreValueDifference"] = QVariant::fromValue(coreProps12.maxTimelineSemaphoreValueDifference);
+            core12Properties["maxTimelineSemaphoreValueDifference"] = QString::number(coreProps12.maxTimelineSemaphoreValueDifference);
             core12Properties["framebufferIntegerColorSampleCounts"] = coreProps12.framebufferIntegerColorSampleCounts;
 
         }
