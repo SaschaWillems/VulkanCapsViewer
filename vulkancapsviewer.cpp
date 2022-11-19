@@ -56,6 +56,10 @@
 #include <sys/utsname.h>
 #endif
 
+#ifdef VK_USE_PLATFORM_WAYLAND_KHR
+#include <wayland-client.h>
+#endif
+
 #ifdef VK_USE_PLATFORM_XCB_KHR
 #include <QX11Info>
 #endif
