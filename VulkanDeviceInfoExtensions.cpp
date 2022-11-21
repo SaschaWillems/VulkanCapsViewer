@@ -68,6 +68,17 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMD() {
 		pushProperty2(extension, "activeComputeUnitCount", QVariant(extProps.activeComputeUnitCount));
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
+	if (extensionSupported("VK_ARM_shader_core_builtins")) {
+		const char* extension("VK_ARM_shader_core_builtins");
+		VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "shaderCoreMask", QVariant::fromValue(extProps.shaderCoreMask));
+		pushProperty2(extension, "shaderCoreCount", QVariant(extProps.shaderCoreCount));
+		pushProperty2(extension, "shaderWarpsPerCore", QVariant(extProps.shaderWarpsPerCore));
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 	if (extensionSupported("VK_EXT_transform_feedback")) {
 		const char* extension("VK_EXT_transform_feedback");
@@ -270,6 +281,45 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxCustomBorderColorSamplers", QVariant(extProps.maxCustomBorderColorSamplers));
+	}
+	if (extensionSupported("VK_EXT_descriptor_buffer")) {
+		const char* extension("VK_EXT_descriptor_buffer");
+		VkPhysicalDeviceDescriptorBufferPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "combinedImageSamplerDescriptorSingleArray", QVariant(bool(extProps.combinedImageSamplerDescriptorSingleArray)));
+		pushProperty2(extension, "bufferlessPushDescriptors", QVariant(bool(extProps.bufferlessPushDescriptors)));
+		pushProperty2(extension, "allowSamplerImageViewPostSubmitCreation", QVariant(bool(extProps.allowSamplerImageViewPostSubmitCreation)));
+		pushProperty2(extension, "descriptorBufferOffsetAlignment", QVariant::fromValue(extProps.descriptorBufferOffsetAlignment));
+		pushProperty2(extension, "maxDescriptorBufferBindings", QVariant(extProps.maxDescriptorBufferBindings));
+		pushProperty2(extension, "maxResourceDescriptorBufferBindings", QVariant(extProps.maxResourceDescriptorBufferBindings));
+		pushProperty2(extension, "maxSamplerDescriptorBufferBindings", QVariant(extProps.maxSamplerDescriptorBufferBindings));
+		pushProperty2(extension, "maxEmbeddedImmutableSamplerBindings", QVariant(extProps.maxEmbeddedImmutableSamplerBindings));
+		pushProperty2(extension, "maxEmbeddedImmutableSamplers", QVariant(extProps.maxEmbeddedImmutableSamplers));
+		pushProperty2(extension, "bufferCaptureReplayDescriptorDataSize", QVariant::fromValue(extProps.bufferCaptureReplayDescriptorDataSize));
+		pushProperty2(extension, "imageCaptureReplayDescriptorDataSize", QVariant::fromValue(extProps.imageCaptureReplayDescriptorDataSize));
+		pushProperty2(extension, "imageViewCaptureReplayDescriptorDataSize", QVariant::fromValue(extProps.imageViewCaptureReplayDescriptorDataSize));
+		pushProperty2(extension, "samplerCaptureReplayDescriptorDataSize", QVariant::fromValue(extProps.samplerCaptureReplayDescriptorDataSize));
+		pushProperty2(extension, "accelerationStructureCaptureReplayDescriptorDataSize", QVariant::fromValue(extProps.accelerationStructureCaptureReplayDescriptorDataSize));
+		pushProperty2(extension, "samplerDescriptorSize", QVariant::fromValue(extProps.samplerDescriptorSize));
+		pushProperty2(extension, "combinedImageSamplerDescriptorSize", QVariant::fromValue(extProps.combinedImageSamplerDescriptorSize));
+		pushProperty2(extension, "sampledImageDescriptorSize", QVariant::fromValue(extProps.sampledImageDescriptorSize));
+		pushProperty2(extension, "storageImageDescriptorSize", QVariant::fromValue(extProps.storageImageDescriptorSize));
+		pushProperty2(extension, "uniformTexelBufferDescriptorSize", QVariant::fromValue(extProps.uniformTexelBufferDescriptorSize));
+		pushProperty2(extension, "robustUniformTexelBufferDescriptorSize", QVariant::fromValue(extProps.robustUniformTexelBufferDescriptorSize));
+		pushProperty2(extension, "storageTexelBufferDescriptorSize", QVariant::fromValue(extProps.storageTexelBufferDescriptorSize));
+		pushProperty2(extension, "robustStorageTexelBufferDescriptorSize", QVariant::fromValue(extProps.robustStorageTexelBufferDescriptorSize));
+		pushProperty2(extension, "uniformBufferDescriptorSize", QVariant::fromValue(extProps.uniformBufferDescriptorSize));
+		pushProperty2(extension, "robustUniformBufferDescriptorSize", QVariant::fromValue(extProps.robustUniformBufferDescriptorSize));
+		pushProperty2(extension, "storageBufferDescriptorSize", QVariant::fromValue(extProps.storageBufferDescriptorSize));
+		pushProperty2(extension, "robustStorageBufferDescriptorSize", QVariant::fromValue(extProps.robustStorageBufferDescriptorSize));
+		pushProperty2(extension, "inputAttachmentDescriptorSize", QVariant::fromValue(extProps.inputAttachmentDescriptorSize));
+		pushProperty2(extension, "accelerationStructureDescriptorSize", QVariant::fromValue(extProps.accelerationStructureDescriptorSize));
+		pushProperty2(extension, "maxSamplerDescriptorBufferRange", QVariant::fromValue(extProps.maxSamplerDescriptorBufferRange));
+		pushProperty2(extension, "maxResourceDescriptorBufferRange", QVariant::fromValue(extProps.maxResourceDescriptorBufferRange));
+		pushProperty2(extension, "samplerDescriptorBufferAddressSpaceSize", QVariant::fromValue(extProps.samplerDescriptorBufferAddressSpaceSize));
+		pushProperty2(extension, "resourceDescriptorBufferAddressSpaceSize", QVariant::fromValue(extProps.resourceDescriptorBufferAddressSpaceSize));
+		pushProperty2(extension, "descriptorBufferAddressSpaceSize", QVariant::fromValue(extProps.descriptorBufferAddressSpaceSize));
 	}
 	if (extensionSupported("VK_EXT_graphics_pipeline_library")) {
 		const char* extension("VK_EXT_graphics_pipeline_library");
@@ -684,6 +734,21 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxFragmentShadingRateInvocationCount", QVariant(extProps.maxFragmentShadingRateInvocationCount));
 	}
+	if (extensionSupported("VK_NV_copy_memory_indirect")) {
+		const char* extension("VK_NV_copy_memory_indirect");
+		VkPhysicalDeviceCopyMemoryIndirectPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "supportedQueues", QVariant(extProps.supportedQueues));
+	}
+	if (extensionSupported("VK_NV_memory_decompression")) {
+		const char* extension("VK_NV_memory_decompression");
+		VkPhysicalDeviceMemoryDecompressionPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "decompressionMethods", QVariant::fromValue(extProps.decompressionMethods));
+		pushProperty2(extension, "maxDecompressionIndirectCount", QVariant::fromValue(extProps.maxDecompressionIndirectCount));
+	}
 	if (extensionSupported("VK_NV_optical_flow")) {
 		const char* extension("VK_NV_optical_flow");
 		VkPhysicalDeviceOpticalFlowPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPTICAL_FLOW_PROPERTIES_NV };
@@ -700,6 +765,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "maxWidth", QVariant(extProps.maxWidth));
 		pushProperty2(extension, "maxHeight", QVariant(extProps.maxHeight));
 		pushProperty2(extension, "maxNumRegionsOfInterest", QVariant(extProps.maxNumRegionsOfInterest));
+	}
+	if (extensionSupported("VK_NV_ray_tracing_invocation_reorder")) {
+		const char* extension("VK_NV_ray_tracing_invocation_reorder");
+		VkPhysicalDeviceRayTracingInvocationReorderPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "rayTracingInvocationReorderReorderingHint", QVariant(extProps.rayTracingInvocationReorderReorderingHint));
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NVX() {
@@ -734,6 +806,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_QCOM() {
 
 void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_AMD();
+    readPhysicalProperties_ARM();
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
     readPhysicalProperties_KHR();
@@ -778,6 +851,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		pushFeature2(extension, "rasterizationOrderColorAttachmentAccess", extFeatures.rasterizationOrderColorAttachmentAccess);
 		pushFeature2(extension, "rasterizationOrderDepthAttachmentAccess", extFeatures.rasterizationOrderDepthAttachmentAccess);
 		pushFeature2(extension, "rasterizationOrderStencilAttachmentAccess", extFeatures.rasterizationOrderStencilAttachmentAccess);
+	}
+	if (extensionSupported("VK_ARM_shader_core_builtins")) {
+		const char* extension("VK_ARM_shader_core_builtins");
+		VkPhysicalDeviceShaderCoreBuiltinsFeaturesARM extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_FEATURES_ARM };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderCoreBuiltins", extFeatures.shaderCoreBuiltins);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
@@ -1066,6 +1146,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineCreationCacheControl", extFeatures.pipelineCreationCacheControl);
+	}
+	if (extensionSupported("VK_EXT_descriptor_buffer")) {
+		const char* extension("VK_EXT_descriptor_buffer");
+		VkPhysicalDeviceDescriptorBufferFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "descriptorBuffer", extFeatures.descriptorBuffer);
+		pushFeature2(extension, "descriptorBufferCaptureReplay", extFeatures.descriptorBufferCaptureReplay);
+		pushFeature2(extension, "descriptorBufferImageLayoutIgnored", extFeatures.descriptorBufferImageLayoutIgnored);
+		pushFeature2(extension, "descriptorBufferPushDescriptors", extFeatures.descriptorBufferPushDescriptors);
 	}
 	if (extensionSupported("VK_EXT_graphics_pipeline_library")) {
 		const char* extension("VK_EXT_graphics_pipeline_library");
@@ -1824,6 +1914,20 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "externalMemoryRDMA", extFeatures.externalMemoryRDMA);
 	}
+	if (extensionSupported("VK_NV_copy_memory_indirect")) {
+		const char* extension("VK_NV_copy_memory_indirect");
+		VkPhysicalDeviceCopyMemoryIndirectFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COPY_MEMORY_INDIRECT_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "indirectCopy", extFeatures.indirectCopy);
+	}
+	if (extensionSupported("VK_NV_memory_decompression")) {
+		const char* extension("VK_NV_memory_decompression");
+		VkPhysicalDeviceMemoryDecompressionFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "memoryDecompression", extFeatures.memoryDecompression);
+	}
 	if (extensionSupported("VK_NV_linear_color_attachment")) {
 		const char* extension("VK_NV_linear_color_attachment");
 		VkPhysicalDeviceLinearColorAttachmentFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINEAR_COLOR_ATTACHMENT_FEATURES_NV };
@@ -1837,6 +1941,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "opticalFlow", extFeatures.opticalFlow);
+	}
+	if (extensionSupported("VK_NV_ray_tracing_invocation_reorder")) {
+		const char* extension("VK_NV_ray_tracing_invocation_reorder");
+		VkPhysicalDeviceRayTracingInvocationReorderFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingInvocationReorder", extFeatures.rayTracingInvocationReorder);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {

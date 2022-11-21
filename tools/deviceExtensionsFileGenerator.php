@@ -200,7 +200,11 @@ class CppBuilder
                 $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(QVariantList({ extProps.$name.width, extProps.$name.height })));\n";
                 continue;
             }
-            // Properties may can be arrays
+            if ($type == "size_t") {
+                $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(extProps.$name));\n";
+                continue;
+            }
+            // Properties can be arrays
             $dim = 0;
             if (!empty(trim((string)$member))) {
                 $m = (string)$member;
