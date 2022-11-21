@@ -1,3 +1,9 @@
+# example usage:
+# You must tell cmake where to find the Vulkan Headers and a loader library. For example on macOS:
+#
+# cmake .. -DVULKAN_HEADERS_INSTALL_DIR=~/VulkanSDK/1.3.230.0/macOS -DVULKAN_LOADER_INSTALL_DIR=/Users/lunarg/VulkanSDK/1.3.230.0/macOS
+# cmake --build . --config Release  
+
 cmake_minimum_required(VERSION 3.10.2)
 project(VK_CAPS_VIEWER LANGUAGES CXX)
 
