@@ -15,9 +15,10 @@ source_group("UI Files" FILES ${FILES_UI})
 file(GLOB FILES_SOURCE ./*.cpp)
 file(GLOB FILES_HEADER ./*.h)
 
-set(FILES_ALL ${FILES_UI} ${FILES_SOURCE} ${FILES_HEADER} appleutils.mm vulkancapsviewer.qrc)
 
 if(NOT APPLE)
+    set(FILES_ALL ${FILES_UI} ${FILES_SOURCE} ${FILES_HEADER} vulkancapsviewer.qrc)
+
     if(WIN32)
         add_executable(vulkanCapsViewer WIN32 ${FILES_ALL} ${FILES_UI})
         target_compile_definitions(vulkanCapsViewer PRIVATE _CRT_SECURE_NO_WARNINGS VK_USE_PLATFORM_WIN32_KHR)
@@ -34,6 +35,8 @@ if(NOT APPLE)
     endif()
 else()
     # APPLE only
+    set(FILES_ALL ${FILES_UI} ${FILES_SOURCE} ${FILES_HEADER} appleutils.mm vulkancapsviewer.qrc)
+
     add_executable(vulkanCapsViewer MACOSX_BUNDLE ${FILES_ALL} ${FILES_UI} ${CMAKE_CURRENT_SOURCE_DIR}/vulkanCapsViewer.icns)
 
     set_target_properties(vulkanCapsViewer PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/macOS/Info.plist)
@@ -65,7 +68,7 @@ if(NOT APPLE)
         elseif(WAYLAND)
             target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::waylandclient "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")
         else()
-	    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")        
+	    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.so")        
         endif()
     endif()
 else() 
