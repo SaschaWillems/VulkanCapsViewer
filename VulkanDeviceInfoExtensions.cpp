@@ -746,7 +746,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		VkPhysicalDeviceMemoryDecompressionPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_DECOMPRESSION_PROPERTIES_NV };
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "decompressionMethods", QVariant(extProps.decompressionMethods));
+		pushProperty2(extension, "decompressionMethods", QVariant::fromValue(extProps.decompressionMethods));
 		pushProperty2(extension, "maxDecompressionIndirectCount", QVariant::fromValue(extProps.maxDecompressionIndirectCount));
 	}
 	if (extensionSupported("VK_NV_optical_flow")) {
