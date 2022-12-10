@@ -816,10 +816,6 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     jsonProperties["pipelineCacheUUID"] = jsonPipelineCache;
     root["properties"] = jsonProperties;
 
-    if (!core12Properties.empty()) {
-        root["propertiesCore12"] = QJsonObject::fromVariantMap(core12Properties);
-    }
-
     // Device features
     QJsonObject jsonFeatures;
     root["features"] = QJsonObject::fromVariantMap(features);
