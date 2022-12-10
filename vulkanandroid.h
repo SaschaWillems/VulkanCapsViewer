@@ -11,6 +11,7 @@
 #define VULKANANDROID_HPP
 
 #include "vulkan/vulkan.h"
+#include "VulkanContext.h"
 #include <sstream>
 
 #ifdef ANDROID
@@ -42,7 +43,7 @@ extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormat
 extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
 
 bool loadVulkanLibrary();
-void loadVulkanFunctions(VkInstance instance);
+void loadVulkanFunctions();
 
 namespace std
 {

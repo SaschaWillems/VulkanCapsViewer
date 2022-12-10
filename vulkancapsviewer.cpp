@@ -297,8 +297,8 @@ VulkanCapsViewer::~VulkanCapsViewer()
             vkDestroyDevice(gpu.dev, nullptr);
         }
     }
-    if (instance != VK_NULL_HANDLE) {
-        vkDestroyInstance(instance, nullptr);
+    if (vulkanContext.instance != VK_NULL_HANDLE) {
+        vkDestroyInstance(vulkanContext.instance, nullptr);
     }
 }
 
@@ -664,7 +664,7 @@ bool VulkanCapsViewer::initVulkan()
     instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
 
     // Create vulkan Instance
-    vkRes = vkCreateInstance(&instanceCreateInfo, nullptr, &instance);
+    vkRes = vkCreateInstance(&instanceCreateInfo, nullptr, &vulkanContext.instance);
     if (vkRes != VK_SUCCESS)
     {
         QString error;
@@ -681,24 +681,24 @@ bool VulkanCapsViewer::initVulkan()
     }
 
 #ifdef ANDROID
-    loadVulkanFunctions(instance);
+    loadVulkanFunctions();
 #endif
 
     // Function pointers for new features/properties
     if (deviceProperties2Available) {
-        pfnGetPhysicalDeviceFeatures2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2KHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceFeatures2KHR"));
-        if (!pfnGetPhysicalDeviceFeatures2KHR) {
+        vulkanContext.vkGetPhysicalDeviceFeatures2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2KHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFeatures2KHR"));
+        if (!vulkanContext.vkGetPhysicalDeviceFeatures2KHR) {
             deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFeatures2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
-        pfnGetPhysicalDeviceProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceProperties2KHR"));
-        if (!pfnGetPhysicalDeviceProperties2KHR) {
+        vulkanContext.vkGetPhysicalDeviceProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2KHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceProperties2KHR"));
+        if (!vulkanContext.vkGetPhysicalDeviceProperties2KHR) {
             deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
     }
 
-    pfnGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
+    vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 
     // Create a surface
     surface = VK_NULL_HANDLE;
@@ -712,7 +712,7 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
             surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
             surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-            surfaceResult = vkCreateWin32SurfaceKHR(instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
         }
 #endif
 
@@ -830,7 +830,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->readPhysicalMemoryProperties();
     GPU->readSurfaceInfo(surface, surfaceExtension);
     GPU->readPlatformDetails();
-    GPU->readProfiles(instance);
+    GPU->readProfiles();
     // Request all available queues
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     for (uint32_t i = 0; i < GPU->queueFamilies.size(); ++i)
@@ -879,7 +879,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     // This information is used to disable uploads to the database
     GPU->hasFeaturModifyingTool = false;
     PFN_vkGetPhysicalDeviceToolPropertiesEXT vkGetPhysicalDeviceToolPropertiesEXT{};
-    vkGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceToolPropertiesEXT"));
+    vkGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceToolPropertiesEXT"));
     if (vkGetPhysicalDeviceToolPropertiesEXT) {
         uint32_t numTools;
         vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, nullptr);
@@ -901,7 +901,7 @@ void VulkanCapsViewer::getGPUs()
     uint32_t numGPUs;
 
     // Enumerate devices
-    vkRes = vkEnumeratePhysicalDevices(instance, &numGPUs, NULL);
+    vkRes = vkEnumeratePhysicalDevices(vulkanContext.instance, &numGPUs, NULL);
     if (vkRes != VK_SUCCESS)
     {
         QMessageBox::warning(this, tr("Error"), "Could not enumerate device count!");
@@ -910,7 +910,7 @@ void VulkanCapsViewer::getGPUs()
     std::vector<VkPhysicalDevice> vulkanDevices;
     vulkanDevices.resize(numGPUs);
 
-    vkRes = vkEnumeratePhysicalDevices(instance, &numGPUs, &vulkanDevices.front());
+    vkRes = vkEnumeratePhysicalDevices(vulkanContext.instance, &numGPUs, &vulkanDevices.front());
     if (vkRes != VK_SUCCESS)
     {
         QMessageBox::warning(this, tr("Error"), "Could not enumerate physical devices!");

@@ -27,7 +27,7 @@
 #include <QVariant>
 
 #include "vulkan/vulkan.h"
-#include "vulkanpfn.h"
+#include "VulkanContext.h"
 #include "vulkanresources.h"
 
 #ifdef __ANDROID__
