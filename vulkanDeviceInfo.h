@@ -45,7 +45,7 @@
 #include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
-#include "vulkanpfn.h"
+#include "VulkanContext.h"
 #include "profiles/vulkan_profiles.hpp"
 
 #ifdef __ANDROID__
@@ -82,9 +82,7 @@ class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 {
 private:
     std::vector<VulkanLayerInfo> layers;
-    bool vulkan_1_1();
-    bool vulkan_1_2();
-    bool vulkan_1_3();
+    bool vulkanVersionSupported(uint32_t major, uint32_t minor);
     bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)
     std::string getSystemProperty(const char* propname);
@@ -128,7 +126,7 @@ public:
     void readPhysicalMemoryProperties();
     void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
     void readPlatformDetails();
-    void readProfiles(VkInstance instance);
+    void readProfiles();
     QJsonObject toJson(QString submitter, QString comment);
 };
 

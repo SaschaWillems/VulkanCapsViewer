@@ -13,8 +13,8 @@ HEADERS += ./settings.h \
     $$PWD/Vulkan-Headers/include/vulkan/vulkan.h \
     $$PWD/vulkanandroid.h \
     $$PWD/vulkansurfaceinfo.hpp \
-    $$PWD/vulkanpfn.h \
-    $$PWD/vulkanDeviceInfo.h
+    $$PWD/vulkanDeviceInfo.h \
+    $$PWD/VulkanContext.h
 SOURCES += ./main.cpp \
     $$PWD/VulkanDeviceInfoExtensions.cpp \
     ./settings.cpp \
@@ -24,7 +24,7 @@ SOURCES += ./main.cpp \
     ./vulkancapsviewer.cpp \
     ./vulkandatabase.cpp \
     $$PWD/vulkanandroid.cpp \
-    $$PWD/vulkanpfn.cpp \
-    $$PWD/vulkanDeviceInfo.cpp
+    $$PWD/vulkanDeviceInfo.cpp \
+    $$PWD/VulkanContext.cpp
 FORMS += ./vulkancapsviewer.ui
 RESOURCES += vulkancapsviewer.qrc

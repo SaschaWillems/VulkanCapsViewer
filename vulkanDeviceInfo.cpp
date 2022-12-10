@@ -27,27 +27,6 @@ std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
     return layers;
 }
 
-bool VulkanDeviceInfo::vulkan_1_1()
-{
-    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
-    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
-    return ((major > 1) || ((major == 1) && (minor >= 1)));
-}
-
-bool VulkanDeviceInfo::vulkan_1_2()
-{
-    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
-    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
-    return ((major > 1) || ((major == 1) && (minor >= 2)));
-}
-
-bool VulkanDeviceInfo::vulkan_1_3()
-{
-    uint32_t major = VK_VERSION_MAJOR(props.apiVersion);
-    uint32_t minor = VK_VERSION_MINOR(props.apiVersion);
-    return ((major > 1) || ((major == 1) && (minor >= 3)));
-}
-
 void VulkanDeviceInfo::readExtensions()
 {
     assert(device != NULL);
@@ -63,6 +42,13 @@ void VulkanDeviceInfo::readExtensions()
             extensions.push_back(ext);
     } while (vkRes == VK_INCOMPLETE);
     assert(!vkRes);
+}
+
+bool VulkanDeviceInfo::vulkanVersionSupported(uint32_t major, uint32_t minor)
+{
+    uint32_t deviceMajor = VK_API_VERSION_MAJOR(props.apiVersion);
+    uint32_t deviceMinor = VK_API_VERSION_MINOR(props.apiVersion);
+    return ((deviceMajor > major) || ((deviceMajor == major) && (deviceMinor >= minor)));
 }
 
 bool VulkanDeviceInfo::extensionSupported(const char* extensionName)
@@ -163,8 +149,8 @@ void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
     {
         VulkanQueueFamilyInfo queueFamilyInfo{};
         queueFamilyInfo.properties = queueFamilyProperty;
-        if ((surface != VK_NULL_HANDLE) && (pfnGetPhysicalDeviceSurfaceSupportKHR)) {
-            pfnGetPhysicalDeviceSurfaceSupportKHR(device, index, surface, &queueFamilyInfo.supportsPresent);
+        if ((surface != VK_NULL_HANDLE) && (vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR)) {
+            vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR(device, index, surface, &queueFamilyInfo.supportsPresent);
         }
         queueFamilies.push_back(queueFamilyInfo);
         index++;
@@ -232,18 +218,18 @@ void VulkanDeviceInfo::readPhysicalProperties()
     sparseProperties["residencyNonResidentStrict"] = props.sparseProperties.residencyNonResidentStrict;
 
     // VK_KHR_get_physical_device_properties2
-    if (pfnGetPhysicalDeviceProperties2KHR) {
+    if (vulkanContext.vkGetPhysicalDeviceProperties2KHR) {
 
         readExtendedProperties();
 
         // VK 1.1 core
-        if (vulkan_1_1()) {
+        if (vulkanVersionSupported(1,1)) {
             VkPhysicalDeviceProperties2KHR deviceProps2{};
             deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
             VkPhysicalDeviceSubgroupProperties extProps{};
             extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SUBGROUP_PROPERTIES;
             deviceProps2.pNext = &extProps;
-            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
             hasSubgroupProperties = true;
             subgroupProperties.clear();
             subgroupProperties["subgroupSize"] = extProps.subgroupSize;
@@ -258,14 +244,14 @@ void VulkanDeviceInfo::readPhysicalProperties()
                 extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
                 deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
                 deviceProps2.pNext = &extProps;
-                pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+                vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
                 properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
                 properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
             }
         }
 
         // VK 1.2 core
-        if (vulkan_1_2()) {
+        if (vulkanVersionSupported(1,2)) {
             // Vulkan 1.2 introduced dedicated structures for properties promoted to core in 1.1 and 1.2
             // Fetching the core 1.1 properties also requires a Vulkan 1.2 (or later) implementation
 
@@ -278,7 +264,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             VkPhysicalDeviceVulkan11Properties coreProps11{};
             coreProps11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES;
             deviceProps2.pNext = &coreProps11;
-            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 
             core11Properties.clear();
             core11Properties["deviceUUID"] = UUIDToJson(coreProps11.deviceUUID);
@@ -304,7 +290,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             VkPhysicalDeviceVulkan12Properties coreProps12{};
             coreProps12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES;
             deviceProps2.pNext = &coreProps12;
-            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 
             core12Properties.clear();
             core12Properties["driverID"] = coreProps12.driverID;
@@ -363,7 +349,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
         }
 
         // Vulkan 1.3
-        if (vulkan_1_3()) {
+        if (vulkanVersionSupported(1,3)) {
             // Core 1.3
             qInfo() << "Reading Vulkan 1.3 core properties";
 
@@ -373,7 +359,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             VkPhysicalDeviceVulkan13Properties coreProps13{};
             coreProps13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES;
             deviceProps2.pNext = &coreProps13;
-            pfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 
             core13Properties.clear();
 			core13Properties["minSubgroupSize"] = coreProps13.minSubgroupSize;
@@ -489,12 +475,12 @@ void VulkanDeviceInfo::readPhysicalFeatures()
     features["inheritedQueries"] = deviceFeatures.inheritedQueries;
 
     // VK_KHR_get_physical_device_properties2
-    if (pfnGetPhysicalDeviceFeatures2KHR) {
+    if (vulkanContext.vkGetPhysicalDeviceFeatures2KHR) {
 
         readExtendedFeatures();
 
         // Vulkan 1.1
-        if (vulkan_1_1()) {
+        if (vulkanVersionSupported(1,1)) {
             VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
             deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
 
@@ -503,13 +489,13 @@ void VulkanDeviceInfo::readPhysicalFeatures()
                 VkPhysicalDeviceShaderDrawParameterFeatures extFeatures{};
                 extFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES;
                 deviceFeatures2.pNext = &extFeatures;
-                pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+                vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
                 features2.push_back(Feature2("shaderDrawParameters", extFeatures.shaderDrawParameters, VK_KHR_SHADER_DRAW_PARAMETERS_EXTENSION_NAME));
             }
         }
 
         // Vulkan 1.2
-        if (vulkan_1_2()) {
+        if (vulkanVersionSupported(1,2)) {
             // Vulkan 1.2 introduced dedicated structures for features promoted to core in 1.1 and 1.2
             // Fetching the core 1.1 features also requires a Vulkan 1.2 (or later) implementation
 
@@ -522,7 +508,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             VkPhysicalDeviceVulkan11Features coreFeatures11{};
             coreFeatures11.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES;
             deviceFeatures2.pNext = &coreFeatures11;
-            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 
             core11Features.clear();
             core11Features["storageBuffer16BitAccess"] = coreFeatures11.storageBuffer16BitAccess;
@@ -544,7 +530,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             VkPhysicalDeviceVulkan12Features coreFeatures12{};
             coreFeatures12.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES;
             deviceFeatures2.pNext = &coreFeatures12;
-            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 
             core12Features.clear();
             core12Features["samplerMirrorClampToEdge"] = coreFeatures12.samplerMirrorClampToEdge;
@@ -597,7 +583,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
         }
 
         // Vulkan 1.3
-        if (vulkan_1_3()) {
+        if (vulkanVersionSupported(1,3)) {
             // Core 1.3
             qInfo() << "Reading Vulkan 1.3 core features";
 
@@ -607,7 +593,7 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             VkPhysicalDeviceVulkan13Features coreFeatures13{};
             coreFeatures13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
             deviceFeatures2.pNext = &coreFeatures13;
-            pfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+            vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 
             core13Features.clear();
             core13Features["robustImageAccess"] = coreFeatures13.robustImageAccess;
@@ -786,7 +772,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 #endif
 }
 
-void VulkanDeviceInfo::readProfiles(VkInstance instance)
+void VulkanDeviceInfo::readProfiles()
 {
     qInfo() << "Reading profiles";
 
@@ -801,7 +787,7 @@ void VulkanDeviceInfo::readProfiles(VkInstance instance)
     for (VpProfileProperties& profile : availableProfiles) {
         qInfo() << "Reading profile" << profile.profileName;
         VkBool32 supported = VK_FALSE;
-        vpGetPhysicalDeviceProfileSupport(instance, device, &profile, &supported);
+        vpGetPhysicalDeviceProfileSupport(vulkanContext.instance, device, &profile, &supported);
         VulkanProfileInfo profileInfo{};
         profileInfo.profileName = profile.profileName;
         profileInfo.specVersion = profile.specVersion;

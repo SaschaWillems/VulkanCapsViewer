@@ -4,7 +4,7 @@
  *
  * Vulkan hardware capability viewer
  * 
- * Copyright (C) 2016-2021 by Sascha Willems (www.saschawillems.de)
+ * Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
  *
  * This code is free software, you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -165,7 +165,7 @@ class CppBuilder
         $res .= "\t\tconst char* extension(\"{$extension->name}\");\n";
         $res .= "\t\t{$extension->features2['name']} extFeatures { $sType };\n";
         $res .= "\t\tVkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));\n";
-        $res .= "\t\tpfnGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);\n";
+        $res .= "\t\tvulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);\n";
         foreach ($extension->features2->member as $member) {
             // Skip types that are not related to feature details
             $type = (string)$member->type;
@@ -186,7 +186,7 @@ class CppBuilder
         $res .= "\t\tconst char* extension(\"{$extension->name}\");\n";
         $res .= "\t\t{$extension->properties2['name']} extProps { $sType };\n";
         $res .= "\t\tVkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));\n";
-        $res .= "\t\tpfnGetPhysicalDeviceProperties2KHR(device, &deviceProps2);\n";
+        $res .= "\t\tvulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);\n";
         // @todo: QVariant vs. QVariant::fromValue
         foreach ($extension->properties2->member as $member) {
             // Skip types that are not related to feature details
