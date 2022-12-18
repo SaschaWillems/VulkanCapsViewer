@@ -1095,6 +1095,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "shaderImageFloat32AtomicMinMax", extFeatures.shaderImageFloat32AtomicMinMax);
 		pushFeature2(extension, "sparseImageFloat32AtomicMinMax", extFeatures.sparseImageFloat32AtomicMinMax);
 	}
+	if (extensionSupported("VK_EXT_swapchain_maintenance1")) {
+		const char* extension("VK_EXT_swapchain_maintenance1");
+		VkPhysicalDeviceSwapchainMaintenance1FeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "swapchainMaintenance1", extFeatures.swapchainMaintenance1);
+	}
 	if (extensionSupported("VK_EXT_shader_demote_to_helper_invocation")) {
 		const char* extension("VK_EXT_shader_demote_to_helper_invocation");
 		VkPhysicalDeviceShaderDemoteToHelperInvocationFeatures extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DEMOTE_TO_HELPER_INVOCATION_FEATURES };
@@ -1973,6 +1980,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "tileProperties", extFeatures.tileProperties);
+	}
+	if (extensionSupported("VK_QCOM_multiview_per_view_viewports")) {
+		const char* extension("VK_QCOM_multiview_per_view_viewports");
+		VkPhysicalDeviceMultiviewPerViewViewportsFeaturesQCOM extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_VIEWPORTS_FEATURES_QCOM };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "multiviewPerViewViewports", extFeatures.multiviewPerViewViewports);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_SEC() {
