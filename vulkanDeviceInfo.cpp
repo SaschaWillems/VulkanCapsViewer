@@ -135,12 +135,12 @@ void VulkanDeviceInfo::readSupportedFormats()
     }
 }
 
-void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
+void VulkanDeviceInfo::readQueueFamilies()
 {
     assert(device != NULL);
     qInfo() << "Reading queue families";
     uint32_t queueFamilyCount;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, NULL);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
     assert(queueFamilyCount > 0);
     std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, &queueFamilyProperties.front());
@@ -149,8 +149,8 @@ void VulkanDeviceInfo::readQueueFamilies(VkSurfaceKHR surface)
     {
         VulkanQueueFamilyInfo queueFamilyInfo{};
         queueFamilyInfo.properties = queueFamilyProperty;
-        if ((surface != VK_NULL_HANDLE) && (vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR)) {
-            vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR(device, index, surface, &queueFamilyInfo.supportsPresent);
+        if ((vulkanContext.surface != VK_NULL_HANDLE) && (vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR)) {
+            vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR(device, index, vulkanContext.surface, &queueFamilyInfo.supportsPresent);
         }
         queueFamilies.push_back(queueFamilyInfo);
         index++;
@@ -737,13 +737,13 @@ void VulkanDeviceInfo::readPhysicalMemoryProperties()
     vkGetPhysicalDeviceMemoryProperties(device, &memoryProperties);
 }
 
-void VulkanDeviceInfo::readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension)
+void VulkanDeviceInfo::readSurfaceInfo()
 {
     assert(device != NULL);
     qInfo() << "Reading surface info";
-    surfaceInfo.validSurface = (surface != VK_NULL_HANDLE);
-    surfaceInfo.surfaceExtension = surfaceExtension;
-    surfaceInfo.get(device, surface);
+    surfaceInfo.validSurface = (vulkanContext.surface != VK_NULL_HANDLE);
+    surfaceInfo.surfaceExtension = vulkanContext.surfaceExtension;
+    surfaceInfo.get(device, vulkanContext.surface);
 }
 
 #if defined(__ANDROID__)

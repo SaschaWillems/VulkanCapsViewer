@@ -119,12 +119,12 @@ public:
     void readExtensions();
     void readLayers();
     void readSupportedFormats();
-    void readQueueFamilies(VkSurfaceKHR surface);
+    void readQueueFamilies();
     void readPhysicalProperties();
     void readPhysicalFeatures();
     void readPhysicalLimits();
     void readPhysicalMemoryProperties();
-    void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
+    void readSurfaceInfo();
     void readPlatformDetails();
     void readProfiles();
     QJsonObject toJson(QString submitter, QString comment);

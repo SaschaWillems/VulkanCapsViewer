@@ -297,6 +297,9 @@ VulkanCapsViewer::~VulkanCapsViewer()
             vkDestroyDevice(gpu.dev, nullptr);
         }
     }
+    if (vulkanContext.surface != VK_NULL_HANDLE) {
+        vkDestroySurfaceKHR(vulkanContext.instance, vulkanContext.surface, nullptr);
+    }
     if (vulkanContext.instance != VK_NULL_HANDLE) {
         vkDestroyInstance(vulkanContext.instance, nullptr);
     }
@@ -701,10 +704,8 @@ bool VulkanCapsViewer::initVulkan()
     vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 
     // Create a surface
-    surface = VK_NULL_HANDLE;
     for (auto surface_extension : surfaceExtensionsAvailable) {
         VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
-        surface = VK_NULL_HANDLE;
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
         if (surface_extension == VK_KHR_WIN32_SURFACE_EXTENSION_NAME) {
@@ -712,7 +713,7 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
             surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
             surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-            surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
 #endif
 
@@ -756,7 +757,7 @@ bool VulkanCapsViewer::initVulkan()
                 VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
                 surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
                 surfaceCreateInfo.window = nativeWindow;
-                surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &surface);
+                surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
             }
         }
 #endif
@@ -768,7 +769,7 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
             surfaceCreateInfo.display = wl_display_connect(NULL);
             surfaceCreateInfo.surface = nullptr;
-            surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
 #endif
 
@@ -778,7 +779,7 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
             surfaceCreateInfo.connection = QX11Info::connection();
             surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-            surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
 #endif
 
@@ -788,7 +789,7 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
             pMetalSurrogate = new QVukanSurrogate();
             surfaceCreateInfo.pView = (void*)pMetalSurrogate->winId();
-            surfaceResult = vkCreateMacOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateMacOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
 #endif
 
@@ -798,15 +799,15 @@ bool VulkanCapsViewer::initVulkan()
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
             pMetalSurrogate = new QVukanSurrogate();
             surfaceCreateInfo.pView = (void*)pMetalSurrogate->winId();
-            surfaceResult = vkCreateIOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &surface);
+            surfaceResult = vkCreateIOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
 #endif
         if (surfaceResult == VK_SUCCESS) {
-            surfaceExtension = surface_extension;
+            vulkanContext.surfaceExtension = surface_extension;
             break;
+        } else {
+            vulkanContext.surface = VK_NULL_HANDLE;
         }
-        else
-            surface = VK_NULL_HANDLE;
     }
 
     displayInstanceLayers();
@@ -824,11 +825,11 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     GPU->readExtensions();
     GPU->readPhysicalProperties();
     GPU->readLayers();
-    GPU->readQueueFamilies(surface);
+    GPU->readQueueFamilies();
     GPU->readPhysicalFeatures();
     GPU->readPhysicalLimits();
     GPU->readPhysicalMemoryProperties();
-    GPU->readSurfaceInfo(surface, surfaceExtension);
+    GPU->readSurfaceInfo();
     GPU->readPlatformDetails();
     GPU->readProfiles();
     // Request all available queues
@@ -1649,7 +1650,7 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     }
 
     // Surface extension used
-    addTreeItem(treeWidget->invisibleRootItem(), "Surface extension", surfaceExtension);
+    addTreeItem(treeWidget->invisibleRootItem(), "Surface extension", vulkanContext.surfaceExtension);
 
     // Surface capabilities
     QTreeWidgetItem *surfaceCapsItem = addTreeItem(treeWidget->invisibleRootItem(), "Surface Capabilities", "");
