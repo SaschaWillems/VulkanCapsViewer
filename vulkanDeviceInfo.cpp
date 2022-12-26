@@ -190,6 +190,15 @@ QJsonArray UUIDToJson(uint8_t* UUID)
     return jsonArray;
 }
 
+QJsonArray LUIDToJson(uint8_t* UUID)
+{
+    QJsonArray jsonArray;
+    for (uint32_t i = 0; i < VK_LUID_SIZE; i++) {
+        jsonArray.append(UUID[i]);
+    }
+    return jsonArray;
+}
+
 void VulkanDeviceInfo::readPhysicalProperties()
 {
     assert(device != NULL);
@@ -269,7 +278,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core11Properties.clear();
             core11Properties["deviceUUID"] = UUIDToJson(coreProps11.deviceUUID);
             core11Properties["driverUUID"] = UUIDToJson(coreProps11.driverUUID);
-            core11Properties["deviceLUID"] = UUIDToJson(coreProps11.deviceLUID);
+            core11Properties["deviceLUID"] = LUIDToJson(coreProps11.deviceLUID);
             core11Properties["deviceNodeMask"] = coreProps11.deviceNodeMask;
             core11Properties["deviceLUIDValid"] = coreProps11.deviceLUIDValid;
             core11Properties["subgroupSize"] = coreProps11.subgroupSize;

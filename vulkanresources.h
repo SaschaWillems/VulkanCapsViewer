@@ -710,12 +710,17 @@ namespace vulkanResources {
 		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"
 	};
 
-	// Values to be displayed as UUIds
+	// Values to be displayed as UUIDs
 	const QSet<QString> uuidValueNames = {
 		"deviceUUID",
 		// Core 1.1
 		"driverUUID",
-		"deviceLUID"
+	};
+
+	//Values to be displayed as LUIDs
+	const QSet<QString> luidValueNames = {
+			// Core 1.1
+			"deviceLUID"
 	};
 
 	// Values to be displayed as hex

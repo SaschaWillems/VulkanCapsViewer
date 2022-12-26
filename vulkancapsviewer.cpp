@@ -1016,30 +1016,45 @@ void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_i
 
 void addUUIDItem(QStandardItem* parent, const QString& key, uint8_t* UUID)
 {
-    std::ostringstream uuidSs;
-    uuidSs << std::hex << std::noshowbase << std::uppercase;
+    std::ostringstream ss;
+    ss << std::hex << std::noshowbase << std::uppercase;
     for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
-        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(UUID[i]);
-        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+        if (i == 4 || i == 6 || i == 8 || i == 10) ss << '-';
+        ss << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(UUID[i]);
     }
     QList<QStandardItem*> item;
     item << new QStandardItem(key);
-    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    item << new QStandardItem(QString::fromStdString(ss.str()));
     parent->appendRow(item);
 }
 
 void addUUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     const QJsonArray values = iterator.value().toJsonArray();
-    std::ostringstream uuidSs;
-    uuidSs << std::hex << std::noshowbase << std::uppercase;
-    for (size_t i = 0; i < values.size(); i++) {
-        uuidSs << std::right << std::setw(2) << std::setfill('0') << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
-        if (i == 3 || i == 5 || i == 7 || i == 9) uuidSs << '-';
+    std::ostringstream ss;
+    ss << std::hex << std::noshowbase << std::uppercase << std::setfill('0');
+    for (size_t i = 0; i < VK_UUID_SIZE; i++) {
+        if (i == 4 || i == 6 || i == 8 || i == 10) ss << '-';
+        ss << std::setw(2) << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
     }
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
-    item << new QStandardItem(QString::fromStdString(uuidSs.str()));
+    item << new QStandardItem(QString::fromStdString(ss.str()));
+    parent->appendRow(item);
+}
+
+void addLUIDItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
+{
+    const QJsonArray values = iterator.value().toJsonArray();
+    std::ostringstream ss;
+    ss << std::hex << std::noshowbase << std::uppercase << std::setfill('0');
+    for (size_t i = 0; i < VK_LUID_SIZE; i++) {
+        if (i == 4) ss << '-';
+        ss << std::setw(2) << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
+    }
+    QList<QStandardItem*> item;
+    item << new QStandardItem(iterator.key());
+    item << new QStandardItem(QString::fromStdString(ss.str()));
     parent->appendRow(item);
 }
 
@@ -1109,6 +1124,10 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     }
     if (vulkanResources::uuidValueNames.contains(key)) {
         addUUIDItem(parent, iterator);
+        return;
+    }
+    if (vulkanResources::luidValueNames.contains(key)) {
+        addLUIDItem(parent, iterator);
         return;
     }
     if (vulkanResources::hexValueNames.contains(key)) {
