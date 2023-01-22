@@ -766,7 +766,7 @@ bool VulkanCapsViewer::initVulkan()
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
         if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
             auto native = QGuiApplication::platformNativeInterface();
-            auto display = static_cast<wl_display*>(native->nativeResourceForWindow("display", NULL));
+            auto display = static_cast<wl_display*>(native->nativeResourceForIntegration("display"));
 	    auto surface = static_cast<wl_surface*>(native->nativeResourceForWindow("surface", reinterpret_cast<QWindow*>(this)));
 	    if(display != NULL && surface != NULL) {
                 VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
