@@ -32,8 +32,8 @@ linux:!android {
     }
     qtHaveModule(waylandclient) {
         message("Supporting Wayland")
-        DEFINES += VK_USE_PLATFORM_XCB_KHR
         QT += waylandclient
+        QT += gui-private
         DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
