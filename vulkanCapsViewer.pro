@@ -27,7 +27,7 @@ linux:!android {
     LIBS += -lvulkan
     qtHaveModule(x11extras) {
         message("Supporting X11")
-        QT += x11extras
+        QT += gui-private
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
     qtHaveModule(waylandclient) {

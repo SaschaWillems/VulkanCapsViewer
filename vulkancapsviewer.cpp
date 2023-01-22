@@ -57,7 +57,7 @@
 #endif
 
 #ifdef VK_USE_PLATFORM_XCB_KHR
-#include <QX11Info>
+#include <qpa/qplatformnativeinterface.h>
 #endif
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
@@ -781,11 +781,16 @@ bool VulkanCapsViewer::initVulkan()
 
 #if defined(VK_USE_PLATFORM_XCB_KHR)
         if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
-            VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.connection = QX11Info::connection();
-            surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
-            surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+            auto native = QGuiApplication::platformNativeInterface();
+            auto connection = static_cast<xcb_connection_t*>(native->nativeResourceForIntegration("connection"));
+            auto window = this->winId();
+            if(connection != NULL) {
+                VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
+                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+                surfaceCreateInfo.connection = connection;
+                surfaceCreateInfo.window = (xcb_window_t)(intptr_t)window;
+                surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+            }
         }
 #endif
 
