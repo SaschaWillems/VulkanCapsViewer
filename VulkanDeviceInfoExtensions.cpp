@@ -423,6 +423,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxSubpassShadingWorkgroupSizeAspectRatio", QVariant(extProps.maxSubpassShadingWorkgroupSizeAspectRatio));
 	}
+	if (extensionSupported("VK_HUAWEI_cluster_culling_shader")) {
+		const char* extension("VK_HUAWEI_cluster_culling_shader");
+		VkPhysicalDeviceClusterCullingShaderPropertiesHUAWEI extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_PROPERTIES_HUAWEI };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxWorkGroupCount", QVariant::fromValue(QVariantList({ extProps.maxWorkGroupCount[0], extProps.maxWorkGroupCount[1], extProps.maxWorkGroupCount[2] })));
+		pushProperty2(extension, "maxWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxWorkGroupSize[0], extProps.maxWorkGroupSize[1], extProps.maxWorkGroupSize[2] })));
+		pushProperty2(extension, "maxOutputClusterCount", QVariant(extProps.maxOutputClusterCount));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 	if (extensionSupported("VK_KHR_multiview")) {
@@ -1478,6 +1487,14 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "invocationMask", extFeatures.invocationMask);
+	}
+	if (extensionSupported("VK_HUAWEI_cluster_culling_shader")) {
+		const char* extension("VK_HUAWEI_cluster_culling_shader");
+		VkPhysicalDeviceClusterCullingShaderFeaturesHUAWEI extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_CULLING_SHADER_FEATURES_HUAWEI };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "clustercullingShader", extFeatures.clustercullingShader);
+		pushFeature2(extension, "multiviewClusterCullingShader", extFeatures.multiviewClusterCullingShader);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_INTEL() {
