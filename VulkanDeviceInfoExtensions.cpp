@@ -69,6 +69,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMD() {
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
+	if (extensionSupported("VK_ARM_shader_core_properties")) {
+		const char* extension("VK_ARM_shader_core_properties");
+		VkPhysicalDeviceShaderCorePropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_PROPERTIES_ARM };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "pixelRate", QVariant(extProps.pixelRate));
+		pushProperty2(extension, "texelRate", QVariant(extProps.texelRate));
+		pushProperty2(extension, "fmaRate", QVariant(extProps.fmaRate));
+	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
 		const char* extension("VK_ARM_shader_core_builtins");
 		VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM };
@@ -1370,6 +1379,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pageableDeviceLocalMemory", extFeatures.pageableDeviceLocalMemory);
 	}
+	if (extensionSupported("VK_EXT_image_sliced_view_of_3d")) {
+		const char* extension("VK_EXT_image_sliced_view_of_3d");
+		VkPhysicalDeviceImageSlicedViewOf3DFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_SLICED_VIEW_OF_3D_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "imageSlicedViewOf3D", extFeatures.imageSlicedViewOf3D);
+	}
 	if (extensionSupported("VK_EXT_depth_clamp_zero_one")) {
 		const char* extension("VK_EXT_depth_clamp_zero_one");
 		VkPhysicalDeviceDepthClampZeroOneFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_EXT };
@@ -1471,6 +1487,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "mutableDescriptorType", extFeatures.mutableDescriptorType);
+	}
+	if (extensionSupported("VK_EXT_pipeline_library_group_handles")) {
+		const char* extension("VK_EXT_pipeline_library_group_handles");
+		VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_LIBRARY_GROUP_HANDLES_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelineLibraryGroupHandles", extFeatures.pipelineLibraryGroupHandles);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
@@ -2004,6 +2027,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "multiviewPerViewViewports", extFeatures.multiviewPerViewViewports);
+	}
+	if (extensionSupported("VK_QCOM_multiview_per_view_render_areas")) {
+		const char* extension("VK_QCOM_multiview_per_view_render_areas");
+		VkPhysicalDeviceMultiviewPerViewRenderAreasFeaturesQCOM extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PER_VIEW_RENDER_AREAS_FEATURES_QCOM };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "multiviewPerViewRenderAreas", extFeatures.multiviewPerViewRenderAreas);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_SEC() {
