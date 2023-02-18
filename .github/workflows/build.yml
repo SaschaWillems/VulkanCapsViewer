@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: linux
@@ -55,7 +55,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: linux
@@ -92,7 +92,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: mac
@@ -124,7 +124,7 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
 
       - name: Build
         env:
@@ -149,7 +149,7 @@ jobs:
         with:
           arch: x86
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           setup-python: 'false'
           version: '5.12.9'
