@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -947,7 +947,7 @@ void VulkanCapsViewer::getGPUs()
 #endif
 }
 
-void VulkanCapsViewer::connectFilterAndModel(QStandardItemModel& model, TreeProxyFilter& filter)
+void VulkanCapsViewer::connectFilterAndModel(QStandardItemModel& model, CustomFilterProxyModel& filter)
 {
     filter.setSourceModel(&model);
     filter.setFilterKeyColumn(-1);
