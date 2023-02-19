@@ -38,7 +38,7 @@
 #include "vulkandatabase.h"
 #include "vulkanandroid.h"
 #include "VulkanContext.h"
-#include "CustomFilterProxyModel.hpp"
+#include "CustomFilterProxyModel.h"
 
 #include "vulkan/vulkan.h"
 
