@@ -52,10 +52,6 @@
 #include <sys/system_properties.h>
 #endif
 
-#ifdef VK_USE_PLATFORM_XCB_KHR
-#include <QX11Info>
-#endif
-
 #include "vulkanandroid.h"
 
 struct OSInfo
