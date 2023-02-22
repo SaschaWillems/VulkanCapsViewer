@@ -25,18 +25,15 @@ win32 {
 }
 linux:!android {
     LIBS += -lvulkan
-    qtHaveModule(x11extras) {
-        message("Supporting X11")
-        QT += gui-private
+    contains(DEFINES, X11) {
+        message("Building for X11")
+        QT += x11extras
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
-    qtHaveModule(waylandclient) {
-        packagesExist(wayland-client) {
-                message("Supporting Wayland")
-                QT += waylandclient
-                QT += gui-private
-                DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
-	}
+    contains(DEFINES, WAYLAND) {
+        message("Building for Wayland")
+        QT += waylandclient
+        DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
     INSTALLS += target
