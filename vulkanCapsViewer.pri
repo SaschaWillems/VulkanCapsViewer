@@ -3,7 +3,6 @@
 # ------------------------------------------------------
 HEADERS += ./settings.h \
     $$PWD/CustomFilterProxyModel.h \
-    $$PWD/CustomFilterProxyModel.hpp \
     $$PWD/VulkanDeviceInfoExtensions.h \
     $$PWD/appleutils.mm \
     ./treeproxyfilter.h \
