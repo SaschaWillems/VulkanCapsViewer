@@ -440,6 +440,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 		pushProperty2(extension, "maxWorkGroupCount", QVariant::fromValue(QVariantList({ extProps.maxWorkGroupCount[0], extProps.maxWorkGroupCount[1], extProps.maxWorkGroupCount[2] })));
 		pushProperty2(extension, "maxWorkGroupSize", QVariant::fromValue(QVariantList({ extProps.maxWorkGroupSize[0], extProps.maxWorkGroupSize[1], extProps.maxWorkGroupSize[2] })));
 		pushProperty2(extension, "maxOutputClusterCount", QVariant(extProps.maxOutputClusterCount));
+		pushProperty2(extension, "indirectBufferOffsetAlignment", QVariant::fromValue(extProps.indirectBufferOffsetAlignment));
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
