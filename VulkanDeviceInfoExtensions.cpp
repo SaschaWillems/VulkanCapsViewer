@@ -401,6 +401,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxMultiDrawCount", QVariant(extProps.maxMultiDrawCount));
 	}
+	if (extensionSupported("VK_EXT_shader_tile_image")) {
+		const char* extension("VK_EXT_shader_tile_image");
+		VkPhysicalDeviceShaderTileImagePropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "shaderTileImageCoherentReadAccelerated", QVariant(bool(extProps.shaderTileImageCoherentReadAccelerated)));
+		pushProperty2(extension, "shaderTileImageReadSampleFromPixelRateInvocation", QVariant(bool(extProps.shaderTileImageReadSampleFromPixelRateInvocation)));
+		pushProperty2(extension, "shaderTileImageReadFromHelperInvocation", QVariant(bool(extProps.shaderTileImageReadFromHelperInvocation)));
+	}
 	if (extensionSupported("VK_EXT_opacity_micromap")) {
 		const char* extension("VK_EXT_opacity_micromap");
 		VkPhysicalDeviceOpacityMicromapPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_PROPERTIES_EXT };
@@ -422,6 +431,14 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "shaderModuleIdentifierAlgorithmUUID", QVariant::fromValue(arrayToQVariantList(extProps.shaderModuleIdentifierAlgorithmUUID, 16)));
+	}
+	if (extensionSupported("VK_EXT_shader_object")) {
+		const char* extension("VK_EXT_shader_object");
+		VkPhysicalDeviceShaderObjectPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "shaderBinaryUUID", QVariant::fromValue(arrayToQVariantList(extProps.shaderBinaryUUID, 16)));
+		pushProperty2(extension, "shaderBinaryVersion", QVariant(extProps.shaderBinaryVersion));
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
@@ -752,6 +769,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxFragmentShadingRateInvocationCount", QVariant(extProps.maxFragmentShadingRateInvocationCount));
+	}
+	if (extensionSupported("VK_NV_displacement_micromap")) {
+		const char* extension("VK_NV_displacement_micromap");
+		VkPhysicalDeviceDisplacementMicromapPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxDisplacementMicromapSubdivisionLevel", QVariant(extProps.maxDisplacementMicromapSubdivisionLevel));
 	}
 	if (extensionSupported("VK_NV_copy_memory_indirect")) {
 		const char* extension("VK_NV_copy_memory_indirect");
@@ -1356,6 +1380,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "image2DViewOf3D", extFeatures.image2DViewOf3D);
 		pushFeature2(extension, "sampler2DViewOf3D", extFeatures.sampler2DViewOf3D);
 	}
+	if (extensionSupported("VK_EXT_shader_tile_image")) {
+		const char* extension("VK_EXT_shader_tile_image");
+		VkPhysicalDeviceShaderTileImageFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_TILE_IMAGE_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderTileImageColorReadAccess", extFeatures.shaderTileImageColorReadAccess);
+		pushFeature2(extension, "shaderTileImageDepthReadAccess", extFeatures.shaderTileImageDepthReadAccess);
+		pushFeature2(extension, "shaderTileImageStencilReadAccess", extFeatures.shaderTileImageStencilReadAccess);
+	}
 	if (extensionSupported("VK_EXT_opacity_micromap")) {
 		const char* extension("VK_EXT_opacity_micromap");
 		VkPhysicalDeviceOpacityMicromapFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_OPACITY_MICROMAP_FEATURES_EXT };
@@ -1481,6 +1514,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineProtectedAccess", extFeatures.pipelineProtectedAccess);
+	}
+	if (extensionSupported("VK_EXT_shader_object")) {
+		const char* extension("VK_EXT_shader_object");
+		VkPhysicalDeviceShaderObjectFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderObject", extFeatures.shaderObject);
 	}
 	if (extensionSupported("VK_EXT_mutable_descriptor_type")) {
 		const char* extension("VK_EXT_mutable_descriptor_type");
@@ -1961,6 +2001,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "externalMemoryRDMA", extFeatures.externalMemoryRDMA);
+	}
+	if (extensionSupported("VK_NV_displacement_micromap")) {
+		const char* extension("VK_NV_displacement_micromap");
+		VkPhysicalDeviceDisplacementMicromapFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DISPLACEMENT_MICROMAP_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "displacementMicromap", extFeatures.displacementMicromap);
 	}
 	if (extensionSupported("VK_NV_copy_memory_indirect")) {
 		const char* extension("VK_NV_copy_memory_indirect");
