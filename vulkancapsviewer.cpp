@@ -1679,8 +1679,6 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     addTreeItem(surfaceCapsItem, "minImageCount", to_string(surfaceCaps.minImageCount));
     addTreeItem(surfaceCapsItem, "maxImageCount", to_string(surfaceCaps.maxImageCount));
     addTreeItem(surfaceCapsItem, "maxImageArrayLayers", to_string(surfaceCaps.maxImageArrayLayers));
-    addTreeItem(surfaceCapsItem, "minImageExtent", to_string(surfaceCaps.minImageExtent.width) + " x " + to_string(surfaceCaps.minImageExtent.height));
-    addTreeItem(surfaceCapsItem, "maxImageExtent", to_string(surfaceCaps.maxImageExtent.width) + " x " + to_string(surfaceCaps.maxImageExtent.height));
     addTreeItemFlags(surfaceCapsItem, "Supported usage flags", surfaceCaps.supportedUsageFlags, imageUsageBitString)->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Supported transforms", surfaceCaps.supportedTransforms, surfaceTransformBitString) ->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Composite alpha flags", surfaceCaps.supportedCompositeAlpha, compositeAlphaBitString) ->setExpanded(true);
