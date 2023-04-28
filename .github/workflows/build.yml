@@ -107,7 +107,8 @@ jobs:
       - name: Test Vulkan SDK Install
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-          echo "VULKAN_SDK=='$VULKAN_SDK'"          
+          echo "VULKAN_SDK=='$VULKAN_SDK'" 
+          ll VULKAN_SDK      
 
       - name: Build
         env:
