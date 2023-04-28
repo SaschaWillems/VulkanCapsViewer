@@ -9,79 +9,79 @@ on:
       - master
 
 jobs:
-  # build_ubuntu_x11:
-  #   name: Build Ubuntu X11
-  #   runs-on: ubuntu-20.04
+  build_ubuntu_x11:
+    name: Build Ubuntu X11
+    runs-on: ubuntu-20.04
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: "recursive"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
-  #     - uses: jurplel/install-qt-action@v2
-  #       with:
-  #         version: 5.12.9
-  #         host: linux
+      - uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.12.9
+          host: linux
 
-  #     - name: Install Vulkan SDK
-  #       run: |
-  #         sudo apt update
-  #         sudo apt install libvulkan-dev
+      - name: Install Vulkan SDK
+        run: |
+          sudo apt update
+          sudo apt install libvulkan-dev
 
-  #     - name: Build
-  #       env:
-  #         TARGET_PLATFORM: X11
-  #       run: |
-  #         echo ${TARGET_PLATFORM}
-  #         PATH="/opt/qt512/bin:$PATH"
-  #         CXX="clang++"
-  #         qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
-  #         make INSTALL_ROOT=appdir install ; find appdir/
-  #         wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-  #         chmod a+x linuxdeployqt-continuous-x86_64.AppImage
-  #         export VERSION=${TARGET_PLATFORM}
-  #         cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-  #         ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
-  #     - name: Upload
-  #       if: github.ref == 'refs/heads/master'
-  #       run: curl -T Vulkan_Caps_Viewer-X11-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+      - name: Build
+        env:
+          TARGET_PLATFORM: X11
+        run: |
+          echo ${TARGET_PLATFORM}
+          PATH="/opt/qt512/bin:$PATH"
+          CXX="clang++"
+          qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
+          make INSTALL_ROOT=appdir install ; find appdir/
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+          export VERSION=${TARGET_PLATFORM}
+          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-X11-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
-  # build_ubuntu_wayland:
-  #   name: Build Ubuntu Wayland
-  #   runs-on: ubuntu-20.04
+  build_ubuntu_wayland:
+    name: Build Ubuntu Wayland
+    runs-on: ubuntu-20.04
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: "recursive"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
-  #     - uses: jurplel/install-qt-action@v2
-  #       with:
-  #         version: 5.12.9
-  #         host: linux
+      - uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.12.9
+          host: linux
 
-  #     - name: Install Vulkan SDK
-  #       run: |
-  #         sudo apt update
-  #         sudo apt install libvulkan-dev libwayland-dev
+      - name: Install Vulkan SDK
+        run: |
+          sudo apt update
+          sudo apt install libvulkan-dev libwayland-dev
 
-  #     - name: Build
-  #       env:
-  #         TARGET_PLATFORM: wayland
-  #       run: |
-  #         echo ${TARGET_PLATFORM}
-  #         PATH="/opt/qt512/bin:$PATH"
-  #         CXX="clang++"
-  #         qmake DEFINES+=WAYLAND CONFIG+=release PREFIX=/usr
-  #         make INSTALL_ROOT=appdir install ; find appdir/
-  #         wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
-  #         chmod a+x linuxdeployqt-continuous-x86_64.AppImage
-  #         export VERSION=${TARGET_PLATFORM}
-  #         cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-  #         ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
-  #     - name: Upload
-  #       if: github.ref == 'refs/heads/master'
-  #       run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+      - name: Build
+        env:
+          TARGET_PLATFORM: wayland
+        run: |
+          echo ${TARGET_PLATFORM}
+          PATH="/opt/qt512/bin:$PATH"
+          CXX="clang++"
+          qmake DEFINES+=WAYLAND CONFIG+=release PREFIX=/usr
+          make INSTALL_ROOT=appdir install ; find appdir/
+          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
+          chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+          export VERSION=${TARGET_PLATFORM}
+          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
   build_macosx:
     name: Build macOS
@@ -104,13 +104,6 @@ jobs:
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: true
 
-      # - name: Test Vulkan SDK Install
-      #   run: |
-      #     echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-      #     echo "VULKAN_SDK=='$VULKAN_SDK'" 
-      #     cd $VULKAN_SDK/lib
-      #     ls -l
-
       - name: Build
         env:
           TARGET_PLATFORM: osx
@@ -126,62 +119,62 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
 
-  # build_windows:
-  #   name: Build Windows (64 bit)
-  #   runs-on: windows-latest
+  build_windows:
+    name: Build Windows (64 bit)
+    runs-on: windows-latest
 
-  #   steps:
-  #     - uses: ilammy/msvc-dev-cmd@v1
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
 
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: "recursive"
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
-  #     - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v2
 
-  #     - name: Build
-  #       env:
-  #         TARGET_PLATFORM: windows
-  #       run: |
-  #         qmake vulkanCapsViewer.pro
-  #         nmake release
-  #         windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
-  #         Remove-Item release\*.obj
-  #         Remove-Item release\*.res
-  #         Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
-  #     - name: Upload
-  #       if: github.ref == 'refs/heads/master'
-  #       run: curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+      - name: Build
+        env:
+          TARGET_PLATFORM: windows
+        run: |
+          qmake vulkanCapsViewer.pro
+          nmake release
+          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          Remove-Item release\*.obj
+          Remove-Item release\*.res
+          Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
-  # build_windows_x86:
-  #   name: Build Windows (32 bit)
-  #   runs-on: windows-latest
+  build_windows_x86:
+    name: Build Windows (32 bit)
+    runs-on: windows-latest
 
-  #   steps:
-  #     - uses: ilammy/msvc-dev-cmd@v1
-  #       with:
-  #         arch: x86
+    steps:
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
 
-  #     - uses: jurplel/install-qt-action@v2
-  #       with:
-  #         setup-python: 'false'
-  #         version: '5.12.9'
-  #         arch: 'win32_msvc2017'
+      - uses: jurplel/install-qt-action@v2
+        with:
+          setup-python: 'false'
+          version: '5.12.9'
+          arch: 'win32_msvc2017'
 
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         submodules: "recursive"
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
 
-  #     - name: Build
-  #       env:
-  #         TARGET_PLATFORM: windows
-  #       run: |
-  #         qmake vulkanCapsViewer.pro
-  #         nmake release
-  #         windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
-  #         Remove-Item release\*.obj
-  #         Remove-Item release\*.res
-  #         Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows_x86.zip
-  #     - name: Upload
-  #       if: github.ref == 'refs/heads/master'
-  #       run: curl -T Vulkan_Caps_Viewer-windows_x86.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
+      - name: Build
+        env:
+          TARGET_PLATFORM: windows
+        run: |
+          qmake vulkanCapsViewer.pro
+          nmake release
+          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          Remove-Item release\*.obj
+          Remove-Item release\*.res
+          Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows_x86.zip
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-windows_x86.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
