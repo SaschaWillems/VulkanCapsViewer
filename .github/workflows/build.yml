@@ -108,7 +108,7 @@ jobs:
         run: |
           echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
           echo "VULKAN_SDK=='$VULKAN_SDK'" 
-          cd $VULKAN_SDK
+          cd $VULKAN_SDK/lib
           ls -l
 
       # - name: Build
