@@ -104,27 +104,27 @@ jobs:
           vulkan-components: Vulkan-Headers, Vulkan-Loader
           vulkan-use-cache: true
 
-      - name: Test Vulkan SDK Install
-        run: |
-          echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
-          echo "VULKAN_SDK=='$VULKAN_SDK'" 
-          cd $VULKAN_SDK/lib
-          ls -l
-
-      # - name: Build
-      #   env:
-      #     TARGET_PLATFORM: osx
+      # - name: Test Vulkan SDK Install
       #   run: |
-      #     echo ${TARGET_PLATFORM}
-      #     export PATH=$PATH:/usr/local/opt/qt/bin
-      #     export CPATH=$CPATH:/usr/local/include/
-      #     qmake -config release
-      #     make -j$(nproc)
-      #     macdeployqt vulkanCapsViewer.app -dmg
-      #     cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
-      # - name: Upload
-      #   if: github.ref == 'refs/heads/master'
-      #   run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
+      #     echo "Vulkan SDK Version=='$VULKAN_SDK_VERSION'"
+      #     echo "VULKAN_SDK=='$VULKAN_SDK'" 
+      #     cd $VULKAN_SDK/lib
+      #     ls -l
+
+      - name: Build
+        env:
+          TARGET_PLATFORM: osx
+        run: |
+          echo ${TARGET_PLATFORM}
+          export PATH=$PATH:/usr/local/opt/qt/bin
+          export CPATH=$CPATH:/usr/local/include/
+          qmake -config release
+          make -j$(nproc)
+          macdeployqt vulkanCapsViewer.app -dmg
+          cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
 
   # build_windows:
   #   name: Build Windows (64 bit)
