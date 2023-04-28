@@ -92,10 +92,10 @@ jobs:
         with:
           submodules: "recursive"
 
-      # - uses: jurplel/install-qt-action@v2
-      #   with:
-      #     version: 5.12.9
-      #     host: mac
+      - uses: jurplel/install-qt-action@v2
+        with:
+          version: 5.12.9
+          host: mac
 
       - name: Prepare Vulkan SDK
         uses: edvn0/setup-vulkan-sdk@v1.3.0
