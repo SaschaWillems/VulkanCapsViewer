@@ -1860,6 +1860,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "maintenance4", extFeatures.maintenance4);
 	}
+	if (extensionSupported("VK_KHR_ray_tracing_position_fetch")) {
+		const char* extension("VK_KHR_ray_tracing_position_fetch");
+		VkPhysicalDeviceRayTracingPositionFetchFeaturesKHR extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_POSITION_FETCH_FEATURES_KHR };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingPositionFetch", extFeatures.rayTracingPositionFetch);
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 	if (extensionSupported("VK_NV_corner_sampled_image")) {
