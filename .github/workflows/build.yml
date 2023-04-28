@@ -83,9 +83,9 @@ jobs:
   #       if: github.ref == 'refs/heads/master'
   #       run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
-  build_macosx_10:
+  build_macosx:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
       - uses: actions/checkout@v3
