@@ -92,7 +92,7 @@ else()
     set_target_properties(vulkanCapsViewer PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
     set_target_properties(vulkanCapsViewer PROPERTIES INSTALL_RPATH "")
     set_target_properties(vulkanCapsViewer PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.1.dylib")
+    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "libvulkan.dylib")
 endif()
 
 
