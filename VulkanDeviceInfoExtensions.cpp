@@ -1536,6 +1536,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineLibraryGroupHandles", extFeatures.pipelineLibraryGroupHandles);
 	}
+	if (extensionSupported("VK_EXT_attachment_feedback_loop_dynamic_state")) {
+		const char* extension("VK_EXT_attachment_feedback_loop_dynamic_state");
+		VkPhysicalDeviceAttachmentFeedbackLoopDynamicStateFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ATTACHMENT_FEEDBACK_LOOP_DYNAMIC_STATE_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "attachmentFeedbackLoopDynamicState", extFeatures.attachmentFeedbackLoopDynamicState);
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	if (extensionSupported("VK_HUAWEI_subpass_shading")) {
