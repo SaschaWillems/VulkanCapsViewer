@@ -200,7 +200,7 @@ jobs:
           TARGET_PLATFORM: ANDROID
         run: |
           export ANDROID_SDK_ROOT=$ANDROID_HOME
-          export ANDROID_NDK_ROOT=$ANDROID_HOME/ndk-bundle
+          export ANDROID_NDK_ROOT=$ANDROID_NDK_ROOT
           qmake vulkanCapsViewer.pro
           make install INSTALL_ROOT=/home/runner/work/VulkanCapsViewer/VulkanCapsViewer/
           androiddeployqt --input /home/runner/work/VulkanCapsViewer/VulkanCapsViewer/android-libvulkanCapsViewer.so-deployment-settings.json --output . --android-platform android-30 --gradle
