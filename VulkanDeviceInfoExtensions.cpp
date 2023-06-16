@@ -2116,6 +2116,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_QNX() {
+#if defined(VK_USE_PLATFORM_SCREEN_QNX)
 	if (extensionSupported("VK_QNX_external_memory_screen_buffer")) {
 		const char* extension("VK_QNX_external_memory_screen_buffer");
 		VkPhysicalDeviceExternalMemoryScreenBufferFeaturesQNX extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_MEMORY_SCREEN_BUFFER_FEATURES_QNX };
@@ -2123,6 +2124,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QNX() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "screenBufferImport", extFeatures.screenBufferImport);
 	}
+#endif
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_SEC() {
 	if (extensionSupported("VK_SEC_amigo_profiling")) {
