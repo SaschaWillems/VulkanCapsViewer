@@ -4,7 +4,7 @@
  *
  * Vulkan hardware capability viewer
  * 
- * Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+ * Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
  *
  * This code is free software, you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -324,8 +324,14 @@ class CppBuilder
             });
             if (count($ext_arr) > 0) {
                 $cpp_features_block .= "void VulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
+                if ($ext_group == 'QNX') {
+                    $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
+                }
                 foreach ($ext_arr as $extension) {
                     $cpp_features_block .= $this->generateFeatures2CodeBlock($extension);
+                }
+                if ($ext_group == 'QNX') {
+                    $cpp_features_block .= "#endif\n";
                 }
                 $cpp_features_block .= "}\n";
             }
