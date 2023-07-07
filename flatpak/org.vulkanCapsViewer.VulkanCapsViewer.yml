@@ -1,0 +1,21 @@
+app-id: org.vulkanCapsViewer.VulkanCapsViewer
+runtime: org.kde.Platform
+runtime-version: '5.15-22.08'
+sdk: org.kde.Sdk
+command: vulkanCapsViewer
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=x11
+  - --socket=wayland
+  - --filesystem=host
+  - --device=dri
+modules:
+  - name: vulkanCapsViewer
+    buildsystem: qmake
+    sources:
+      - type: git
+        url: https://github.com/SaschaWillems/VulkanCapsViewer.git
+        branch: master
+      - type: patch
+        path: flatpak_install.patch

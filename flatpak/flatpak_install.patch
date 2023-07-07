@@ -1,0 +1,21 @@
+diff --git a/vulkanCapsViewer.pro b/vulkanCapsViewer.pro
+index 68d3608..447103d 100644
+--- a/vulkanCapsViewer.pro
++++ b/vulkanCapsViewer.pro
+@@ -35,13 +35,13 @@ linux:!android {
+         QT += waylandclient
+         DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
+     }
+-    target.path = /usr/bin
++    target.path = /app/bin
+     INSTALLS += target
+     desktop.files = vulkanCapsViewer.desktop
+-    desktop.path = /usr/share/applications
++    desktop.path = /app/share/applications
+     icon.extra = cp $$PWD/gfx/android_icon_256.png vulkanCapsViewer.png
+     icon.files = vulkanCapsViewer.png
+-    icon.path = /usr/share/icons/hicolor/256x256/apps/
++    icon.path = /app/share/icons/hicolor/256x256/apps/
+     INSTALLS += desktop icon
+ }
+ android {
