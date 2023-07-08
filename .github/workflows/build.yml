@@ -83,6 +83,21 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
+  build_flatpak:
+    name: Build Flatpak
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:kde-5.15-22.08
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: "recursive"
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6.1
+        with:
+          manifest-path: flatpak/org.vulkanCapsViewer.VulkanCapsViewer.yml
+
   build_macosx:
     name: Build macOS
     runs-on: macos-12
