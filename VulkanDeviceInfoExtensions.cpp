@@ -279,18 +279,18 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "lineSubPixelPrecisionBits", QVariant(extProps.lineSubPixelPrecisionBits));
 	}
-	if (extensionSupported("VK_EXT_host_image_copy")) {
-		const char* extension("VK_EXT_host_image_copy");
-		VkPhysicalDeviceHostImageCopyPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_PROPERTIES_EXT };
-		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
-		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "copySrcLayoutCount", QVariant(extProps.copySrcLayoutCount));
-		pushProperty2(extension, "pCopySrcLayouts", QVariant(extProps.pCopySrcLayouts));
-		pushProperty2(extension, "copyDstLayoutCount", QVariant(extProps.copyDstLayoutCount));
-		pushProperty2(extension, "pCopyDstLayouts", QVariant(extProps.pCopyDstLayouts));
-		pushProperty2(extension, "optimalTilingLayoutUUID", QVariant::fromValue(arrayToQVariantList(extProps.optimalTilingLayoutUUID, 16)));
-		pushProperty2(extension, "identicalMemoryTypeRequirements", QVariant(bool(extProps.identicalMemoryTypeRequirements)));
-	}
+	//if (extensionSupported("VK_EXT_host_image_copy")) {
+	//	const char* extension("VK_EXT_host_image_copy");
+	//	VkPhysicalDeviceHostImageCopyPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_PROPERTIES_EXT };
+	//	VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+	//	vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+	//	pushProperty2(extension, "copySrcLayoutCount", QVariant(extProps.copySrcLayoutCount));
+	//	pushProperty2(extension, "pCopySrcLayouts", QVariant(extProps.pCopySrcLayouts));
+	//	pushProperty2(extension, "copyDstLayoutCount", QVariant(extProps.copyDstLayoutCount));
+	//	pushProperty2(extension, "pCopyDstLayouts", QVariant(extProps.pCopyDstLayouts));
+	//	pushProperty2(extension, "optimalTilingLayoutUUID", QVariant::fromValue(arrayToQVariantList(extProps.optimalTilingLayoutUUID, 16)));
+	//	pushProperty2(extension, "identicalMemoryTypeRequirements", QVariant(bool(extProps.identicalMemoryTypeRequirements)));
+	//}
 	if (extensionSupported("VK_EXT_texel_buffer_alignment")) {
 		const char* extension("VK_EXT_texel_buffer_alignment");
 		VkPhysicalDeviceTexelBufferAlignmentProperties extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TEXEL_BUFFER_ALIGNMENT_PROPERTIES };
