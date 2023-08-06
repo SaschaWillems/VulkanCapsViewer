@@ -716,12 +716,16 @@ namespace vulkanResources {
 		"deviceUUID",
 		// Core 1.1
 		"driverUUID",
+		// Extensions
+		"shaderModuleIdentifierAlgorithmUUID",
+		"shaderBinaryUUID",
+		"optimalTilingLayoutUUID"
 	};
 
 	//Values to be displayed as LUIDs
 	const QSet<QString> luidValueNames = {
-			// Core 1.1
-			"deviceLUID"
+		// Core 1.1
+		"deviceLUID"
 	};
 
 	// Values to be displayed as hex

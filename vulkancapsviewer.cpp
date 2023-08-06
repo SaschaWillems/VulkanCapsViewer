@@ -1162,6 +1162,43 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     parent->appendRow(item);
 }
 
+void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
+{
+    QList<QStandardItem*> propertyItem;
+    propertyItem << new QStandardItem(QString::fromStdString(property.name));
+
+    if (vulkanResources::uuidValueNames.contains(QString::fromStdString(property.name))) {
+        const QJsonArray values = property.value.toJsonArray();
+        std::ostringstream ss;
+        ss << std::hex << std::noshowbase << std::uppercase << std::setfill('0');
+        for (size_t i = 0; i < VK_UUID_SIZE; i++) {
+            if (i == 4 || i == 6 || i == 8 || i == 10) ss << '-';
+            ss << std::setw(2) << static_cast<unsigned short>(values[static_cast<int>(i)].toInt());
+        }
+        propertyItem << new QStandardItem(QString::fromStdString(ss.str()));
+        item.first()->appendRow(propertyItem);
+        return;
+    }
+
+    if (property.value.canConvert(QVariant::List)) {
+        propertyItem << new QStandardItem(arrayToStr(property.value));
+    }
+    else {
+        switch (property.value.type()) {
+        case QVariant::Bool: {
+            bool boolVal = property.value.toBool();
+            propertyItem << new QStandardItem(boolVal ? "true" : "false");
+            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+            break;
+        }
+        default:
+            propertyItem << new QStandardItem(property.value.toString());
+        }
+    }
+
+    item.first()->appendRow(propertyItem);
+}
+
 void VulkanCapsViewer::displayDevice(int index)
 {
     assert(index < vulkanGPUs.size());
@@ -1272,25 +1309,7 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
                         extItem << new QStandardItem(QString::fromStdString(extension.extensionName));
                         extItem << new QStandardItem();
                     }
-                    QList<QStandardItem*> propertyItem;
-                    propertyItem << new QStandardItem(QString::fromStdString(property.name));
-
-                    if (property.value.canConvert(QVariant::List)) {
-                        propertyItem << new QStandardItem(arrayToStr(property.value));
-                    }
-                    else {
-                        switch (property.value.type()) {
-                        case QVariant::Bool: {
-                            bool boolVal = property.value.toBool();
-                            propertyItem << new QStandardItem(boolVal ? "true" : "false");
-                            propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
-                            break;
-                        }
-                        default:
-                            propertyItem << new QStandardItem(property.value.toString());
-                        }
-                    }
-                    extItem.first()->appendRow(propertyItem);
+                    addExtensionPropertiesRow(extItem, property);
                 }
             }
             if (hasProperties) {
