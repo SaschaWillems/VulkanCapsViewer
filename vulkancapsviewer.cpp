@@ -1184,7 +1184,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
             QList<QVariant> list = property.value.toList();
             for (auto i = 0; i < list.size(); i++) {
                 QStandardItem* formatItem = new QStandardItem();
-                formatItem->setText(vulkanResources::formatQString((VkFormat)list[i].toInt()));
+                formatItem->setText(vulkanResources::imageLayoutString((VkImageLayout)list[i].toInt()));
                 propertyItem.first()->appendRow(formatItem);
             }
         }
