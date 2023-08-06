@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -399,6 +399,11 @@ namespace vulkanResources {
 #undef STR
 		default: return "UNKNOWN_ENUM (" + toHexString(format) + ")";
 		}
+	}
+
+	inline QString formatQString(const VkFormat format)
+	{
+		return QString::fromStdString(formatString(format));
 	}
 
 	inline std::string presentModeKHRString(const VkPresentModeKHR presentMode)

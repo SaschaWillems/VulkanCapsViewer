@@ -120,7 +120,6 @@ QString arrayToStr(QVariant value) {
     return "[" + imploded + "]";
 }
 
-
 #if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_ANDROID_KHR)
 void setTouchProps(QWidget *widget) {
     QScroller *scroller = QScroller::scroller(widget);
@@ -1181,6 +1180,14 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
     }
 
     if (property.value.canConvert(QVariant::List)) {
+        if ((strcmp(property.extension, VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME) == 0) && ((property.name == "pCopySrcLayouts") || (property.name == "pCopyDstLayouts"))) {
+            QList<QVariant> list = property.value.toList();
+            for (auto i = 0; i < list.size(); i++) {
+                QStandardItem* formatItem = new QStandardItem();
+                formatItem->setText(vulkanResources::formatQString((VkFormat)list[i].toInt()));
+                propertyItem.first()->appendRow(formatItem);
+            }
+        }
         propertyItem << new QStandardItem(arrayToStr(property.value));
     }
     else {
