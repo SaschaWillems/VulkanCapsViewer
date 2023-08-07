@@ -410,7 +410,7 @@ namespace vulkanResources {
 	{
 		switch (imageLayout)
 		{
-#define STR(r) case VK_IMAGE_LAYOUT_##r##: return #r
+#define STR(r) case VK_IMAGE_LAYOUT_##r: return #r
 			STR(UNDEFINED);
 			STR(GENERAL);
 			STR(COLOR_ATTACHMENT_OPTIMAL);
