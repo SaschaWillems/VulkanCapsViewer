@@ -81,6 +81,17 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 		pushProperty2(extension, "executionGraphDispatchAddressAlignment", QVariant(extProps.executionGraphDispatchAddressAlignment));
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
+	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
+		const char* extension("VK_ANDROID_external_format_resolve");
+		VkPhysicalDeviceExternalFormatResolvePropertiesANDROID extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_PROPERTIES_ANDROID };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "nullColorAttachmentWithExternalFormatResolve", QVariant(bool(extProps.nullColorAttachmentWithExternalFormatResolve)));
+		pushProperty2(extension, "externalFormatResolveChromaOffsetX", QVariant(extProps.externalFormatResolveChromaOffsetX));
+		pushProperty2(extension, "externalFormatResolveChromaOffsetY", QVariant(extProps.externalFormatResolveChromaOffsetY));
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 	if (extensionSupported("VK_ARM_shader_core_properties")) {
 		const char* extension("VK_ARM_shader_core_properties");
@@ -919,6 +930,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_QCOM() {
 void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_AMD();
     readPhysicalProperties_AMDX();
+    readPhysicalProperties_ANDROID();
     readPhysicalProperties_ARM();
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
@@ -963,6 +975,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderEnqueue", extFeatures.shaderEnqueue);
+	}
+}
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
+	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
+		const char* extension("VK_ANDROID_external_format_resolve");
+		VkPhysicalDeviceExternalFormatResolveFeaturesANDROID extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_FEATURES_ANDROID };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "externalFormatResolve", extFeatures.externalFormatResolve);
 	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
@@ -2309,6 +2330,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_AMD();
     readPhysicalFeatures_AMDX();
+    readPhysicalFeatures_ANDROID();
     readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
     readPhysicalFeatures_HUAWEI();
