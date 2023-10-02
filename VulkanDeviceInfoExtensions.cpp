@@ -81,6 +81,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 		pushProperty2(extension, "executionGraphDispatchAddressAlignment", QVariant(extProps.executionGraphDispatchAddressAlignment));
 	}
 }
+#ifdef ANDROID
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
@@ -92,6 +93,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
 		pushProperty2(extension, "externalFormatResolveChromaOffsetY", QVariant(extProps.externalFormatResolveChromaOffsetY));
 	}
 }
+#endif
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 	if (extensionSupported("VK_ARM_shader_core_properties")) {
 		const char* extension("VK_ARM_shader_core_properties");
@@ -930,7 +932,9 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_QCOM() {
 void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_AMD();
     readPhysicalProperties_AMDX();
+#ifdef ANDROID
     readPhysicalProperties_ANDROID();
+#endif
     readPhysicalProperties_ARM();
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
@@ -977,6 +981,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 		pushFeature2(extension, "shaderEnqueue", extFeatures.shaderEnqueue);
 	}
 }
+#ifdef ANDROID
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
@@ -986,6 +991,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
 		pushFeature2(extension, "externalFormatResolve", extFeatures.externalFormatResolve);
 	}
 }
+#endif
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 	if (extensionSupported("VK_ARM_rasterization_order_attachment_access")) {
 		const char* extension("VK_ARM_rasterization_order_attachment_access");
@@ -2330,7 +2336,9 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_AMD();
     readPhysicalFeatures_AMDX();
+#ifdef ANDROID
     readPhysicalFeatures_ANDROID();
+#endif
     readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
     readPhysicalFeatures_HUAWEI();

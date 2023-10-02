@@ -72,8 +72,10 @@ private:
     void readPhysicalProperties_AMD();
     void readPhysicalFeatures_AMDX();
     void readPhysicalProperties_AMDX();
+#ifdef ANDROID
     void readPhysicalFeatures_ANDROID();
     void readPhysicalProperties_ANDROID();
+#endif
     void readPhysicalFeatures_ARM();
     void readPhysicalProperties_ARM();
     void readPhysicalFeatures_EXT();
