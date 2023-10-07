@@ -327,10 +327,13 @@ class CppBuilder
                 if ($ext_group == 'QNX') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
                 }
+                if ($ext_group == 'ANDROID') {
+                    $cpp_features_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
+                }                
                 foreach ($ext_arr as $extension) {
                     $cpp_features_block .= $this->generateFeatures2CodeBlock($extension);
                 }
-                if ($ext_group == 'QNX') {
+                if (in_array($ext_group, ['QNX', 'ANDROID']) != false) {
                     $cpp_features_block .= "#endif\n";
                 }
                 $cpp_features_block .= "}\n";
@@ -341,9 +344,18 @@ class CppBuilder
             });
             if (count($ext_arr) > 0) {
                 $cpp_properties_block .= "void VulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
+                if ($ext_group == 'QNX') {
+                    $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
+                }
+                if ($ext_group == 'ANDROID') {
+                    $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
+                }                    
                 foreach ($ext_arr as $extension) {
                     $cpp_properties_block .= $this->generateProperties2CodeBlock($extension);
                 }
+                if (in_array($ext_group, ['QNX', 'ANDROID']) != false) {
+                    $cpp_properties_block .= "#endif\n";
+                }                
                 $cpp_properties_block .= "}\n";
             }
         }
