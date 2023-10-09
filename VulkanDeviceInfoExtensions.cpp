@@ -81,8 +81,8 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 		pushProperty2(extension, "executionGraphDispatchAddressAlignment", QVariant(extProps.executionGraphDispatchAddressAlignment));
 	}
 }
-#ifdef ANDROID
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
+#if defined(VK_USE_PLATFORM_ANDROID)
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
 		VkPhysicalDeviceExternalFormatResolvePropertiesANDROID extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_PROPERTIES_ANDROID };
@@ -92,8 +92,8 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
 		pushProperty2(extension, "externalFormatResolveChromaOffsetX", QVariant(extProps.externalFormatResolveChromaOffsetX));
 		pushProperty2(extension, "externalFormatResolveChromaOffsetY", QVariant(extProps.externalFormatResolveChromaOffsetY));
 	}
-}
 #endif
+}
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 	if (extensionSupported("VK_ARM_shader_core_properties")) {
 		const char* extension("VK_ARM_shader_core_properties");
@@ -464,6 +464,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "maxOpacity2StateSubdivisionLevel", QVariant(extProps.maxOpacity2StateSubdivisionLevel));
 		pushProperty2(extension, "maxOpacity4StateSubdivisionLevel", QVariant(extProps.maxOpacity4StateSubdivisionLevel));
+	}
+	if (extensionSupported("VK_EXT_nested_command_buffer")) {
+		const char* extension("VK_EXT_nested_command_buffer");
+		VkPhysicalDeviceNestedCommandBufferPropertiesEXT extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NESTED_COMMAND_BUFFER_PROPERTIES_EXT };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxCommandBufferNestingLevel", QVariant(extProps.maxCommandBufferNestingLevel));
 	}
 	if (extensionSupported("VK_EXT_extended_dynamic_state3")) {
 		const char* extension("VK_EXT_extended_dynamic_state3");
@@ -891,6 +898,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "rayTracingInvocationReorderReorderingHint", QVariant(extProps.rayTracingInvocationReorderReorderingHint));
 	}
+	if (extensionSupported("VK_NV_extended_sparse_address_space")) {
+		const char* extension("VK_NV_extended_sparse_address_space");
+		VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_SPARSE_ADDRESS_SPACE_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "extendedSparseAddressSpaceSize", QVariant::fromValue(extProps.extendedSparseAddressSpaceSize));
+		pushProperty2(extension, "extendedSparseImageUsageFlags", QVariant(extProps.extendedSparseImageUsageFlags));
+		pushProperty2(extension, "extendedSparseBufferUsageFlags", QVariant(extProps.extendedSparseBufferUsageFlags));
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NVX() {
 	if (extensionSupported("VK_NVX_multiview_per_view_attributes")) {
@@ -932,9 +948,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_QCOM() {
 void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_AMD();
     readPhysicalProperties_AMDX();
-#ifdef ANDROID
     readPhysicalProperties_ANDROID();
-#endif
     readPhysicalProperties_ARM();
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
@@ -981,8 +995,8 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 		pushFeature2(extension, "shaderEnqueue", extFeatures.shaderEnqueue);
 	}
 }
-#ifdef ANDROID
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
+#if defined(VK_USE_PLATFORM_ANDROID)
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
 		VkPhysicalDeviceExternalFormatResolveFeaturesANDROID extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_FORMAT_RESOLVE_FEATURES_ANDROID };
@@ -990,8 +1004,8 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "externalFormatResolve", extFeatures.externalFormatResolve);
 	}
-}
 #endif
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 	if (extensionSupported("VK_ARM_rasterization_order_attachment_access")) {
 		const char* extension("VK_ARM_rasterization_order_attachment_access");
@@ -1571,6 +1585,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "imageCompressionControlSwapchain", extFeatures.imageCompressionControlSwapchain);
+	}
+	if (extensionSupported("VK_EXT_nested_command_buffer")) {
+		const char* extension("VK_EXT_nested_command_buffer");
+		VkPhysicalDeviceNestedCommandBufferFeaturesEXT extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_NESTED_COMMAND_BUFFER_FEATURES_EXT };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "nestedCommandBuffer", extFeatures.nestedCommandBuffer);
+		pushFeature2(extension, "nestedCommandBufferRendering", extFeatures.nestedCommandBufferRendering);
+		pushFeature2(extension, "nestedCommandBufferSimultaneousUse", extFeatures.nestedCommandBufferSimultaneousUse);
 	}
 	if (extensionSupported("VK_EXT_extended_dynamic_state3")) {
 		const char* extension("VK_EXT_extended_dynamic_state3");
@@ -2220,6 +2243,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayTracingInvocationReorder", extFeatures.rayTracingInvocationReorder);
 	}
+	if (extensionSupported("VK_NV_extended_sparse_address_space")) {
+		const char* extension("VK_NV_extended_sparse_address_space");
+		VkPhysicalDeviceExtendedSparseAddressSpaceFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTENDED_SPARSE_ADDRESS_SPACE_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "extendedSparseAddressSpace", extFeatures.extendedSparseAddressSpace);
+	}
 	if (extensionSupported("VK_NV_descriptor_pool_overallocation")) {
 		const char* extension("VK_NV_descriptor_pool_overallocation");
 		VkPhysicalDeviceDescriptorPoolOverallocationFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_POOL_OVERALLOCATION_FEATURES_NV };
@@ -2336,9 +2366,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_AMD();
     readPhysicalFeatures_AMDX();
-#ifdef ANDROID
     readPhysicalFeatures_ANDROID();
-#endif
     readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
     readPhysicalFeatures_HUAWEI();
