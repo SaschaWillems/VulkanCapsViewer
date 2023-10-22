@@ -104,6 +104,13 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 		pushProperty2(extension, "texelRate", QVariant(extProps.texelRate));
 		pushProperty2(extension, "fmaRate", QVariant(extProps.fmaRate));
 	}
+	if (extensionSupported("VK_ARM_scheduling_controls")) {
+		const char* extension("VK_ARM_scheduling_controls");
+		VkPhysicalDeviceSchedulingControlsPropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_PROPERTIES_ARM };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "schedulingControlsFlags", QVariant(extProps.schedulingControlsFlags));
+	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
 		const char* extension("VK_ARM_shader_core_builtins");
 		VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_CORE_BUILTINS_PROPERTIES_ARM };
@@ -845,6 +852,14 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "minSequencesIndexBufferOffsetAlignment", QVariant(extProps.minSequencesIndexBufferOffsetAlignment));
 		pushProperty2(extension, "minIndirectCommandsBufferOffsetAlignment", QVariant(extProps.minIndirectCommandsBufferOffsetAlignment));
 	}
+	if (extensionSupported("VK_NV_cuda_kernel_launch")) {
+		const char* extension("VK_NV_cuda_kernel_launch");
+		VkPhysicalDeviceCudaKernelLaunchPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_PROPERTIES_NV };
+		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "computeCapabilityMinor", QVariant(extProps.computeCapabilityMinor));
+		pushProperty2(extension, "computeCapabilityMajor", QVariant(extProps.computeCapabilityMajor));
+	}
 	if (extensionSupported("VK_NV_fragment_shading_rate_enums")) {
 		const char* extension("VK_NV_fragment_shading_rate_enums");
 		VkPhysicalDeviceFragmentShadingRateEnumsPropertiesNV extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_SHADING_RATE_ENUMS_PROPERTIES_NV };
@@ -1015,6 +1030,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		pushFeature2(extension, "rasterizationOrderColorAttachmentAccess", extFeatures.rasterizationOrderColorAttachmentAccess);
 		pushFeature2(extension, "rasterizationOrderDepthAttachmentAccess", extFeatures.rasterizationOrderDepthAttachmentAccess);
 		pushFeature2(extension, "rasterizationOrderStencilAttachmentAccess", extFeatures.rasterizationOrderStencilAttachmentAccess);
+	}
+	if (extensionSupported("VK_ARM_scheduling_controls")) {
+		const char* extension("VK_ARM_scheduling_controls");
+		VkPhysicalDeviceSchedulingControlsFeaturesARM extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_FEATURES_ARM };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "schedulingControls", extFeatures.schedulingControls);
 	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
 		const char* extension("VK_ARM_shader_core_builtins");
@@ -2167,6 +2189,13 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "diagnosticsConfig", extFeatures.diagnosticsConfig);
+	}
+	if (extensionSupported("VK_NV_cuda_kernel_launch")) {
+		const char* extension("VK_NV_cuda_kernel_launch");
+		VkPhysicalDeviceCudaKernelLaunchFeaturesNV extFeatures { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUDA_KERNEL_LAUNCH_FEATURES_NV };
+		VkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "cudaKernelLaunchFeatures", extFeatures.cudaKernelLaunchFeatures);
 	}
 	if (extensionSupported("VK_NV_fragment_shading_rate_enums")) {
 		const char* extension("VK_NV_fragment_shading_rate_enums");

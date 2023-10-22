@@ -10,6 +10,7 @@ VK_ANDROID_external_format_resolve
 ARM
 VK_ARM_rasterization_order_attachment_access
 VK_ARM_shader_core_properties
+VK_ARM_scheduling_controls
 VK_ARM_shader_core_builtins
 EXT
 VK_EXT_transform_feedback
@@ -173,6 +174,7 @@ VK_NV_device_generated_commands
 VK_NV_inherited_viewport_scissor
 VK_NV_present_barrier
 VK_NV_device_diagnostics_config
+VK_NV_cuda_kernel_launch
 VK_NV_fragment_shading_rate_enums
 VK_NV_ray_tracing_motion_blur
 VK_NV_external_memory_rdma
