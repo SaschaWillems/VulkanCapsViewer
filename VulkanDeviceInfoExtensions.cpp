@@ -109,7 +109,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 		VkPhysicalDeviceSchedulingControlsPropertiesARM extProps { VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SCHEDULING_CONTROLS_PROPERTIES_ARM };
 		VkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "schedulingControlsFlags", QVariant(extProps.schedulingControlsFlags));
+ 		pushProperty2(extension, "schedulingControlsFlags", QVariant((qulonglong)extProps.schedulingControlsFlags));
 	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
 		const char* extension("VK_ARM_shader_core_builtins");
