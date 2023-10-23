@@ -71,7 +71,7 @@ android {
 
     defaultConfig {
         resConfig "en"
-        minSdkVersion = "31"
-        targetSdkVersion = "33"
+        minSdkVersion = "29"
+        targetSdkVersion = "29"
     }
 }
