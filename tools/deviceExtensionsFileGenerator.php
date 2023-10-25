@@ -243,8 +243,14 @@ class CppBuilder
                         $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.$name))";
                         break;
                     case 'VkDeviceSize':
+                    case 'int64_t':
                     case 'uint64_t':
+                    case 'VkPhysicalDeviceSchedulingControlsFlagsARM':
+                    case 'VkMemoryDecompressionMethodFlagsNV':
                         $qtype = "QVariant::fromValue(extProps.$name)";
+                        break;
+                    case 'VkConformanceVersion':
+                        $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.$name))";
                         break;
                     default:
                         $qtype = "QVariant(extProps.$name)";
