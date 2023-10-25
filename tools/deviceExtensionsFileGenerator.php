@@ -167,8 +167,9 @@ class CppBuilder
         $sType = TypeContainer::getsType($extension->features2);
         $res = "\tif (extensionSupported(\"{$extension->name}\")) {\n";
         $res .= "\t\tconst char* extension(\"{$extension->name}\");\n";
-        $res .= "\t\t{$extension->features2['name']} extFeatures { $sType };\n";
-        $res .= "\t\tVkPhysicalDeviceFeatures2 deviceFeatures2(initDeviceFeatures2(&extFeatures));\n";
+        $res .= "\t\t{$extension->features2['name']}* extFeatures = new {$extension->features2['name']}{};\n";        
+        $res .= "\t\textFeatures->sType = $sType;\n";
+        $res .= "\t\tdeviceFeatures2 = initDeviceFeatures2(extFeatures);\n";
         $res .= "\t\tvulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);\n";
         foreach ($extension->features2->member as $member) {
             // Skip types that are not related to feature details
@@ -177,8 +178,9 @@ class CppBuilder
                 continue;
             }
             $name = (string)$member->name;
-            $res .= "\t\tpushFeature2(extension, \"$name\", extFeatures.$name);\n";
+            $res .= "\t\tpushFeature2(extension, \"$name\", extFeatures->$name);\n";
         }
+        $res .= "\t\tdelete extFeatures;\n";        
         $res .= "\t}\n";
         return $res;
     }
@@ -188,8 +190,9 @@ class CppBuilder
         $sType = TypeContainer::getsType($extension->properties2);
         $res = "\tif (extensionSupported(\"{$extension->name}\")) {\n";
         $res .= "\t\tconst char* extension(\"{$extension->name}\");\n";
-        $res .= "\t\t{$extension->properties2['name']} extProps { $sType };\n";
-        $res .= "\t\tVkPhysicalDeviceProperties2 deviceProps2(initDeviceProperties2(&extProps));\n";
+        $res .= "\t\t{$extension->properties2['name']}* extProps = new {$extension->properties2['name']}{};\n";
+        $res .= "\t\textProps->sType = $sType;\n";
+        $res .= "\t\tdeviceProps2 = initDeviceProperties2(extProps);\n";
         $res .= "\t\tvulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);\n";
         // @todo: QVariant vs. QVariant::fromValue
         foreach ($extension->properties2->member as $member) {
@@ -201,11 +204,11 @@ class CppBuilder
             $name = (string)$member->name;
             $vktype = (string)$member->type;
             if ($type == "VkExtent2D") {
-                $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(QVariantList({ extProps.$name.width, extProps.$name.height })));\n";
+                $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(QVariantList({ extProps->$name.width, extProps->$name.height })));\n";
                 continue;
             }
             if ($type == "size_t") {
-                $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(extProps.$name));\n";
+                $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(extProps->$name));\n";
                 continue;
             }
             // Properties can be arrays
@@ -227,7 +230,7 @@ class CppBuilder
                             break;
                     }
                     if ($enum_dim > 0) {
-                        $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(arrayToQVariantList(extProps.$name, $enum_dim)));\n";
+                        $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(arrayToQVariantList(extProps->$name, $enum_dim)));\n";
                         continue;
                     }
                 } else {
@@ -237,34 +240,35 @@ class CppBuilder
             if ($dim == 0) {
                 switch ($vktype) {
                     case 'VkBool32':
-                        $qtype = "QVariant(bool(extProps.$name))";
+                        $qtype = "QVariant(bool(extProps->$name))";
                         break;
                     case 'VkConformanceVersionKHR':
-                        $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.$name))";
+                        $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->$name))";
                         break;
                     case 'VkDeviceSize':
                     case 'int64_t':
                     case 'uint64_t':
                     case 'VkPhysicalDeviceSchedulingControlsFlagsARM':
                     case 'VkMemoryDecompressionMethodFlagsNV':
-                        $qtype = "QVariant::fromValue(extProps.$name)";
+                        $qtype = "QVariant::fromValue(extProps->$name)";
                         break;
                     case 'VkConformanceVersion':
-                        $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps.$name))";
+                        $qtype = "QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->$name))";
                         break;
                     default:
-                        $qtype = "QVariant(extProps.$name)";
+                        $qtype = "QVariant(extProps->$name)";
                 }
                 $res .= "\t\tpushProperty2(extension, \"$name\", $qtype);\n";
             } else {
                 $vars = [];
                 for ($i = 0; $i < $dim; $i++) {
-                    $vars[] = "extProps." . $name . "[" . $i . "]";
+                    $vars[] = "extProps->" . $name . "[" . $i . "]";
                 }
                 $qlist = implode(', ', $vars);
                 $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(QVariantList({ $qlist })));\n";
             }
         }
+        $res .= "\t\tdelete extProps;\n";        
         $res .= "\t}\n";
         return $res;
     }
@@ -330,6 +334,7 @@ class CppBuilder
             });
             if (count($ext_arr) > 0) {
                 $cpp_features_block .= "void VulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
+                $cpp_features_block .= "\tVkPhysicalDeviceFeatures2 deviceFeatures2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
                 }
@@ -350,6 +355,7 @@ class CppBuilder
             });
             if (count($ext_arr) > 0) {
                 $cpp_properties_block .= "void VulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
+                $cpp_properties_block .= "\tVkPhysicalDeviceProperties2 deviceProps2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
                 }
