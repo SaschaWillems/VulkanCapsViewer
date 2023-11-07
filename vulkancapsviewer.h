@@ -37,6 +37,8 @@
 #include "vulkansurfaceinfo.hpp"
 #include "vulkandatabase.h"
 #include "vulkanandroid.h"
+#include "VulkanContext.h"
+#include "CustomFilterProxyModel.h"
 
 #include "vulkan/vulkan.h"
 
@@ -83,27 +85,24 @@ public:
 private:
     uint32_t instanceApiVersion;
     int selectedDeviceIndex = 0;
-    VkInstance instance = VK_NULL_HANDLE;
-    VkSurfaceKHR surface;
 #if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
     QVukanSurrogate *pMetalSurrogate = nullptr;
-#endif
-    std::string surfaceExtension;
+#endif    
     Ui::vulkanCapsViewerClass ui;
     struct {
-        TreeProxyFilter propertiesCore10;
-        TreeProxyFilter propertiesCore11;
-        TreeProxyFilter propertiesCore12;
-        TreeProxyFilter propertiesCore13;
-        TreeProxyFilter propertiesExtensions;
-        TreeProxyFilter featuresCore10;
-        TreeProxyFilter featuresCore11;
-        TreeProxyFilter featuresCore12;
-        TreeProxyFilter featuresCore13;
-        TreeProxyFilter featuresExtensions;
-        TreeProxyFilter formats;
-        TreeProxyFilter extensions;
-        TreeProxyFilter profiles;
+        CustomFilterProxyModel propertiesCore10;
+        CustomFilterProxyModel propertiesCore11;
+        CustomFilterProxyModel propertiesCore12;
+        CustomFilterProxyModel propertiesCore13;
+        CustomFilterProxyModel propertiesExtensions;
+        CustomFilterProxyModel featuresCore10;
+        CustomFilterProxyModel featuresCore11;
+        CustomFilterProxyModel featuresCore12;
+        CustomFilterProxyModel featuresCore13;
+        CustomFilterProxyModel featuresExtensions;
+        CustomFilterProxyModel formats;
+        CustomFilterProxyModel extensions;
+        CustomFilterProxyModel profiles;
     } filterProxies;
     struct {
         QStandardItemModel propertiesCore10;
@@ -127,7 +126,7 @@ private:
     bool initVulkan();
     void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
     void getGPUs();
-    void connectFilterAndModel(QStandardItemModel& model, TreeProxyFilter& filter);
+    void connectFilterAndModel(QStandardItemModel& model, CustomFilterProxyModel& filter);
     void displayDevice(int index);
     void displayDeviceProperties(VulkanDeviceInfo *device);
     void displayDeviceMemoryProperties(VulkanDeviceInfo *device);

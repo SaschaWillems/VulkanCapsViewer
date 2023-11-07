@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -45,8 +45,8 @@
 #include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
-#include "vulkanpfn.h"
-#include "profiles/vulkan_profiles.hpp"
+#include "VulkanContext.h"
+#include "vulkan_profiles.hpp"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
@@ -82,9 +82,7 @@ class VulkanDeviceInfo: public VulkanDeviceInfoExtensions
 {
 private:
     std::vector<VulkanLayerInfo> layers;
-    bool vulkan_1_1();
-    bool vulkan_1_2();
-    bool vulkan_1_3();
+    bool vulkanVersionSupported(uint32_t major, uint32_t minor);
     bool extensionSupported(const char* extensionName);
 #if defined(__ANDROID__)
     std::string getSystemProperty(const char* propname);
@@ -121,14 +119,14 @@ public:
     void readExtensions();
     void readLayers();
     void readSupportedFormats();
-    void readQueueFamilies(VkSurfaceKHR surface);
+    void readQueueFamilies();
     void readPhysicalProperties();
     void readPhysicalFeatures();
     void readPhysicalLimits();
     void readPhysicalMemoryProperties();
-    void readSurfaceInfo(VkSurfaceKHR surface, std::string surfaceExtension);
+    void readSurfaceInfo();
     void readPlatformDetails();
-    void readProfiles(VkInstance instance);
+    void readProfiles();
     QJsonObject toJson(QString submitter, QString comment);
 };
 

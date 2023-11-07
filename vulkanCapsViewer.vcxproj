@@ -70,7 +70,7 @@
     <QtModules>core;network;gui;widgets</QtModules>
   </PropertyGroup>
   <PropertyGroup Label="QtSettings" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <QtInstall>msvc2017_64</QtInstall>
+    <QtInstall>5.15.2_msvc2019_64</QtInstall>
     <QtModules>core;network;gui;widgets</QtModules>
   </PropertyGroup>
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.props')">
@@ -200,6 +200,8 @@
     </QtUic>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CustomFilterProxyModel.cpp" />
+    <ClCompile Include="VulkanContext.cpp" />
     <ClCompile Include="VulkanDeviceInfoExtensions.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="settings.cpp" />
@@ -208,11 +210,17 @@
     <ClCompile Include="treeproxyfilter.cpp" />
     <ClCompile Include="vulkanDeviceInfo.cpp" />
     <ClCompile Include="vulkanandroid.cpp" />
-    <ClCompile Include="vulkancapsviewer.cpp" />
+    <ClCompile Include="vulkancapsviewer.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </ClCompile>
     <ClCompile Include="vulkandatabase.cpp" />
-    <ClCompile Include="vulkanpfn.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <QtMoc Include="CustomFilterProxyModel.h" />
+    <ClInclude Include="VulkanContext.h" />
     <ClInclude Include="VulkanDeviceInfoExtensions.h" />
     <ClInclude Include="makeviewmetal.mm" />
     <ClInclude Include="settings.h" />
@@ -229,7 +237,6 @@
     </QtMoc>
     <QtMoc Include="vulkandatabase.h">
     </QtMoc>
-    <ClInclude Include="vulkanpfn.h" />
     <ClInclude Include="vulkansurfaceinfo.hpp" />
   </ItemGroup>
   <ItemGroup>

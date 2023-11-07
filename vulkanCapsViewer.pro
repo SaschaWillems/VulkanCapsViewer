@@ -60,7 +60,7 @@ android {
 }
 macx {
     DEFINES += VK_USE_PLATFORM_MACOS_MVK
-    VULKAN_DYLIB = /usr/local/lib/libvulkan.1.dylib
+    VULKAN_DYLIB = $(VULKAN_SDK)/lib/libvulkan.dylib
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
@@ -96,12 +96,6 @@ DISTFILES += \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
     android/gradlew.bat
-
-contains(ANDROID_TARGET_ARCH,armeabi-v7a) {
-    ANDROID_EXTRA_LIBS = \
-        $$PWD/libs/openssl/armeabi-v7a/libcrypto.so \
-        $$PWD/libs/openssl/armeabi-v7a/libssl.so
-}
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_EXTRA_LIBS = \

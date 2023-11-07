@@ -11,14 +11,14 @@ on:
 jobs:
   build_ubuntu_x11:
     name: Build Ubuntu X11
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: linux
@@ -48,14 +48,14 @@ jobs:
 
   build_ubuntu_wayland:
     name: Build Ubuntu Wayland
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: linux
@@ -63,7 +63,7 @@ jobs:
       - name: Install Vulkan SDK
         run: |
           sudo apt update
-          sudo apt install libvulkan-dev
+          sudo apt install libvulkan-dev libwayland-dev
 
       - name: Build
         env:
@@ -72,37 +72,43 @@ jobs:
           echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          qmake DEFINES+=wayland CONFIG+=release PREFIX=/usr
+          qmake DEFINES+=WAYLAND CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
           wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage"
           chmod a+x linuxdeployqt-continuous-x86_64.AppImage
           export VERSION=${TARGET_PLATFORM}
           cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage
+          ./linuxdeployqt-continuous-x86_64.AppImage appdir/usr/share/applications/* -appimage -exclude-libs=libwayland-client.so
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
-  build_macosx_10:
-    name: Build macOS 10
-    runs-on: macos-latest
+  build_macosx:
+    name: Build macOS
+    runs-on: macos-12
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           version: 5.12.9
           host: mac
+
+      - name: Prepare Vulkan SDK
+        uses: edvn0/setup-vulkan-sdk@v1.3.0
+        with:
+          vulkan-query-version: latest 
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
 
       - name: Build
         env:
           TARGET_PLATFORM: osx
         run: |
           echo ${TARGET_PLATFORM}
-          brew install --cask apenngrace/vulkan/vulkan-sdk
           export PATH=$PATH:/usr/local/opt/qt/bin
           export CPATH=$CPATH:/usr/local/include/
           qmake -config release
@@ -120,11 +126,11 @@ jobs:
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
 
       - name: Build
         env:
@@ -149,13 +155,13 @@ jobs:
         with:
           arch: x86
 
-      - uses: jurplel/install-qt-action@v2
+      - uses: jurplel/install-qt-action@v3
         with:
           setup-python: 'false'
           version: '5.12.9'
           arch: 'win32_msvc2017'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: "recursive"
 

@@ -4,7 +4,7 @@
 *
 * Database communication class implementation
 *
-* Copyright (C) 2016-2020 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or 
 * modify it under the terms of the GNU Lesser General Public
@@ -170,7 +170,7 @@ bool VulkanDatabase::checkCanUpdateReport(VulkanDeviceInfo& device, int reportId
 	QJsonDocument doc(device.toJson("", ""));
 	jsonPart.setBody(doc.toJson());
 	multiPart->append(jsonPart);
-	QUrl qurl(databaseUrl + "api/v3/checkcanupdatereport.php?reportid=" + QString::number(reportId));
+	QUrl qurl(databaseUrl + "api/v4/checkcanupdatereport.php?reportid=" + QString::number(reportId));
 	QNetworkRequest request(qurl);
 	QNetworkReply* reply = manager->post(request, multiPart);
 	multiPart->setParent(reply);
@@ -203,7 +203,7 @@ bool VulkanDatabase::postReportForUpdate(VulkanDeviceInfo &device, int reportId,
 	QJsonDocument doc(device.toJson("", ""));
 	jsonPart.setBody(doc.toJson());
 	multiPart->append(jsonPart);
-	QUrl qurl(databaseUrl + "api/v3/updatereport.php?reportid=" + QString::number(reportId));
+	QUrl qurl(databaseUrl + "api/v4/updatereport.php?reportid=" + QString::number(reportId));
 	QNetworkRequest request(qurl);
 	QNetworkReply* reply = manager->post(request, multiPart);
 	multiPart->setParent(reply);

@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2021 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -401,6 +401,55 @@ namespace vulkanResources {
 		}
 	}
 
+	inline QString formatQString(const VkFormat format)
+	{
+		return QString::fromStdString(formatString(format));
+	}
+
+	inline QString imageLayoutString(const VkImageLayout imageLayout)
+	{
+		switch (imageLayout)
+		{
+#define STR(r) case VK_IMAGE_LAYOUT_##r: return #r
+			STR(UNDEFINED);
+			STR(GENERAL);
+			STR(COLOR_ATTACHMENT_OPTIMAL);
+			STR(DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+			STR(DEPTH_STENCIL_READ_ONLY_OPTIMAL);
+			STR(SHADER_READ_ONLY_OPTIMAL);
+			STR(TRANSFER_SRC_OPTIMAL);
+			STR(TRANSFER_DST_OPTIMAL);
+			STR(PREINITIALIZED);
+			STR(DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL);
+			STR(DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL);
+			STR(DEPTH_ATTACHMENT_OPTIMAL);
+			STR(DEPTH_READ_ONLY_OPTIMAL);
+			STR(STENCIL_ATTACHMENT_OPTIMAL);
+			STR(STENCIL_READ_ONLY_OPTIMAL);
+			STR(READ_ONLY_OPTIMAL);
+			STR(ATTACHMENT_OPTIMAL);
+			STR(PRESENT_SRC_KHR);
+			STR(VIDEO_DECODE_DST_KHR);
+			STR(VIDEO_DECODE_SRC_KHR);
+			STR(VIDEO_DECODE_DPB_KHR);
+			STR(SHARED_PRESENT_KHR);
+			STR(FRAGMENT_DENSITY_MAP_OPTIMAL_EXT);
+			STR(FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR);
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+			STR(VIDEO_ENCODE_DST_KHR);
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+			STR(VIDEO_ENCODE_SRC_KHR);
+#endif
+#ifdef VK_ENABLE_BETA_EXTENSIONS
+			STR(VIDEO_ENCODE_DPB_KHR);
+#endif
+			STR(ATTACHMENT_FEEDBACK_LOOP_OPTIMAL_EXT);
+#undef STR
+		default: return QString::fromStdString("UNKNOWN_ENUM (" + toHexString(imageLayout) + ")");
+		}
+	}
+
 	inline std::string presentModeKHRString(const VkPresentModeKHR presentMode)
 	{
 		switch (presentMode)
@@ -553,6 +602,7 @@ namespace vulkanResources {
 			STR(PROTECTED_BIT);
 			STR(VIDEO_DECODE_BIT_KHR);
 			STR(VIDEO_ENCODE_BIT_KHR);
+			STR(OPTICAL_FLOW_BIT_NV);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
 		};
@@ -710,11 +760,20 @@ namespace vulkanResources {
 		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"
 	};
 
-	// Values to be displayed as UUIds
+	// Values to be displayed as UUIDs
 	const QSet<QString> uuidValueNames = {
 		"deviceUUID",
 		// Core 1.1
 		"driverUUID",
+		// Extensions
+		"shaderModuleIdentifierAlgorithmUUID",
+		"shaderBinaryUUID",
+		"optimalTilingLayoutUUID"
+	};
+
+	//Values to be displayed as LUIDs
+	const QSet<QString> luidValueNames = {
+		// Core 1.1
 		"deviceLUID"
 	};
 

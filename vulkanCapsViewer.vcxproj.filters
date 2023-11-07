@@ -81,21 +81,21 @@
     <ClCompile Include="vulkanandroid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vulkancapsviewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="vulkandatabase.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="vulkanpfn.cpp">
+    <ClCompile Include="VulkanContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="vulkancapsviewer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFilterProxyModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VulkanDeviceInfoExtensions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="makeviewmetal.mm">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="settings.h">
@@ -128,10 +128,11 @@
     <QtMoc Include="vulkandatabase.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClInclude Include="vulkanpfn.h">
+    <ClInclude Include="vulkansurfaceinfo.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vulkansurfaceinfo.hpp">
+    <ClInclude Include="makeviewmetal.mm" />
+    <ClInclude Include="VulkanContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -142,16 +143,6 @@
     <CustomBuild Include="GeneratedFiles\release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="vulkancapsviewer.ui">
@@ -230,5 +221,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="vulkanCapsViewer.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <QtMoc Include="CustomFilterProxyModel.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
 </Project>
