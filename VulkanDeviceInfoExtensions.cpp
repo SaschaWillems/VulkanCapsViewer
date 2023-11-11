@@ -2110,6 +2110,18 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 		delete extFeatures;
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_IMG() {
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	if (extensionSupported("VK_IMG_relaxed_line_rasterization")) {
+		const char* extension("VK_IMG_relaxed_line_rasterization");
+		VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG* extFeatures = new VkPhysicalDeviceRelaxedLineRasterizationFeaturesIMG{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RELAXED_LINE_RASTERIZATION_FEATURES_IMG;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "relaxedLineRasterization", extFeatures->relaxedLineRasterization);
+		delete extFeatures;
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_INTEL() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
 	if (extensionSupported("VK_INTEL_shader_integer_functions2")) {
@@ -2927,6 +2939,7 @@ void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
     readPhysicalFeatures_HUAWEI();
+    readPhysicalFeatures_IMG();
     readPhysicalFeatures_INTEL();
     readPhysicalFeatures_KHR();
     readPhysicalFeatures_NV();

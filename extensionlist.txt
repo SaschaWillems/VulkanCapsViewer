@@ -104,6 +104,8 @@ HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
 VK_HUAWEI_cluster_culling_shader
+IMG
+VK_IMG_relaxed_line_rasterization
 INTEL
 VK_INTEL_shader_integer_functions2
 KHR
