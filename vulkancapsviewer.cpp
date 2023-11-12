@@ -1547,11 +1547,11 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         QList<QStandardItem *> rowItems;
         rowItems << new QStandardItem(QString::fromStdString(vulkanResources::formatString(format.format)));
 
-        std::vector<VkFormatFeatureFlags> featureFlags =
+        std::vector<uint64_t> featureFlags =
         {
-            format.properties.linearTilingFeatures,
-            format.properties.optimalTilingFeatures,
-            format.properties.bufferFeatures
+            format.linearTilingFeatures,
+            format.optimalTilingFeatures,
+            format.bufferFeatures
         };
 
         uint32_t i = 1;
@@ -1566,12 +1566,12 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         // @todo
         struct featureSet {
             std::string name;
-            VkFormatFeatureFlags2 flags;
+            uint64_t flags;
         };
         std::vector<featureSet> featureSets = {
-            { "Linear tiling flags", format.properties3.linearTilingFeatures },
-            { "Optimal tiling flags", format.properties3.optimalTilingFeatures },
-            { "Buffer features flags", format.properties3.bufferFeatures }
+            { "Linear tiling flags", format.linearTilingFeatures },
+            { "Optimal tiling flags", format.optimalTilingFeatures },
+            { "Buffer features flags", format.bufferFeatures }
         };
 
         for (auto& featureSet : featureSets)
@@ -1587,16 +1587,6 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
             }
             else
             {
-                #define ADD_FLAG(flag) \
-                    if (featureSet.flags & flag) \
-                    { \
-                        QList<QStandardItem *> flagItem; \
-                        QString flagname(#flag); \
-                        flagname = flagname.replace("VK_FORMAT_FEATURE_", ""); \
-                        flagItem << new QStandardItem(flagname); \
-                        flagItems[0]->appendRow(flagItem); \
-                    }
-
                 for (auto& formatFlag2 : vulkanResources::formatFeatureFlags2) {
                     if (featureSet.flags & formatFlag2) {
                         QList<QStandardItem*> flagItem;
@@ -1613,6 +1603,7 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         }
 
         /*
+        @todo: remove, always use flags2, as they also contain the old flags
         struct featureSet {
             std::string name;
             VkFlags flags;

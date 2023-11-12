@@ -27,8 +27,16 @@
 struct VulkanFormatInfo
 {
 	VkFormat format;
-	VkFormatProperties properties;
-	VkFormatProperties3 properties3{};
-	bool supportsFormatFeatureFlags2{ false };
+	// @todo: Don't differentiate, use uint64 and combine old and new
+	//VkFormatProperties properties;
+	//VkFormatProperties3 properties3{};
+
+	uint64_t linearTilingFeatures;
+	uint64_t optimalTilingFeatures;
+	uint64_t bufferFeatures;
+
+	bool isFeatureFlags2{ false };
+
+	// @todo: deprecate
 	bool supported;
 };

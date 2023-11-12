@@ -112,42 +112,57 @@ void VulkanDeviceInfo::readSupportedFormats()
     for (int32_t format = firstFormat; format <= lastFormat; format++) {
         VulkanFormatInfo formatInfo = {};
         formatInfo.format = (VkFormat)format;
-        vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-        formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
 
         // @todo
         if (hasFormatFeatureFlags2) {
             // Using VK_KHR_format_feature_flags2
-            formatInfo.properties3 = {};
-            formatInfo.properties3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR;
+            VkFormatProperties3 formatProperties3{};
+            formatProperties3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR;
 
             VkFormatProperties2 formatProperties2{};
             formatProperties2.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
-            formatProperties2.pNext = &formatInfo.properties3;
+            formatProperties2.pNext = &formatProperties3;
 
             vulkanContext.vkGetPhysicalDeviceFormatProperties2(device, formatInfo.format, &formatProperties2);
+
+            formatInfo.bufferFeatures = formatProperties3.bufferFeatures;
+            formatInfo.linearTilingFeatures = formatProperties3.linearTilingFeatures;
+            formatInfo.optimalTilingFeatures = formatProperties3.optimalTilingFeatures;
+
+            formatInfo.isFeatureFlags2 = true;
+        }
+        else {
+            VkFormatProperties formatProperties{};
+            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatProperties);
+
+            formatInfo.bufferFeatures = formatProperties.bufferFeatures;
+            formatInfo.linearTilingFeatures = formatProperties.linearTilingFeatures;
+            formatInfo.optimalTilingFeatures = formatProperties.optimalTilingFeatures;
         }
 
+        formatInfo.supported = (formatInfo.linearTilingFeatures != 0) || (formatInfo.optimalTilingFeatures != 0) || (formatInfo.bufferFeatures != 0);
         formats.push_back(formatInfo);
     }
     // VK_KHR_sampler_ycbcr_conversion
     if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
         for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format < VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; format++) {
-            VulkanFormatInfo formatInfo = {};
-            formatInfo.format = (VkFormat)format;
-            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            formats.push_back(formatInfo);
+            // @todo
+            //VulkanFormatInfo formatInfo = {};
+            //formatInfo.format = (VkFormat)format;
+            //vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
+            //formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
+            //formats.push_back(formatInfo);
         }
     }
     // VK_IMG_FORMAT_PVRTC_EXTENSION_NAME
     if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
         for (int32_t format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format < VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; format++) {
-            VulkanFormatInfo formatInfo = {};
-            formatInfo.format = (VkFormat)format;
-            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            formats.push_back(formatInfo);
+            // @todo
+            //VulkanFormatInfo formatInfo = {};
+            //formatInfo.format = (VkFormat)format;
+            //vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
+            //formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
+            //formats.push_back(formatInfo);
         }
     }
 }
@@ -904,9 +919,11 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonArray jsonFormat;
         jsonFormat.append((QJsonValue(format.format)));
         QJsonObject jsonFormatFeatures;
-        jsonFormatFeatures["linearTilingFeatures"] = int(format.properties.linearTilingFeatures);
-        jsonFormatFeatures["optimalTilingFeatures"] = int(format.properties.optimalTilingFeatures);
-        jsonFormatFeatures["bufferFeatures"] = int(format.properties.bufferFeatures);
+        // @todo: check if proprerly converted from uint64_t
+        // Write values as strings to avoid problems with JSON presentation of large numbers
+        jsonFormatFeatures["linearTilingFeatures"] = QString::number(format.linearTilingFeatures);
+        jsonFormatFeatures["optimalTilingFeatures"] = QString::number(format.optimalTilingFeatures);
+        jsonFormatFeatures["bufferFeatures"] = QString::number(format.bufferFeatures);
         jsonFormatFeatures["supported"] = format.supported;
         jsonFormat.append(jsonFormatFeatures);
         jsonFormats.append(jsonFormat);
