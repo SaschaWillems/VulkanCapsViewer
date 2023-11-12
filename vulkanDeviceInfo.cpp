@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -101,6 +101,9 @@ void VulkanDeviceInfo::readLayers()
 
 void VulkanDeviceInfo::readSupportedFormats()
 {
+    // @todo: rework to better work with base and extended feature flags
+    // @todo: Create format list from extensions and replace if blocks
+
     assert(device != NULL);
     qInfo() << "Reading formats";
     // Base formats
@@ -111,6 +114,20 @@ void VulkanDeviceInfo::readSupportedFormats()
         formatInfo.format = (VkFormat)format;
         vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
         formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
+
+        // @todo
+        if (hasFormatFeatureFlags2) {
+            // Using VK_KHR_format_feature_flags2
+            formatInfo.properties3 = {};
+            formatInfo.properties3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR;
+
+            VkFormatProperties2 formatProperties2{};
+            formatProperties2.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+            formatProperties2.pNext = &formatInfo.properties3;
+
+            vulkanContext.vkGetPhysicalDeviceFormatProperties2(device, formatInfo.format, &formatProperties2);
+        }
+
         formats.push_back(formatInfo);
     }
     // VK_KHR_sampler_ycbcr_conversion
@@ -417,6 +434,10 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetSingleTexelAlignment);
             core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize).toString();
         }
+    }
+
+    if (extensionSupported(VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME)) {
+        hasFormatFeatureFlags2 = true;
     }
 }
 

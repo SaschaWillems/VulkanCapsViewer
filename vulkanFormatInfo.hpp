@@ -28,5 +28,7 @@ struct VulkanFormatInfo
 {
 	VkFormat format;
 	VkFormatProperties properties;
+	VkFormatProperties3 properties3{};
+	bool supportsFormatFeatureFlags2{ false };
 	bool supported;
 };

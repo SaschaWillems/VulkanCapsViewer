@@ -701,6 +701,13 @@ bool VulkanCapsViewer::initVulkan()
             deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
+        // Function pointers for new format properties
+        // @todo
+        vulkanContext.vkGetPhysicalDeviceFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFormatProperties2"));
+        if (!vulkanContext.vkGetPhysicalDeviceFormatProperties2) {
+            deviceFormatProperties2Available = false;
+            QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFormatProperties2 (even though extension is enabled!)\nNew format properties won't be displayed!");
+        }
     }
 
     vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
@@ -1556,7 +1563,56 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         }
 
         rootItem->appendRow(rowItems);
+        // @todo
+        struct featureSet {
+            std::string name;
+            VkFormatFeatureFlags2 flags;
+        };
+        std::vector<featureSet> featureSets = {
+            { "Linear tiling flags", format.properties3.linearTilingFeatures },
+            { "Optimal tiling flags", format.properties3.optimalTilingFeatures },
+            { "Buffer features flags", format.properties3.bufferFeatures }
+        };
 
+        for (auto& featureSet : featureSets)
+        {
+            QList<QStandardItem*> flagItems;
+            flagItems << new QStandardItem(QString::fromStdString(featureSet.name));
+
+            if (featureSet.flags == 0)
+            {
+                QList<QStandardItem*> flagItem;
+                flagItem << new QStandardItem("none");
+                flagItems[0]->appendRow(flagItem);
+            }
+            else
+            {
+                #define ADD_FLAG(flag) \
+                    if (featureSet.flags & flag) \
+                    { \
+                        QList<QStandardItem *> flagItem; \
+                        QString flagname(#flag); \
+                        flagname = flagname.replace("VK_FORMAT_FEATURE_", ""); \
+                        flagItem << new QStandardItem(flagname); \
+                        flagItems[0]->appendRow(flagItem); \
+                    }
+
+                for (auto& formatFlag2 : vulkanResources::formatFeatureFlags2) {
+                    if (featureSet.flags & formatFlag2) {
+                        QList<QStandardItem*> flagItem;
+                        QString flagname = vulkanResources::formatFeature2String(formatFlag2);
+                        flagname = flagname.replace("VK_FORMAT_FEATURE_2_", "");
+                        flagItem << new QStandardItem(flagname);
+                        flagItems[0]->appendRow(flagItem);
+                    }
+                }
+            }
+
+            rowItems[0]->appendRow(flagItems);
+
+        }
+
+        /*
         struct featureSet {
             std::string name;
             VkFlags flags;
@@ -1626,6 +1682,7 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 
             }
         }
+        */
     }
 
     QStringList formatHeaders;
