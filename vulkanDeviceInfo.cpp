@@ -101,8 +101,7 @@ void VulkanDeviceInfo::readLayers()
 
 void VulkanDeviceInfo::readSupportedFormats()
 {
-    // @todo: rework to better work with base and extended feature flags
-    // @todo: Create format list from extensions and replace if blocks
+    // A note before adding new formats in here: In order for them to be properly displayed, formats also need to be added to the database
 
     assert(device != NULL);
     qInfo() << "Reading formats";
@@ -137,7 +136,9 @@ void VulkanDeviceInfo::readSupportedFormats()
         VulkanFormatInfo formatInfo = {};
         formatInfo.format = (VkFormat)format;
 
-        // @todo
+        // Use the same data structure for both base and newer feature flag bits
+        // As the _flags2 also contain the base flags this will work both in the app and the database
+        
         if (hasFormatFeatureFlags2) {
             // Using VK_KHR_format_feature_flags2
             VkFormatProperties3 formatProperties3{};

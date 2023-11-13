@@ -852,6 +852,7 @@ namespace vulkanResources {
 		{ "driverVersionText", "driverVersion" },
 	};
 
+	// Values in the 32-bit range map 1:1 to their non _2_ VK_FORMAT_FEATURE equivalents, so we can reuse this
 	const std::vector<VkFormatFeatureFlags2> formatFeatureFlags2 = {
 		VK_FORMAT_FEATURE_2_SAMPLED_IMAGE_BIT,
 		VK_FORMAT_FEATURE_2_STORAGE_IMAGE_BIT,
