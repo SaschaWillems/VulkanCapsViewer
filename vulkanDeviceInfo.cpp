@@ -457,6 +457,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
     if (extensionSupported(VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME)) {
         hasFormatFeatureFlags2 = true;
     }
+
+    properties["hasFormatFeatureFlags2"] = hasFormatFeatureFlags2;
 }
 
 void VulkanDeviceInfo::readPhysicalFeatures()
