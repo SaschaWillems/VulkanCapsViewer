@@ -106,10 +106,34 @@ void VulkanDeviceInfo::readSupportedFormats()
 
     assert(device != NULL);
     qInfo() << "Reading formats";
-    // Base formats
-    int32_t firstFormat = VK_FORMAT_R4G4_UNORM_PACK8;
-    int32_t lastFormat = VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
+
+    // Generate format listing from core and supported extensions
+    std::vector<uint64_t> formatList{};
+
+    // Core formats
+    uint64_t firstFormat = VK_FORMAT_R4G4_UNORM_PACK8;
+    uint64_t lastFormat = VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
     for (int32_t format = firstFormat; format <= lastFormat; format++) {
+        formatList.push_back(format);
+    }
+
+    // VK_KHR_sampler_ycbcr_conversion
+    if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
+        for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format < VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; format++) {
+            formatList.push_back((VkFormat)format);
+        }
+    }
+
+    // VK_IMG_FORMAT_PVRTC_EXTENSION_NAME
+    if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
+        for (int32_t format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format < VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; format++) {
+            formatList.push_back((VkFormat)format);
+        }
+    }
+
+    for (auto i = 0; i < formatList.size(); i++) {
+        VkFormat format = (VkFormat)formatList[i];
+
         VulkanFormatInfo formatInfo = {};
         formatInfo.format = (VkFormat)format;
 
@@ -142,28 +166,6 @@ void VulkanDeviceInfo::readSupportedFormats()
 
         formatInfo.supported = (formatInfo.linearTilingFeatures != 0) || (formatInfo.optimalTilingFeatures != 0) || (formatInfo.bufferFeatures != 0);
         formats.push_back(formatInfo);
-    }
-    // VK_KHR_sampler_ycbcr_conversion
-    if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
-        for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format < VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; format++) {
-            // @todo
-            //VulkanFormatInfo formatInfo = {};
-            //formatInfo.format = (VkFormat)format;
-            //vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            //formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            //formats.push_back(formatInfo);
-        }
-    }
-    // VK_IMG_FORMAT_PVRTC_EXTENSION_NAME
-    if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
-        for (int32_t format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format < VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; format++) {
-            // @todo
-            //VulkanFormatInfo formatInfo = {};
-            //formatInfo.format = (VkFormat)format;
-            //vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            //formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            //formats.push_back(formatInfo);
-        }
     }
 }
 
