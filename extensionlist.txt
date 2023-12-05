@@ -11,6 +11,7 @@ ARM
 VK_ARM_rasterization_order_attachment_access
 VK_ARM_shader_core_properties
 VK_ARM_scheduling_controls
+VK_ARM_render_pass_striped
 VK_ARM_shader_core_builtins
 EXT
 VK_EXT_transform_feedback
