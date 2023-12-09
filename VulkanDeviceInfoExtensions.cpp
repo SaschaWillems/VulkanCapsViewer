@@ -127,6 +127,16 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 		pushProperty2(extension, "schedulingControlsFlags", QVariant::fromValue(extProps->schedulingControlsFlags));
 		delete extProps;
 	}
+	if (extensionSupported("VK_ARM_render_pass_striped")) {
+		const char* extension("VK_ARM_render_pass_striped");
+		VkPhysicalDeviceRenderPassStripedPropertiesARM* extProps = new VkPhysicalDeviceRenderPassStripedPropertiesARM{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RENDER_PASS_STRIPED_PROPERTIES_ARM;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "renderPassStripeGranularity", QVariant::fromValue(QVariantList({ extProps->renderPassStripeGranularity.width, extProps->renderPassStripeGranularity.height })));
+		pushProperty2(extension, "maxRenderPassStripes", QVariant(extProps->maxRenderPassStripes));
+		delete extProps;
+	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
 		const char* extension("VK_ARM_shader_core_builtins");
 		VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM* extProps = new VkPhysicalDeviceShaderCoreBuiltinsPropertiesARM{};
@@ -900,6 +910,16 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "cooperativeMatrixSupportedStages", QVariant(extProps->cooperativeMatrixSupportedStages));
 		delete extProps;
 	}
+	if (extensionSupported("VK_KHR_vertex_attribute_divisor")) {
+		const char* extension("VK_KHR_vertex_attribute_divisor");
+		VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR* extProps = new VkPhysicalDeviceVertexAttributeDivisorPropertiesKHR{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_PROPERTIES_KHR;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxVertexAttribDivisor", QVariant(extProps->maxVertexAttribDivisor));
+		pushProperty2(extension, "supportsNonZeroFirstInstance", QVariant(bool(extProps->supportsNonZeroFirstInstance)));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_MSFT() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -1225,6 +1245,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "schedulingControls", extFeatures->schedulingControls);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_ARM_render_pass_striped")) {
+		const char* extension("VK_ARM_render_pass_striped");
+		VkPhysicalDeviceRenderPassStripedFeaturesARM* extFeatures = new VkPhysicalDeviceRenderPassStripedFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RENDER_PASS_STRIPED_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "renderPassStriped", extFeatures->renderPassStriped);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_ARM_shader_core_builtins")) {
@@ -2521,6 +2550,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "cooperativeMatrix", extFeatures->cooperativeMatrix);
 		pushFeature2(extension, "cooperativeMatrixRobustBufferAccess", extFeatures->cooperativeMatrixRobustBufferAccess);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_vertex_attribute_divisor")) {
+		const char* extension("VK_KHR_vertex_attribute_divisor");
+		VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR* extFeatures = new VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_DIVISOR_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "vertexAttributeInstanceRateDivisor", extFeatures->vertexAttributeInstanceRateDivisor);
+		pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures->vertexAttributeInstanceRateZeroDivisor);
 		delete extFeatures;
 	}
 }
