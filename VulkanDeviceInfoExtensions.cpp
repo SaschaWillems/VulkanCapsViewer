@@ -920,6 +920,17 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "supportsNonZeroFirstInstance", QVariant(bool(extProps->supportsNonZeroFirstInstance)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_KHR_maintenance6")) {
+		const char* extension("VK_KHR_maintenance6");
+		VkPhysicalDeviceMaintenance6PropertiesKHR* extProps = new VkPhysicalDeviceMaintenance6PropertiesKHR{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_6_PROPERTIES_KHR;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "blockTexelViewCompatibleMultipleLayers", QVariant(bool(extProps->blockTexelViewCompatibleMultipleLayers)));
+		pushProperty2(extension, "maxCombinedImageSamplerDescriptorCount", QVariant(extProps->maxCombinedImageSamplerDescriptorCount));
+		pushProperty2(extension, "fragmentShadingRateClampCombinerInputs", QVariant(bool(extProps->fragmentShadingRateClampCombinerInputs)));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_MSFT() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -2552,6 +2563,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "cooperativeMatrixRobustBufferAccess", extFeatures->cooperativeMatrixRobustBufferAccess);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_video_maintenance1")) {
+		const char* extension("VK_KHR_video_maintenance1");
+		VkPhysicalDeviceVideoMaintenance1FeaturesKHR* extFeatures = new VkPhysicalDeviceVideoMaintenance1FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_1_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoMaintenance1", extFeatures->videoMaintenance1);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_vertex_attribute_divisor")) {
 		const char* extension("VK_KHR_vertex_attribute_divisor");
 		VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR* extFeatures = new VkPhysicalDeviceVertexAttributeDivisorFeaturesKHR{};
@@ -2560,6 +2580,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "vertexAttributeInstanceRateDivisor", extFeatures->vertexAttributeInstanceRateDivisor);
 		pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures->vertexAttributeInstanceRateZeroDivisor);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_maintenance6")) {
+		const char* extension("VK_KHR_maintenance6");
+		VkPhysicalDeviceMaintenance6FeaturesKHR* extFeatures = new VkPhysicalDeviceMaintenance6FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_6_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "maintenance6", extFeatures->maintenance6);
 		delete extFeatures;
 	}
 }
@@ -2824,6 +2853,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "extendedSparseAddressSpace", extFeatures->extendedSparseAddressSpace);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_per_stage_descriptor_set")) {
+		const char* extension("VK_NV_per_stage_descriptor_set");
+		VkPhysicalDevicePerStageDescriptorSetFeaturesNV* extFeatures = new VkPhysicalDevicePerStageDescriptorSetFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PER_STAGE_DESCRIPTOR_SET_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "perStageDescriptorSet", extFeatures->perStageDescriptorSet);
+		pushFeature2(extension, "dynamicPipelineLayout", extFeatures->dynamicPipelineLayout);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_NV_descriptor_pool_overallocation")) {
