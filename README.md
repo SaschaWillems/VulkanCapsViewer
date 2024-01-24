@@ -23,6 +23,22 @@ The hardware reports can be submitted to a public [online database](http://vulka
 The repository includes a project file for the [Qt Creator IDE](https://www.qt.io/ide/) that has been tested to work with Windows, Linux and Android. This is the preferred (and easiest) way of building the application if you want to build it yourself. Using the [Qt Visual Studio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2019), it's also possible to use a current Visual Studio version.
 Alternatively, you can simply run `qmake` followed by `make` in the source directory.
 
+## Linux
+When building for Linux, specify the desired windowing system to enable its support.
+
+X11 support
+```
+qmake5 -config release DEFINES+=X11
+```  
+
+Wayland support
+```
+qmake5 -config release DEFINES+=WAYLAND
+```
+
+Note: Do not enable both flags simultaneously.
+
+
 # Releases
 Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](https://vulkan.gpuinfo.org/download.php).
 
