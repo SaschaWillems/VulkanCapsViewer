@@ -920,6 +920,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "supportsNonZeroFirstInstance", QVariant(bool(extProps->supportsNonZeroFirstInstance)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_KHR_line_rasterization")) {
+		const char* extension("VK_KHR_line_rasterization");
+		VkPhysicalDeviceLineRasterizationPropertiesKHR* extProps = new VkPhysicalDeviceLineRasterizationPropertiesKHR{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_PROPERTIES_KHR;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "lineSubPixelPrecisionBits", QVariant(extProps->lineSubPixelPrecisionBits));
+		delete extProps;
+	}
 	if (extensionSupported("VK_KHR_maintenance6")) {
 		const char* extension("VK_KHR_maintenance6");
 		VkPhysicalDeviceMaintenance6PropertiesKHR* extProps = new VkPhysicalDeviceMaintenance6PropertiesKHR{};
@@ -2403,6 +2412,24 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "attachmentFragmentShadingRate", extFeatures->attachmentFragmentShadingRate);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_dynamic_rendering_local_read")) {
+		const char* extension("VK_KHR_dynamic_rendering_local_read");
+		VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR* extFeatures = new VkPhysicalDeviceDynamicRenderingLocalReadFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_LOCAL_READ_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "dynamicRenderingLocalRead", extFeatures->dynamicRenderingLocalRead);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_quad_control")) {
+		const char* extension("VK_KHR_shader_quad_control");
+		VkPhysicalDeviceShaderQuadControlFeaturesKHR* extFeatures = new VkPhysicalDeviceShaderQuadControlFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_QUAD_CONTROL_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderQuadControl", extFeatures->shaderQuadControl);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_separate_depth_stencil_layouts")) {
 		const char* extension("VK_KHR_separate_depth_stencil_layouts");
 		VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures* extFeatures = new VkPhysicalDeviceSeparateDepthStencilLayoutsFeatures{};
@@ -2535,6 +2562,25 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "maintenance4", extFeatures->maintenance4);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_shader_subgroup_rotate")) {
+		const char* extension("VK_KHR_shader_subgroup_rotate");
+		VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR* extFeatures = new VkPhysicalDeviceShaderSubgroupRotateFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_SUBGROUP_ROTATE_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderSubgroupRotate", extFeatures->shaderSubgroupRotate);
+		pushFeature2(extension, "shaderSubgroupRotateClustered", extFeatures->shaderSubgroupRotateClustered);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_maximal_reconvergence")) {
+		const char* extension("VK_KHR_shader_maximal_reconvergence");
+		VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR* extFeatures = new VkPhysicalDeviceShaderMaximalReconvergenceFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_MAXIMAL_RECONVERGENCE_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderMaximalReconvergence", extFeatures->shaderMaximalReconvergence);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_maintenance5")) {
 		const char* extension("VK_KHR_maintenance5");
 		VkPhysicalDeviceMaintenance5FeaturesKHR* extFeatures = new VkPhysicalDeviceMaintenance5FeaturesKHR{};
@@ -2580,6 +2626,47 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "vertexAttributeInstanceRateDivisor", extFeatures->vertexAttributeInstanceRateDivisor);
 		pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures->vertexAttributeInstanceRateZeroDivisor);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_float_controls2")) {
+		const char* extension("VK_KHR_shader_float_controls2");
+		VkPhysicalDeviceShaderFloatControls2FeaturesKHR* extFeatures = new VkPhysicalDeviceShaderFloatControls2FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_FLOAT_CONTROLS_2_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderFloatControls2", extFeatures->shaderFloatControls2);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_index_type_uint8")) {
+		const char* extension("VK_KHR_index_type_uint8");
+		VkPhysicalDeviceIndexTypeUint8FeaturesKHR* extFeatures = new VkPhysicalDeviceIndexTypeUint8FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INDEX_TYPE_UINT8_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "indexTypeUint8", extFeatures->indexTypeUint8);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_line_rasterization")) {
+		const char* extension("VK_KHR_line_rasterization");
+		VkPhysicalDeviceLineRasterizationFeaturesKHR* extFeatures = new VkPhysicalDeviceLineRasterizationFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LINE_RASTERIZATION_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rectangularLines", extFeatures->rectangularLines);
+		pushFeature2(extension, "bresenhamLines", extFeatures->bresenhamLines);
+		pushFeature2(extension, "smoothLines", extFeatures->smoothLines);
+		pushFeature2(extension, "stippledRectangularLines", extFeatures->stippledRectangularLines);
+		pushFeature2(extension, "stippledBresenhamLines", extFeatures->stippledBresenhamLines);
+		pushFeature2(extension, "stippledSmoothLines", extFeatures->stippledSmoothLines);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_expect_assume")) {
+		const char* extension("VK_KHR_shader_expect_assume");
+		VkPhysicalDeviceShaderExpectAssumeFeaturesKHR* extFeatures = new VkPhysicalDeviceShaderExpectAssumeFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_EXPECT_ASSUME_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderExpectAssume", extFeatures->shaderExpectAssume);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_KHR_maintenance6")) {
