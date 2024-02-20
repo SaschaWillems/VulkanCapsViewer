@@ -362,6 +362,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 	}
 	if (extensionSupported("VK_EXT_host_image_copy")) {
 		// This extension needs some special handling, this code has to be adjusted manually after header generation
+		// If changed after header-update, DO NOT COMMIT the changes, but revert them
 		const char* extension("VK_EXT_host_image_copy");
 		VkPhysicalDeviceHostImageCopyPropertiesEXT* extProps = new VkPhysicalDeviceHostImageCopyPropertiesEXT{};
 		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HOST_IMAGE_COPY_PROPERTIES_EXT;
@@ -381,6 +382,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		// Store them as serialized values
 		pushProperty2(extension, "pCopySrcLayouts", QVariant::fromValue(arrayToQVariantList(copySrcLayouts, copySrcLayouts.size())));
 		pushProperty2(extension, "pCopyDstLayouts", QVariant::fromValue(arrayToQVariantList(copySrcLayouts, copyDstLayouts.size())));
+		delete extProps;
+	}
+	if (extensionSupported("VK_EXT_map_memory_placed")) {
+		const char* extension("VK_EXT_map_memory_placed");
+		VkPhysicalDeviceMapMemoryPlacedPropertiesEXT* extProps = new VkPhysicalDeviceMapMemoryPlacedPropertiesEXT{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_PROPERTIES_EXT;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "minPlacedMemoryMapAlignment", QVariant::fromValue(extProps->minPlacedMemoryMapAlignment));
 		delete extProps;
 	}
 	if (extensionSupported("VK_EXT_texel_buffer_alignment")) {
@@ -1559,6 +1569,17 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "hostImageCopy", extFeatures->hostImageCopy);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_map_memory_placed")) {
+		const char* extension("VK_EXT_map_memory_placed");
+		VkPhysicalDeviceMapMemoryPlacedFeaturesEXT* extFeatures = new VkPhysicalDeviceMapMemoryPlacedFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAP_MEMORY_PLACED_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "memoryMapPlaced", extFeatures->memoryMapPlaced);
+		pushFeature2(extension, "memoryMapRangePlaced", extFeatures->memoryMapRangePlaced);
+		pushFeature2(extension, "memoryUnmapReserve", extFeatures->memoryUnmapReserve);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_EXT_shader_atomic_float2")) {
@@ -2959,6 +2980,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "descriptorPoolOverallocation", extFeatures->descriptorPoolOverallocation);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_shader_atomic_float16_vector")) {
+		const char* extension("VK_NV_shader_atomic_float16_vector");
+		VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV* extFeatures = new VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_ATOMIC_FLOAT16_VECTOR_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderFloat16VectorAtomics", extFeatures->shaderFloat16VectorAtomics);
 		delete extFeatures;
 	}
 }
