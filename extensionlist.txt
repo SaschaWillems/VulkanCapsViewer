@@ -203,6 +203,7 @@ VK_NV_ray_tracing_invocation_reorder
 VK_NV_extended_sparse_address_space
 VK_NV_per_stage_descriptor_set
 VK_NV_descriptor_pool_overallocation
+VK_NV_raw_access_chains
 VK_NV_shader_atomic_float16_vector
 NVX
 VK_NVX_multiview_per_view_attributes

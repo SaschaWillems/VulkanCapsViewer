@@ -2982,6 +2982,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pushFeature2(extension, "descriptorPoolOverallocation", extFeatures->descriptorPoolOverallocation);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_NV_raw_access_chains")) {
+		const char* extension("VK_NV_raw_access_chains");
+		VkPhysicalDeviceRawAccessChainsFeaturesNV* extFeatures = new VkPhysicalDeviceRawAccessChainsFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAW_ACCESS_CHAINS_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderRawAccessChains", extFeatures->shaderRawAccessChains);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_NV_shader_atomic_float16_vector")) {
 		const char* extension("VK_NV_shader_atomic_float16_vector");
 		VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV* extFeatures = new VkPhysicalDeviceShaderAtomicFloat16VectorFeaturesNV{};
