@@ -3000,6 +3000,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pushFeature2(extension, "shaderFloat16VectorAtomics", extFeatures->shaderFloat16VectorAtomics);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_NV_ray_tracing_validation")) {
+		const char* extension("VK_NV_ray_tracing_validation");
+		VkPhysicalDeviceRayTracingValidationFeaturesNV* extFeatures = new VkPhysicalDeviceRayTracingValidationFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_VALIDATION_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingValidation", extFeatures->rayTracingValidation);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
