@@ -1,13 +1,13 @@
 # example usage:
 # You must tell cmake where to find the Vulkan Headers and a loader library. For example on macOS:
 #
-# cmake .. -DVULKAN_HEADERS_INSTALL_DIR=~/VulkanSDK/1.3.230.0/macOS -DVULKAN_LOADER_INSTALL_DIR=/Users/lunarg/VulkanSDK/1.3.230.0/macOS
+# cmake .. -DVULKAN_LOADER_INSTALL_DIR=/Users/lunarg/VulkanSDK/1.3.230.0/macOS
 # cmake --build . --config Release  
 
 cmake_minimum_required(VERSION 3.10.2)
 project(VK_CAPS_VIEWER LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -61,7 +61,12 @@ target_compile_definitions(vulkanCapsViewer PRIVATE QT_WIDGETS_LIB)
 include(GNUInstallDirs)
 install(TARGETS vulkanCapsViewer DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-target_include_directories(vulkanCapsViewer PRIVATE "${VULKAN_HEADERS_INSTALL_DIR}/include" "./")
+if (NOT VULKAN_HEADERS_INSTALL_DIR)
+    # By default use the Vulkan-Headers submodule
+    target_include_directories(vulkanCapsViewer PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include" "./")
+else()
+    target_include_directories(vulkanCapsViewer PRIVATE "${VULKAN_HEADERS_INSTALL_DIR}/include" "./")
+endif()
 target_compile_definitions(vulkanCapsViewer PRIVATE ${VULKANCAPSVIEWER_DEFINITIONS})
 
 if(NOT APPLE)
