@@ -5,7 +5,7 @@
 TEMPLATE = app
 TARGET = vulkanCapsViewer
 QT += core network widgets gui
-CONFIG += c++11
+CONFIG += c++17
 #CONFIG += release bad for debugging
 DEFINES += QT_DLL QT_NETWORK_LIB QT_WIDGETS_LIB VK_ENABLE_BETA_EXTENSIONS
 INCLUDEPATH += ./GeneratedFiles \
