@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -77,8 +77,8 @@ extern "C" const char *getWorkingFolderForiOS(void);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "3.34";
-const QString VulkanCapsViewer::reportVersion = "3.2";
+const QString VulkanCapsViewer::version = "3.40";
+const QString VulkanCapsViewer::reportVersion = "3.3";
 
 OSInfo getOperatingSystem()
 {
@@ -105,6 +105,23 @@ OSInfo getOperatingSystem()
         FreeLibrary(hModule);
     }
 #endif
+    // Also store os type lookup value used by the database (more precise than doing guesswork in a database trigger)
+#if defined(VK_USE_PLATFORM_WIN32_KHR)
+    osInfo.type = 0;
+#endif
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_)
+    osInfo.type = 1;
+#endif
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+    osInfo.type = 2;
+#endif
+#if defined(VK_USE_PLATFORM_MACOS_MVK)
+    osInfo.type = 3;
+#endif
+#if defined(VK_USE_PLATFORM_IOS_MVK)
+    osInfo.type = 4;
+#endif
+
     return osInfo;
 }
 
