@@ -1023,6 +1023,7 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     jsonEnv["name"] = QString::fromStdString(os.name);
     jsonEnv["version"] = QString::fromStdString(os.version);
     jsonEnv["architecture"] = QString::fromStdString(os.architecture);
+    jsonEnv["ostype"] = os.type;
     jsonEnv["submitter"] = submitter;
     jsonEnv["comment"] = comment;
     jsonEnv["reportversion"] = reportVersion;
