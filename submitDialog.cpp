@@ -29,6 +29,7 @@
 #include <QLine>
 #include <QSettings>
 #include <QDialogButtonBox>
+#include <QCoreApplication>
 
 SubmitDialog::SubmitDialog(QString submitter, QString caption)
 {
@@ -57,13 +58,13 @@ SubmitDialog::SubmitDialog(QString submitter, QString caption)
 	formLayout->addRow("Comment:", editComment);
 
 	QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-	connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAccept()));
-	connect(buttonBox, SIGNAL(rejected()), this, SLOT(slotCancel()));
+	connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAccept()), Qt::QueuedConnection);
+	connect(buttonBox, SIGNAL(rejected()), this, SLOT(slotCancel()), Qt::QueuedConnection);
 
 	formLayout->addWidget(buttonBox);
 
 	setLayout(formLayout);
-	setWindowTitle(caption);
+	setWindowTitle(caption);    
 }
 
 
