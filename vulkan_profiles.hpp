@@ -159,15 +159,7 @@
 #define VP_KHR_ROADMAP_2024_MIN_API_VERSION VK_MAKE_VERSION(1, 3, 276)
 #endif
 
-#if defined(VK_VERSION_1_1)
-#define VP_LUNARG_minimum_requirements_1_1 1
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_NAME "VP_LUNARG_minimum_requirements_1_1"
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_SPEC_VERSION 1
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 108)
-#endif
-
 #if defined(VK_VERSION_1_1) && \
-    defined(VP_LUNARG_minimum_requirements_1_1) && \
     defined(VK_EXT_descriptor_indexing) && \
     defined(VK_EXT_host_query_reset) && \
     defined(VK_EXT_inline_uniform_block) && \
@@ -211,16 +203,7 @@
 #define VP_LUNARG_DESKTOP_BASELINE_2022_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 139)
 #endif
 
-#if defined(VK_VERSION_1_2)
-#define VP_LUNARG_minimum_requirements_1_2 1
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_NAME "VP_LUNARG_minimum_requirements_1_2"
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_SPEC_VERSION 1
-#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_MIN_API_VERSION VK_MAKE_VERSION(1, 2, 131)
-#endif
-
 #if defined(VK_VERSION_1_2) && \
-    defined(VP_LUNARG_minimum_requirements_1_1) && \
-    defined(VP_LUNARG_minimum_requirements_1_2) && \
     defined(VK_EXT_descriptor_indexing) && \
     defined(VK_EXT_host_query_reset) && \
     defined(VK_EXT_image_robustness) && \
@@ -269,8 +252,6 @@
 #endif
 
 #if defined(VK_VERSION_1_2) && \
-    defined(VP_LUNARG_minimum_requirements_1_1) && \
-    defined(VP_LUNARG_minimum_requirements_1_2) && \
     defined(VK_EXT_4444_formats) && \
     defined(VK_EXT_calibrated_timestamps) && \
     defined(VK_EXT_descriptor_indexing) && \
@@ -346,6 +327,20 @@
 #define VP_LUNARG_MINIMUM_REQUIREMENTS_1_0_NAME "VP_LUNARG_minimum_requirements_1_0"
 #define VP_LUNARG_MINIMUM_REQUIREMENTS_1_0_SPEC_VERSION 1
 #define VP_LUNARG_MINIMUM_REQUIREMENTS_1_0_MIN_API_VERSION VK_MAKE_VERSION(1, 0, 68)
+#endif
+
+#if defined(VK_VERSION_1_1)
+#define VP_LUNARG_minimum_requirements_1_1 1
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_NAME "VP_LUNARG_minimum_requirements_1_1"
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_SPEC_VERSION 1
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_MIN_API_VERSION VK_MAKE_VERSION(1, 1, 108)
+#endif
+
+#if defined(VK_VERSION_1_2)
+#define VP_LUNARG_minimum_requirements_1_2 1
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_NAME "VP_LUNARG_minimum_requirements_1_2"
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_SPEC_VERSION 1
+#define VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_MIN_API_VERSION VK_MAKE_VERSION(1, 2, 131)
 #endif
 
 #if defined(VK_VERSION_1_3)
@@ -11803,11 +11798,9 @@ static const VpFeatureDesc featureDesc = {
                     s->shaderInt8 = VK_TRUE;
                     s->shaderSampledImageArrayNonUniformIndexing = VK_TRUE;
                     s->shaderStorageTexelBufferArrayDynamicIndexing = VK_TRUE;
-                    s->shaderSubgroupExtendedTypes = VK_TRUE;
                     s->shaderUniformTexelBufferArrayDynamicIndexing = VK_TRUE;
                     s->shaderUniformTexelBufferArrayNonUniformIndexing = VK_TRUE;
                     s->storageBuffer8BitAccess = VK_TRUE;
-                    s->subgroupBroadcastDynamicId = VK_TRUE;
                     s->timelineSemaphore = VK_TRUE;
                     s->uniformAndStorageBuffer8BitAccess = VK_TRUE;
                     s->uniformBufferStandardLayout = VK_TRUE;
@@ -11901,11 +11894,9 @@ static const VpFeatureDesc featureDesc = {
                     ret = ret && (s->shaderInt8 == VK_TRUE);
                     ret = ret && (s->shaderSampledImageArrayNonUniformIndexing == VK_TRUE);
                     ret = ret && (s->shaderStorageTexelBufferArrayDynamicIndexing == VK_TRUE);
-                    ret = ret && (s->shaderSubgroupExtendedTypes == VK_TRUE);
                     ret = ret && (s->shaderUniformTexelBufferArrayDynamicIndexing == VK_TRUE);
                     ret = ret && (s->shaderUniformTexelBufferArrayNonUniformIndexing == VK_TRUE);
                     ret = ret && (s->storageBuffer8BitAccess == VK_TRUE);
-                    ret = ret && (s->subgroupBroadcastDynamicId == VK_TRUE);
                     ret = ret && (s->timelineSemaphore == VK_TRUE);
                     ret = ret && (s->uniformAndStorageBuffer8BitAccess == VK_TRUE);
                     ret = ret && (s->uniformBufferStandardLayout == VK_TRUE);
@@ -21280,11 +21271,6 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2022 {
         { VP_LUNARG_desktop_baseline_2022_block::variantCount, VP_LUNARG_desktop_baseline_2022_block::variants },
     };
     static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
-
-    static const VpProfileProperties profiles[] = {
-        {VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_NAME, VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_SPEC_VERSION},
-    };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2022
 #endif //VP_LUNARG_desktop_baseline_2022
 
@@ -21331,12 +21317,6 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2023 {
         { VP_LUNARG_desktop_baseline_2023_block::variantCount, VP_LUNARG_desktop_baseline_2023_block::variants },
     };
     static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
-
-    static const VpProfileProperties profiles[] = {
-        {VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_NAME, VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_SPEC_VERSION},
-        {VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_NAME, VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_SPEC_VERSION},
-    };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2023
 #endif //VP_LUNARG_desktop_baseline_2023
 
@@ -21383,12 +21363,6 @@ namespace VP_LUNARG_DESKTOP_BASELINE_2024 {
         { VP_LUNARG_desktop_baseline_2024_block::variantCount, VP_LUNARG_desktop_baseline_2024_block::variants },
     };
     static const uint32_t capabilityCount = static_cast<uint32_t>(std::size(capabilities));
-
-    static const VpProfileProperties profiles[] = {
-        {VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_NAME, VP_LUNARG_MINIMUM_REQUIREMENTS_1_1_SPEC_VERSION},
-        {VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_NAME, VP_LUNARG_MINIMUM_REQUIREMENTS_1_2_SPEC_VERSION},
-    };
-    static const uint32_t profileCount = static_cast<uint32_t>(std::size(profiles));
 } // namespace VP_LUNARG_DESKTOP_BASELINE_2024
 #endif //VP_LUNARG_desktop_baseline_2024
 
@@ -21758,7 +21732,7 @@ static const VpProfileDesc profiles[] = {
         VpProfileProperties{ VP_LUNARG_DESKTOP_BASELINE_2022_NAME, VP_LUNARG_DESKTOP_BASELINE_2022_SPEC_VERSION },
         VP_LUNARG_DESKTOP_BASELINE_2022_MIN_API_VERSION,
         VP_LUNARG_DESKTOP_BASELINE_2022::mergedCapabilities,
-        VP_LUNARG_DESKTOP_BASELINE_2022::profileCount, VP_LUNARG_DESKTOP_BASELINE_2022::profiles,
+        0, nullptr,
         VP_LUNARG_DESKTOP_BASELINE_2022::capabilityCount, VP_LUNARG_DESKTOP_BASELINE_2022::capabilities,
         0, nullptr,
     },
@@ -21768,7 +21742,7 @@ static const VpProfileDesc profiles[] = {
         VpProfileProperties{ VP_LUNARG_DESKTOP_BASELINE_2023_NAME, VP_LUNARG_DESKTOP_BASELINE_2023_SPEC_VERSION },
         VP_LUNARG_DESKTOP_BASELINE_2023_MIN_API_VERSION,
         VP_LUNARG_DESKTOP_BASELINE_2023::mergedCapabilities,
-        VP_LUNARG_DESKTOP_BASELINE_2023::profileCount, VP_LUNARG_DESKTOP_BASELINE_2023::profiles,
+        0, nullptr,
         VP_LUNARG_DESKTOP_BASELINE_2023::capabilityCount, VP_LUNARG_DESKTOP_BASELINE_2023::capabilities,
         0, nullptr,
     },
@@ -21778,7 +21752,7 @@ static const VpProfileDesc profiles[] = {
         VpProfileProperties{ VP_LUNARG_DESKTOP_BASELINE_2024_NAME, VP_LUNARG_DESKTOP_BASELINE_2024_SPEC_VERSION },
         VP_LUNARG_DESKTOP_BASELINE_2024_MIN_API_VERSION,
         VP_LUNARG_DESKTOP_BASELINE_2024::mergedCapabilities,
-        VP_LUNARG_DESKTOP_BASELINE_2024::profileCount, VP_LUNARG_DESKTOP_BASELINE_2024::profiles,
+        0, nullptr,
         VP_LUNARG_DESKTOP_BASELINE_2024::capabilityCount, VP_LUNARG_DESKTOP_BASELINE_2024::capabilities,
         0, nullptr,
     },
@@ -22888,10 +22862,10 @@ VPAPI_ATTR VkResult vpGetProfileStructureTypes(
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
         for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
-            const detail::VpCapabilitiesDesc& capabilities = profile_desc->pRequiredCapabilities[capability_index];
+            const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < capabilities.variantCount; ++variant_index) {
-                const detail::VpVariantDesc& variant = capabilities.pVariants[variant_index];
+            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+                const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
                         continue;
@@ -22979,10 +22953,10 @@ VPAPI_ATTR VkResult vpGetProfileExtensionProperties(
         }
 
         for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
-            const detail::VpCapabilitiesDesc& capabilities = profile_desc->pRequiredCapabilities[capability_index];
+            const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < capabilities.variantCount; ++variant_index) {
-                const detail::VpVariantDesc& variant = capabilities.pVariants[variant_index];
+            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+                const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
                         continue;
@@ -24020,10 +23994,10 @@ VPAPI_ATTR VkResult vpGetProfileFeatures(
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
         for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
-            const detail::VpCapabilitiesDesc& capabilities = profile_desc->pRequiredCapabilities[capability_index];
+            const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < capabilities.variantCount; ++variant_index) {
-                const detail::VpVariantDesc& variant = capabilities.pVariants[variant_index];
+            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+                const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
                         continue;
@@ -24074,10 +24048,10 @@ VPAPI_ATTR VkResult vpGetProfileProperties(
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
         for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
-            const detail::VpCapabilitiesDesc& capabilities = profile_desc->pRequiredCapabilities[capability_index];
+            const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < capabilities.variantCount; ++variant_index) {
-                const detail::VpVariantDesc& variant = capabilities.pVariants[variant_index];
+            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+                const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
                         continue;
@@ -24122,10 +24096,10 @@ VPAPI_ATTR VkResult vpGetProfileFormats(
         if (profile_desc == nullptr) return VK_ERROR_UNKNOWN;
 
         for (uint32_t capability_index = 0; capability_index < profile_desc->requiredCapabilityCount; ++capability_index) {
-            const detail::VpCapabilitiesDesc& capabilities = profile_desc->pRequiredCapabilities[capability_index];
+            const detail::VpCapabilitiesDesc& cap_desc = profile_desc->pRequiredCapabilities[capability_index];
 
-            for (uint32_t variant_index = 0; variant_index < capabilities.variantCount; ++variant_index) {
-                const detail::VpVariantDesc& variant = capabilities.pVariants[variant_index];
+            for (uint32_t variant_index = 0; variant_index < cap_desc.variantCount; ++variant_index) {
+                const detail::VpVariantDesc& variant = cap_desc.pVariants[variant_index];
                 if (pBlockName != nullptr) {
                     if (strcmp(variant.blockName, pBlockName) != 0) {
                         continue;
