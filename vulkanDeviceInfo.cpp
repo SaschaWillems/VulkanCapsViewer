@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -885,9 +885,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonArray jsonFormat;
         jsonFormat.append((QJsonValue(format.format)));
         QJsonObject jsonFormatFeatures;
-        jsonFormatFeatures["linearTilingFeatures"] = int(format.properties.linearTilingFeatures);
-        jsonFormatFeatures["optimalTilingFeatures"] = int(format.properties.optimalTilingFeatures);
-        jsonFormatFeatures["bufferFeatures"] = int(format.properties.bufferFeatures);
+        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.properties.linearTilingFeatures).toString();
+        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.properties.optimalTilingFeatures).toString();
+        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.properties.bufferFeatures).toString();
         jsonFormatFeatures["supported"] = format.supported;
         jsonFormat.append(jsonFormatFeatures);
         jsonFormats.append(jsonFormat);
@@ -1025,6 +1025,7 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     jsonEnv["name"] = QString::fromStdString(os.name);
     jsonEnv["version"] = QString::fromStdString(os.version);
     jsonEnv["architecture"] = QString::fromStdString(os.architecture);
+    jsonEnv["ostype"] = os.type;
     jsonEnv["submitter"] = submitter;
     jsonEnv["comment"] = comment;
     jsonEnv["reportversion"] = reportVersion;
