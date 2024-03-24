@@ -1,3 +1,23 @@
+/*
+*
+* Vulkan hardware capability viewer
+*
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+*
+* This code is free software, you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License version 3 as published by the Free Software Foundation.
+*
+* Please review the following information to ensure the GNU Lesser
+* General Public License version 3 requirements will be met:
+* http://opensource.org/licenses/lgpl-3.0.html
+*
+* The code is distributed WITHOUT ANY WARRANTY; without even the
+* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+* PURPOSE.  See the GNU LGPL 3.0 for more details.
+*
+*/
+
 #include "vulkanandroid.h"
 
 #ifdef ANDROID
@@ -25,6 +45,12 @@ PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabili
 PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
 PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
 PFN_vkCreateAndroidSurfaceKHR vkCreateAndroidSurfaceKHR;
+PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+PFN_vkGetPhysicalDeviceProperties2 vkGetPhysicalDeviceProperties2;
+PFN_vkGetPhysicalDeviceFormatProperties2 vkGetPhysicalDeviceFormatProperties2;
+PFN_vkGetPhysicalDeviceFeatures2 vkGetPhysicalDeviceFeatures2;
+PFN_vkGetPhysicalDeviceQueueFamilyProperties2 vkGetPhysicalDeviceQueueFamilyProperties2;
+PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion;
 
 // Dynamically load Vulkan library and base function pointers
 bool loadVulkanLibrary()
@@ -45,6 +71,10 @@ bool loadVulkanLibrary()
     vkCreateInstance = reinterpret_cast<PFN_vkCreateInstance>(dlsym(libVulkan, "vkCreateInstance"));
     vkDestroyInstance = reinterpret_cast<PFN_vkDestroyInstance>(dlsym(libVulkan, "vkDestroyInstance"));
     vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(dlsym(libVulkan, "vkGetInstanceProcAddr"));
+
+    // Required for the profiles library
+    vkEnumerateInstanceVersion = reinterpret_cast<PFN_vkEnumerateInstanceVersion>(dlsym(libVulkan, "vkEnumerateInstanceVersion"));
+    vkGetDeviceProcAddr = reinterpret_cast<PFN_vkGetDeviceProcAddr>(dlsym(libVulkan, "vkGetDeviceProcAddr"));
 
     return true;
 }
@@ -71,6 +101,12 @@ void loadVulkanFunctions()
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR = reinterpret_cast< PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR"));
     vkGetPhysicalDeviceSurfaceFormatsKHR = reinterpret_cast< PFN_vkGetPhysicalDeviceSurfaceFormatsKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceFormatsKHR"));
     vkGetPhysicalDeviceSurfacePresentModesKHR = reinterpret_cast< PFN_vkGetPhysicalDeviceSurfacePresentModesKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfacePresentModesKHR"));
+
+    // Required for the profiles library
+    vkGetPhysicalDeviceProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceProperties2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceProperties2"));
+    vkGetPhysicalDeviceQueueFamilyProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceQueueFamilyProperties2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceQueueFamilyProperties2"));
+    vkGetPhysicalDeviceFeatures2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFeatures2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFeatures2"));
+    vkGetPhysicalDeviceFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFormatProperties2"));
 }
 
 #endif

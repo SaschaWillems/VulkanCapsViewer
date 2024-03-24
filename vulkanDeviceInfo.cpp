@@ -783,6 +783,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 
 void VulkanDeviceInfo::readProfiles()
 {
+#if not defined(DISABLE_PROFILES)
     qInfo() << "Reading profiles";
 
     std::vector<VpProfileProperties> availableProfiles{};
@@ -803,6 +804,7 @@ void VulkanDeviceInfo::readProfiles()
         profileInfo.supported = supported;
         profiles.push_back(profileInfo);
     }
+#endif
 }
 
 QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
