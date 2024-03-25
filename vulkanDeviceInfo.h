@@ -46,7 +46,6 @@
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
 #include "VulkanContext.h"
-#include "vulkan_profiles.hpp"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
@@ -57,6 +56,9 @@
 #endif
 
 #include "vulkanandroid.h"
+#if !defined(DISABLE_PROFILES)
+#include "vulkan_profiles.hpp"
+#endif
 
 struct OSInfo
 {

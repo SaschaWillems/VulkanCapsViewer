@@ -1,9 +1,30 @@
+/*
+*
+* Vulkan hardware capability viewer
+*
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+*
+* This code is free software, you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License version 3 as published by the Free Software Foundation.
+*
+* Please review the following information to ensure the GNU Lesser
+* General Public License version 3 requirements will be met:
+* http://opensource.org/licenses/lgpl-3.0.html
+*
+* The code is distributed WITHOUT ANY WARRANTY; without even the
+* implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+* PURPOSE.  See the GNU LGPL 3.0 for more details.
+*
+*/
+
 #pragma once
 
 #ifndef VULKANANDROID_H
 #define VULKANANDROID_H
 
-// Vulkan needs to be loaded dynamically on android
+// Load Vulkan functions dynamically on Android
+// While newer devices may have a loder, very old devices dont'
 
 #pragma once
 
@@ -41,6 +62,13 @@ extern PFN_vkGetPhysicalDeviceSurfaceSupportKHR vkGetPhysicalDeviceSurfaceSuppor
 extern PFN_vkGetPhysicalDeviceSurfaceCapabilitiesKHR vkGetPhysicalDeviceSurfaceCapabilitiesKHR;
 extern PFN_vkGetPhysicalDeviceSurfaceFormatsKHR vkGetPhysicalDeviceSurfaceFormatsKHR;
 extern PFN_vkGetPhysicalDeviceSurfacePresentModesKHR vkGetPhysicalDeviceSurfacePresentModesKHR;
+// Required for the profiles library
+extern PFN_vkGetDeviceProcAddr vkGetDeviceProcAddr;
+extern PFN_vkGetPhysicalDeviceProperties2 vkGetPhysicalDeviceProperties2;
+extern PFN_vkGetPhysicalDeviceFormatProperties2 vkGetPhysicalDeviceFormatProperties2;
+extern PFN_vkGetPhysicalDeviceFeatures2 vkGetPhysicalDeviceFeatures2;
+extern PFN_vkGetPhysicalDeviceQueueFamilyProperties2 vkGetPhysicalDeviceQueueFamilyProperties2;
+extern PFN_vkEnumerateInstanceVersion vkEnumerateInstanceVersion;
 
 bool loadVulkanLibrary();
 void loadVulkanFunctions();
