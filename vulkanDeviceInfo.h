@@ -56,7 +56,7 @@
 #endif
 
 #include "vulkanandroid.h"
-#if not defined(DISABLE_PROFILES)
+#if !defined(DISABLE_PROFILES)
 #include "vulkan_profiles.hpp"
 #endif
 

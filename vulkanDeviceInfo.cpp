@@ -783,7 +783,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 
 void VulkanDeviceInfo::readProfiles()
 {
-#if not defined(DISABLE_PROFILES)
+#if !defined(DISABLE_PROFILES)
     qInfo() << "Reading profiles";
 
     std::vector<VpProfileProperties> availableProfiles{};
@@ -804,6 +804,8 @@ void VulkanDeviceInfo::readProfiles()
         profileInfo.supported = supported;
         profiles.push_back(profileInfo);
     }
+#else
+    qInfo() << "Profiles disabled at build time";
 #endif
 }
 
