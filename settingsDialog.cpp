@@ -69,8 +69,8 @@ settingsDialog::settingsDialog(Settings appSet)
 	formLayout->addRow(tr("Use proxy settings for upload"), createCheckBox("checkBoxUseProxy"));
 
 	QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
-	connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAccept()));
-	connect(buttonBox, SIGNAL(rejected()), this, SLOT(slotCancel()));
+	connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotAccept()), Qt::QueuedConnection);
+	connect(buttonBox, SIGNAL(rejected()), this, SLOT(slotCancel()), Qt::QueuedConnection);
 
 	formLayout->addWidget(buttonBox);
 

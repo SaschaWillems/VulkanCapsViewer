@@ -71,8 +71,12 @@
 #include <android/native_window_jni.h>
 #endif
 
+#ifdef __APPLE__
+#include <vulkan/vulkan_metal.h>
+
 #ifdef VK_USE_PLATFORM_IOS_MVK
 extern "C" const char *getWorkingFolderForiOS(void);
+#endif
 #endif
 
 using std::to_string;
@@ -169,15 +173,15 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.setupUi(this);
     setWindowTitle("Vulkan Hardware Capability Viewer " + version);
     // Connect slots
-    connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)));
-    connect(ui.toolButtonUpload, SIGNAL(pressed()), this, SLOT(slotUploadReport()));
-    connect(ui.toolButtonSave, SIGNAL(pressed()), this, SLOT(slotSaveReport()));
-    connect(ui.toolButtonOnlineDevice, SIGNAL(pressed()), this, SLOT(slotDisplayOnlineReport()));
-    connect(ui.toolButtonOnlineDataBase, SIGNAL(pressed()), this, SLOT(slotBrowseDatabase()));
-    connect(ui.toolButtonAbout, SIGNAL(pressed()), this, SLOT(slotAbout()));
-    connect(ui.toolButtonExit, SIGNAL(pressed()), this, SLOT(slotClose()));
-    connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()));
-    connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)));
+    connect(ui.comboBoxGPU, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboBoxGPUIndexChanged(int)), Qt::QueuedConnection);
+    connect(ui.toolButtonUpload, SIGNAL(pressed()), this, SLOT(slotUploadReport()), Qt::QueuedConnection);
+    connect(ui.toolButtonSave, SIGNAL(pressed()), this, SLOT(slotSaveReport()), Qt::QueuedConnection);
+    connect(ui.toolButtonOnlineDevice, SIGNAL(pressed()), this, SLOT(slotDisplayOnlineReport()), Qt::QueuedConnection);
+    connect(ui.toolButtonOnlineDataBase, SIGNAL(pressed()), this, SLOT(slotBrowseDatabase()), Qt::QueuedConnection);
+    connect(ui.toolButtonAbout, SIGNAL(pressed()), this, SLOT(slotAbout()), Qt::QueuedConnection);
+    connect(ui.toolButtonExit, SIGNAL(pressed()), this, SLOT(slotClose()), Qt::QueuedConnection);
+    connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()), Qt::QueuedConnection);
+    connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)), Qt::QueuedConnection);
 
     qApp->setStyle(QStyleFactory::create("Fusion"));
     boldFont.setBold(true);
@@ -618,13 +622,14 @@ bool VulkanCapsViewer::initVulkan()
 #if defined(VK_USE_PLATFORM_XCB_KHR)
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
-#if defined(VK_USE_PLATFORM_MACOS_MVK)
-    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
-#endif
-
-#if defined(VK_USE_PLATFORM_IOS_MVK)
-   VK_MVK_IOS_SURFACE_EXTENSION_NAME,
-#endif
+        
+//#if defined(VK_USE_PLATFORM_MACOS_MVK)
+//    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
+//#endif
+//
+//#if defined(VK_USE_PLATFORM_IOS_MVK)
+//   VK_MVK_IOS_SURFACE_EXTENSION_NAME,
+//#endif
     };
 
     std::vector<const char*> enabledExtensions = {};
@@ -637,6 +642,10 @@ bool VulkanCapsViewer::initVulkan()
     if (availableExtensionCount != 0) {
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     }
+    
+#if __APPLE__
+    enabledExtensions.push_back("VK_EXT_metal_surface");
+#endif
 
     std::vector<std::string> surfaceExtensionsAvailable = {};
 
@@ -676,7 +685,7 @@ bool VulkanCapsViewer::initVulkan()
         }
     }
 
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && (VK_HEADER_VERSION >= 216)
+#if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
     instanceCreateInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
     enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
     enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
@@ -802,25 +811,16 @@ bool VulkanCapsViewer::initVulkan()
         }
 #endif
 
-#if defined(VK_USE_PLATFORM_MACOS_MVK)
-        if (surface_extension == VK_MVK_MACOS_SURFACE_EXTENSION_NAME) {
-            VkMacOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-            pMetalSurrogate = new QVukanSurrogate();
-            surfaceCreateInfo.pView = (void*)pMetalSurrogate->winId();
-            surfaceResult = vkCreateMacOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-        }
+// This works for deskop and iOS devices
+#if __APPLE__
+        VkMetalSurfaceCreateInfoEXT info = {};
+        info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+        info.pNext = nullptr;
+        info.pLayer = (void*)pMetalSurrogate->winId();
+        info.flags = 0;
+        vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
 #endif
 
-#if defined(VK_USE_PLATFORM_IOS_MVK)
-        if (surface_extension == VK_MVK_IOS_SURFACE_EXTENSION_NAME) {
-            VkIOSSurfaceCreateInfoMVK surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_MACOS_SURFACE_CREATE_INFO_MVK;
-            pMetalSurrogate = new QVukanSurrogate();
-            surfaceCreateInfo.pView = (void*)pMetalSurrogate->winId();
-            surfaceResult = vkCreateIOSSurfaceMVK(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-        }
-#endif
         if (surfaceResult == VK_SUCCESS) {
             vulkanContext.surfaceExtension = surface_extension;
             break;
