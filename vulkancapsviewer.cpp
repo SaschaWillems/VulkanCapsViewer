@@ -45,6 +45,7 @@
 #include <QApplication>
 #include <qnamespace.h>
 #include <assert.h>
+#include <unordered_map>
 #include <settingsDialog.h>
 #include "submitDialog.h"
 
@@ -1545,16 +1546,6 @@ void VulkanCapsViewer::displayOSInfo(VulkanDeviceInfo& device)
     }
 }
 
-void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)
-{
-    if (flag)
-    {
-        QList<QStandardItem *> flagItems;
-        flagItems << new QStandardItem(flagName);
-        parent->appendRow(flagItems);
-    }
-}
-
 void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 {
     models.formats.clear();
@@ -1580,23 +1571,19 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         }
 
         rootItem->appendRow(rowItems);
-        // @todo
-        struct featureSet {
-            std::string name;
-            uint64_t flags;
-        };
-        std::vector<featureSet> featureSets = {
+        std::unordered_map<std::string, uint64_t> featureSets = {
             { "Linear tiling flags", format.linearTilingFeatures },
             { "Optimal tiling flags", format.optimalTilingFeatures },
             { "Buffer features flags", format.bufferFeatures }
         };
 
+        // Always use feature2 enums, as they contain all initial enums
         for (auto& featureSet : featureSets)
         {
             QList<QStandardItem*> flagItems;
-            flagItems << new QStandardItem(QString::fromStdString(featureSet.name));
+            flagItems << new QStandardItem(QString::fromStdString(featureSet.first));
 
-            if (featureSet.flags == 0)
+            if (featureSet.second == 0)
             {
                 QList<QStandardItem*> flagItem;
                 flagItem << new QStandardItem("none");
@@ -1604,10 +1591,10 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
             }
             else
             {
-                for (auto& formatFlag2 : vulkanResources::formatFeatureFlags2) {
-                    if (featureSet.flags & formatFlag2) {
+                for (auto& formatFlag : vulkanResources::formatFeatureFlags2) {
+                    if (featureSet.second & formatFlag) {
                         QList<QStandardItem*> flagItem;
-                        QString flagname = vulkanResources::formatFeature2String(formatFlag2);
+                        QString flagname = vulkanResources::formatFeature2String(formatFlag);
                         flagname = flagname.replace("VK_FORMAT_FEATURE_2_", "");
                         flagItem << new QStandardItem(flagname);
                         flagItems[0]->appendRow(flagItem);
@@ -1616,81 +1603,7 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
             }
 
             rowItems[0]->appendRow(flagItems);
-
         }
-
-        /*
-        @todo: remove, always use flags2, as they also contain the old flags
-        struct featureSet {
-            std::string name;
-            VkFlags flags;
-        };
-        std::vector<featureSet> featureSets =
-        {
-            { "Linear tiling flags", format.properties.linearTilingFeatures },
-            { "Optimal tiling flags", format.properties.optimalTilingFeatures },
-            { "Buffer features flags", format.properties.bufferFeatures }
-        };
-
-        if (format.supported)
-        {
-            for (auto& featureSet : featureSets)
-            {
-                QList<QStandardItem *> flagItems;
-                flagItems << new QStandardItem(QString::fromStdString(featureSet.name));
-
-                if (featureSet.flags == 0)
-                {
-                    QList<QStandardItem *> flagItem;
-                    flagItem << new QStandardItem("none");
-                    flagItems[0]->appendRow(flagItem);
-                }
-                else
-                {
-                #define ADD_FLAG(flag) \
-                    if (featureSet.flags & flag) \
-                    { \
-                        QList<QStandardItem *> flagItem; \
-                        QString flagname(#flag); \
-                        flagname = flagname.replace("VK_FORMAT_FEATURE_", ""); \
-                        flagItem << new QStandardItem(flagname); \
-                        flagItems[0]->appendRow(flagItem); \
-                    }
-
-                    // Core
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_SRC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_DST_BIT)
-                    // 1.1
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_SRC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_DST_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_DISJOINT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT)
-
-                    // EXT
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG)
-                }
-
-                rowItems[0]->appendRow(flagItems);
-
-            }
-        }
-        */
     }
 
     QStringList formatHeaders;

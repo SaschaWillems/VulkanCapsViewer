@@ -928,9 +928,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonArray jsonFormat;
         jsonFormat.append((QJsonValue(format.format)));
         QJsonObject jsonFormatFeatures;
-        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.properties.linearTilingFeatures).toString();
-        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.properties.optimalTilingFeatures).toString();
-        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.properties.bufferFeatures).toString();
+        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.linearTilingFeatures).toString();
+        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.optimalTilingFeatures).toString();
+        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.bufferFeatures).toString();
         jsonFormatFeatures["supported"] = format.supported;
         jsonFormat.append(jsonFormatFeatures);
         jsonFormats.append(jsonFormat);
