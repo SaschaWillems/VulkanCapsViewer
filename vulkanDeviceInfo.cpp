@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -824,6 +824,7 @@ void VulkanDeviceInfo::readPlatformDetails()
 
 void VulkanDeviceInfo::readProfiles()
 {
+#if !defined(DISABLE_PROFILES)
     qInfo() << "Reading profiles";
 
     std::vector<VpProfileProperties> availableProfiles{};
@@ -844,6 +845,9 @@ void VulkanDeviceInfo::readProfiles()
         profileInfo.supported = supported;
         profiles.push_back(profileInfo);
     }
+#else
+    qInfo() << "Profiles disabled at build time";
+#endif
 }
 
 QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
@@ -924,11 +928,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonArray jsonFormat;
         jsonFormat.append((QJsonValue(format.format)));
         QJsonObject jsonFormatFeatures;
-        // @todo: check if proprerly converted from uint64_t
-        // Write values as strings to avoid problems with JSON presentation of large numbers
-        jsonFormatFeatures["linearTilingFeatures"] = QString::number(format.linearTilingFeatures);
-        jsonFormatFeatures["optimalTilingFeatures"] = QString::number(format.optimalTilingFeatures);
-        jsonFormatFeatures["bufferFeatures"] = QString::number(format.bufferFeatures);
+        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.properties.linearTilingFeatures).toString();
+        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.properties.optimalTilingFeatures).toString();
+        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.properties.bufferFeatures).toString();
         jsonFormatFeatures["supported"] = format.supported;
         jsonFormat.append(jsonFormatFeatures);
         jsonFormats.append(jsonFormat);
@@ -1066,6 +1068,7 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     jsonEnv["name"] = QString::fromStdString(os.name);
     jsonEnv["version"] = QString::fromStdString(os.version);
     jsonEnv["architecture"] = QString::fromStdString(os.architecture);
+    jsonEnv["ostype"] = os.type;
     jsonEnv["submitter"] = submitter;
     jsonEnv["comment"] = comment;
     jsonEnv["reportversion"] = reportVersion;

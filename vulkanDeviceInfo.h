@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -46,7 +46,6 @@
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
 #include "VulkanContext.h"
-#include "vulkan_profiles.hpp"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
@@ -57,12 +56,16 @@
 #endif
 
 #include "vulkanandroid.h"
+#if !defined(DISABLE_PROFILES)
+#include "vulkan_profiles.hpp"
+#endif
 
 struct OSInfo
 {
     std::string name;
     std::string version;
     std::string architecture;
+    int32_t type{ -1 };
 };
 
 struct VulkanQueueFamilyInfo

@@ -52,6 +52,8 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const 
         QTextStream textStream(&logFile);
         textStream << logMessage << endl;
     };
+    // Suppress compiler warning
+    (void)context;
 }
 
 int main(int argc, char *argv[])

@@ -229,3 +229,4 @@ redist/*.tar.gz
 redist/*.zip
 
 devdatabase.ini
+/db.ini
