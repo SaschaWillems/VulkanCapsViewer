@@ -104,7 +104,11 @@ void VulkanDeviceInfo::readSupportedFormats()
     // A note before adding new formats in here: In order for them to be properly displayed, formats also need to be added to the database
 
     assert(device != NULL);
-    qInfo() << "Reading formats";
+    if (hasFormatFeatureFlags2) {
+        qInfo() << "Reading formats using VK_KHR_format_feature_flags2";
+    } else {
+        qInfo() << "Reading formats";
+    }
 
     // Generate format listing from core and supported extensions
     std::vector<uint64_t> formatList{};
@@ -455,6 +459,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
     }
 
     if (extensionSupported(VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME)) {
+        qInfo() << "Device supports VK_KHR_format_feature_flags2";
         hasFormatFeatureFlags2 = true;
     }
 
@@ -464,7 +469,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
 void VulkanDeviceInfo::readPhysicalFeatures()
 {
     assert(device != NULL);
-    qInfo() << "Reading physical feattures";
+    qInfo() << "Reading physical features";
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
     features.clear();
