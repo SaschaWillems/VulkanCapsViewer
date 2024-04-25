@@ -4,7 +4,7 @@
 *
 * Layer information struct
 *
-* Copyright (C) 2015 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -27,9 +27,6 @@
 struct VulkanFormatInfo
 {
 	VkFormat format;
-	// @todo: Don't differentiate, use uint64 and combine old and new
-	//VkFormatProperties properties;
-	//VkFormatProperties3 properties3{};
 
 	uint64_t linearTilingFeatures;
 	uint64_t optimalTilingFeatures;

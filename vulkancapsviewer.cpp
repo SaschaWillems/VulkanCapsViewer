@@ -729,7 +729,6 @@ bool VulkanCapsViewer::initVulkan()
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
         // Function pointers for new format properties
-        // @todo
         vulkanContext.vkGetPhysicalDeviceFormatProperties2 = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFormatProperties2"));
         if (!vulkanContext.vkGetPhysicalDeviceFormatProperties2) {
             deviceFormatProperties2Available = false;
