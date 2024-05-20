@@ -99,6 +99,7 @@ VK_EXT_legacy_dithering
 VK_EXT_pipeline_protected_access
 VK_EXT_shader_object
 VK_EXT_mutable_descriptor_type
+VK_EXT_legacy_vertex_attributes
 VK_EXT_pipeline_library_group_handles
 VK_EXT_dynamic_rendering_unused_attachments
 VK_EXT_attachment_feedback_loop_dynamic_state
@@ -169,6 +170,8 @@ VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
 VK_KHR_shader_expect_assume
 VK_KHR_maintenance6
+MESA
+VK_MESA_image_alignment_control
 MSFT
 VK_MSFT_layered_driver
 NV
