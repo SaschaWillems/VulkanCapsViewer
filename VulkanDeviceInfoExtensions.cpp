@@ -2179,6 +2179,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "attachmentFeedbackLoopDynamicState", extFeatures->attachmentFeedbackLoopDynamicState);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_shader_replicated_composites")) {
+		const char* extension("VK_EXT_shader_replicated_composites");
+		VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT* extFeatures = new VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_REPLICATED_COMPOSITES_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderReplicatedComposites", extFeatures->shaderReplicatedComposites);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
