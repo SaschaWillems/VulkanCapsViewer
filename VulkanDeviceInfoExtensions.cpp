@@ -604,6 +604,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "shaderBinaryVersion", QVariant(extProps->shaderBinaryVersion));
 		delete extProps;
 	}
+	if (extensionSupported("VK_EXT_legacy_vertex_attributes")) {
+		const char* extension("VK_EXT_legacy_vertex_attributes");
+		VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT* extProps = new VkPhysicalDeviceLegacyVertexAttributesPropertiesEXT{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_VERTEX_ATTRIBUTES_PROPERTIES_EXT;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "nativeUnalignedPerformance", QVariant(bool(extProps->nativeUnalignedPerformance)));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -951,6 +960,18 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		delete extProps;
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalProperties_MESA() {
+	VkPhysicalDeviceProperties2 deviceProps2{};
+	if (extensionSupported("VK_MESA_image_alignment_control")) {
+		const char* extension("VK_MESA_image_alignment_control");
+		VkPhysicalDeviceImageAlignmentControlPropertiesMESA* extProps = new VkPhysicalDeviceImageAlignmentControlPropertiesMESA{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ALIGNMENT_CONTROL_PROPERTIES_MESA;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "supportedImageAlignmentMask", QVariant(extProps->supportedImageAlignmentMask));
+		delete extProps;
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalProperties_MSFT() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
 	if (extensionSupported("VK_MSFT_layered_driver")) {
@@ -1191,6 +1212,7 @@ void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
     readPhysicalProperties_KHR();
+    readPhysicalProperties_MESA();
     readPhysicalProperties_MSFT();
     readPhysicalProperties_NV();
     readPhysicalProperties_NVX();
@@ -2121,6 +2143,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "mutableDescriptorType", extFeatures->mutableDescriptorType);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_legacy_vertex_attributes")) {
+		const char* extension("VK_EXT_legacy_vertex_attributes");
+		VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT* extFeatures = new VkPhysicalDeviceLegacyVertexAttributesFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_LEGACY_VERTEX_ATTRIBUTES_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "legacyVertexAttributes", extFeatures->legacyVertexAttributes);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_EXT_pipeline_library_group_handles")) {
 		const char* extension("VK_EXT_pipeline_library_group_handles");
 		VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT* extFeatures = new VkPhysicalDevicePipelineLibraryGroupHandlesFeaturesEXT{};
@@ -2146,6 +2177,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "attachmentFeedbackLoopDynamicState", extFeatures->attachmentFeedbackLoopDynamicState);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_shader_replicated_composites")) {
+		const char* extension("VK_EXT_shader_replicated_composites");
+		VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT* extFeatures = new VkPhysicalDeviceShaderReplicatedCompositesFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_REPLICATED_COMPOSITES_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderReplicatedComposites", extFeatures->shaderReplicatedComposites);
 		delete extFeatures;
 	}
 }
@@ -2700,6 +2740,18 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		delete extFeatures;
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_MESA() {
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	if (extensionSupported("VK_MESA_image_alignment_control")) {
+		const char* extension("VK_MESA_image_alignment_control");
+		VkPhysicalDeviceImageAlignmentControlFeaturesMESA* extFeatures = new VkPhysicalDeviceImageAlignmentControlFeaturesMESA{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_ALIGNMENT_CONTROL_FEATURES_MESA;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "imageAlignmentControl", extFeatures->imageAlignmentControl);
+		delete extFeatures;
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
 	if (extensionSupported("VK_NV_corner_sampled_image")) {
@@ -3155,6 +3207,7 @@ void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_IMG();
     readPhysicalFeatures_INTEL();
     readPhysicalFeatures_KHR();
+    readPhysicalFeatures_MESA();
     readPhysicalFeatures_NV();
     readPhysicalFeatures_QCOM();
     readPhysicalFeatures_QNX();
