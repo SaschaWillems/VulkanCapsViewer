@@ -75,6 +75,7 @@ public:
     std::vector<VulkanLayerInfo> instanceLayers;
     std::vector<VkExtensionProperties> instanceExtensions;
     bool deviceProperties2Available = false;
+    bool deviceFormatProperties2Available = false;
     VulkanDatabase database;
     void checkReportDatabaseState();
     VulkanCapsViewer(QWidget *parent = 0);
