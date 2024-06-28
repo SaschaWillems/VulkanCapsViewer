@@ -171,6 +171,8 @@ VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
 VK_KHR_shader_expect_assume
 VK_KHR_maintenance6
+VK_KHR_shader_relaxed_extended_instruction
+VK_KHR_maintenance7
 MESA
 VK_MESA_image_alignment_control
 MSFT
