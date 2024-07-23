@@ -1382,7 +1382,7 @@ height: 24px;
          </widget>
          <widget class="QWidget" name="tab_12">
           <attribute name="title">
-           <string>Queue families</string>
+           <string>Queue Families</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_15">
            <item>
@@ -1623,7 +1623,7 @@ height: 24px;
                  </column>
                  <column>
                   <property name="text">
-                   <string>Impementation</string>
+                   <string>Implementation</string>
                   </property>
                  </column>
                  <column>
