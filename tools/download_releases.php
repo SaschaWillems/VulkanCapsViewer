@@ -7,11 +7,10 @@ function download($remote, $local) {
         fclose($remote_file);
     } else {
         throw new Exception("Could not download remote file!");
-        exit();
     }
 }
 
-$version = "3.29";
+$version = "3.42";
 $name_template = "vulkancapsviewer_".$version."_%s";
 
 # Windows 64 bit
