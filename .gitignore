@@ -230,3 +230,11 @@ redist/*.zip
 
 devdatabase.ini
 /db.ini
+
+android-build/**
+tools/*.zip
+tools/*.dmg
+tools/*.apk
+tools/*.AppImage
+
+log.txt

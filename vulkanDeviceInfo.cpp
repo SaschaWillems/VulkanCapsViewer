@@ -101,37 +101,76 @@ void VulkanDeviceInfo::readLayers()
 
 void VulkanDeviceInfo::readSupportedFormats()
 {
+    // A note before adding new formats in here: In order for them to be properly displayed, formats also need to be added to the database
+
     assert(device != NULL);
-    qInfo() << "Reading formats";
-    // Base formats
-    int32_t firstFormat = VK_FORMAT_R4G4_UNORM_PACK8;
-    int32_t lastFormat = VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
-    for (int32_t format = firstFormat; format <= lastFormat; format++) {
-        VulkanFormatInfo formatInfo = {};
-        formatInfo.format = (VkFormat)format;
-        vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-        formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-        formats.push_back(formatInfo);
+    if (hasFormatFeatureFlags2) {
+        qInfo() << "Reading formats using VK_KHR_format_feature_flags2";
+    } else {
+        qInfo() << "Reading formats";
     }
+
+    // Generate format listing from core and supported extensions
+    std::vector<uint64_t> formatList{};
+
+    // Core formats
+    uint64_t firstFormat = VK_FORMAT_R4G4_UNORM_PACK8;
+    uint64_t lastFormat = VK_FORMAT_ASTC_12x12_SRGB_BLOCK;
+    for (int32_t format = firstFormat; format <= lastFormat; format++) {
+        formatList.push_back(format);
+    }
+
     // VK_KHR_sampler_ycbcr_conversion
     if (extensionSupported(VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME)) {
         for (int32_t format = VK_FORMAT_G8B8G8R8_422_UNORM; format < VK_FORMAT_G16_B16_R16_3PLANE_444_UNORM; format++) {
-            VulkanFormatInfo formatInfo = {};
-            formatInfo.format = (VkFormat)format;
-            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            formats.push_back(formatInfo);
+            formatList.push_back((VkFormat)format);
         }
     }
+
     // VK_IMG_FORMAT_PVRTC_EXTENSION_NAME
     if (extensionSupported(VK_IMG_FORMAT_PVRTC_EXTENSION_NAME)) {
         for (int32_t format = VK_FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG; format < VK_FORMAT_PVRTC2_4BPP_SRGB_BLOCK_IMG; format++) {
-            VulkanFormatInfo formatInfo = {};
-            formatInfo.format = (VkFormat)format;
-            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatInfo.properties);
-            formatInfo.supported = (formatInfo.properties.linearTilingFeatures != 0) || (formatInfo.properties.optimalTilingFeatures != 0) || (formatInfo.properties.bufferFeatures != 0);
-            formats.push_back(formatInfo);
+            formatList.push_back((VkFormat)format);
         }
+    }
+
+    for (auto i = 0; i < formatList.size(); i++) {
+        VkFormat format = (VkFormat)formatList[i];
+
+        VulkanFormatInfo formatInfo = {};
+        formatInfo.format = (VkFormat)format;
+
+        // Use the same data structure for both base and newer feature flag bits
+        // As the _flags2 also contain the base flags this will work both in the app and the database
+        
+        if (hasFormatFeatureFlags2) {
+            // Using VK_KHR_format_feature_flags2
+            VkFormatProperties3 formatProperties3{};
+            formatProperties3.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_3_KHR;
+
+            VkFormatProperties2 formatProperties2{};
+            formatProperties2.sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2;
+            formatProperties2.pNext = &formatProperties3;
+
+            vulkanContext.vkGetPhysicalDeviceFormatProperties2(device, formatInfo.format, &formatProperties2);
+
+            formatInfo.bufferFeatures = formatProperties3.bufferFeatures;
+            formatInfo.linearTilingFeatures = formatProperties3.linearTilingFeatures;
+            formatInfo.optimalTilingFeatures = formatProperties3.optimalTilingFeatures;
+
+            formatInfo.isFeatureFlags2 = true;
+        }
+        else {
+            VkFormatProperties formatProperties{};
+            vkGetPhysicalDeviceFormatProperties(device, formatInfo.format, &formatProperties);
+
+            formatInfo.bufferFeatures = formatProperties.bufferFeatures;
+            formatInfo.linearTilingFeatures = formatProperties.linearTilingFeatures;
+            formatInfo.optimalTilingFeatures = formatProperties.optimalTilingFeatures;
+        }
+
+        formatInfo.supported = (formatInfo.linearTilingFeatures != 0) || (formatInfo.optimalTilingFeatures != 0) || (formatInfo.bufferFeatures != 0);
+        formats.push_back(formatInfo);
     }
 }
 
@@ -418,12 +457,19 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize).toString();
         }
     }
+
+    if (extensionSupported(VK_KHR_FORMAT_FEATURE_FLAGS_2_EXTENSION_NAME)) {
+        qInfo() << "Device supports VK_KHR_format_feature_flags2";
+        hasFormatFeatureFlags2 = true;
+    }
+
+    properties["hasFormatFeatureFlags2"] = hasFormatFeatureFlags2;
 }
 
 void VulkanDeviceInfo::readPhysicalFeatures()
 {
     assert(device != NULL);
-    qInfo() << "Reading physical feattures";
+    qInfo() << "Reading physical features";
     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
     features.clear();
@@ -887,9 +933,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonArray jsonFormat;
         jsonFormat.append((QJsonValue(format.format)));
         QJsonObject jsonFormatFeatures;
-        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.properties.linearTilingFeatures).toString();
-        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.properties.optimalTilingFeatures).toString();
-        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.properties.bufferFeatures).toString();
+        jsonFormatFeatures["linearTilingFeatures"] = QVariant::fromValue(format.linearTilingFeatures).toString();
+        jsonFormatFeatures["optimalTilingFeatures"] = QVariant::fromValue(format.optimalTilingFeatures).toString();
+        jsonFormatFeatures["bufferFeatures"] = QVariant::fromValue(format.bufferFeatures).toString();
         jsonFormatFeatures["supported"] = format.supported;
         jsonFormat.append(jsonFormatFeatures);
         jsonFormats.append(jsonFormat);
