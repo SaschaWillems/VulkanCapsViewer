@@ -1,7 +1,17 @@
-#ifdef VK_USE_PLATFORM_IOS_MVK
-// iOS Utility Functions
-#import <UIKit/UIKit.h>
+#ifdef VK_USE_PLATFORM_METAL_EXT
 
+#import <Foundation/Foundation.h>
+#import <QuartzCore/CAMetalLayer.h>
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+#include <UIKit/UIView.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
+
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
 extern "C" void setWorkingFolderForiOS(void)
 {
@@ -20,6 +30,24 @@ extern "C" const char *getWorkingFolderForiOS(void)
     strncpy(cWorkingFolder, [myPath UTF8String], 512);
 
     return cWorkingFolder;
+}
+
+
+extern "C" void *makeViewMetalCompatible(void* handle)
+{
+#if TARGET_OS_IPHONE
+    UIView* view = (__bridge UIView*)handle;
+    assert([view isKindOfClass:[UIView class]]);
+
+    void *pLayer =(__bridge void*)view.layer;
+    return pLayer;
+#else
+    NSView* view = (__bridge NSView*)handle;
+    assert([view isKindOfClass:[NSView class]]);
+
+    void *pLayer = (__bridge void *)view.layer;
+    return pLayer;
+#endif
 }
 
 #endif
