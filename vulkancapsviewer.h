@@ -48,7 +48,7 @@
     extern "C" void setWorkingFolderForiOS(void);
 #endif
 
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
 // An unseen window for macOS and iOS that has a Metal surface
 // attached.
 class QVukanSurrogate: public QWindow
@@ -85,7 +85,7 @@ public:
 private:
     uint32_t instanceApiVersion;
     int selectedDeviceIndex = 0;
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     QVukanSurrogate *pMetalSurrogate = nullptr;
 #endif    
     Ui::vulkanCapsViewerClass ui;

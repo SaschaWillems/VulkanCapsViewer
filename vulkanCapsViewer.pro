@@ -59,7 +59,7 @@ android {
         android/res/values/libs.xml
 }
 macx {
-    DEFINES += VK_USE_PLATFORM_MACOS_MVK
+    DEFINES += VK_USE_PLATFORM_METAL_EXT
     VULKAN_DYLIB = $(VULKAN_SDK)/lib/libvulkan.dylib
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
@@ -68,8 +68,9 @@ macx {
 ios {
     TARGET = "Vulkan Caps Viewer"
     QMAKE_INFO_PLIST = iOS/Info.plist
-    DEFINES += VK_USE_PLATFORM_IOS_MVK
-    LIBS += /Users/lunarg/dev/VulkanSDK/MoltenVK/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
+    DEFINES += VK_USE_PLATFORM_METAL_EXT
+    DEFINES += VK_USE_PLATFORM_MACOS_MVK
+    LIBS += $(VULKAN_SDK)/lib/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
     LIBS += -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/iOS/vulkanCapsViewer.png

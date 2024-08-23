@@ -74,8 +74,10 @@
 #ifdef __APPLE__
 #include <vulkan/vulkan_metal.h>
 
-#ifdef VK_USE_PLATFORM_IOS_MVK
+
+#ifdef VK_USE_PLATFORM_METAL_EXT
 extern "C" const char *getWorkingFolderForiOS(void);
+extern "C" void *makeViewMetalCompatible(void* handle);
 #endif
 #endif
 
@@ -119,11 +121,8 @@ OSInfo getOperatingSystem()
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     osInfo.type = 2;
 #endif
-#if defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     osInfo.type = 3;
-#endif
-#if defined(VK_USE_PLATFORM_IOS_MVK)
-    osInfo.type = 4;
 #endif
 
     return osInfo;
@@ -307,7 +306,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 VulkanCapsViewer::~VulkanCapsViewer()
 {    
     // Free up hidden window used on Apple platforms
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     if(pMetalSurrogate != nullptr)
         delete pMetalSurrogate;
 #endif
@@ -623,13 +622,9 @@ bool VulkanCapsViewer::initVulkan()
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
         
-//#if defined(VK_USE_PLATFORM_MACOS_MVK)
-//    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
-//#endif
-//
-//#if defined(VK_USE_PLATFORM_IOS_MVK)
-//   VK_MVK_IOS_SURFACE_EXTENSION_NAME,
-//#endif
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+    VK_EXT_METAL_SURFACE_EXTENSION_NAME,
+#endif
     };
 
     std::vector<const char*> enabledExtensions = {};
@@ -643,9 +638,6 @@ bool VulkanCapsViewer::initVulkan()
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     }
     
-#if __APPLE__
-    enabledExtensions.push_back("VK_EXT_metal_surface");
-#endif
 
     std::vector<std::string> surfaceExtensionsAvailable = {};
 
@@ -683,13 +675,14 @@ bool VulkanCapsViewer::initVulkan()
         if (strcmp(ext.extensionName, VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME) == 0) {
             enabledExtensions.push_back(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
         }
-    }
 
 #if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
-    instanceCreateInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-    enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+        if(strcmp(ext.extensionName, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) == 0) {
+            instanceCreateInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+            enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        }
 #endif
+    }
 
     instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
     instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
@@ -812,13 +805,16 @@ bool VulkanCapsViewer::initVulkan()
 #endif
 
 // This works for deskop and iOS devices
-#if __APPLE__
-        VkMetalSurfaceCreateInfoEXT info = {};
-        info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-        info.pNext = nullptr;
-        info.pLayer = (void*)pMetalSurrogate->winId();
-        info.flags = 0;
-        vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+        if(surface_extension == VK_EXT_METAL_SURFACE_EXTENSION_NAME) {
+            pMetalSurrogate = new QVukanSurrogate;
+            VkMetalSurfaceCreateInfoEXT info = {};
+            info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+            info.pNext = nullptr;
+            info.pLayer = (void*)makeViewMetalCompatible((void*)pMetalSurrogate->winId());
+            info.flags = 0;
+            surfaceResult = vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
+        }
 #endif
 
         if (surfaceResult == VK_SUCCESS) {
@@ -865,7 +861,7 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     }
 
     std::vector<const char*> enabledExtensions;
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && (VK_HEADER_VERSION >= 216)
+#if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
     enabledExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
 #endif
 
