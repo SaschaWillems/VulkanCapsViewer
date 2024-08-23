@@ -920,6 +920,19 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		pushProperty2(extension, "nonStrictWideLinesUseParallelogram", QVariant(bool(extProps->nonStrictWideLinesUseParallelogram)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_KHR_pipeline_binary")) {
+		const char* extension("VK_KHR_pipeline_binary");
+		VkPhysicalDevicePipelineBinaryPropertiesKHR* extProps = new VkPhysicalDevicePipelineBinaryPropertiesKHR{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_BINARY_PROPERTIES_KHR;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "pipelineBinaryInternalCache", QVariant(bool(extProps->pipelineBinaryInternalCache)));
+		pushProperty2(extension, "pipelineBinaryInternalCacheControl", QVariant(bool(extProps->pipelineBinaryInternalCacheControl)));
+		pushProperty2(extension, "pipelineBinaryPrefersInternalCache", QVariant(bool(extProps->pipelineBinaryPrefersInternalCache)));
+		pushProperty2(extension, "pipelineBinaryPrecompiledInternalCache", QVariant(bool(extProps->pipelineBinaryPrecompiledInternalCache)));
+		pushProperty2(extension, "pipelineBinaryCompressedData", QVariant(bool(extProps->pipelineBinaryCompressedData)));
+		delete extProps;
+	}
 	if (extensionSupported("VK_KHR_cooperative_matrix")) {
 		const char* extension("VK_KHR_cooperative_matrix");
 		VkPhysicalDeviceCooperativeMatrixPropertiesKHR* extProps = new VkPhysicalDeviceCooperativeMatrixPropertiesKHR{};
@@ -1264,6 +1277,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMD() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderEarlyAndLateFragmentTests", extFeatures->shaderEarlyAndLateFragmentTests);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_AMD_anti_lag")) {
+		const char* extension("VK_AMD_anti_lag");
+		VkPhysicalDeviceAntiLagFeaturesAMD* extFeatures = new VkPhysicalDeviceAntiLagFeaturesAMD{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ANTI_LAG_FEATURES_AMD;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "antiLag", extFeatures->antiLag);
 		delete extFeatures;
 	}
 }
@@ -2676,6 +2698,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "rayTracingPositionFetch", extFeatures->rayTracingPositionFetch);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_pipeline_binary")) {
+		const char* extension("VK_KHR_pipeline_binary");
+		VkPhysicalDevicePipelineBinaryFeaturesKHR* extFeatures = new VkPhysicalDevicePipelineBinaryFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_BINARY_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelineBinaries", extFeatures->pipelineBinaries);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_cooperative_matrix")) {
 		const char* extension("VK_KHR_cooperative_matrix");
 		VkPhysicalDeviceCooperativeMatrixFeaturesKHR* extFeatures = new VkPhysicalDeviceCooperativeMatrixFeaturesKHR{};
@@ -3075,6 +3106,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderRawAccessChains", extFeatures->shaderRawAccessChains);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_command_buffer_inheritance")) {
+		const char* extension("VK_NV_command_buffer_inheritance");
+		VkPhysicalDeviceCommandBufferInheritanceFeaturesNV* extFeatures = new VkPhysicalDeviceCommandBufferInheritanceFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMMAND_BUFFER_INHERITANCE_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "commandBufferInheritance", extFeatures->commandBufferInheritance);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_NV_shader_atomic_float16_vector")) {
