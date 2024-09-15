@@ -166,6 +166,7 @@ VK_KHR_maintenance5
 VK_KHR_ray_tracing_position_fetch
 VK_KHR_pipeline_binary
 VK_KHR_cooperative_matrix
+VK_KHR_compute_shader_derivatives
 VK_KHR_video_maintenance1
 VK_KHR_vertex_attribute_divisor
 VK_KHR_shader_float_controls2
