@@ -613,6 +613,26 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "nativeUnalignedPerformance", QVariant(bool(extProps->nativeUnalignedPerformance)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_EXT_device_generated_commands")) {
+		const char* extension("VK_EXT_device_generated_commands");
+		VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT* extProps = new VkPhysicalDeviceDeviceGeneratedCommandsPropertiesEXT{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_PROPERTIES_EXT;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxIndirectPipelineCount", QVariant(extProps->maxIndirectPipelineCount));
+		pushProperty2(extension, "maxIndirectShaderObjectCount", QVariant(extProps->maxIndirectShaderObjectCount));
+		pushProperty2(extension, "maxIndirectSequenceCount", QVariant(extProps->maxIndirectSequenceCount));
+		pushProperty2(extension, "maxIndirectCommandsTokenCount", QVariant(extProps->maxIndirectCommandsTokenCount));
+		pushProperty2(extension, "maxIndirectCommandsTokenOffset", QVariant(extProps->maxIndirectCommandsTokenOffset));
+		pushProperty2(extension, "maxIndirectCommandsIndirectStride", QVariant(extProps->maxIndirectCommandsIndirectStride));
+		pushProperty2(extension, "supportedIndirectCommandsInputModes", QVariant(extProps->supportedIndirectCommandsInputModes));
+		pushProperty2(extension, "supportedIndirectCommandsShaderStages", QVariant(extProps->supportedIndirectCommandsShaderStages));
+		pushProperty2(extension, "supportedIndirectCommandsShaderStagesPipelineBinding", QVariant(extProps->supportedIndirectCommandsShaderStagesPipelineBinding));
+		pushProperty2(extension, "supportedIndirectCommandsShaderStagesShaderBinding", QVariant(extProps->supportedIndirectCommandsShaderStagesShaderBinding));
+		pushProperty2(extension, "deviceGeneratedCommandsTransformFeedback", QVariant(bool(extProps->deviceGeneratedCommandsTransformFeedback)));
+		pushProperty2(extension, "deviceGeneratedCommandsMultiDrawIndirectCount", QVariant(bool(extProps->deviceGeneratedCommandsMultiDrawIndirectCount)));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -940,6 +960,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		deviceProps2 = initDeviceProperties2(extProps);
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "cooperativeMatrixSupportedStages", QVariant(extProps->cooperativeMatrixSupportedStages));
+		delete extProps;
+	}
+	if (extensionSupported("VK_KHR_compute_shader_derivatives")) {
+		const char* extension("VK_KHR_compute_shader_derivatives");
+		VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR* extProps = new VkPhysicalDeviceComputeShaderDerivativesPropertiesKHR{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_PROPERTIES_KHR;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "meshAndTaskShaderDerivatives", QVariant(bool(extProps->meshAndTaskShaderDerivatives)));
 		delete extProps;
 	}
 	if (extensionSupported("VK_KHR_vertex_attribute_divisor")) {
@@ -2226,6 +2255,25 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "shaderReplicatedComposites", extFeatures->shaderReplicatedComposites);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_device_generated_commands")) {
+		const char* extension("VK_EXT_device_generated_commands");
+		VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT* extFeatures = new VkPhysicalDeviceDeviceGeneratedCommandsFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEVICE_GENERATED_COMMANDS_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "deviceGeneratedCommands", extFeatures->deviceGeneratedCommands);
+		pushFeature2(extension, "dynamicGeneratedPipelineLayout", extFeatures->dynamicGeneratedPipelineLayout);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_depth_clamp_control")) {
+		const char* extension("VK_EXT_depth_clamp_control");
+		VkPhysicalDeviceDepthClampControlFeaturesEXT* extFeatures = new VkPhysicalDeviceDepthClampControlFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_CONTROL_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "depthClampControl", extFeatures->depthClampControl);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2715,6 +2763,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "cooperativeMatrix", extFeatures->cooperativeMatrix);
 		pushFeature2(extension, "cooperativeMatrixRobustBufferAccess", extFeatures->cooperativeMatrixRobustBufferAccess);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_compute_shader_derivatives")) {
+		const char* extension("VK_KHR_compute_shader_derivatives");
+		VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR* extFeatures = new VkPhysicalDeviceComputeShaderDerivativesFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COMPUTE_SHADER_DERIVATIVES_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "computeDerivativeGroupQuads", extFeatures->computeDerivativeGroupQuads);
+		pushFeature2(extension, "computeDerivativeGroupLinear", extFeatures->computeDerivativeGroupLinear);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_KHR_video_maintenance1")) {
