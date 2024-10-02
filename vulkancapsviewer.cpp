@@ -83,7 +83,7 @@ extern "C" void *makeViewMetalCompatible(void* handle);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "3.42";
+const QString VulkanCapsViewer::version = "3.43";
 const QString VulkanCapsViewer::reportVersion = "3.3";
 
 OSInfo getOperatingSystem()
