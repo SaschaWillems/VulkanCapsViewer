@@ -21,7 +21,7 @@ win32 {
     } else {
         LIBS += "$$PWD/libs/vulkan/lib32/vulkan-1.lib"
     }
-    LIBS += Advapi32.lib
+    LIBS += -ladvapi32
 }
 linux:!android {
     LIBS += -lvulkan
