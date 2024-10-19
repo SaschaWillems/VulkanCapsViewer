@@ -86,6 +86,8 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 		pushProperty2(extension, "maxExecutionGraphShaderPayloadSize", QVariant(extProps->maxExecutionGraphShaderPayloadSize));
 		pushProperty2(extension, "maxExecutionGraphShaderPayloadCount", QVariant(extProps->maxExecutionGraphShaderPayloadCount));
 		pushProperty2(extension, "executionGraphDispatchAddressAlignment", QVariant(extProps->executionGraphDispatchAddressAlignment));
+		pushProperty2(extension, "maxExecutionGraphWorkgroupCount", QVariant::fromValue(QVariantList({ extProps->maxExecutionGraphWorkgroupCount[0], extProps->maxExecutionGraphWorkgroupCount[1], extProps->maxExecutionGraphWorkgroupCount[2] })));
+		pushProperty2(extension, "maxExecutionGraphWorkgroups", QVariant(extProps->maxExecutionGraphWorkgroups));
 		delete extProps;
 	}
 }
@@ -1327,6 +1329,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderEnqueue", extFeatures->shaderEnqueue);
+		pushFeature2(extension, "shaderMeshEnqueue", extFeatures->shaderMeshEnqueue);
 		delete extFeatures;
 	}
 }
@@ -1921,6 +1924,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "primitiveTopologyListRestart", extFeatures->primitiveTopologyListRestart);
 		pushFeature2(extension, "primitiveTopologyPatchListRestart", extFeatures->primitiveTopologyPatchListRestart);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_present_mode_fifo_latest_ready")) {
+		const char* extension("VK_EXT_present_mode_fifo_latest_ready");
+		VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT* extFeatures = new VkPhysicalDevicePresentModeFifoLatestReadyFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_MODE_FIFO_LATEST_READY_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentModeFifoLatestReady", extFeatures->presentModeFifoLatestReady);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_EXT_pipeline_properties")) {
