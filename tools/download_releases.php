@@ -10,7 +10,7 @@ function download($remote, $local) {
     }
 }
 
-$version = "3.42";
+$version = "3.43";
 $name_template = "vulkancapsviewer_".$version."_%s";
 
 # Windows 64 bit

@@ -1,0 +1,18 @@
+{
+  "FileVersion": 2,
+  "Id": "560f3ad5-17f2-395d-b675-082a25172590",
+  "Items": [
+    {
+      "Id": "8faa0ad9-277b-4759-a0d7-2db1dc1233c0",
+      "Command": "-d  db.ini"
+    },
+    {
+      "Id": "0ef54657-2476-430a-86d1-501157df808e",
+      "Command": "--help"
+    },
+    {
+      "Id": "0d51e32e-6d95-4245-98bb-4b931541d087",
+      "Command": "--log"
+    }
+  ]
+}
