@@ -1216,6 +1216,17 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "extendedSparseBufferUsageFlags", QVariant(extProps->extendedSparseBufferUsageFlags));
 		delete extProps;
 	}
+	if (extensionSupported("VK_NV_cooperative_matrix2")) {
+		const char* extension("VK_NV_cooperative_matrix2");
+		VkPhysicalDeviceCooperativeMatrix2PropertiesNV* extProps = new VkPhysicalDeviceCooperativeMatrix2PropertiesNV{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_2_PROPERTIES_NV;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "cooperativeMatrixWorkgroupScopeMaxWorkgroupSize", QVariant(extProps->cooperativeMatrixWorkgroupScopeMaxWorkgroupSize));
+		pushProperty2(extension, "cooperativeMatrixFlexibleDimensionsMaxDimension", QVariant(extProps->cooperativeMatrixFlexibleDimensionsMaxDimension));
+		pushProperty2(extension, "cooperativeMatrixWorkgroupScopeReservedSharedMemory", QVariant(extProps->cooperativeMatrixWorkgroupScopeReservedSharedMemory));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_NVX() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -2317,6 +2328,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 		pushFeature2(extension, "multiviewClusterCullingShader", extFeatures->multiviewClusterCullingShader);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_HUAWEI_hdr_vivid")) {
+		const char* extension("VK_HUAWEI_hdr_vivid");
+		VkPhysicalDeviceHdrVividFeaturesHUAWEI* extFeatures = new VkPhysicalDeviceHdrVividFeaturesHUAWEI{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HDR_VIVID_FEATURES_HUAWEI;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "hdrVivid", extFeatures->hdrVivid);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_IMG() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -3203,6 +3223,21 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayTracingValidation", extFeatures->rayTracingValidation);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_cooperative_matrix2")) {
+		const char* extension("VK_NV_cooperative_matrix2");
+		VkPhysicalDeviceCooperativeMatrix2FeaturesNV* extFeatures = new VkPhysicalDeviceCooperativeMatrix2FeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_2_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "cooperativeMatrixWorkgroupScope", extFeatures->cooperativeMatrixWorkgroupScope);
+		pushFeature2(extension, "cooperativeMatrixFlexibleDimensions", extFeatures->cooperativeMatrixFlexibleDimensions);
+		pushFeature2(extension, "cooperativeMatrixReductions", extFeatures->cooperativeMatrixReductions);
+		pushFeature2(extension, "cooperativeMatrixConversions", extFeatures->cooperativeMatrixConversions);
+		pushFeature2(extension, "cooperativeMatrixPerElementOperations", extFeatures->cooperativeMatrixPerElementOperations);
+		pushFeature2(extension, "cooperativeMatrixTensorAddressing", extFeatures->cooperativeMatrixTensorAddressing);
+		pushFeature2(extension, "cooperativeMatrixBlockLoads", extFeatures->cooperativeMatrixBlockLoads);
 		delete extFeatures;
 	}
 }

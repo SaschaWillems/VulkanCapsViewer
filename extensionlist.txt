@@ -112,6 +112,7 @@ HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
 VK_HUAWEI_cluster_culling_shader
+VK_HUAWEI_hdr_vivid
 IMG
 VK_IMG_relaxed_line_rasterization
 INTEL
@@ -219,6 +220,7 @@ VK_NV_raw_access_chains
 VK_NV_command_buffer_inheritance
 VK_NV_shader_atomic_float16_vector
 VK_NV_ray_tracing_validation
+VK_NV_cooperative_matrix2
 NVX
 VK_NVX_multiview_per_view_attributes
 QCOM
