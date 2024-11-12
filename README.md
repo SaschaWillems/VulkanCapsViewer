@@ -4,7 +4,7 @@
 
 Client application to display hardware implementation details for GPUs supporting the [Vulkan](https://www.khronos.org/vulkan/) API by Khronos.
 
-The hardware reports can be submitted to a public [online database](http://vulkan.gpuinfo.org/) that allows comparing different devices, browsing available features, extensions, formats, etc.
+The hardware reports can be submitted to a public [online database](https://vulkan.gpuinfo.org/) that allows comparing different devices, browsing available features, extensions, formats, etc.
 
 
 <img src="images/windows.png" height="320px"> <img src="images/android.png" height="320px">
@@ -15,6 +15,7 @@ The hardware reports can be submitted to a public [online database](http://vulka
 - Linux (x64)
 - Android (Including Android TV)
 - Mac OS X
+- iOS
 
 # Building
 
@@ -44,4 +45,4 @@ Current releases for all platforms will be provided on a regular basis at [vulka
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-- [Qt 5.12](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
+- [Qt 5.15](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
