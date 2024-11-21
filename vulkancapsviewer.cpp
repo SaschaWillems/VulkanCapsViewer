@@ -795,7 +795,7 @@ bool VulkanCapsViewer::initVulkan()
 #endif
 
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-        if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
+        if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME && QX11Info::isPlatformX11()) {
             VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
             surfaceCreateInfo.connection = QX11Info::connection();
