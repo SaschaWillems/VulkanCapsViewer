@@ -32,7 +32,7 @@ linux:!android {
     }
     contains(DEFINES, WAYLAND) {
         message("Building for Wayland")
-        LIBS += -lwaylandclient
+        LIBS += -lwayland-client
         DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
