@@ -27,12 +27,12 @@ linux:!android {
     LIBS += -lvulkan
     contains(DEFINES, X11) {
         message("Building for X11")
-        QT += x11extras
+        LIBS += -lxcb
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
     contains(DEFINES, WAYLAND) {
         message("Building for Wayland")
-        QT += waylandclient
+        LIBS += -lwayland-client
         DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
