@@ -85,7 +85,7 @@ jobs:
 
   build_macosx:
     name: Build macOS
-    runs-on: macos-12
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -94,7 +94,7 @@ jobs:
 
       - uses: jurplel/install-qt-action@v3
         with:
-          version: 5.12.9
+          version: 5.15.2
           host: mac
 
       - name: Prepare Vulkan SDK
