@@ -757,7 +757,20 @@ namespace vulkanResources {
 		"integerDotProductAccumulatingSaturating64BitUnsignedAccelerated",
 		"integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated",
 		"integerDotProductAccumulatingSaturating8BitSignedAccelerated",
-		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"
+		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated",
+		// Core 1.4
+		"blockTexelViewCompatibleMultipleLayers",
+		"depthStencilSwizzleOneSupport",
+		"dynamicRenderingLocalReadDepthStencilAttachments",
+		"dynamicRenderingLocalReadMultisampledAttachments",
+		"earlyFragmentMultisampleCoverageAfterSampleCounting",
+		"earlyFragmentSampleMaskTestBeforeSampleCounting",
+		"fragmentShadingRateClampCombinerInputs",
+		"identicalMemoryTypeRequirements",
+		"nonStrictSinglePixelWideLinesUseParallelogram",
+		"nonStrictWideLinesUseParallelogram",
+		"polygonModePointSize",
+		"supportsNonZeroFirstInstance"
 	};
 
 	// Values to be displayed as UUIDs

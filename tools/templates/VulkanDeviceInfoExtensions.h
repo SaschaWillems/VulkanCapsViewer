@@ -58,14 +58,6 @@ private:
     void pushProperty2(const char* extension, std::string name, T value) {
         properties2.push_back(Property2(name, QVariant(value), extension));
     };
-    template<typename T>
-    QVariantList arrayToQVariantList(T array, size_t size) {
-        QVariantList res;
-        for (size_t i = 0; i < size; i++) {
-            res.push_back(QVariant(array[i]));            
-        }
-        return res;
-    };
     void pushFeature2(const char* extension, std::string name, bool supported);
     bool extensionSupported(const char* extensionName);
 {{header_functions}}
@@ -77,6 +69,14 @@ public:
     VkPhysicalDevice device;
     void readExtendedFeatures();
     void readExtendedProperties();
+    template<typename T>
+    QVariantList arrayToQVariantList(T array, size_t size) {
+        QVariantList res;
+        for (size_t i = 0; i < size; i++) {
+            res.push_back(QVariant(array[i]));
+        }
+        return res;
+    };
 };
 
 #endif // VULKANDEVICEINFOEXTENSIONS_H
