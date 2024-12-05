@@ -1143,6 +1143,22 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
     item << new QStandardItem(arrayToStr(iterator.value()));
+    if ((iterator.key() == "pCopySrcLayouts") || (iterator.key() == "pCopyDstLayouts")) {
+        QList<QVariant> list = iterator.value().toList();
+        for (auto i = 0; i < list.size(); i++) {
+            QStandardItem* formatItem = new QStandardItem();
+            formatItem->setText(vulkanResources::imageLayoutString((VkImageLayout)list[i].toInt()));
+            item.first()->appendRow(formatItem);
+        }
+    }
+    parent->appendRow(item);
+}
+
+void addTextItem(QStandardItem* parent, const QString& key, const QString& value)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(key);
+    item << new QStandardItem(value);
     parent->appendRow(item);
 }
 
@@ -1218,6 +1234,14 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     if (key == "subgroupSupportedStages") {
         const VkShaderStageFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }
+    if ((key == "defaultRobustnessStorageBuffers") || (key  == "defaultRobustnessUniformBuffers") || (key == "defaultRobustnessVertexInputs")) {        
+        addTextItem(parent, iterator.key(), vulkanResources::pipelineRobustnessBufferBehaviorString((VkPipelineRobustnessBufferBehavior)iterator.value().toUInt()));
+        return;
+    }
+    if (key == "defaultRobustnessImages") {
+        addTextItem(parent, iterator.key(), vulkanResources::pipelineRobustnessImageBehaviorString((VkPipelineRobustnessImageBehavior)iterator.value().toUInt()));
         return;
     }
 
