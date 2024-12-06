@@ -108,6 +108,7 @@ VK_EXT_attachment_feedback_loop_dynamic_state
 VK_EXT_shader_replicated_composites
 VK_EXT_device_generated_commands
 VK_EXT_depth_clamp_control
+VK_EXT_vertex_attribute_robustness
 HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
@@ -171,6 +172,7 @@ VK_KHR_ray_tracing_position_fetch
 VK_KHR_pipeline_binary
 VK_KHR_cooperative_matrix
 VK_KHR_compute_shader_derivatives
+VK_KHR_video_encode_av1
 VK_KHR_video_maintenance1
 VK_KHR_vertex_attribute_divisor
 VK_KHR_shader_float_controls2
@@ -178,6 +180,7 @@ VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
 VK_KHR_shader_expect_assume
 VK_KHR_maintenance6
+VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
 MESA

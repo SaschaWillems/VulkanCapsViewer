@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2023 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2024 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -651,6 +651,34 @@ namespace vulkanResources {
 		};
 	}
 
+	inline QString pipelineRobustnessBufferBehaviorString(const VkPipelineRobustnessBufferBehavior value)
+	{
+		switch (value) {
+#define STR(r) case VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_##r: return #r
+
+			STR(DEVICE_DEFAULT);
+			STR(DISABLED);
+			STR(ROBUST_BUFFER_ACCESS);
+			STR(ROBUST_BUFFER_ACCESS_2);
+#undef STR
+		default: return QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
+		};
+	}
+
+	inline QString pipelineRobustnessImageBehaviorString(const VkPipelineRobustnessImageBehavior value)
+	{
+		switch (value) {
+#define STR(r) case VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_##r: return #r
+
+			STR(DEVICE_DEFAULT);
+			STR(DISABLED);
+			STR(ROBUST_IMAGE_ACCESS);
+			STR(ROBUST_IMAGE_ACCESS_2);
+#undef STR
+		default: return QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
+		};
+	}
+
 	inline std::string joinString(const char separator, const std::vector<std::string>& stringList)
 	{
 		std::stringstream ss;
@@ -757,7 +785,20 @@ namespace vulkanResources {
 		"integerDotProductAccumulatingSaturating64BitUnsignedAccelerated",
 		"integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated",
 		"integerDotProductAccumulatingSaturating8BitSignedAccelerated",
-		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"
+		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated",
+		// Core 1.4
+		"blockTexelViewCompatibleMultipleLayers",
+		"depthStencilSwizzleOneSupport",
+		"dynamicRenderingLocalReadDepthStencilAttachments",
+		"dynamicRenderingLocalReadMultisampledAttachments",
+		"earlyFragmentMultisampleCoverageAfterSampleCounting",
+		"earlyFragmentSampleMaskTestBeforeSampleCounting",
+		"fragmentShadingRateClampCombinerInputs",
+		"identicalMemoryTypeRequirements",
+		"nonStrictSinglePixelWideLinesUseParallelogram",
+		"nonStrictWideLinesUseParallelogram",
+		"polygonModePointSize",
+		"supportsNonZeroFirstInstance"
 	};
 
 	// Values to be displayed as UUIDs

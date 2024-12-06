@@ -2297,6 +2297,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "depthClampControl", extFeatures->depthClampControl);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_vertex_attribute_robustness")) {
+		const char* extension("VK_EXT_vertex_attribute_robustness");
+		VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT* extFeatures = new VkPhysicalDeviceVertexAttributeRobustnessFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VERTEX_ATTRIBUTE_ROBUSTNESS_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "vertexAttributeRobustness", extFeatures->vertexAttributeRobustness);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2807,6 +2816,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "computeDerivativeGroupLinear", extFeatures->computeDerivativeGroupLinear);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_video_encode_av1")) {
+		const char* extension("VK_KHR_video_encode_av1");
+		VkPhysicalDeviceVideoEncodeAV1FeaturesKHR* extFeatures = new VkPhysicalDeviceVideoEncodeAV1FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_AV1_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoEncodeAV1", extFeatures->videoEncodeAV1);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_video_maintenance1")) {
 		const char* extension("VK_KHR_video_maintenance1");
 		VkPhysicalDeviceVideoMaintenance1FeaturesKHR* extFeatures = new VkPhysicalDeviceVideoMaintenance1FeaturesKHR{};
@@ -2874,6 +2892,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "maintenance6", extFeatures->maintenance6);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_video_encode_quantization_map")) {
+		const char* extension("VK_KHR_video_encode_quantization_map");
+		VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR* extFeatures = new VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_QUANTIZATION_MAP_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoEncodeQuantizationMap", extFeatures->videoEncodeQuantizationMap);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_KHR_shader_relaxed_extended_instruction")) {

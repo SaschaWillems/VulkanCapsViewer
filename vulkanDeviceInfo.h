@@ -100,12 +100,14 @@ public:
     QVariantMap core11Features;
     QVariantMap core12Features;
     QVariantMap core13Features;
+    QVariantMap core14Features;
     bool hasSubgroupProperties = false;
     bool hasFeaturModifyingTool = false;
     QVariantMap subgroupProperties;
     QVariantMap core11Properties;
     QVariantMap core12Properties;
     QVariantMap core13Properties;
+    QVariantMap core14Properties;
     std::vector<VulkanQueueFamilyInfo> queueFamilies;
     std::vector<VulkanFormatInfo> formats;
     VulkanSurfaceInfo surfaceInfo;
