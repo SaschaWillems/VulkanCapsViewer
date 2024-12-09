@@ -741,150 +741,169 @@ bool VulkanCapsViewer::initVulkan()
     vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 
     // Create a surface
-    for (auto surface_extension : surfaceExtensionsAvailable) {
-        VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
+    VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-        if (surface_extension == VK_KHR_WIN32_SURFACE_EXTENSION_NAME) {
-            VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
-            surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-            surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-        }
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_WIN32_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+
+        VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+        surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
+        surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
+        surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+    }
 #endif
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-        if (surface_extension == VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) {
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 
-            // Get a native window via JNI
-            // Qt doesn't offer access to this, so we have to do this manually
-            // Note: Purely based on countless hours of trial-and-error, need to check on other devices
-            // todo: cleanup, error checking
+        // Get a native window via JNI
+        // Qt doesn't offer access to this, so we have to do this manually
+        // Note: Purely based on countless hours of trial-and-error, need to check on other devices
+        // todo: cleanup, error checking
 
-            // Get window
-            QAndroidJniObject activity = QtAndroid::androidActivity();
-            QAndroidJniObject window;
-            if (activity.isValid())
+        // Get window
+        QAndroidJniObject activity = QtAndroid::androidActivity();
+        QAndroidJniObject window;
+        if (activity.isValid())
+        {
+            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+        }
+
+        if (window.isValid())
+        {
+            // Get a surface texture
+            QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
+            qDebug() << surfaceTexture.isValid();
+
+            // Get a surface based on the texture
+            QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
+            qDebug() << surface.isValid();
+
+            if (surfaceTexture.isValid())
             {
-                window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-            }
-
-            if (window.isValid())
-            {
-
-                // Get a surface texture
-                QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
-                qDebug() << surfaceTexture.isValid();
-
-                // Get a surface based on the texture
-                QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
-                qDebug() << surface.isValid();
-
-                if (surfaceTexture.isValid())
-                {
-                    // Create a native window from our surface that can be used to create the Vulkan surface
-                    QAndroidJniEnvironment qjniEnv;
-                    nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
-                }
-            }
-
-            if (nativeWindow)
-            {
-                VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
-                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-                surfaceCreateInfo.window = nativeWindow;
-                surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
+                // Create a native window from our surface that can be used to create the Vulkan surface
+                QAndroidJniEnvironment qjniEnv;
+                nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
             }
         }
+
+        if (nativeWindow)
+        {
+            VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.window = nativeWindow;
+            surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
+        }
+    }
 #endif
 
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-        if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
-            static const wl_registry_listener WAYLAND_LISTENER {
-                .global = [](void *data, wl_registry*, uint32_t name, const char* interface, uint32_t){
-                    if (!strcmp(interface, wl_compositor_interface.name)) {
-                        *static_cast<uint32_t *>(data) = name;
-                    }
-                },
-                .global_remove = [](void*, wl_registry*, uint32_t){
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 
+        static const wl_registry_listener WAYLAND_LISTENER {
+            .global = [](void *data, wl_registry*, uint32_t name, const char* interface, uint32_t){
+                if (!strcmp(interface, wl_compositor_interface.name)) {
+                    *static_cast<uint32_t *>(data) = name;
                 }
-            };
+            },
+            .global_remove = [](void*, wl_registry*, uint32_t){
 
-            const auto wayland_display = wl_display_connect(nullptr);
-            if (wayland_display) {
-                const auto wayland_registry = wl_display_get_registry(wayland_display);
-                uint32_t wayland_compositor_name = 0;
-                wl_registry_add_listener(wayland_registry, &WAYLAND_LISTENER, &wayland_compositor_name);
-                wl_display_roundtrip(wayland_display);
+            }
+        };
 
-                if (wayland_compositor_name > 0) {
-                    const auto wayland_compositor = static_cast<wl_compositor *>(
-                        wl_registry_bind(wayland_registry, wayland_compositor_name, &wl_compositor_interface, 1)
-                    );
-                    const auto wayland_surface = wl_compositor_create_surface(wayland_compositor);
-                    VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
-                    surfaceCreateInfo.pNext = nullptr;
-                    surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-                    surfaceCreateInfo.display = wayland_display;
-                    surfaceCreateInfo.surface = wayland_surface;
-                    surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-                }
+        const auto wayland_display = wl_display_connect(nullptr);
+        if (wayland_display) {
+            const auto wayland_registry = wl_display_get_registry(wayland_display);
+            uint32_t wayland_compositor_name = 0;
+            wl_registry_add_listener(wayland_registry, &WAYLAND_LISTENER, &wayland_compositor_name);
+            wl_display_roundtrip(wayland_display);
+
+            if (wayland_compositor_name > 0) {
+                const auto wayland_compositor = static_cast<wl_compositor *>(
+                    wl_registry_bind(wayland_registry, wayland_compositor_name, &wl_compositor_interface, 1)
+                );
+                const auto wayland_surface = wl_compositor_create_surface(wayland_compositor);
+                VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
+                surfaceCreateInfo.pNext = nullptr;
+                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+                surfaceCreateInfo.display = wayland_display;
+                surfaceCreateInfo.surface = wayland_surface;
+                surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
             }
         }
+    }
 #endif
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-        if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
-            int xcb_screen_idx;
-            const auto xcb_connection = xcb_connect(nullptr, &xcb_screen_idx);
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_XCB_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
 
-            if (!xcb_connection_has_error(xcb_connection)) {
-                const auto xcb_setup = xcb_get_setup(xcb_connection);
-                auto xcb_screen = xcb_setup_roots_iterator(xcb_setup);
-                for (int i = 0; i < xcb_screen_idx; ++i) {
-                    xcb_screen_next(&xcb_screen);
-                }
-                const auto xcb_window = xcb_generate_id(xcb_connection);
-                xcb_create_window(
-                    xcb_connection,
-                    xcb_screen.data->root_depth,
-                    xcb_window,
-                    xcb_screen.data->root,
-                    0, 0,
-                    800, 600, 0,
-                    XCB_WINDOW_CLASS_INPUT_OUTPUT,
-                    xcb_screen.data->root_visual,
-                    0, nullptr);
+        int xcb_screen_idx;
+        const auto xcb_connection = xcb_connect(nullptr, &xcb_screen_idx);
 
-                VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
-                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-                surfaceCreateInfo.connection = xcb_connection;
-                surfaceCreateInfo.window = xcb_window;
-                surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+        if (!xcb_connection_has_error(xcb_connection)) {
+            const auto xcb_setup = xcb_get_setup(xcb_connection);
+            auto xcb_screen = xcb_setup_roots_iterator(xcb_setup);
+            for (int i = 0; i < xcb_screen_idx; ++i) {
+                xcb_screen_next(&xcb_screen);
             }
+            const auto xcb_window = xcb_generate_id(xcb_connection);
+            xcb_create_window(
+                xcb_connection,
+                xcb_screen.data->root_depth,
+                xcb_window,
+                xcb_screen.data->root,
+                0, 0,
+                800, 600, 0,
+                XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                xcb_screen.data->root_visual,
+                0, nullptr);
+
+            VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.connection = xcb_connection;
+            surfaceCreateInfo.window = xcb_window;
+            surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
+    }
 #endif
 
 // This works for deskop and iOS devices
 #if defined(VK_USE_PLATFORM_METAL_EXT)
-        if(surface_extension == VK_EXT_METAL_SURFACE_EXTENSION_NAME) {
-            pMetalSurrogate = new QVukanSurrogate;
-            VkMetalSurfaceCreateInfoEXT info = {};
-            info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
-            info.pNext = nullptr;
-            info.pLayer = (void*)makeViewMetalCompatible((void*)pMetalSurrogate->winId());
-            info.flags = 0;
-            surfaceResult = vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
-        }
+    if(!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_EXT_METAL_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_EXT_METAL_SURFACE_EXTENSION_NAME;
+
+        pMetalSurrogate = new QVukanSurrogate;
+        VkMetalSurfaceCreateInfoEXT info = {};
+        info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
+        info.pNext = nullptr;
+        info.pLayer = (void*)makeViewMetalCompatible((void*)pMetalSurrogate->winId());
+        info.flags = 0;
+        surfaceResult = vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
+    }
 #endif
 
-        if (surfaceResult == VK_SUCCESS) {
-            vulkanContext.surfaceExtension = surface_extension;
-            break;
-        } else {
-            vulkanContext.surface = VK_NULL_HANDLE;
-        }
+    if (surfaceResult != VK_SUCCESS) {
+        vulkanContext.surface = VK_NULL_HANDLE;
+        vulkanContext.surfaceExtension = "" ;
     }
 
     displayInstanceLayers();
