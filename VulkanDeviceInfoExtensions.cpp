@@ -1398,6 +1398,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		pushFeature2(extension, "shaderCoreBuiltins", extFeatures->shaderCoreBuiltins);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_ARM_pipeline_opacity_micromap")) {
+		const char* extension("VK_ARM_pipeline_opacity_micromap");
+		VkPhysicalDevicePipelineOpacityMicromapFeaturesARM* extFeatures = new VkPhysicalDevicePipelineOpacityMicromapFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_OPACITY_MICROMAP_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelineOpacityMicromap", extFeatures->pipelineOpacityMicromap);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2919,6 +2928,24 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "maintenance7", extFeatures->maintenance7);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_maintenance8")) {
+		const char* extension("VK_KHR_maintenance8");
+		VkPhysicalDeviceMaintenance8FeaturesKHR* extFeatures = new VkPhysicalDeviceMaintenance8FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_8_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "maintenance8", extFeatures->maintenance8);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_depth_clamp_zero_one")) {
+		const char* extension("VK_KHR_depth_clamp_zero_one");
+		VkPhysicalDeviceDepthClampZeroOneFeaturesKHR* extFeatures = new VkPhysicalDeviceDepthClampZeroOneFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DEPTH_CLAMP_ZERO_ONE_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "depthClampZeroOne", extFeatures->depthClampZeroOne);
 		delete extFeatures;
 	}
 }

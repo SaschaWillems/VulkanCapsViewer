@@ -14,6 +14,7 @@ VK_ARM_shader_core_properties
 VK_ARM_scheduling_controls
 VK_ARM_render_pass_striped
 VK_ARM_shader_core_builtins
+VK_ARM_pipeline_opacity_micromap
 EXT
 VK_EXT_transform_feedback
 VK_EXT_texture_compression_astc_hdr
@@ -183,6 +184,8 @@ VK_KHR_maintenance6
 VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
+VK_KHR_maintenance8
+VK_KHR_depth_clamp_zero_one
 MESA
 VK_MESA_image_alignment_control
 MSFT
