@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -355,7 +355,7 @@ void VulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version.toStdString() << "<br/><br/>"
-        "Copyright (c) 2016-2024 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2025 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "This tool is <b>Free Open Source Software</b><br/><br/>"
         "For usage and distribution details refer to the readme<br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
