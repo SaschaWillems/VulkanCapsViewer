@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2024 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -822,6 +822,12 @@ namespace vulkanResources {
 	const QSet<QString> hexValueNames = {
 		"vendorID",
 		"deviceID"
+	};
+
+	// Values to be displayed as shader stages
+	const QSet<QString> shaderStageValueNames = {
+		"cooperativeVectorSupportedStages",
+		"cooperativeMatrixSupportedStages"
 	};
 
 	// Values not to be displayd

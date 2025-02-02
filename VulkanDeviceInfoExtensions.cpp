@@ -1205,6 +1205,18 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "rayTracingInvocationReorderReorderingHint", QVariant(extProps->rayTracingInvocationReorderReorderingHint));
 		delete extProps;
 	}
+	if (extensionSupported("VK_NV_cooperative_vector")) {
+		const char* extension("VK_NV_cooperative_vector");
+		VkPhysicalDeviceCooperativeVectorPropertiesNV* extProps = new VkPhysicalDeviceCooperativeVectorPropertiesNV{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_PROPERTIES_NV;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "cooperativeVectorSupportedStages", QVariant(extProps->cooperativeVectorSupportedStages));
+		pushProperty2(extension, "cooperativeVectorTrainingFloat16Accumulation", QVariant(bool(extProps->cooperativeVectorTrainingFloat16Accumulation)));
+		pushProperty2(extension, "cooperativeVectorTrainingFloat32Accumulation", QVariant(bool(extProps->cooperativeVectorTrainingFloat32Accumulation)));
+		pushProperty2(extension, "maxCooperativeVectorComponents", QVariant(extProps->maxCooperativeVectorComponents));
+		delete extProps;
+	}
 	if (extensionSupported("VK_NV_extended_sparse_address_space")) {
 		const char* extension("VK_NV_extended_sparse_address_space");
 		VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV* extProps = new VkPhysicalDeviceExtendedSparseAddressSpacePropertiesNV{};
@@ -1214,6 +1226,31 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_NV() {
 		pushProperty2(extension, "extendedSparseAddressSpaceSize", QVariant::fromValue(extProps->extendedSparseAddressSpaceSize));
 		pushProperty2(extension, "extendedSparseImageUsageFlags", QVariant(extProps->extendedSparseImageUsageFlags));
 		pushProperty2(extension, "extendedSparseBufferUsageFlags", QVariant(extProps->extendedSparseBufferUsageFlags));
+		delete extProps;
+	}
+	if (extensionSupported("VK_NV_cluster_acceleration_structure")) {
+		const char* extension("VK_NV_cluster_acceleration_structure");
+		VkPhysicalDeviceClusterAccelerationStructurePropertiesNV* extProps = new VkPhysicalDeviceClusterAccelerationStructurePropertiesNV{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_PROPERTIES_NV;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxVerticesPerCluster", QVariant(extProps->maxVerticesPerCluster));
+		pushProperty2(extension, "maxTrianglesPerCluster", QVariant(extProps->maxTrianglesPerCluster));
+		pushProperty2(extension, "clusterScratchByteAlignment", QVariant(extProps->clusterScratchByteAlignment));
+		pushProperty2(extension, "clusterByteAlignment", QVariant(extProps->clusterByteAlignment));
+		pushProperty2(extension, "clusterTemplateByteAlignment", QVariant(extProps->clusterTemplateByteAlignment));
+		pushProperty2(extension, "clusterBottomLevelByteAlignment", QVariant(extProps->clusterBottomLevelByteAlignment));
+		pushProperty2(extension, "clusterTemplateBoundsByteAlignment", QVariant(extProps->clusterTemplateBoundsByteAlignment));
+		pushProperty2(extension, "maxClusterGeometryIndex", QVariant(extProps->maxClusterGeometryIndex));
+		delete extProps;
+	}
+	if (extensionSupported("VK_NV_partitioned_acceleration_structure")) {
+		const char* extension("VK_NV_partitioned_acceleration_structure");
+		VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV* extProps = new VkPhysicalDevicePartitionedAccelerationStructurePropertiesNV{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_PROPERTIES_NV;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxPartitionCount", QVariant(extProps->maxPartitionCount));
 		delete extProps;
 	}
 	if (extensionSupported("VK_NV_cooperative_matrix2")) {
@@ -2939,6 +2976,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "maintenance8", extFeatures->maintenance8);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_video_maintenance2")) {
+		const char* extension("VK_KHR_video_maintenance2");
+		VkPhysicalDeviceVideoMaintenance2FeaturesKHR* extFeatures = new VkPhysicalDeviceVideoMaintenance2FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_MAINTENANCE_2_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoMaintenance2", extFeatures->videoMaintenance2);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_depth_clamp_zero_one")) {
 		const char* extension("VK_KHR_depth_clamp_zero_one");
 		VkPhysicalDeviceDepthClampZeroOneFeaturesKHR* extFeatures = new VkPhysicalDeviceDepthClampZeroOneFeaturesKHR{};
@@ -3188,6 +3234,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pushFeature2(extension, "deviceGeneratedComputeCaptureReplay", extFeatures->deviceGeneratedComputeCaptureReplay);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_NV_ray_tracing_linear_swept_spheres")) {
+		const char* extension("VK_NV_ray_tracing_linear_swept_spheres");
+		VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV* extFeatures = new VkPhysicalDeviceRayTracingLinearSweptSpheresFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_LINEAR_SWEPT_SPHERES_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "spheres", extFeatures->spheres);
+		pushFeature2(extension, "linearSweptSpheres", extFeatures->linearSweptSpheres);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_NV_linear_color_attachment")) {
 		const char* extension("VK_NV_linear_color_attachment");
 		VkPhysicalDeviceLinearColorAttachmentFeaturesNV* extFeatures = new VkPhysicalDeviceLinearColorAttachmentFeaturesNV{};
@@ -3213,6 +3269,16 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayTracingInvocationReorder", extFeatures->rayTracingInvocationReorder);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_cooperative_vector")) {
+		const char* extension("VK_NV_cooperative_vector");
+		VkPhysicalDeviceCooperativeVectorFeaturesNV* extFeatures = new VkPhysicalDeviceCooperativeVectorFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_VECTOR_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "cooperativeVector", extFeatures->cooperativeVector);
+		pushFeature2(extension, "cooperativeVectorTraining", extFeatures->cooperativeVectorTraining);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_NV_extended_sparse_address_space")) {
@@ -3277,6 +3343,24 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayTracingValidation", extFeatures->rayTracingValidation);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_cluster_acceleration_structure")) {
+		const char* extension("VK_NV_cluster_acceleration_structure");
+		VkPhysicalDeviceClusterAccelerationStructureFeaturesNV* extFeatures = new VkPhysicalDeviceClusterAccelerationStructureFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CLUSTER_ACCELERATION_STRUCTURE_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "clusterAccelerationStructure", extFeatures->clusterAccelerationStructure);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_partitioned_acceleration_structure")) {
+		const char* extension("VK_NV_partitioned_acceleration_structure");
+		VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV* extFeatures = new VkPhysicalDevicePartitionedAccelerationStructureFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PARTITIONED_ACCELERATION_STRUCTURE_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "partitionedAccelerationStructure", extFeatures->partitionedAccelerationStructure);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_NV_cooperative_matrix2")) {

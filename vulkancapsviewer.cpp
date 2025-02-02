@@ -1281,6 +1281,12 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
 
 void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
 {
+    if (vulkanResources::shaderStageValueNames.contains(QString::fromStdString(property.name))) {
+        const VkSubgroupFeatureFlags flags = property.value.toUInt();
+        addBitFlagsItem(item[0], QString::fromStdString(property.name), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }
+
     QList<QStandardItem*> propertyItem;
     propertyItem << new QStandardItem(QString::fromStdString(property.name));
 
