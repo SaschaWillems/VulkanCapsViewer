@@ -85,14 +85,14 @@ jobs:
 
   build_macosx:
     name: Build macOS
-    runs-on: macos-latest
+    runs-on: macos-13
 
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v4
         with:
           version: 5.15.2
           host: mac
