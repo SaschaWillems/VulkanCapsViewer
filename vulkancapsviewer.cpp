@@ -510,8 +510,8 @@ void VulkanCapsViewer::slotFilterPropertiesCore13(QString text)
 
 void VulkanCapsViewer::slotFilterPropertiesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
@@ -546,8 +546,8 @@ void VulkanCapsViewer::slotFilterFeaturesCore13(QString text)
 
 void VulkanCapsViewer::slotFilterFeaturesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
