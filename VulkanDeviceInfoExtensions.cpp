@@ -796,8 +796,8 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		deviceProps2 = initDeviceProperties2(extProps);
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "driverID", QVariant(extProps->driverID));
-		pushProperty2(extension, "driverName", QVariant(extProps->driverName));
-		pushProperty2(extension, "driverInfo", QVariant(extProps->driverInfo));
+        pushProperty2(extension, "driverName", QVariant((const char*)extProps->driverName));
+        pushProperty2(extension, "driverInfo", QVariant((const char*)extProps->driverInfo));
 		pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->conformanceVersion)));
 		delete extProps;
 	}

@@ -50,7 +50,7 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const 
     QFile logFile("log.txt");
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         QTextStream textStream(&logFile);
-        textStream << logMessage << endl;
+        textStream << logMessage << Qt::endl;
     };
     // Suppress compiler warning
     (void)context;
@@ -58,10 +58,6 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const 
 
 int main(int argc, char *argv[])
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-#endif
-
     QApplication application(argc, argv);
     application.setApplicationVersion(VulkanCapsViewer::version);
 
