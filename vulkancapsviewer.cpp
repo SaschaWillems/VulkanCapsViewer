@@ -21,7 +21,6 @@
 #include "vulkancapsviewer.h"
 #include "vulkanresources.h"
 #include "vulkansurfaceinfo.hpp"
-#include <typeinfo>
 #include <sstream>
 #include <iomanip>
 #include <type_traits>
@@ -1305,7 +1304,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         return;
     }
 
-    if (property.value.canConvert(QVariant::List)) {
+    if (property.value.canConvert<QVariantList>()) {
         if ((strcmp(property.extension, VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME) == 0) && ((property.name == "pCopySrcLayouts") || (property.name == "pCopyDstLayouts"))) {
             QList<QVariant> list = property.value.toList();
             for (auto i = 0; i < list.size(); i++) {
@@ -1317,8 +1316,8 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         propertyItem << new QStandardItem(arrayToStr(property.value));
     }
     else {
-        switch (property.value.type()) {
-        case QVariant::Bool: {
+        switch (property.value.metaType().id()) {
+        case QMetaType::Bool: {
             bool boolVal = property.value.toBool();
             propertyItem << new QStandardItem(boolVal ? "true" : "false");
             propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));

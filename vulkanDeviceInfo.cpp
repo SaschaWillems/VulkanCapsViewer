@@ -1126,12 +1126,15 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);        
-        if (property2.value.canConvert(QMetaType::QVariantList)) {
+        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);
+        // This fixes the one remaining problem in the report .json
+        if (property2.value.metaType().id() == QMetaType::QVariantList) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {
             jsonProperty2["value"] = property2.value.toString();
         }
+
+
         jsonProperties2.append(jsonProperty2);
     }
     jsonExtended["deviceproperties2"] = jsonProperties2;
