@@ -1166,7 +1166,7 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
 {
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
-    item << new QStandardItem(arrayToStr(iterator.value()));
+    new QStandardItem(arrayToStr(iterator.value()));
     if ((iterator.key() == "pCopySrcLayouts") || (iterator.key() == "pCopyDstLayouts")) {
         QList<QVariant> list = iterator.value().toList();
         for (auto i = 0; i < list.size(); i++) {
@@ -1246,10 +1246,12 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         addHexItem(parent, iterator);
         return;
     }
-    if (iterator.value().canConvert(QVariant::List)) {
-        addVariantListItem(parent, iterator);
-        return;
-    }
+
+    // This is marked deprecated in Qt6 and was causing all sorts of problems
+    // if (iterator.value().canConvert(QVariant::List)) {
+    //     addVariantListItem(parent, iterator);
+    //     return;
+    // }
     if (key == "subgroupSupportedOperations") {
         const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);

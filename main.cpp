@@ -58,8 +58,10 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const 
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_WIN
     // Disable dark mode on Winodows
     qputenv("QT_QPA_PLATFORM", "windows::darkmode=0");
+#endif
 
     QApplication application(argc, argv);
     application.setApplicationVersion(VulkanCapsViewer::version);

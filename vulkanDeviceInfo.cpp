@@ -207,7 +207,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
     qInfo().nospace() << "Device \"" << props.deviceName << "\"";
 
     properties.clear();
-    properties["deviceName"] = (const char*)props.deviceName;
+    properties["deviceName"] = QString::fromStdString(props.deviceName);
+    //qDebug() << properties["deviceName"].typeName();  // RSW - this outputs QString, which it should
     properties["driverVersion"] = props.driverVersion;
     properties["driverVersionText"] = QString::fromStdString(getDriverVersion());
     properties["apiVersion"] = props.apiVersion;
@@ -303,8 +304,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
             core12Properties.clear();
             core12Properties["driverID"] = coreProps12.driverID;
-            core12Properties["driverName"] = QString(coreProps12.driverName);
-            core12Properties["driverInfo"] = QString(coreProps12.driverInfo);
+            core12Properties["driverName"] = QString::fromStdString(coreProps12.driverName); // This is OKAY in the json (RSW)
+            core12Properties["driverInfo"] = QString::fromStdString(coreProps12.driverInfo);
             core12Properties["conformanceVersion"] =  QString::fromStdString(vulkanResources::conformanceVersionKHRString(coreProps12.conformanceVersion));
             core12Properties["denormBehaviorIndependence"] = coreProps12.denormBehaviorIndependence;
             core12Properties["roundingModeIndependence"] = coreProps12.roundingModeIndependence;
