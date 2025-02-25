@@ -12,7 +12,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Network QUIET)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network QUIET)
 
 file(GLOB FILES_UI ./*.ui)
 
