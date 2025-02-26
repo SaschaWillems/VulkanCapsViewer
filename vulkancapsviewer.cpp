@@ -21,7 +21,6 @@
 #include "vulkancapsviewer.h"
 #include "vulkanresources.h"
 #include "vulkansurfaceinfo.hpp"
-#include <typeinfo>
 #include <sstream>
 #include <iomanip>
 #include <type_traits>
@@ -486,92 +485,92 @@ void VulkanCapsViewer::slotSettings()
 
 void VulkanCapsViewer::slotFilterPropertiesCore10(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore13.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeatures(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore13.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.extensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.extensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFormats(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.formats.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.formats.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterProfiles(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.profiles.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.profiles.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotComboTabChanged(int index)
@@ -1246,10 +1245,28 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         addHexItem(parent, iterator);
         return;
     }
-    if (iterator.value().canConvert(QVariant::List)) {
-        addVariantListItem(parent, iterator);
-        return;
-    }
+
+    // This is marked deprecated in Qt6 and was causing all sorts of problems
+    // if (iterator.value().canConvert(QVariant::List)) {
+    //     addVariantListItem(parent, iterator);
+    //     return;
+    // }
+    // In theory, the above could/should be replaced with this. However,
+    // Qt6 seems ot have some stricker type rules, and this is turning QStrings
+    // into lists. String is the fallthrough, at the bottom, and most things
+    // can be turned into strings. Simply removing this fixes the string parsing
+    // issue (many strings showing up as lists with comma's between each character.
+    // Also... it appears to do no harm. The outuput is the same as with HWCaps viewer
+    // build with Qt5. I'm leving this comment here for "posterity", and just in case
+    // it turns out to be important down the road.
+    // "The Road to Hell is Paved with Good Intentions" ;-)
+    //if (iterator.value().canConvert<QVariantList>()) {
+    //    addVariantListItem(parent, iterator);
+    //    return;
+    //}
+
+
+
     if (key == "subgroupSupportedOperations") {
         const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
@@ -1303,7 +1320,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         return;
     }
 
-    if (property.value.canConvert(QVariant::List)) {
+    if (property.value.canConvert<QVariantList>()) {
         if ((strcmp(property.extension, VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME) == 0) && ((property.name == "pCopySrcLayouts") || (property.name == "pCopyDstLayouts"))) {
             QList<QVariant> list = property.value.toList();
             for (auto i = 0; i < list.size(); i++) {
@@ -1315,8 +1332,8 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         propertyItem << new QStandardItem(arrayToStr(property.value));
     }
     else {
-        switch (property.value.type()) {
-        case QVariant::Bool: {
+        switch (property.value.metaType().id()) {
+        case QMetaType::Bool: {
             bool boolVal = property.value.toBool();
             propertyItem << new QStandardItem(boolVal ? "true" : "false");
             propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
