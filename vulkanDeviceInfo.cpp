@@ -1133,8 +1133,6 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         } else {
             jsonProperty2["value"] = property2.value.toString();
         }
-
-
         jsonProperties2.append(jsonProperty2);
     }
     jsonExtended["deviceproperties2"] = jsonProperties2;

@@ -1165,7 +1165,7 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
 {
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
-    new QStandardItem(arrayToStr(iterator.value()));
+    item << new QStandardItem(arrayToStr(iterator.value()));
     if ((iterator.key() == "pCopySrcLayouts") || (iterator.key() == "pCopyDstLayouts")) {
         QList<QVariant> list = iterator.value().toList();
         for (auto i = 0; i < list.size(); i++) {
@@ -1251,6 +1251,22 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     //     addVariantListItem(parent, iterator);
     //     return;
     // }
+    // In theory, the above could/should be replaced with this. However,
+    // Qt6 seems ot have some stricker type rules, and this is turning QStrings
+    // into lists. String is the fallthrough, at the bottom, and most things
+    // can be turned into strings. Simply removing this fixes the string parsing
+    // issue (many strings showing up as lists with comma's between each character.
+    // Also... it appears to do no harm. The outuput is the same as with HWCaps viewer
+    // build with Qt5. I'm leving this comment here for "posterity", and just in case
+    // it turns out to be important down the road.
+    // "The Road to Hell is Paved with Good Intentions" ;-)
+    //if (iterator.value().canConvert<QVariantList>()) {
+    //    addVariantListItem(parent, iterator);
+    //    return;
+    //}
+
+
+
     if (key == "subgroupSupportedOperations") {
         const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
