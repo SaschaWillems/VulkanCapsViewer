@@ -14,6 +14,9 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network QUIET)
 
+option(USE_STATIC_RT "Use static C runtime (for when linking against static Qt libraries")
+
+
 file(GLOB FILES_UI ./*.ui)
 
 source_group("UI Files" FILES ${FILES_UI})
@@ -26,6 +29,12 @@ if(NOT APPLE)
     set(FILES_ALL ${FILES_UI} ${FILES_SOURCE} ${FILES_HEADER} vulkancapsviewer.qrc)
 
     if(WIN32)
+        # Use the static runtime library? This allows Windows to link against static builds of Qt
+        if(USE_STATIC_RT)
+            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+            message(STATUS "Vulkan Caps Viewer will link against static runtime on Windows")
+        endif()    
+
         add_executable(vulkanCapsViewer WIN32 ${FILES_ALL} ${FILES_UI})
         target_compile_definitions(vulkanCapsViewer PRIVATE _CRT_SECURE_NO_WARNINGS VK_USE_PLATFORM_WIN32_KHR)
     else()
