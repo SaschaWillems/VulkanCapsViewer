@@ -5,6 +5,16 @@
 # cmake --build . --config Release  
 
 cmake_minimum_required(VERSION 3.10.2)
+
+if(WIN32)
+    # Use the static runtime library? This allows Windows to link against static builds of Qt
+    # Note, this has to come early in the CMakeLists.txt
+    if(USE_STATIC_RT)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+        message(STATUS "Vulkan Caps Viewer will link against static runtime on Windows")
+    endif()    
+endif()
+
 project(VK_CAPS_VIEWER LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -29,12 +39,6 @@ if(NOT APPLE)
     set(FILES_ALL ${FILES_UI} ${FILES_SOURCE} ${FILES_HEADER} vulkancapsviewer.qrc)
 
     if(WIN32)
-        # Use the static runtime library? This allows Windows to link against static builds of Qt
-        if(USE_STATIC_RT)
-            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-            message(STATUS "Vulkan Caps Viewer will link against static runtime on Windows")
-        endif()    
-
         add_executable(vulkanCapsViewer WIN32 ${FILES_ALL} ${FILES_UI})
         target_compile_definitions(vulkanCapsViewer PRIVATE _CRT_SECURE_NO_WARNINGS VK_USE_PLATFORM_WIN32_KHR)
     else()
