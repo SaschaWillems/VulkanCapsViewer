@@ -77,8 +77,13 @@ ios {
     }
 
 DEPENDPATH += .
-MOC_DIR += ./GeneratedFiles/release
-OBJECTS_DIR += release
+android {
+    MOC_DIR = ./GeneratedFiles/release_$${QT_ARCH}
+    OBJECTS_DIR = release_$${QT_ARCH}
+} else {
+    MOC_DIR = ./GeneratedFiles/release
+    OBJECTS_DIR = release
+}
 UI_DIR += ./GeneratedFiles
 RCC_DIR += ./GeneratedFiles
 include(vulkanCapsViewer.pri)
