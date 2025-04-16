@@ -110,6 +110,7 @@ VK_EXT_shader_replicated_composites
 VK_EXT_device_generated_commands
 VK_EXT_depth_clamp_control
 VK_EXT_vertex_attribute_robustness
+VK_EXT_fragment_density_map_offset
 HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
@@ -132,6 +133,7 @@ VK_KHR_external_fence_capabilities
 VK_KHR_performance_query
 VK_KHR_maintenance2
 VK_KHR_variable_pointers
+VK_KHR_shader_bfloat16
 VK_KHR_acceleration_structure
 VK_KHR_ray_tracing_pipeline
 VK_KHR_ray_query
@@ -232,6 +234,7 @@ VK_NV_ray_tracing_validation
 VK_NV_cluster_acceleration_structure
 VK_NV_partitioned_acceleration_structure
 VK_NV_cooperative_matrix2
+VK_NV_present_metering
 NVX
 VK_NVX_multiview_per_view_attributes
 QCOM

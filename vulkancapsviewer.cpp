@@ -96,7 +96,7 @@ OSInfo getOperatingSystem()
         RtlGetVersionFN RtlGetVersion = reinterpret_cast<RtlGetVersionFN>(GetProcAddress(hModule, "RtlGetVersion"));
         if (RtlGetVersion) {
             RTL_OSVERSIONINFOW osVersionInfo = { 0 };
-            osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+            osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
             if (RtlGetVersion(&osVersionInfo) == S_OK) {
                 if (osVersionInfo.dwBuildNumber >= 22000) {
                     osInfo.version = "11";

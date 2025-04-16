@@ -635,6 +635,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "deviceGeneratedCommandsMultiDrawIndirectCount", QVariant(bool(extProps->deviceGeneratedCommandsMultiDrawIndirectCount)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_EXT_fragment_density_map_offset")) {
+		const char* extension("VK_EXT_fragment_density_map_offset");
+		VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT* extProps = new VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_PROPERTIES_EXT;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "fragmentDensityOffsetGranularity", QVariant::fromValue(QVariantList({ extProps->fragmentDensityOffsetGranularity.width, extProps->fragmentDensityOffsetGranularity.height })));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -2352,6 +2361,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "vertexAttributeRobustness", extFeatures->vertexAttributeRobustness);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_fragment_density_map_offset")) {
+		const char* extension("VK_EXT_fragment_density_map_offset");
+		VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT* extFeatures = new VkPhysicalDeviceFragmentDensityMapOffsetFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FRAGMENT_DENSITY_MAP_OFFSET_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "fragmentDensityMapOffset", extFeatures->fragmentDensityMapOffset);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2488,6 +2506,17 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "variablePointersStorageBuffer", extFeatures->variablePointersStorageBuffer);
 		pushFeature2(extension, "variablePointers", extFeatures->variablePointers);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_bfloat16")) {
+		const char* extension("VK_KHR_shader_bfloat16");
+		VkPhysicalDeviceShaderBfloat16FeaturesKHR* extFeatures = new VkPhysicalDeviceShaderBfloat16FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_BFLOAT16_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderBFloat16Type", extFeatures->shaderBFloat16Type);
+		pushFeature2(extension, "shaderBFloat16DotProduct", extFeatures->shaderBFloat16DotProduct);
+		pushFeature2(extension, "shaderBFloat16CooperativeMatrix", extFeatures->shaderBFloat16CooperativeMatrix);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_KHR_acceleration_structure")) {
@@ -3376,6 +3405,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_NV() {
 		pushFeature2(extension, "cooperativeMatrixPerElementOperations", extFeatures->cooperativeMatrixPerElementOperations);
 		pushFeature2(extension, "cooperativeMatrixTensorAddressing", extFeatures->cooperativeMatrixTensorAddressing);
 		pushFeature2(extension, "cooperativeMatrixBlockLoads", extFeatures->cooperativeMatrixBlockLoads);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_NV_present_metering")) {
+		const char* extension("VK_NV_present_metering");
+		VkPhysicalDevicePresentMeteringFeaturesNV* extFeatures = new VkPhysicalDevicePresentMeteringFeaturesNV{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_METERING_FEATURES_NV;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentMetering", extFeatures->presentMetering);
 		delete extFeatures;
 	}
 }
