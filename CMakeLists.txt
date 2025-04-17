@@ -5,6 +5,16 @@
 # cmake --build . --config Release  
 
 cmake_minimum_required(VERSION 3.10.2)
+
+if(WIN32)
+    # Use the static runtime library? This allows Windows to link against static builds of Qt
+    # Note, this has to come early in the CMakeLists.txt
+    if(USE_STATIC_RT)
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+        message(STATUS "Vulkan Caps Viewer will link against static runtime on Windows")
+    endif()    
+endif()
+
 project(VK_CAPS_VIEWER LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,7 +22,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Network QUIET)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network QUIET)
+
+option(USE_STATIC_RT "Use static C runtime (for when linking against static Qt libraries")
+
 
 file(GLOB FILES_UI ./*.ui)
 
@@ -30,7 +43,7 @@ if(NOT APPLE)
         target_compile_definitions(vulkanCapsViewer PRIVATE _CRT_SECURE_NO_WARNINGS VK_USE_PLATFORM_WIN32_KHR)
     else()
     	# Linux only
-	# find_package(Qt5 REQUIRED COMPONENTS x11extras QUIET)
+	# find_package(Qt6 REQUIRED COMPONENTS x11extras QUIET)
  	add_executable(vulkanCapsViewer ${FILES_ALL} ${FILES_UI})
  	if(X11)
 	    target_compile_definitions(vulkanCapsViewer PRIVATE  VK_USE_PLATFORM_XCB_KHR)
@@ -71,15 +84,15 @@ target_compile_definitions(vulkanCapsViewer PRIVATE ${VULKANCAPSVIEWER_DEFINITIO
 
 if(NOT APPLE)
     if(WIN32)
-        target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan-1.lib")
+        target_link_libraries(vulkanCapsViewer Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan-1.lib")
     else()
         # Linux...
 	if(X11)
-	    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::x11extras "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")
+	    target_link_libraries(vulkanCapsViewer Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::x11extras "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")
         elseif(WAYLAND)
-            target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network Qt5::waylandclient "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")
+            target_link_libraries(vulkanCapsViewer Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network Qt6::waylandclient "${VULKAN_LOADER_INSTALL_DIR}/lib/vulkan")
         else()
-	    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.so")        
+	    target_link_libraries(vulkanCapsViewer Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.so")        
         endif()
     endif()
 else() 
@@ -97,10 +110,10 @@ else()
     set_target_properties(vulkanCapsViewer PROPERTIES BUILD_WITH_INSTALL_RPATH TRUE)
     set_target_properties(vulkanCapsViewer PROPERTIES INSTALL_RPATH "")
     set_target_properties(vulkanCapsViewer PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
-    target_link_libraries(vulkanCapsViewer Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.1.dylib")
+    target_link_libraries(vulkanCapsViewer Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network "${VULKAN_LOADER_INSTALL_DIR}/lib/libvulkan.1.dylib")
 endif()
 
 
-get_target_property(QMAKE_EXE Qt5::qmake IMPORTED_LOCATION)
+get_target_property(QMAKE_EXE Qt6::qmake IMPORTED_LOCATION)
 get_filename_component(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
 

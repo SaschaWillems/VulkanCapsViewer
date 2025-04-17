@@ -33,12 +33,12 @@ bool CustomFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex& 
     bool itemMatch = false;
     for (int i = 0; i < sourceModel()->columnCount(); i++) {
         QModelIndex index = sourceModel()->index(sourceRow, i, sourceParent);
-        itemMatch |= sourceModel()->data(index).toString().contains(filterRegExp());
+        itemMatch |= sourceModel()->data(index).toString().contains(filterRegularExpression());
     }
     bool parentMatch = false;
-    QString fr = this->filterRegExp().pattern();
+    QString fr = this->filterRegularExpression().pattern();
     if (parent.isValid()) {
-        parentMatch = parent.data().toString().contains(filterRegExp());
+        parentMatch = parent.data().toString().contains(filterRegularExpression());
     }
     return (itemMatch || parentMatch);
 }

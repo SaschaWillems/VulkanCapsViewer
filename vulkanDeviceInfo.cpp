@@ -207,7 +207,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
     qInfo().nospace() << "Device \"" << props.deviceName << "\"";
 
     properties.clear();
-    properties["deviceName"] = props.deviceName;
+    properties["deviceName"] = QString::fromStdString(props.deviceName);
+    //qDebug() << properties["deviceName"].typeName();  // RSW - this outputs QString, which it should
     properties["driverVersion"] = props.driverVersion;
     properties["driverVersionText"] = QString::fromStdString(getDriverVersion());
     properties["apiVersion"] = props.apiVersion;
@@ -291,8 +292,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
             core12Properties.clear();
             core12Properties["driverID"] = coreProps12.driverID;
-            core12Properties["driverName"] = QString(coreProps12.driverName);
-            core12Properties["driverInfo"] = QString(coreProps12.driverInfo);
+            core12Properties["driverName"] = QString::fromStdString(coreProps12.driverName); // This is OKAY in the json (RSW)
+            core12Properties["driverInfo"] = QString::fromStdString(coreProps12.driverInfo);
             core12Properties["conformanceVersion"] =  QString::fromStdString(vulkanResources::conformanceVersionKHRString(coreProps12.conformanceVersion));
             core12Properties["denormBehaviorIndependence"] = coreProps12.denormBehaviorIndependence;
             core12Properties["roundingModeIndependence"] = coreProps12.roundingModeIndependence;
@@ -1125,8 +1126,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);        
-        if (property2.value.canConvert(QMetaType::QVariantList)) {
+        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);
+        // This fixes the one remaining problem in the report .json
+        if (property2.value.metaType().id() == QMetaType::QVariantList) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {
             jsonProperty2["value"] = property2.value.toString();
