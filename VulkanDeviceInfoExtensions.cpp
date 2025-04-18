@@ -803,11 +803,11 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		VkPhysicalDeviceDriverProperties* extProps = new VkPhysicalDeviceDriverProperties{};
 		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES;
 		deviceProps2 = initDeviceProperties2(extProps);
-        vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "driverID", QVariant(extProps->driverID));
-        pushProperty2(extension, "driverName", QString::fromStdString(extProps->driverName)); // This is wrong in json. Why?
-        pushProperty2(extension, "driverInfo", QString::fromStdString(extProps->driverInfo));
-        pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->conformanceVersion)));
+		pushProperty2(extension, "driverName", QVariant(extProps->driverName));
+		pushProperty2(extension, "driverInfo", QVariant(extProps->driverInfo));
+		pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->conformanceVersion)));
 		delete extProps;
 	}
 	if (extensionSupported("VK_KHR_shader_float_controls")) {

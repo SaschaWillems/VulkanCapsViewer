@@ -28,7 +28,7 @@ TreeProxyFilter::TreeProxyFilter(QObject *parent) : QSortFilterProxyModel(parent
 
 bool TreeProxyFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if (filterRegularExpression().isValid())
+	if (!filterRegExp().isEmpty())
 	{
 		QModelIndex index = sourceModel()->index(sourceRow, this->filterKeyColumn(), sourceParent);
 		if (index.isValid())
@@ -41,7 +41,7 @@ bool TreeProxyFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourceP
 				}
 			}
 			QString key = sourceModel()->data(index, filterRole()).toString();
-            return key.contains(filterRegularExpression());
+			return key.contains(filterRegExp());
 		}
 	}
 	return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
