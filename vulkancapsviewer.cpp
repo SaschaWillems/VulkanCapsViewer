@@ -42,6 +42,7 @@
 #include <QSet>
 #include <QWindow>
 #include <QApplication>
+#include <QVulkanInstance>
 #include <qnamespace.h>
 #include <assert.h>
 #include <settingsDialog.h>
@@ -57,13 +58,6 @@
 
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 #include <wayland-client.h>
-#endif
-
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
-#include <QtAndroid>
-#include <QAndroidJniEnvironment>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
 #endif
 
 #ifdef __APPLE__
@@ -764,44 +758,16 @@ bool VulkanCapsViewer::initVulkan()
     {
         vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 
-        // Get a native window via JNI
-        // Qt doesn't offer access to this, so we have to do this manually
-        // Note: Purely based on countless hours of trial-and-error, need to check on other devices
-        // todo: cleanup, error checking
-
-        // Get window
-        QAndroidJniObject activity = QtAndroid::androidActivity();
-        QAndroidJniObject window;
-        if (activity.isValid())
-        {
-            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-        }
-
-        if (window.isValid())
-        {
-            // Get a surface texture
-            QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
-            qDebug() << surfaceTexture.isValid();
-
-            // Get a surface based on the texture
-            QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
-            qDebug() << surface.isValid();
-
-            if (surfaceTexture.isValid())
-            {
-                // Create a native window from our surface that can be used to create the Vulkan surface
-                QAndroidJniEnvironment qjniEnv;
-                nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
-            }
-        }
-
-        if (nativeWindow)
-        {
-            VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.window = nativeWindow;
-            surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
-        }
+        QVulkanInstance instance;
+        instance.setVkInstance(vulkanContext.instance);
+        instance.create();
+        QWindow* window = new QWindow;
+        window->setSurfaceType(QSurface::VulkanSurface);
+        QWidget* wrapper = QWidget::createWindowContainer(window, this);
+        //VkSurfaceKHR surface = QVulkanInstance::surfaceForWindow(window);
+        vulkanContext.surface = QVulkanInstance::surfaceForWindow(window);
+        surfaceResult = vulkanContext.surface != VK_NULL_HANDLE ? VK_SUCCESS : VK_ERROR_INITIALIZATION_FAILED;
+        delete window;
     }
 #endif
 

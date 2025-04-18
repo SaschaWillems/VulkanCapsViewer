@@ -47,10 +47,6 @@ linux:!android {
 android {
     DEFINES += VK_NO_PROTOTYPES
     DEFINES += VK_USE_PLATFORM_ANDROID_KHR
-    QT += androidextras
-    CONFIG += mobility
-    MOBILITY =
-    LIBS += -landroid
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
     DISTFILES += \
