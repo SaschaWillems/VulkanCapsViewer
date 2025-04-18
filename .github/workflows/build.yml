@@ -28,6 +28,11 @@ jobs:
           sudo apt update
           sudo apt install libvulkan-dev
 
+      - name: Install libfuse
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install libfuse2      
+
       - name: Build
         env:
           TARGET_PLATFORM: X11
@@ -64,6 +69,11 @@ jobs:
         run: |
           sudo apt update
           sudo apt install libvulkan-dev libwayland-dev
+
+      - name: Install libfuse
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install libfuse2      
 
       - name: Build
         env:
