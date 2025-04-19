@@ -93,41 +93,44 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-wayland-x86_64.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
-  # build_macosx:
-  #   name: Build macOS
-  #   runs-on: macos-latest
+  build_macosx:
+    name: Build macOS
+    runs-on: macos-13
 
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         submodules: "recursive"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
 
-  #     - uses: jurplel/install-qt-action@v3
-  #       with:
-  #         version: 5.15.2
-  #         host: mac
+      - name: Select Xcode version
+        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'          
 
-  #     - name: Prepare Vulkan SDK
-  #       uses: edvn0/setup-vulkan-sdk@v1.3.0
-  #       with:
-  #         vulkan-query-version: latest 
-  #         vulkan-components: Vulkan-Headers, Vulkan-Loader
-  #         vulkan-use-cache: true
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: 5.12.9
+          host: mac
 
-  #     - name: Build
-  #       env:
-  #         TARGET_PLATFORM: osx
-  #       run: |
-  #         echo ${TARGET_PLATFORM}
-  #         export PATH=$PATH:/usr/local/opt/qt/bin
-  #         export CPATH=$CPATH:/usr/local/include/
-  #         qmake -config release
-  #         make -j$(nproc)
-  #         macdeployqt vulkanCapsViewer.app -dmg
-  #         cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
-  #     - name: Upload
-  #       if: github.ref == 'refs/heads/master'
-  #       run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
+      - name: Prepare Vulkan SDK
+        uses: humbletim/setup-vulkan-sdk@v1.2.1
+        with:
+          vulkan-query-version: 1.4.304.1
+          vulkan-components: Vulkan-Headers, Vulkan-Loader
+          vulkan-use-cache: true
+
+      - name: Build
+        env:
+          TARGET_PLATFORM: osx
+        run: |
+          echo ${TARGET_PLATFORM}
+          export PATH=$PATH:/usr/local/opt/qt/bin
+          export CPATH=$CPATH:/usr/local/include/
+          qmake -config release
+          make -j$(nproc)
+          macdeployqt vulkanCapsViewer.app -dmg
+          cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
+      - name: Upload
+        if: github.ref == 'refs/heads/master'
+        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
 
   build_windows:
     name: Build Windows (64 bit)
