@@ -41,7 +41,7 @@ Note: Do not enable both flags simultaneously.
 
 ## Android
 
-The Android apk needs to be built from Qt Creator and requires Android SDK and Android NDK. Note that Qt 5.15.2 will not work with recent NDKs, you must install and select NDK 21.x under Settings -> Devices -> Android.
+The Android apk needs to be built from Qt Creator and requires Android SDK and Android NDK. Note that Qt 5.15.2 will not work with recent NDKs, you must install and select NDK 21.x under Settings -> Devices -> Android. Android build platform SDK must be set to android-33 (build steps in the Android ki build settings).
 
 # Releases
 Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](https://vulkan.gpuinfo.org/download.php).
