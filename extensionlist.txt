@@ -111,6 +111,7 @@ VK_EXT_device_generated_commands
 VK_EXT_depth_clamp_control
 VK_EXT_vertex_attribute_robustness
 VK_EXT_fragment_density_map_offset
+VK_EXT_zero_initialize_device_memory
 HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
@@ -189,6 +190,7 @@ VK_KHR_maintenance7
 VK_KHR_maintenance8
 VK_KHR_video_maintenance2
 VK_KHR_depth_clamp_zero_one
+VK_KHR_robustness2
 MESA
 VK_MESA_image_alignment_control
 MSFT
