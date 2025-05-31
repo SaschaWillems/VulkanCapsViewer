@@ -33,6 +33,8 @@ QString VulkanDatabase::username = "";
 QString VulkanDatabase::password = "";
 QString VulkanDatabase::databaseUrl = "http://vulkan.gpuinfo.org/";
 
+using namespace std;
+
 bool VulkanDatabase::checkServerConnection(QString& message)
 {
     manager = new QNetworkAccessManager(nullptr);
