@@ -23,11 +23,11 @@ download('Vulkan_Caps_Viewer-windows_x86.zip', sprintf($name_template, 'winx86.z
 
 # Linux X11
 download('Vulkan_Caps_Viewer-X11-x86_64.AppImage', sprintf($name_template, 'linux64.AppImage'));
-download('Vulkan_Caps_Viewer-X11-aarch64.AppImage', sprintf($name_template, 'linux64_aarch.AppImage'));
+download('Vulkan_Caps_Viewer-X11-aarch64.AppImage', sprintf($name_template, 'linux64_aarch64.AppImage'));
 
 # Linux Wayland
 download('Vulkan_Caps_Viewer-wayland-x86_64.AppImage', sprintf($name_template, 'linux64_wayland.AppImage'));
-download('Vulkan_Caps_Viewer-wayland-aarch64.AppImage', sprintf($name_template, 'linux64_wayland_aarch.AppImage'));
+download('Vulkan_Caps_Viewer-wayland-aarch64.AppImage', sprintf($name_template, 'linux64_wayland_aarch64.AppImage'));
 
 # OSX
 download('Vulkan_Caps_Viewer-osx-x86_64.dmg', sprintf($name_template, 'osx.dmg'));
