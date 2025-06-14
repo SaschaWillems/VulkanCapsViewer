@@ -13,8 +13,10 @@ VK_ARM_rasterization_order_attachment_access
 VK_ARM_shader_core_properties
 VK_ARM_scheduling_controls
 VK_ARM_render_pass_striped
+VK_ARM_tensors
 VK_ARM_shader_core_builtins
 VK_ARM_pipeline_opacity_micromap
+VK_ARM_format_pack
 EXT
 VK_EXT_transform_feedback
 VK_EXT_texture_compression_astc_hdr
@@ -107,6 +109,7 @@ VK_EXT_pipeline_library_group_handles
 VK_EXT_dynamic_rendering_unused_attachments
 VK_EXT_attachment_feedback_loop_dynamic_state
 VK_EXT_shader_replicated_composites
+VK_EXT_shader_float8
 VK_EXT_device_generated_commands
 VK_EXT_depth_clamp_control
 VK_EXT_vertex_attribute_robustness
@@ -172,13 +175,17 @@ VK_KHR_maintenance4
 VK_KHR_shader_subgroup_rotate
 VK_KHR_shader_maximal_reconvergence
 VK_KHR_maintenance5
+VK_KHR_present_id2
+VK_KHR_present_wait2
 VK_KHR_ray_tracing_position_fetch
 VK_KHR_pipeline_binary
 VK_KHR_cooperative_matrix
 VK_KHR_compute_shader_derivatives
 VK_KHR_video_encode_av1
+VK_KHR_video_decode_vp9
 VK_KHR_video_maintenance1
 VK_KHR_vertex_attribute_divisor
+VK_KHR_unified_image_layouts
 VK_KHR_shader_float_controls2
 VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
@@ -188,6 +195,7 @@ VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
 VK_KHR_maintenance8
+VK_KHR_maintenance9
 VK_KHR_video_maintenance2
 VK_KHR_depth_clamp_zero_one
 VK_KHR_robustness2
@@ -259,3 +267,4 @@ VK_SEC_amigo_profiling
 VALVE
 VK_VALVE_mutable_descriptor_type
 VK_VALVE_descriptor_set_host_mapping
+VK_VALVE_fragment_density_map_layered
