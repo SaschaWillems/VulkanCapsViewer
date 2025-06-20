@@ -679,6 +679,39 @@ namespace vulkanResources {
 		};
 	}
 
+	inline QString VkComponentTypeKHRString(const VkComponentTypeKHR value)
+	{
+		switch (value) {
+#define STR(r) case VK_COMPONENT_TYPE_##r: return #r
+			STR(FLOAT16_KHR);
+			STR(FLOAT32_KHR);
+			STR(FLOAT64_KHR);
+			STR(SINT8_KHR);
+			STR(SINT16_KHR);
+			STR(SINT32_KHR);
+			STR(SINT64_KHR);
+			STR(UINT8_KHR);
+			STR(UINT16_KHR);
+			STR(UINT32_KHR);
+			STR(UINT64_KHR);
+#undef STR
+		default: QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
+		};
+	}
+
+	inline QString VkScopeKHRString(const VkScopeKHR value)
+	{
+		switch (value) {
+#define STR(r) case VK_SCOPE_##r: return #r
+			STR(DEVICE_KHR);
+			STR(WORKGROUP_KHR);
+			STR(SUBGROUP_KHR);
+			STR(QUEUE_FAMILY_KHR);
+#undef STR
+		default: QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
+		};
+	}
+
 	inline std::string joinString(const char separator, const std::vector<std::string>& stringList)
 	{
 		std::stringstream ss;

@@ -992,6 +992,21 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		deviceProps2 = initDeviceProperties2(extProps);
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "cooperativeMatrixSupportedStages", QVariant(extProps->cooperativeMatrixSupportedStages));
+		// This extension needs some special handling, this code has to be adjusted manually after header generation
+		// If changed after header-update, DO NOT COMMIT the changes, but revert them
+		if (vulkanContext.vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR != nullptr) {
+			uint32_t propCount = 0;
+			vulkanContext.vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR(device, &propCount, nullptr);
+			std::vector<VkCooperativeMatrixPropertiesKHR> props(propCount);
+			vulkanContext.vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR(device, &propCount, props.data());
+			// The structure is flattened to an array without property names due to database column size limits
+			QVariantList qvl{};
+			for (auto& prop : props) {
+				auto value = QVariantList({ prop.MSize, prop.NSize, prop.KSize, prop.AType, prop.BType, prop.CType, prop.ResultType, prop.saturatingAccumulation, prop.scope});
+				qvl.push_back(value);
+			}
+			pushProperty2(extension, "cooperativeMatrixProperties", qvl);
+		};
 		delete extProps;
 	}
 	if (extensionSupported("VK_KHR_compute_shader_derivatives")) {
