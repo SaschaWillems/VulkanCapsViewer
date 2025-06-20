@@ -50,7 +50,7 @@ void logMessageHandler(QtMsgType type, const QMessageLogContext& context, const 
     QFile logFile("log.txt");
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
         QTextStream textStream(&logFile);
-        textStream << logMessage << endl;
+        textStream << logMessage << Qt::endl;
     };
     // Suppress compiler warning
     (void)context;
