@@ -1544,6 +1544,19 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		pushFeature2(extension, "shaderCoreBuiltins", extFeatures->shaderCoreBuiltins);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_ARM_data_graph")) {
+		const char* extension("VK_ARM_data_graph");
+		VkPhysicalDeviceDataGraphFeaturesARM* extFeatures = new VkPhysicalDeviceDataGraphFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "dataGraph", extFeatures->dataGraph);
+		pushFeature2(extension, "dataGraphUpdateAfterBind", extFeatures->dataGraphUpdateAfterBind);
+		pushFeature2(extension, "dataGraphSpecializationConstants", extFeatures->dataGraphSpecializationConstants);
+		pushFeature2(extension, "dataGraphDescriptorBuffer", extFeatures->dataGraphDescriptorBuffer);
+		pushFeature2(extension, "dataGraphShaderModule", extFeatures->dataGraphShaderModule);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_ARM_pipeline_opacity_micromap")) {
 		const char* extension("VK_ARM_pipeline_opacity_micromap");
 		VkPhysicalDevicePipelineOpacityMicromapFeaturesARM* extFeatures = new VkPhysicalDevicePipelineOpacityMicromapFeaturesARM{};
