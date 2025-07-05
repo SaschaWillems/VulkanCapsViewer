@@ -90,7 +90,7 @@ private:
     void readPhysicalProperties_VALVE();
 
 public:
-    const uint32_t vkHeaderVersion = 320;
+    const uint32_t vkHeaderVersion = 321;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;

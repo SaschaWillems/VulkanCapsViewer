@@ -3030,6 +3030,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "pipelineBinaries", extFeatures->pipelineBinaries);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_swapchain_maintenance1")) {
+		const char* extension("VK_KHR_swapchain_maintenance1");
+		VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR* extFeatures = new VkPhysicalDeviceSwapchainMaintenance1FeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SWAPCHAIN_MAINTENANCE_1_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "swapchainMaintenance1", extFeatures->swapchainMaintenance1);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_cooperative_matrix")) {
 		const char* extension("VK_KHR_cooperative_matrix");
 		VkPhysicalDeviceCooperativeMatrixFeaturesKHR* extFeatures = new VkPhysicalDeviceCooperativeMatrixFeaturesKHR{};
@@ -3147,6 +3156,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "maintenance6", extFeatures->maintenance6);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_KHR_video_encode_intra_refresh")) {
+		const char* extension("VK_KHR_video_encode_intra_refresh");
+		VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR* extFeatures = new VkPhysicalDeviceVideoEncodeIntraRefreshFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_INTRA_REFRESH_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoEncodeIntraRefresh", extFeatures->videoEncodeIntraRefresh);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_KHR_video_encode_quantization_map")) {
 		const char* extension("VK_KHR_video_encode_quantization_map");
 		VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR* extFeatures = new VkPhysicalDeviceVideoEncodeQuantizationMapFeaturesKHR{};
@@ -3219,6 +3237,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		pushFeature2(extension, "robustBufferAccess2", extFeatures->robustBufferAccess2);
 		pushFeature2(extension, "robustImageAccess2", extFeatures->robustImageAccess2);
 		pushFeature2(extension, "nullDescriptor", extFeatures->nullDescriptor);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_present_mode_fifo_latest_ready")) {
+		const char* extension("VK_KHR_present_mode_fifo_latest_ready");
+		VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR* extFeatures = new VkPhysicalDevicePresentModeFifoLatestReadyFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_MODE_FIFO_LATEST_READY_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentModeFifoLatestReady", extFeatures->presentModeFifoLatestReady);
 		delete extFeatures;
 	}
 }
@@ -3755,6 +3782,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_SEC() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "amigoProfiling", extFeatures->amigoProfiling);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_SEC_pipeline_cache_incremental_mode")) {
+		const char* extension("VK_SEC_pipeline_cache_incremental_mode");
+		VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC* extFeatures = new VkPhysicalDevicePipelineCacheIncrementalModeFeaturesSEC{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PIPELINE_CACHE_INCREMENTAL_MODE_FEATURES_SEC;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "pipelineCacheIncrementalMode", extFeatures->pipelineCacheIncrementalMode);
 		delete extFeatures;
 	}
 }

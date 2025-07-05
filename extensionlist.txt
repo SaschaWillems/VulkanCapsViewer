@@ -180,6 +180,7 @@ VK_KHR_present_id2
 VK_KHR_present_wait2
 VK_KHR_ray_tracing_position_fetch
 VK_KHR_pipeline_binary
+VK_KHR_swapchain_maintenance1
 VK_KHR_cooperative_matrix
 VK_KHR_compute_shader_derivatives
 VK_KHR_video_encode_av1
@@ -192,6 +193,7 @@ VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
 VK_KHR_shader_expect_assume
 VK_KHR_maintenance6
+VK_KHR_video_encode_intra_refresh
 VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
@@ -200,6 +202,7 @@ VK_KHR_maintenance9
 VK_KHR_video_maintenance2
 VK_KHR_depth_clamp_zero_one
 VK_KHR_robustness2
+VK_KHR_present_mode_fifo_latest_ready
 MESA
 VK_MESA_image_alignment_control
 MSFT
@@ -265,6 +268,7 @@ QNX
 VK_QNX_external_memory_screen_buffer
 SEC
 VK_SEC_amigo_profiling
+VK_SEC_pipeline_cache_incremental_mode
 VALVE
 VK_VALVE_mutable_descriptor_type
 VK_VALVE_descriptor_set_host_mapping
