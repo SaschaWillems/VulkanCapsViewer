@@ -32,7 +32,7 @@ private:
 	QLineEdit *editSubmitter;
 	QLineEdit *editComment;
 public:
-	SubmitDialog(QString submitter, QString caption = "Submit new report");
+	SubmitDialog(QWidget* parent, QString submitter, QString caption = "Submit new report");
 	~SubmitDialog();
 	QString getSubmitter();
 	QString getComment();
