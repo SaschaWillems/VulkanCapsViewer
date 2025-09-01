@@ -6,6 +6,7 @@ VK_AMD_shader_early_and_late_fragment_tests
 VK_AMD_anti_lag
 AMDX
 VK_AMDX_shader_enqueue
+VK_AMDX_dense_geometry_format
 ANDROID
 VK_ANDROID_external_format_resolve
 ARM
@@ -172,6 +173,7 @@ VK_KHR_shader_subgroup_uniform_control_flow
 VK_KHR_zero_initialize_workgroup_memory
 VK_KHR_workgroup_memory_explicit_layout
 VK_KHR_ray_tracing_maintenance1
+VK_KHR_shader_untyped_pointers
 VK_KHR_maintenance4
 VK_KHR_shader_subgroup_rotate
 VK_KHR_shader_maximal_reconvergence

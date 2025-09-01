@@ -1475,6 +1475,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 		pushFeature2(extension, "shaderMeshEnqueue", extFeatures->shaderMeshEnqueue);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_AMDX_dense_geometry_format")) {
+		const char* extension("VK_AMDX_dense_geometry_format");
+		VkPhysicalDeviceDenseGeometryFormatFeaturesAMDX* extFeatures = new VkPhysicalDeviceDenseGeometryFormatFeaturesAMDX{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DENSE_GEOMETRY_FORMAT_FEATURES_AMDX;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "denseGeometryFormat", extFeatures->denseGeometryFormat);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2955,6 +2964,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_KHR() {
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "rayTracingMaintenance1", extFeatures->rayTracingMaintenance1);
 		pushFeature2(extension, "rayTracingPipelineTraceRaysIndirect2", extFeatures->rayTracingPipelineTraceRaysIndirect2);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_KHR_shader_untyped_pointers")) {
+		const char* extension("VK_KHR_shader_untyped_pointers");
+		VkPhysicalDeviceShaderUntypedPointersFeaturesKHR* extFeatures = new VkPhysicalDeviceShaderUntypedPointersFeaturesKHR{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_UNTYPED_POINTERS_FEATURES_KHR;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "shaderUntypedPointers", extFeatures->shaderUntypedPointers);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_KHR_maintenance4")) {
