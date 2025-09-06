@@ -28,15 +28,7 @@ jobs:
           sudo apt update
           sudo apt install libvulkan-dev
 
-      - name: Install x86_64 Qt
-        if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 5.12.9
-          host: linux
-
-      - name: Install aarch64 Qt
-        if: ${{ matrix.cfg.arch == 'aarch64' }}
+      - name: Install Qt
         run: |
           sudo apt install qt5-qmake qtbase5-dev libqt5gui5
 
@@ -53,12 +45,13 @@ jobs:
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
           qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
-          make INSTALL_ROOT=appdir install ; find appdir/
-          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage"
-          chmod a+x linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage
-          export VERSION=${TARGET_PLATFORM}
-          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-          ./linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage appdir/usr/share/applications/* -appimage
+          make INSTALL_ROOT=appdir install_icon ; find appdir/
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{matrix.cfg.arch}}.AppImage"
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage"
+          chmod a+x linuxdeploy-${{matrix.cfg.arch}}.AppImage linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage ./tools/linuxdeploy-env.sh
+          source ./tools/linuxdeploy-env.sh
+          ./linuxdeploy-${{matrix.cfg.arch}}.appimage --appdir=appdir --output=appimage -e ./vulkanCapsViewer -d vulkanCapsViewer.desktop -i ./vulkanCapsViewer.png -p qt
+          mv Vulkan_Caps_Viewer-${{matrix.cfg.arch}}.AppImage Vulkan_Caps_Viewer-X11-${{matrix.cfg.arch}}.AppImage
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-X11-${{matrix.cfg.arch}}.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
@@ -82,17 +75,9 @@ jobs:
           sudo apt update
           sudo apt install libvulkan-dev libwayland-dev
 
-      - name: Install x86_64 Qt
-        if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: 5.12.9
-          host: linux
-
-      - name: Install aarch64 Qt
-        if: ${{ matrix.cfg.arch == 'aarch64' }}
+      - name: Install Qt
         run: |
-          sudo apt install qt5-qmake qtbase5-dev libqt5gui5
+          sudo apt install qt5-qmake qtbase5-dev libqt5gui5 qtwayland5
 
       - name: Install libfuse
         run: |
@@ -108,11 +93,12 @@ jobs:
           CXX="clang++"
           qmake DEFINES+=WAYLAND CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install ; find appdir/
-          wget -c -nv "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage"
-          chmod a+x linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage
-          export VERSION=${TARGET_PLATFORM}
-          cp vulkanCapsViewer.png appdir/usr/share/icons/hicolor/256x256/apps/vulkanCapsViewer.png
-          ./linuxdeployqt-continuous-${{matrix.cfg.arch}}.AppImage appdir/usr/share/applications/* -appimage -exclude-libs=libwayland-client.so
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{matrix.cfg.arch}}.AppImage"
+          wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage"
+          chmod a+x linuxdeploy-${{matrix.cfg.arch}}.AppImage linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage ./tools/linuxdeploy-env.sh
+          source ./tools/linuxdeploy-env.sh
+          ./linuxdeploy-${{matrix.cfg.arch}}.appimage --appdir=appdir --output=appimage -e ./vulkanCapsViewer -d vulkanCapsViewer.desktop -i ./vulkanCapsViewer.png -p qt
+          mv Vulkan_Caps_Viewer-${{matrix.cfg.arch}}.AppImage Vulkan_Caps_Viewer-wayland-${{matrix.cfg.arch}}.AppImage
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-wayland-${{matrix.cfg.arch}}.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
