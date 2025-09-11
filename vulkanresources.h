@@ -461,6 +461,7 @@ namespace vulkanResources {
 			STR(FIFO_RELAXED);
 			STR(SHARED_DEMAND_REFRESH);
 			STR(SHARED_CONTINUOUS_REFRESH);
+			STR(FIFO_LATEST_READY);
 #undef STR
 		default: return "UNKNOWN_ENUM (" + toHexString(presentMode) + ")";
 		}
