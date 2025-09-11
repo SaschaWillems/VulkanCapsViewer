@@ -621,6 +621,8 @@ namespace vulkanResources {
 			STR(CLUSTERED_BIT);
 			STR(QUAD_BIT);
 			STR(PARTITIONED_BIT_NV);
+			STR(ROTATE_BIT);
+			STR(ROTATE_CLUSTERED_BIT);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(subgroupBit) + ")";
 		};
