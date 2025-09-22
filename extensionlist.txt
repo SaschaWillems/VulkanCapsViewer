@@ -8,6 +8,7 @@ AMDX
 VK_AMDX_shader_enqueue
 VK_AMDX_dense_geometry_format
 ANDROID
+VK_ANDROID_native_buffer
 VK_ANDROID_external_format_resolve
 ARM
 VK_ARM_rasterization_order_attachment_access
@@ -273,5 +274,6 @@ VK_SEC_amigo_profiling
 VK_SEC_pipeline_cache_incremental_mode
 VALVE
 VK_VALVE_mutable_descriptor_type
+VK_VALVE_video_encode_rgb_conversion
 VK_VALVE_descriptor_set_host_mapping
 VK_VALVE_fragment_density_map_layered

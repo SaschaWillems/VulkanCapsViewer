@@ -94,6 +94,15 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
 #if defined(VK_USE_PLATFORM_ANDROID)
+	if (extensionSupported("VK_ANDROID_native_buffer")) {
+		const char* extension("VK_ANDROID_native_buffer");
+		VkPhysicalDevicePresentationPropertiesANDROID* extProps = new VkPhysicalDevicePresentationPropertiesANDROID{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENTATION_PROPERTIES_ANDROID;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "sharedImage", QVariant(bool(extProps->sharedImage)));
+		delete extProps;
+	}
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
 		VkPhysicalDeviceExternalFormatResolvePropertiesANDROID* extProps = new VkPhysicalDeviceExternalFormatResolvePropertiesANDROID{};
@@ -3821,6 +3830,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_VALVE() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "mutableDescriptorType", extFeatures->mutableDescriptorType);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_VALVE_video_encode_rgb_conversion")) {
+		const char* extension("VK_VALVE_video_encode_rgb_conversion");
+		VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE* extFeatures = new VkPhysicalDeviceVideoEncodeRgbConversionFeaturesVALVE{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VIDEO_ENCODE_RGB_CONVERSION_FEATURES_VALVE;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "videoEncodeRgbConversion", extFeatures->videoEncodeRgbConversion);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_VALVE_descriptor_set_host_mapping")) {
