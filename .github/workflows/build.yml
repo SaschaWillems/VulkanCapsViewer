@@ -32,13 +32,13 @@ jobs:
         if: ${{ matrix.cfg.arch == 'x86_64' }}
         uses: jurplel/install-qt-action@v3
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: linux
 
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
-        run: |
-          sudo apt install qt5-qmake qtbase5-dev libqt5gui5
+        run: |              
+          sudo apt install qt6-qmake qtbase6-dev libqt6gui6
 
       - name: Install libfuse
         run: |
@@ -86,13 +86,13 @@ jobs:
         if: ${{ matrix.cfg.arch == 'x86_64' }}
         uses: jurplel/install-qt-action@v3
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: linux
 
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         run: |
-          sudo apt install qt5-qmake qtbase5-dev libqt5gui5
+          sudo apt install qt6-qmake qtbase6-dev libqt6gui6
 
       - name: Install libfuse
         run: |
@@ -131,7 +131,7 @@ jobs:
 
       - uses: jurplel/install-qt-action@v4
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: mac
 
       - name: Prepare Vulkan SDK
@@ -167,7 +167,11 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.9.2
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'          
 
       - name: Build
         env:
@@ -195,7 +199,7 @@ jobs:
       - uses: jurplel/install-qt-action@v3
         with:
           setup-python: 'false'
-          version: '5.12.9'
+          version: 6.9.2
           arch: 'win32_msvc2017'
 
       - uses: actions/checkout@v4

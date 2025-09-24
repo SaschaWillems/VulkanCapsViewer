@@ -124,9 +124,6 @@ private:
         QStandardItemModel profiles;
     } models;
     QFont boldFont;
-#ifdef ANDROID
-    ANativeWindow* nativeWindow = nullptr;
-#endif
     bool initVulkan();
     void getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysicalDevice device);
     void getGPUs();
