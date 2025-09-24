@@ -21,6 +21,7 @@
 #include "vulkancapsviewer.h"
 #include "vulkanresources.h"
 #include "vulkansurfaceinfo.hpp"
+#include <typeinfo>
 #include <sstream>
 #include <iomanip>
 #include <type_traits>
@@ -214,7 +215,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 
     // No identation
     for (int i = 0; i < ui.tabWidgetDevice->count(); i++) {
-        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
+//        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
     }
 
     QTabBar *tabBar = ui.tabWidgetDevice->findChild<QTabBar *>();
@@ -414,7 +415,7 @@ void VulkanCapsViewer::slotUploadReport()
     }
     // Upload new report
     if (reportState == ReportState::not_present) {
-        SubmitDialog dialog(settings.submitterName, "Submit new report");
+        SubmitDialog dialog(this, settings.submitterName, "Submit new report");
         if (dialog.exec() == QDialog::Accepted) {
             QString message;
             QJsonObject reportJson;
@@ -434,7 +435,7 @@ void VulkanCapsViewer::slotUploadReport()
 
     // Update existing report
     if (reportState == ReportState::is_updatable) {
-        SubmitDialog dialog(settings.submitterName, "Update existing report");
+        SubmitDialog dialog(this, settings.submitterName, "Update existing report");
         if (dialog.exec() == QDialog::Accepted) {
             int reportId = database.getReportId(device);
             QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -470,7 +471,7 @@ void VulkanCapsViewer::slotUploadReport()
 
 void VulkanCapsViewer::slotSettings()
 {
-    settingsDialog dialog(settings);
+    settingsDialog dialog(this, settings);
     dialog.setModal(true);
     dialog.exec();
     settings.restore();
