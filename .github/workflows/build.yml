@@ -167,9 +167,11 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v4
         with:
-          version: 6.9.2      
+          version: 6.9.2
+          target: 'desktop'
+          arch: 'win64_msvc2022_64'          
 
       - name: Build
         env:
