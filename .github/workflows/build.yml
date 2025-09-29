@@ -171,7 +171,6 @@ jobs:
         with:
           version: 6.9.2
           target: 'desktop'
-          arch: 'win64_msvc2022_64'          
 
       - name: Build
         env:
@@ -200,7 +199,6 @@ jobs:
         with:
           setup-python: 'false'
           version: 6.9.2
-          arch: 'win32_msvc2017'
 
       - uses: actions/checkout@v4
         with:
