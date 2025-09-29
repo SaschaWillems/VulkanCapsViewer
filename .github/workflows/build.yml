@@ -178,7 +178,7 @@ jobs:
         run: |
           qmake vulkanCapsViewer.pro
           nmake release
-          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          windeployqt.exe release --no-opengl-sw --no-translations --no-system-d3d-compiler
           Remove-Item release\*.obj
           Remove-Item release\*.res
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
@@ -210,7 +210,7 @@ jobs:
         run: |
           qmake vulkanCapsViewer.pro
           nmake release
-          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          windeployqt.exe release --no-opengl-sw --no-translations --no-system-d3d-compiler
           Remove-Item release\*.obj
           Remove-Item release\*.res
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows_x86.zip
