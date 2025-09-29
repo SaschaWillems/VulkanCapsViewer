@@ -172,6 +172,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()), Qt::QueuedConnection);
     connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)), Qt::QueuedConnection);
 
+    QPalette palette;
+    palette.setColor(QPalette::Highlight, QColor(0, 120, 215));
+    palette.setColor(QPalette::Link, QColor(0, 120, 215));
+    qApp->setPalette(palette);
     qApp->setStyle(QStyleFactory::create("Fusion"));
     boldFont.setBold(true);
 
