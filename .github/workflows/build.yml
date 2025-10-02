@@ -37,13 +37,13 @@ jobs:
 
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
-        run: |              
-          sudo apt install qt6-qmake qtbase6-dev libqt6gui6
+        run: |
+          sudo apt install qmake6 qt6-base-dev libqt6gui6t64
 
       - name: Install libfuse
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2      
+          sudo apt install libfuse2
 
       - name: Build
         env:
@@ -92,12 +92,12 @@ jobs:
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         run: |
-          sudo apt install qt6-qmake qtbase6-dev libqt6gui6
+          sudo apt install qmake6 qt6-base-dev libqt6gui6t64
 
       - name: Install libfuse
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2      
+          sudo apt install libfuse2
 
       - name: Build
         env:
@@ -127,7 +127,7 @@ jobs:
           submodules: "recursive"
 
       - name: Select Xcode version
-        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'          
+        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'
 
       - uses: jurplel/install-qt-action@v4
         with:
@@ -154,7 +154,7 @@ jobs:
           cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
       - name: Upload
         if: github.ref == 'refs/heads/master'
-        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
+        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
   build_windows:
     name: Build Windows (64 bit)
