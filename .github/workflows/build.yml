@@ -38,7 +38,7 @@ jobs:
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         run: |
-          sudo apt install qmake6 qt6-base-dev libqt6gui6t
+          sudo apt install qmake6 qt6-base-dev libqt6gui6
 
       - name: Install libfuse
         run: |
@@ -92,7 +92,7 @@ jobs:
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         run: |
-          sudo apt install qmake6 qt6-base-dev libqt6gui6t
+          sudo apt install qmake6 qt6-base-dev libqt6gui6
 
       - name: Install libfuse
         run: |
