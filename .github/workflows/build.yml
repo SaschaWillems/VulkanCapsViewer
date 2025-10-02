@@ -30,7 +30,7 @@ jobs:
 
       - name: Install x86_64 Qt
         if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: 6.9.2
           host: linux
@@ -84,7 +84,7 @@ jobs:
 
       - name: Install x86_64 Qt
         if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
           version: 6.9.2
           host: linux
