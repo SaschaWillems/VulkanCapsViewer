@@ -40,7 +40,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: 6.9.2
-          host: linux
+          host: linux_arm64
           arch: linux_gcc_arm64
 
       - name: Install libfuse
