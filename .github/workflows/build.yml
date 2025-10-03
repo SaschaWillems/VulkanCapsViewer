@@ -16,7 +16,7 @@ jobs:
       matrix:
         cfg:
         - { os: ubuntu-22.04,     arch: x86_64 }
-        # - { os: ubuntu-22.04-arm, arch: aarch64 }
+        - { os: ubuntu-22.04-arm, arch: aarch64 }
 
     steps:
       - uses: actions/checkout@v4
@@ -35,10 +35,13 @@ jobs:
           version: 6.9.2
           host: linux
 
-      # - name: Install aarch64 Qt
-      #   if: ${{ matrix.cfg.arch == 'aarch64' }}
-      #   run: |
-      #     sudo apt install qmake6 qt6-base-dev libqt6gui6
+      - name: Install aarch64 Qt
+        if: ${{ matrix.cfg.arch == 'aarch64' }}
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.9.2
+          host: linux
+          arch: linux_gcc_arm64
 
       - name: Install libfuse
         run: |
