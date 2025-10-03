@@ -43,6 +43,7 @@
 #include <QSet>
 #include <QWindow>
 #include <QApplication>
+#include <QVulkanInstance>
 #include <qnamespace.h>
 #include <assert.h>
 #include <settingsDialog.h>
@@ -60,13 +61,6 @@
 #include <wayland-client.h>
 #endif
 
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
-#include <QtAndroid>
-#include <QAndroidJniEnvironment>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
-#endif
-
 #ifdef __APPLE__
 #include <vulkan/vulkan_metal.h>
 
@@ -79,8 +73,8 @@ extern "C" void *makeViewMetalCompatible(void* handle);
 
 using std::to_string;
 
-const QString VulkanCapsViewer::version = "4.02";
-const QString VulkanCapsViewer::reportVersion = "4.0";
+const QString VulkanCapsViewer::version = "4.10";
+const QString VulkanCapsViewer::reportVersion = "4.1";
 
 OSInfo getOperatingSystem()
 {
@@ -178,6 +172,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()), Qt::QueuedConnection);
     connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)), Qt::QueuedConnection);
 
+    QPalette palette;
+    palette.setColor(QPalette::Highlight, QColor(0, 120, 215));
+    palette.setColor(QPalette::Link, QColor(0, 120, 215));
+    qApp->setPalette(palette);
     qApp->setStyle(QStyleFactory::create("Fusion"));
     boldFont.setBold(true);
 
@@ -221,7 +219,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 
     // No identation
     for (int i = 0; i < ui.tabWidgetDevice->count(); i++) {
-        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
+//        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
     }
 
     QTabBar *tabBar = ui.tabWidgetDevice->findChild<QTabBar *>();
@@ -486,92 +484,92 @@ void VulkanCapsViewer::slotSettings()
 
 void VulkanCapsViewer::slotFilterPropertiesCore10(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore13.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeatures(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore13.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore14(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore14.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.extensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.extensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFormats(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.formats.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.formats.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterProfiles(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.profiles.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.profiles.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotComboTabChanged(int index)
@@ -765,44 +763,16 @@ bool VulkanCapsViewer::initVulkan()
     {
         vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 
-        // Get a native window via JNI
-        // Qt doesn't offer access to this, so we have to do this manually
-        // Note: Purely based on countless hours of trial-and-error, need to check on other devices
-        // todo: cleanup, error checking
-
-        // Get window
-        QAndroidJniObject activity = QtAndroid::androidActivity();
-        QAndroidJniObject window;
-        if (activity.isValid())
-        {
-            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-        }
-
-        if (window.isValid())
-        {
-            // Get a surface texture
-            QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
-            qDebug() << surfaceTexture.isValid();
-
-            // Get a surface based on the texture
-            QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
-            qDebug() << surface.isValid();
-
-            if (surfaceTexture.isValid())
-            {
-                // Create a native window from our surface that can be used to create the Vulkan surface
-                QAndroidJniEnvironment qjniEnv;
-                nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
-            }
-        }
-
-        if (nativeWindow)
-        {
-            VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.window = nativeWindow;
-            surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
-        }
+        QVulkanInstance instance;
+        instance.setVkInstance(vulkanContext.instance);
+        instance.create();
+        QWindow* window = new QWindow;
+        window->setSurfaceType(QSurface::VulkanSurface);
+        QWidget* wrapper = QWidget::createWindowContainer(window, this);
+        //VkSurfaceKHR surface = QVulkanInstance::surfaceForWindow(window);
+        vulkanContext.surface = QVulkanInstance::surfaceForWindow(window);
+        surfaceResult = vulkanContext.surface != VK_NULL_HANDLE ? VK_SUCCESS : VK_ERROR_INITIALIZATION_FAILED;
+        delete window;
     }
 #endif
 
@@ -1246,10 +1216,28 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         addHexItem(parent, iterator);
         return;
     }
-    if (iterator.value().canConvert(QVariant::List)) {
-        addVariantListItem(parent, iterator);
-        return;
-    }
+
+    // This is marked deprecated in Qt6 and was causing all sorts of problems
+    // if (iterator.value().canConvert(QVariant::List)) {
+    //     addVariantListItem(parent, iterator);
+    //     return;
+    // }
+    // In theory, the above could/should be replaced with this. However,
+    // Qt6 seems ot have some stricker type rules, and this is turning QStrings
+    // into lists. String is the fallthrough, at the bottom, and most things
+    // can be turned into strings. Simply removing this fixes the string parsing
+    // issue (many strings showing up as lists with comma's between each character.
+    // Also... it appears to do no harm. The outuput is the same as with HWCaps viewer
+    // build with Qt5. I'm leving this comment here for "posterity", and just in case
+    // it turns out to be important down the road.
+    // "The Road to Hell is Paved with Good Intentions" ;-)
+    //if (iterator.value().canConvert<QVariantList>()) {
+    //    addVariantListItem(parent, iterator);
+    //    return;
+    //}
+
+
+
     if (key == "subgroupSupportedOperations") {
         const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
@@ -1303,7 +1291,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         return;
     }
 
-    if (property.value.canConvert(QVariant::List)) {
+    if ((property.value.metaType().id() != QMetaType::QString) && property.value.canConvert<QVariantList>()) {
         if ((strcmp(property.extension, VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME) == 0) && ((property.name == "pCopySrcLayouts") || (property.name == "pCopyDstLayouts"))) {
             QList<QVariant> list = property.value.toList();
             for (auto i = 0; i < list.size(); i++) {
@@ -1315,8 +1303,8 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         propertyItem << new QStandardItem(arrayToStr(property.value));
     }
     else {
-        switch (property.value.type()) {
-        case QVariant::Bool: {
+        switch (property.value.metaType().id()) {
+        case QMetaType::Bool: {
             bool boolVal = property.value.toBool();
             propertyItem << new QStandardItem(boolVal ? "true" : "false");
             propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));

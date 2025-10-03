@@ -30,20 +30,23 @@ jobs:
 
       - name: Install x86_64 Qt
         if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: linux
 
       - name: Install aarch64 Qt
         if: ${{ matrix.cfg.arch == 'aarch64' }}
-        run: |
-          sudo apt install qt5-qmake qtbase5-dev libqt5gui5
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.9.2
+          host: linux_arm64
+          arch: linux_gcc_arm64
 
       - name: Install libfuse
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2      
+          sudo apt install libfuse2
 
       - name: Build
         env:
@@ -70,7 +73,7 @@ jobs:
       matrix:
         cfg:
         - { os: ubuntu-22.04,     arch: x86_64 }
-        - { os: ubuntu-22.04-arm, arch: aarch64 }
+        # - { os: ubuntu-22.04-arm, arch: aarch64 }
 
     steps:
       - uses: actions/checkout@v4
@@ -84,20 +87,20 @@ jobs:
 
       - name: Install x86_64 Qt
         if: ${{ matrix.cfg.arch == 'x86_64' }}
-        uses: jurplel/install-qt-action@v3
+        uses: jurplel/install-qt-action@v4
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: linux
 
-      - name: Install aarch64 Qt
-        if: ${{ matrix.cfg.arch == 'aarch64' }}
-        run: |
-          sudo apt install qt5-qmake qtbase5-dev libqt5gui5
+      # - name: Install aarch64 Qt
+      #   if: ${{ matrix.cfg.arch == 'aarch64' }}
+      #   run: |
+      #     sudo apt install qmake6 qt6-base-dev libqt6gui6
 
       - name: Install libfuse
         run: |
           sudo add-apt-repository universe
-          sudo apt install libfuse2      
+          sudo apt install libfuse2
 
       - name: Build
         env:
@@ -127,11 +130,11 @@ jobs:
           submodules: "recursive"
 
       - name: Select Xcode version
-        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'          
+        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'
 
       - uses: jurplel/install-qt-action@v4
         with:
-          version: 5.12.9
+          version: 6.9.2
           host: mac
 
       - name: Prepare Vulkan SDK
@@ -154,7 +157,7 @@ jobs:
           cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
       - name: Upload
         if: github.ref == 'refs/heads/master'
-        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}          
+        run: curl -T Vulkan_Caps_Viewer-osx-x86_64.dmg  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
 
   build_windows:
     name: Build Windows (64 bit)
@@ -167,7 +170,10 @@ jobs:
         with:
           submodules: "recursive"
 
-      - uses: jurplel/install-qt-action@v3
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: 6.9.2
+          target: 'desktop'
 
       - name: Build
         env:
@@ -175,43 +181,10 @@ jobs:
         run: |
           qmake vulkanCapsViewer.pro
           nmake release
-          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
+          windeployqt.exe release --no-opengl-sw --no-translations --no-system-d3d-compiler
           Remove-Item release\*.obj
           Remove-Item release\*.res
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-windows.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
-
-  build_windows_x86:
-    name: Build Windows (32 bit)
-    runs-on: windows-latest
-
-    steps:
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x86
-
-      - uses: jurplel/install-qt-action@v3
-        with:
-          setup-python: 'false'
-          version: '5.12.9'
-          arch: 'win32_msvc2017'
-
-      - uses: actions/checkout@v4
-        with:
-          submodules: "recursive"
-
-      - name: Build
-        env:
-          TARGET_PLATFORM: windows
-        run: |
-          qmake vulkanCapsViewer.pro
-          nmake release
-          windeployqt.exe release --no-opengl-sw --no-angle --no-webkit2 --no-translations --no-system-d3d-compiler
-          Remove-Item release\*.obj
-          Remove-Item release\*.res
-          Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows_x86.zip
-      - name: Upload
-        if: github.ref == 'refs/heads/master'
-        run: curl -T Vulkan_Caps_Viewer-windows_x86.zip  ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
