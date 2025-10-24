@@ -692,7 +692,8 @@ bool VulkanCapsViewer::initVulkan()
             enabledExtensions.push_back(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
         }
 
-#if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
+// IF the portability extension is available, enable it here.
+#if VK_HEADER_VERSION >= 216
         if(strcmp(ext.extensionName, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) == 0) {
             instanceCreateInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
             enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
@@ -943,7 +944,21 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
 
     std::vector<const char*> enabledExtensions;
 #if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
-    enabledExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+    // Enable the portability extension at the device level, but only if the device uses it
+    // For example, MoltenVK does, while lavapipe and KosmicKrisp do not.
+
+    // Get the list of device extensions
+    uint32_t extensionCount = 0;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+
+    vkEnumerateDeviceExtensionProperties(
+        device, nullptr, &extensionCount, availableExtensions.data());
+
+    // Loop through the extensions and enable any portability devices
+    for(int i = 0; i < extensionCount; i++)
+        if(strcmp(availableExtensions[i].extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME) == 0)
+            enabledExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
 #endif
 
     // Init device
