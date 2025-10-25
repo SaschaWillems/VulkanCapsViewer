@@ -4,7 +4,7 @@
  *
  * Vulkan hardware capability viewer
  * 
- * Copyright (C) 2016-2023 by Sascha Willems (www.saschawillems.de)
+ * Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
  *
  * This code is free software, you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -341,10 +341,13 @@ class CppBuilder
                 if ($ext_group == 'ANDROID') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
                 }                
+                if ($ext_group == 'OHOS') {
+                    $cpp_features_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";
+                }                
                 foreach ($ext_arr as $extension) {
                     $cpp_features_block .= $this->generateFeatures2CodeBlock($extension);
                 }
-                if (in_array($ext_group, ['QNX', 'ANDROID']) != false) {
+                if (in_array($ext_group, ['QNX', 'ANDROID', 'OHOS']) != false) {
                     $cpp_features_block .= "#endif\n";
                 }
                 $cpp_features_block .= "}\n";
@@ -361,11 +364,14 @@ class CppBuilder
                 }
                 if ($ext_group == 'ANDROID') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
-                }                    
+                }
+                if ($ext_group == 'OHOS') {
+                    $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";
+                }                
                 foreach ($ext_arr as $extension) {
                     $cpp_properties_block .= $this->generateProperties2CodeBlock($extension);
                 }
-                if (in_array($ext_group, ['QNX', 'ANDROID']) != false) {
+                if (in_array($ext_group, ['QNX', 'ANDROID', 'OHOS']) != false) {
                     $cpp_properties_block .= "#endif\n";
                 }                
                 $cpp_properties_block .= "}\n";
