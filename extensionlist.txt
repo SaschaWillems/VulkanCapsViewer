@@ -111,6 +111,7 @@ VK_EXT_legacy_vertex_attributes
 VK_EXT_pipeline_library_group_handles
 VK_EXT_dynamic_rendering_unused_attachments
 VK_EXT_attachment_feedback_loop_dynamic_state
+VK_EXT_memory_decompression
 VK_EXT_shader_replicated_composites
 VK_EXT_shader_float8
 VK_EXT_device_generated_commands
@@ -118,6 +119,8 @@ VK_EXT_depth_clamp_control
 VK_EXT_vertex_attribute_robustness
 VK_EXT_fragment_density_map_offset
 VK_EXT_zero_initialize_device_memory
+VK_EXT_shader_64bit_indexing
+VK_EXT_shader_uniform_buffer_unsized_array
 HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
@@ -196,16 +199,19 @@ VK_KHR_index_type_uint8
 VK_KHR_line_rasterization
 VK_KHR_shader_expect_assume
 VK_KHR_maintenance6
+VK_KHR_copy_memory_indirect
 VK_KHR_video_encode_intra_refresh
 VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
 VK_KHR_maintenance8
+VK_KHR_shader_fma
 VK_KHR_maintenance9
 VK_KHR_video_maintenance2
 VK_KHR_depth_clamp_zero_one
 VK_KHR_robustness2
 VK_KHR_present_mode_fifo_latest_ready
+VK_KHR_maintenance10
 MESA
 VK_MESA_image_alignment_control
 MSFT
@@ -255,6 +261,8 @@ VK_NV_cooperative_matrix2
 VK_NV_present_metering
 NVX
 VK_NVX_multiview_per_view_attributes
+OHOS
+VK_OHOS_native_buffer
 QCOM
 VK_QCOM_tile_shading
 VK_QCOM_fragment_density_map_offset
