@@ -8,6 +8,7 @@ QT += core network widgets gui
 CONFIG += c++17
 #CONFIG += release bad for debugging
 DEFINES += QT_DLL QT_NETWORK_LIB QT_WIDGETS_LIB VK_ENABLE_BETA_EXTENSIONS
+QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 INCLUDEPATH += ./GeneratedFiles \
     . \
     ./GeneratedFiles/Release

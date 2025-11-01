@@ -43,7 +43,10 @@
 #include <QSet>
 #include <QWindow>
 #include <QApplication>
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 #include <QVulkanInstance>
+#include <QVulkanWindow>
+#endif
 #include <qnamespace.h>
 #include <assert.h>
 #include <settingsDialog.h>
@@ -762,17 +765,17 @@ bool VulkanCapsViewer::initVulkan()
                   VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
     {
         vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-
         QVulkanInstance instance;
         instance.setVkInstance(vulkanContext.instance);
         instance.create();
-        QWindow* window = new QWindow;
-        window->setSurfaceType(QSurface::VulkanSurface);
-        QWidget* wrapper = QWidget::createWindowContainer(window, this);
-        //VkSurfaceKHR surface = QVulkanInstance::surfaceForWindow(window);
-        vulkanContext.surface = QVulkanInstance::surfaceForWindow(window);
+        QVulkanWindow* vWindow = new QVulkanWindow;
+        vWindow->setVulkanInstance(&instance);
+        vWindow->showMinimized();
+        vulkanContext.surface = QVulkanInstance::surfaceForWindow(vWindow);
+        if (vulkanContext.surface == VK_NULL_HANDLE) {
+            qFatal() << "Could not get a valid surface!";
+        }
         surfaceResult = vulkanContext.surface != VK_NULL_HANDLE ? VK_SUCCESS : VK_ERROR_INITIALIZATION_FAILED;
-        delete window;
     }
 #endif
 
