@@ -16,7 +16,7 @@ jobs:
       matrix:
         cfg:
         - { os: ubuntu-22.04,     arch: x86_64 }
-        # - { os: ubuntu-22.04-arm, arch: aarch64 }
+        - { os: ubuntu-22.04-arm, arch: aarch64 }
 
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,6 @@ jobs:
         if: ${{ matrix.cfg.arch == 'x86_64' }}
         uses: jurplel/install-qt-action@v4
         with:
-          # todo: Needs to be updated to 6.8.5 once that's released
           version: 6.8.3
           host: linux
 
@@ -40,8 +39,7 @@ jobs:
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         uses: jurplel/install-qt-action@v4
         with:
-          # todo: Needs to be updated to 6.8.5 once that's released
-          version: 6.8.3
+          version: 6.9.2
           host: linux_arm64
           arch: linux_gcc_arm64
 
@@ -75,7 +73,7 @@ jobs:
       matrix:
         cfg:
         - { os: ubuntu-22.04,     arch: x86_64 }
-        # - { os: ubuntu-22.04-arm, arch: aarch64 }
+        - { os: ubuntu-22.04-arm, arch: aarch64 }
 
     steps:
       - uses: actions/checkout@v4
@@ -91,7 +89,6 @@ jobs:
         if: ${{ matrix.cfg.arch == 'x86_64' }}
         uses: jurplel/install-qt-action@v4
         with:
-          # todo: Needs to be updated to 6.8.5 once that's released
           version: 6.8.3
           host: linux
 
@@ -99,7 +96,6 @@ jobs:
         if: ${{ matrix.cfg.arch == 'aarch64' }}
         uses: jurplel/install-qt-action@v4
         with:
-          # todo: Needs to be updated to 6.8.5 once that's released
           version: 6.8.3
           host: linux_arm64
           arch: linux_gcc_arm64
