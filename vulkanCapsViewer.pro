@@ -8,7 +8,6 @@ QT += core network widgets gui
 CONFIG += c++17
 #CONFIG += release bad for debugging
 DEFINES += QT_DLL QT_NETWORK_LIB QT_WIDGETS_LIB VK_ENABLE_BETA_EXTENSIONS
-QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 INCLUDEPATH += ./GeneratedFiles \
     . \
     ./GeneratedFiles/Release
@@ -61,6 +60,7 @@ macx {
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 ios {
     TARGET = "Vulkan Caps Viewer"
