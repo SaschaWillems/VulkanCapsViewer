@@ -137,7 +137,19 @@ jobs:
           submodules: "recursive"
 
       - name: Select Xcode version
-        run: sudo xcode-select -s '/Applications/Xcode_14.2.app/Contents/Developer'
+        run: |
+          echo "Available Xcode installations:"
+          ls -1 /Applications | grep -i xcode || true
+          ls -d /Applications/Xcode*.app 2>/dev/null || true
+          # Choose the newest Xcode* app if present, otherwise leave system default
+          XCODE_DIR=$(ls -d /Applications/Xcode*.app 2>/dev/null | sort -V | tail -n1)
+          if [ -n "$XCODE_DIR" ]; then
+            echo "Selecting Xcode at $XCODE_DIR"
+            sudo xcode-select -s "${XCODE_DIR}/Contents/Developer"
+          else
+            echo "No /Applications/Xcode*.app found — leaving system default"
+            xcode-select -p || true
+          fi
 
       - uses: jurplel/install-qt-action@v4
         with:
@@ -160,7 +172,7 @@ jobs:
           export PATH=$PATH:/usr/local/opt/qt/bin
           export CPATH=$CPATH:/usr/local/include/
           qmake -config release
-          make -j$(nproc)
+          make -j$(sysctl -n hw.ncpu)
           macdeployqt vulkanCapsViewer.app -dmg
           cp vulkanCapsviewer.dmg Vulkan_Caps_Viewer-osx-x86_64.dmg
       - name: Upload
