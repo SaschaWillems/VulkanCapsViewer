@@ -43,6 +43,7 @@ linux:!android {
     icon.files = vulkanCapsViewer.png
     icon.path = /usr/share/icons/hicolor/256x256/apps/
     INSTALLS += desktop icon
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 android {
     DEFINES += VK_NO_PROTOTYPES
