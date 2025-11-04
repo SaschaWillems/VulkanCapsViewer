@@ -59,7 +59,7 @@ jobs:
           make INSTALL_ROOT=appdir install_icon ; find appdir/
           wget -c -nv "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{matrix.cfg.arch}}.AppImage"
           wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage"
-          chmod a+x linuxdeploy-${{matrix.cfg.arch}}.AppImage linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage
+          chmod +x linuxdeploy*.AppImage
           ./linuxdeploy-${{matrix.cfg.arch}}.appimage --appdir=appdir --output=appimage -e ./vulkanCapsViewer -d vulkanCapsViewer.desktop -i ./vulkanCapsViewer.png -p qt
           mv Vulkan_Caps_Viewer-${{matrix.cfg.arch}}.AppImage Vulkan_Caps_Viewer-X11-${{matrix.cfg.arch}}.AppImage
       - name: Upload
