@@ -55,7 +55,7 @@ jobs:
           echo ${TARGET_PLATFORM}
           PATH="/opt/qt512/bin:$PATH"
           CXX="clang++"
-          qmake DEFINES+X11 CONFIG+=release PREFIX=/usr
+          qmake DEFINES+=X11 CONFIG+=release PREFIX=/usr
           make INSTALL_ROOT=appdir install_icon ; find appdir/
           wget -c -nv "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-${{matrix.cfg.arch}}.AppImage"
           wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage"
