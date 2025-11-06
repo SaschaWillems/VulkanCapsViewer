@@ -46,6 +46,8 @@ linux:!android {
     QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 android {
+    QT += core-private
+    LIBS += -landroid
     DEFINES += VK_NO_PROTOTYPES
     DEFINES += VK_USE_PLATFORM_ANDROID_KHR
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
@@ -99,7 +101,8 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/res/xml/qtprovider_paths.xml
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_EXTRA_LIBS = \
