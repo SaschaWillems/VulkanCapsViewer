@@ -19,6 +19,7 @@ VK_ARM_tensors
 VK_ARM_shader_core_builtins
 VK_ARM_data_graph
 VK_ARM_pipeline_opacity_micromap
+VK_ARM_performance_counters_by_region
 VK_ARM_format_pack
 EXT
 VK_EXT_transform_feedback

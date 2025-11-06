@@ -180,6 +180,19 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 		pushProperty2(extension, "shaderWarpsPerCore", QVariant(extProps->shaderWarpsPerCore));
 		delete extProps;
 	}
+	if (extensionSupported("VK_ARM_performance_counters_by_region")) {
+		const char* extension("VK_ARM_performance_counters_by_region");
+		VkPhysicalDevicePerformanceCountersByRegionPropertiesARM* extProps = new VkPhysicalDevicePerformanceCountersByRegionPropertiesARM{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_PROPERTIES_ARM;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxPerRegionPerformanceCounters", QVariant(extProps->maxPerRegionPerformanceCounters));
+		pushProperty2(extension, "performanceCounterRegionSize", QVariant::fromValue(QVariantList({ extProps->performanceCounterRegionSize.width, extProps->performanceCounterRegionSize.height })));
+		pushProperty2(extension, "rowStrideAlignment", QVariant(extProps->rowStrideAlignment));
+		pushProperty2(extension, "regionAlignment", QVariant(extProps->regionAlignment));
+		pushProperty2(extension, "identityTransformOrder", QVariant(bool(extProps->identityTransformOrder)));
+		delete extProps;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
@@ -1627,6 +1640,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineOpacityMicromap", extFeatures->pipelineOpacityMicromap);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_ARM_performance_counters_by_region")) {
+		const char* extension("VK_ARM_performance_counters_by_region");
+		VkPhysicalDevicePerformanceCountersByRegionFeaturesARM* extFeatures = new VkPhysicalDevicePerformanceCountersByRegionFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "performanceCountersByRegion", extFeatures->performanceCountersByRegion);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_ARM_format_pack")) {
