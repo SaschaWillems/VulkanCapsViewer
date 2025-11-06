@@ -44,8 +44,10 @@
 #include <QWindow>
 #include <QApplication>
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-#include <QVulkanInstance>
-#include <QVulkanWindow>
+#include <QJniEnvironment>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <QtCore/private/qandroidextras_p.h>
 #endif
 #include <qnamespace.h>
 #include <assert.h>
@@ -761,18 +763,57 @@ bool VulkanCapsViewer::initVulkan()
 #endif
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-    if (!vulkanContext.surface &&
-        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
-                  VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
-    {
+    if (!vulkanContext.surface && std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable)) {
         vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
-        QVulkanInstance instance;
-        instance.setVkInstance(vulkanContext.instance);
-        instance.create();
-        QVulkanWindow* vWindow = new QVulkanWindow;
-        vWindow->setVulkanInstance(&instance);
-        vWindow->showMinimized();
-        vulkanContext.surface = QVulkanInstance::surfaceForWindow(vWindow);
+
+        // Get a native window via JNI
+        // Qt6 does have it's own Vulkan classes, but they don't work reliable enough
+        // Note: Purely based on countless hours of trial-and-error, need to check on other devices
+
+        // Get window
+        QJniObject activity = QNativeInterface::QAndroidApplication::context();
+        QJniObject window;
+        if (activity.isValid())
+        {
+            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+        }
+
+        if (window.isValid())
+        {
+            // Get a surface texture
+            QJniObject surfaceTexture = QJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
+            qDebug() << surfaceTexture.isValid();
+
+            // Get a surface based on the texture
+            QJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
+            qDebug() << surface.isValid();
+
+            if (surfaceTexture.isValid())
+            {
+                // Create a native window from our surface that can be used to create the Vulkan surface
+                QJniEnvironment qjniEnv;
+                nativeWindow = ANativeWindow_fromSurface(qjniEnv.jniEnv(), surface.object());
+            }
+        }
+
+        if (nativeWindow)
+        {
+            VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.window = nativeWindow;
+            surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
+        }
+
+
+        //QVulkanInstance instance;
+        //instance.setVkInstance(vulkanContext.instance);
+        //instance.create();
+//        QVulkanWindow* vWindow = new QVulkanWindow;
+//        vWindow->setVulkanInstance(&instance);
+        //QWindow* win = this->windowHandle();
+        //vWindow->showMinimized();
+//        vulkanContext.surface = QVulkanInstance::surfaceForWindow(vWindow);
+        //vulkanContext.surface = QVulkanInstance::surfaceForWindow(win);
         if (vulkanContext.surface == VK_NULL_HANDLE) {
             qFatal() << "Could not get a valid surface!";
         }
