@@ -20,7 +20,7 @@
 *
 */
 
-#include "vulkandatabase.h"
+#include "vulkanDatabase.h"
 #include <QNetworkProxy>
 #include <sstream>
 #include <string>

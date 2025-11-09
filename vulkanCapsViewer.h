@@ -33,7 +33,7 @@
 #include <vector>
 
 #include "vulkanDeviceInfo.h"
-#include "vulkandatabase.h"
+#include "vulkanDatabase.h"
 #include "vulkanandroid.h"
 #include "VulkanContext.h"
 #include "CustomFilterProxyModel.h"
