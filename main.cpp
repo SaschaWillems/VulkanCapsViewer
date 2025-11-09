@@ -18,7 +18,7 @@
 * 
 */
 
-#include "vulkancapsviewer.h"
+#include "vulkanCapsViewer.h"
 #include <QtWidgets/QApplication>
 #include <QDebug>
 #include <QCommandLineParser>

@@ -18,7 +18,7 @@
 *
 */
 
-#include "vulkancapsviewer.h"
+#include "vulkanCapsViewer.h"
 #include "vulkanresources.h"
 #include <typeinfo>
 #include <sstream>
