@@ -1933,7 +1933,7 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     if (!device.surfaceInfo.formats.empty())
     {
         uint32_t index = 0;
-        for (auto surfaceFormat : device.surfaceInfo.formats)
+        for (auto& surfaceFormat : device.surfaceInfo.formats)
         {
             QTreeWidgetItem *formatItem = addTreeItem(formatsItem, "Surface format " + std::to_string(index), "");
             addTreeItem(formatItem, "Format", (formatString(surfaceFormat.format)));
