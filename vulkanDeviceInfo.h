@@ -40,7 +40,7 @@
 #include <QDebug>
 
 #include "vulkan/vulkan.h"
-#include "vulkanresources.h"
+#include "vulkanResources.h"
 #include "vulkanDeviceInfoExtensions.h"
 #include "vulkanContext.h"
 

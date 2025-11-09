@@ -19,7 +19,7 @@
 */
 
 #include "vulkanCapsViewer.h"
-#include "vulkanresources.h"
+#include "vulkanResources.h"
 #include <typeinfo>
 #include <sstream>
 #include <iomanip>
