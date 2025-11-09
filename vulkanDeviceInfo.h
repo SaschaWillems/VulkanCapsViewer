@@ -41,7 +41,7 @@
 
 #include "vulkan/vulkan.h"
 #include "vulkanresources.h"
-#include "VulkanDeviceInfoExtensions.h"
+#include "vulkanDeviceInfoExtensions.h"
 #include "vulkanContext.h"
 
 #ifdef __ANDROID__
