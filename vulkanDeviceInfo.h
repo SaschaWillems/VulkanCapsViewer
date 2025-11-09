@@ -41,7 +41,6 @@
 
 #include "vulkan/vulkan.h"
 #include "vulkanresources.h"
-#include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
 #include "VulkanContext.h"
 
@@ -86,6 +85,16 @@ struct VulkanFormatInfo
     VkFormat format;
     VkFormatProperties properties;
     bool supported;
+};
+
+struct VulkanSurfaceInfo
+{
+    bool validSurface = false;
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkPresentModeKHR> presentModes;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::string surfaceExtension;
+    void get(VkPhysicalDevice device, VkSurfaceKHR surface);
 };
 
 class VulkanDeviceInfo: public VulkanDeviceInfoExtensions

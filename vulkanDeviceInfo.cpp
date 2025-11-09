@@ -27,6 +27,34 @@ std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
     return layers;
 }
 
+void VulkanSurfaceInfo::get(VkPhysicalDevice device, VkSurfaceKHR surface)
+{
+    if (!validSurface) {
+        return;
+    }
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
+    // Present modes
+    uint32_t presentModeCount;
+    if (vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr) == VK_SUCCESS)
+    {
+        presentModes.resize(presentModeCount);
+        if (presentModeCount > 0)
+        {
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+        }
+    }
+    // Surface formats
+    uint32_t surfaceFormatCount;
+    if (vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr) == VK_SUCCESS)
+    {
+        formats.resize(surfaceFormatCount);
+        if (surfaceFormatCount > 0)
+        {
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
+        }
+    }
+}
+
 void VulkanDeviceInfo::readExtensions()
 {
     assert(device != NULL);

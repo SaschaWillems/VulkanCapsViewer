@@ -20,7 +20,6 @@
 
 #include "vulkancapsviewer.h"
 #include "vulkanresources.h"
-#include "vulkansurfaceinfo.hpp"
 #include <typeinfo>
 #include <sstream>
 #include <iomanip>

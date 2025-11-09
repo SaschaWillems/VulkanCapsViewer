@@ -125,9 +125,6 @@
     <QtMoc Include="vulkandatabase.h">
       <Filter>Header Files</Filter>
     </QtMoc>
-    <ClInclude Include="vulkansurfaceinfo.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="makeviewmetal.mm" />
     <ClInclude Include="VulkanContext.h">
       <Filter>Header Files</Filter>

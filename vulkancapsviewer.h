@@ -33,7 +33,6 @@
 #include <vector>
 
 #include "vulkanDeviceInfo.h"
-#include "vulkansurfaceinfo.hpp"
 #include "vulkandatabase.h"
 #include "vulkanandroid.h"
 #include "VulkanContext.h"

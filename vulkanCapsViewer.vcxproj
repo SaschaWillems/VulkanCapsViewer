@@ -237,7 +237,6 @@
     </QtMoc>
     <QtMoc Include="vulkandatabase.h">
     </QtMoc>
-    <ClInclude Include="vulkansurfaceinfo.hpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="GeneratedFiles\debug\moc_predefs.h.cbt">
