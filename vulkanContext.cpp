@@ -18,6 +18,6 @@
 *
 */
 
-#include "VulkanContext.h"
+#include "vulkanContext.h"
 
 VulkanContext vulkanContext{};
