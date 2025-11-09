@@ -32,7 +32,7 @@
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 #endif
 
 struct Feature2 {

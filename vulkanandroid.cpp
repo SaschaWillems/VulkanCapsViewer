@@ -18,7 +18,7 @@
 *
 */
 
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 
 #ifdef ANDROID
     #include <android/log.h>
