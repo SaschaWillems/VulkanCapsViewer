@@ -41,8 +41,6 @@
 
 #include "vulkan/vulkan.h"
 #include "vulkanresources.h"
-#include "vulkanLayerInfo.hpp"
-#include "vulkanFormatInfo.hpp"
 #include "vulkansurfaceinfo.hpp"
 #include "VulkanDeviceInfoExtensions.h"
 #include "VulkanContext.h"
@@ -75,6 +73,19 @@ struct VulkanProfileInfo
     std::string profileName;
     uint32_t specVersion;
     bool supported = false;
+};
+
+struct VulkanLayerInfo
+{
+    VkLayerProperties properties;
+    std::vector<VkExtensionProperties> extensions;
+};
+
+struct VulkanFormatInfo
+{
+    VkFormat format;
+    VkFormatProperties properties;
+    bool supported;
 };
 
 class VulkanDeviceInfo: public VulkanDeviceInfoExtensions

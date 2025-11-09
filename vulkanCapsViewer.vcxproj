@@ -232,7 +232,6 @@
     <ClInclude Include="treeproxyfilter.h" />
     <ClInclude Include="Vulkan-Headers\include\vulkan\vulkan.h" />
     <ClInclude Include="vulkanDeviceInfo.h" />
-    <ClInclude Include="vulkanLayerInfo.hpp" />
     <ClInclude Include="vulkanandroid.h" />
     <QtMoc Include="vulkancapsviewer.h">
     </QtMoc>

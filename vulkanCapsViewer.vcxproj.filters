@@ -116,9 +116,6 @@
     <ClInclude Include="vulkanDeviceInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="vulkanLayerInfo.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="vulkanandroid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
