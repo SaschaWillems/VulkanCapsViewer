@@ -42,7 +42,7 @@
 #include "vulkan/vulkan.h"
 #include "vulkanresources.h"
 #include "VulkanDeviceInfoExtensions.h"
-#include "VulkanContext.h"
+#include "vulkanContext.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
