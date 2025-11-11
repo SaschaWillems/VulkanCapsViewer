@@ -109,7 +109,7 @@ OSInfo getOperatingSystem()
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     osInfo.type = 0;
 #endif
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_)
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR)
     osInfo.type = 1;
 #endif
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
@@ -159,7 +159,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     : QMainWindow(parent)
 {
     // Set current working directory to writable document folder
-#if defined(VK_USE_PLATFOROM_IOS_MVK)
+#if defined(VK_USE_PLATFROM_IOS_MVK)
     setWorkingFolderForiOS();
 #endif
 
@@ -1007,10 +1007,10 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     vkGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceToolPropertiesEXT"));
     if (vkGetPhysicalDeviceToolPropertiesEXT) {
         uint32_t numTools;
-        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, nullptr);
+        vkGetPhysicalDeviceToolPropertiesEXT(GPU->device, &numTools, nullptr);
         std::vector<VkPhysicalDeviceToolPropertiesEXT> toolProperties{};
         toolProperties.resize(numTools);
-        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, toolProperties.data());
+        vkGetPhysicalDeviceToolPropertiesEXT(GPU->device, &numTools, toolProperties.data());
         for (auto& toolProps : toolProperties) {
             if (toolProps.purposes & VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT) {
                 qWarning().nospace() << "Found feature modifying tool \"" << toolProps.description << "\" for \"" << GPU->props.deviceName << "\", uploads for this device will be disabled";
