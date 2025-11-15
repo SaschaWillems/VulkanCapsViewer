@@ -21,7 +21,7 @@
  */
 
  /*
-  * Generator for creating the VulkanDeviceInfoExtensions.h/.cpp source files used by the caps viewer to fetch device extensions
+  * Generator for creating the vulkanDeviceInfoExtensions.h/.cpp source files used by the caps viewer to fetch device extensions
   */
 
  class TypeContainer
@@ -280,27 +280,27 @@ class CppBuilder
 
     public function writeHeader(string $file_name, string $output_dir)
     {
-        if (!file_exists('templates/VulkanDeviceInfoExtensions.h')) {
+        if (!file_exists('templates/vulkanDeviceInfoExtensions.h')) {
             echo "Template $file_name does not exist!\n";
             return;
         }
-        $header_source = file_get_contents('templates/VulkanDeviceInfoExtensions.h');
+        $header_source = file_get_contents('templates/vulkanDeviceInfoExtensions.h');
         $header_replace = '';
         foreach ($this->header_functions as $header_func) {
             $header_replace .= "    void $header_func();\n";
         }
         $header_source = str_replace('{{header_functions}}', $header_replace, $header_source);
         $header_source = str_replace('{{VK_HEADER_VERSION}}', $this->vk_header_version, $header_source);
-        file_put_contents("$output_dir/VulkanDeviceInfoExtensions.h", $header_source);
+        file_put_contents("$output_dir/vulkanDeviceInfoExtensions.h", $header_source);
     }
 
     public function writeImplementation(string $file_name, string $output_dir, $extension_container)
     {
-        if (!file_exists('templates/VulkanDeviceInfoExtensions.cpp')) {
+        if (!file_exists('templates/vulkanDeviceInfoExtensions.cpp')) {
             echo "Template $file_name does not exist!\n";
             return;
         }
-        $impl_source = file_get_contents('templates/VulkanDeviceInfoExtensions.cpp');
+        $impl_source = file_get_contents('templates/vulkanDeviceInfoExtensions.cpp');
 
         $fn_calls = array_map(function ($fn) {
             return "    " . $fn . "();";
@@ -333,7 +333,7 @@ class CppBuilder
                 return ($ext->group == $ext_group && $ext->features2);
             });
             if (count($ext_arr) > 0) {
-                $cpp_features_block .= "void VulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
+                $cpp_features_block .= "void vulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
                 $cpp_features_block .= "\tVkPhysicalDeviceFeatures2 deviceFeatures2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
@@ -357,7 +357,7 @@ class CppBuilder
                 return ($ext->group == $ext_group && $ext->properties2);
             });
             if (count($ext_arr) > 0) {
-                $cpp_properties_block .= "void VulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
+                $cpp_properties_block .= "void vulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
                 $cpp_properties_block .= "\tVkPhysicalDeviceProperties2 deviceProps2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
@@ -385,7 +385,7 @@ class CppBuilder
             $impl_source = str_replace('{{implementation_properties2_functions}}', $cpp_properties_block, $impl_source);
         }
 
-        file_put_contents("$output_dir/VulkanDeviceInfoExtensions.cpp", $impl_source);
+        file_put_contents("$output_dir/vulkanDeviceInfoExtensions.cpp", $impl_source);
     }
 }
 
@@ -397,7 +397,7 @@ $output_dir = "..\\";
 if (!is_dir($output_dir)) {
     mkdir($output_dir);
 }
-if (file_exists($output_dir."VulkanDeviceInfoExtensions.cpp")) {
+if (file_exists($output_dir."vulkanDeviceInfoExtensions.cpp")) {
     echo "Warning: Output files will be overwritten\n";
 }
 
@@ -433,8 +433,8 @@ foreach ($ext_groups as $ext_group) {
         $cpp_builder->addHeaderFunction("readPhysicalProperties_$ext_group");
     }
 }
-$cpp_builder->writeHeader("$output_dir/VulkanDeviceInfoExtensions.h", $output_dir);
-$cpp_builder->writeImplementation("$output_dir/VulkanDeviceInfoExtensions.cpp", $output_dir, $extension_container);
+$cpp_builder->writeHeader("$output_dir/vulkanDeviceInfoExtensions.h", $output_dir);
+$cpp_builder->writeImplementation("$output_dir/vulkanDeviceInfoExtensions.cpp", $output_dir, $extension_container);
 
 // Output extension list for changelog
 $extenstion_list_file = $output_dir . "/extensionlist.txt";

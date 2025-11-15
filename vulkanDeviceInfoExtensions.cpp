@@ -19,7 +19,7 @@
 * PURPOSE.  See the GNU LGPL 3.0 for more details.
 */
 
-#include "VulkanDeviceInfoExtensions.h"
+#include "vulkanDeviceInfoExtensions.h"
 
 bool VulkanDeviceInfoExtensions::extensionSupported(const char* extensionName)
 {
@@ -178,6 +178,19 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_ARM() {
 		pushProperty2(extension, "shaderCoreMask", QVariant::fromValue(extProps->shaderCoreMask));
 		pushProperty2(extension, "shaderCoreCount", QVariant(extProps->shaderCoreCount));
 		pushProperty2(extension, "shaderWarpsPerCore", QVariant(extProps->shaderWarpsPerCore));
+		delete extProps;
+	}
+	if (extensionSupported("VK_ARM_performance_counters_by_region")) {
+		const char* extension("VK_ARM_performance_counters_by_region");
+		VkPhysicalDevicePerformanceCountersByRegionPropertiesARM* extProps = new VkPhysicalDevicePerformanceCountersByRegionPropertiesARM{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_PROPERTIES_ARM;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "maxPerRegionPerformanceCounters", QVariant(extProps->maxPerRegionPerformanceCounters));
+		pushProperty2(extension, "performanceCounterRegionSize", QVariant::fromValue(QVariantList({ extProps->performanceCounterRegionSize.width, extProps->performanceCounterRegionSize.height })));
+		pushProperty2(extension, "rowStrideAlignment", QVariant(extProps->rowStrideAlignment));
+		pushProperty2(extension, "regionAlignment", QVariant(extProps->regionAlignment));
+		pushProperty2(extension, "identityTransformOrder", QVariant(bool(extProps->identityTransformOrder)));
 		delete extProps;
 	}
 }
@@ -845,9 +858,9 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 		deviceProps2 = initDeviceProperties2(extProps);
 		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
 		pushProperty2(extension, "driverID", QVariant(extProps->driverID));
-		pushProperty2(extension, "driverName", QVariant(extProps->driverName));
-		pushProperty2(extension, "driverInfo", QVariant(extProps->driverInfo));
-		pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->conformanceVersion)));
+        pushProperty2(extension, "driverName", QString::fromStdString(extProps->driverName)); // This is wrong in json. Why?
+        pushProperty2(extension, "driverInfo", QString::fromStdString(extProps->driverInfo));
+        pushProperty2(extension, "conformanceVersion", QString::fromStdString(vulkanResources::conformanceVersionKHRString(extProps->conformanceVersion)));
 		delete extProps;
 	}
 	if (extensionSupported("VK_KHR_shader_float_controls")) {
@@ -1627,6 +1640,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "pipelineOpacityMicromap", extFeatures->pipelineOpacityMicromap);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_ARM_performance_counters_by_region")) {
+		const char* extension("VK_ARM_performance_counters_by_region");
+		VkPhysicalDevicePerformanceCountersByRegionFeaturesARM* extFeatures = new VkPhysicalDevicePerformanceCountersByRegionFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PERFORMANCE_COUNTERS_BY_REGION_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "performanceCountersByRegion", extFeatures->performanceCountersByRegion);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_ARM_format_pack")) {

@@ -27,12 +27,12 @@
 #include <QVariant>
 
 #include "vulkan/vulkan.h"
-#include "VulkanContext.h"
-#include "vulkanresources.h"
+#include "vulkanContext.h"
+#include "vulkanResources.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 #endif
 
 struct Feature2 {
@@ -91,7 +91,7 @@ private:
     void readPhysicalProperties_VALVE();
 
 public:
-    const uint32_t vkHeaderVersion = 330;
+    const uint32_t vkHeaderVersion = 331;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;

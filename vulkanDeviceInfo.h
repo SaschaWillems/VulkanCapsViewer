@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -40,18 +40,15 @@
 #include <QDebug>
 
 #include "vulkan/vulkan.h"
-#include "vulkanresources.h"
-#include "vulkanLayerInfo.hpp"
-#include "vulkanFormatInfo.hpp"
-#include "vulkansurfaceinfo.hpp"
-#include "VulkanDeviceInfoExtensions.h"
-#include "VulkanContext.h"
+#include "vulkanResources.h"
+#include "vulkanDeviceInfoExtensions.h"
+#include "vulkanContext.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
 #endif
 
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 #if !defined(DISABLE_PROFILES)
 #include "vulkan_profiles.hpp"
 #endif
@@ -75,6 +72,29 @@ struct VulkanProfileInfo
     std::string profileName;
     uint32_t specVersion;
     bool supported = false;
+};
+
+struct VulkanLayerInfo
+{
+    VkLayerProperties properties;
+    std::vector<VkExtensionProperties> extensions;
+};
+
+struct VulkanFormatInfo
+{
+    VkFormat format;
+    VkFormatProperties properties;
+    bool supported;
+};
+
+struct VulkanSurfaceInfo
+{
+    bool validSurface = false;
+    VkSurfaceCapabilitiesKHR capabilities;
+    std::vector<VkPresentModeKHR> presentModes;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::string surfaceExtension;
+    void get(VkPhysicalDevice device, VkSurfaceKHR surface);
 };
 
 class VulkanDeviceInfo: public VulkanDeviceInfoExtensions

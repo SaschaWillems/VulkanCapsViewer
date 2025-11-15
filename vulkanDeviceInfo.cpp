@@ -27,6 +27,34 @@ std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
     return layers;
 }
 
+void VulkanSurfaceInfo::get(VkPhysicalDevice device, VkSurfaceKHR surface)
+{
+    if (!validSurface) {
+        return;
+    }
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
+    // Present modes
+    uint32_t presentModeCount;
+    if (vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr) == VK_SUCCESS)
+    {
+        presentModes.resize(presentModeCount);
+        if (presentModeCount > 0)
+        {
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+        }
+    }
+    // Surface formats
+    uint32_t surfaceFormatCount;
+    if (vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr) == VK_SUCCESS)
+    {
+        formats.resize(surfaceFormatCount);
+        if (surfaceFormatCount > 0)
+        {
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
+        }
+    }
+}
+
 void VulkanDeviceInfo::readExtensions()
 {
     assert(device != NULL);
@@ -176,7 +204,6 @@ std::string VulkanDeviceInfo::getDriverVersion()
     }
     else
     {
-       // todo : Add mappings for other vendors
        return vulkanResources::versionToString(props.driverVersion);
     }
 }
@@ -207,7 +234,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
     qInfo().nospace() << "Device \"" << props.deviceName << "\"";
 
     properties.clear();
-    properties["deviceName"] = props.deviceName;
+    properties["deviceName"] = QString::fromStdString(props.deviceName);
     properties["driverVersion"] = props.driverVersion;
     properties["driverVersionText"] = QString::fromStdString(getDriverVersion());
     properties["apiVersion"] = props.apiVersion;
@@ -291,8 +318,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
             core12Properties.clear();
             core12Properties["driverID"] = coreProps12.driverID;
-            core12Properties["driverName"] = QString(coreProps12.driverName);
-            core12Properties["driverInfo"] = QString(coreProps12.driverInfo);
+            core12Properties["driverName"] = QString::fromStdString(coreProps12.driverName);
+            core12Properties["driverInfo"] = QString::fromStdString(coreProps12.driverInfo);
             core12Properties["conformanceVersion"] =  QString::fromStdString(vulkanResources::conformanceVersionKHRString(coreProps12.conformanceVersion));
             core12Properties["denormBehaviorIndependence"] = coreProps12.denormBehaviorIndependence;
             core12Properties["roundingModeIndependence"] = coreProps12.roundingModeIndependence;
@@ -1125,8 +1152,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);        
-        if (property2.value.canConvert(QMetaType::QVariantList)) {
+        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);
+        // This fixes the one remaining problem in the report .json
+        if (property2.value.metaType().id() == QMetaType::QVariantList) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {
             jsonProperty2["value"] = property2.value.toString();
