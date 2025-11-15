@@ -1,7 +1,7 @@
 <?php
 
 function download($remote, $local) {
-    $remote_file = fopen("https://www.vulkan.gpuinfo.org/downloads/automated/$remote", 'r');
+    $remote_file = fopen("https://vulkan.gpuinfo.org/downloads/automated/$remote", 'r');
     if ($remote_file) {
         file_put_contents($local, $remote_file);
         fclose($remote_file);
@@ -10,7 +10,7 @@ function download($remote, $local) {
     }
 }
 
-$version = "4.01";
+$version = "4.10";
 $name_template = "vulkancapsviewer_".$version."_%s";
 
 echo "Starting downloads for $name_template ...".PHP_EOL;
