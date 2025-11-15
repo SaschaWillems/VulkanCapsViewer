@@ -116,7 +116,7 @@ jobs:
           wget -c -nv "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-${{matrix.cfg.arch}}.AppImage"
           chmod +x linuxdeploy*.AppImage
           ./linuxdeploy-${{matrix.cfg.arch}}.AppImage --appdir=appdir --output=appimage -e ./vulkanCapsViewer -d vulkanCapsViewer.desktop -i ./vulkanCapsViewer.png -p qt
-          mv Vulkan_Caps_Viewer-${{matrix.cfg.arch}}.AppImage Vulkan_Caps_Viewer-X11-${{matrix.cfg.arch}}.AppImage
+          mv Vulkan_Caps_Viewer-${{matrix.cfg.arch}}.AppImage Vulkan_Caps_Viewer-wayland-${{matrix.cfg.arch}}.AppImage
       - name: Upload
         if: github.ref == 'refs/heads/master'
         run: curl -T Vulkan_Caps_Viewer-wayland-${{matrix.cfg.arch}}.AppImage ftp://${{ secrets.FTP_USER_NAME }}:${{ secrets.FTP_PASS }}@${{ secrets.FTP_SERVER_NAME }}
