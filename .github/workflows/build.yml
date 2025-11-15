@@ -199,6 +199,8 @@ jobs:
           windeployqt.exe release --no-opengl-sw --no-translations --no-system-d3d-compiler --no-system-d3d-compiler --no-compiler-runtime    
           Remove-Item release\*.obj
           Remove-Item release\*.res
+          Remove-Item release\dxcompiler.dll
+          Remove-Item release\dxil.dll
           Compress-Archive -Path release\ -DestinationPath Vulkan_Caps_Viewer-windows.zip
       - name: Upload
         if: github.ref == 'refs/heads/master'
