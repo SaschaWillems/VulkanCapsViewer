@@ -688,6 +688,16 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_EXT() {
 		pushProperty2(extension, "deviceGeneratedCommandsMultiDrawIndirectCount", QVariant(bool(extProps->deviceGeneratedCommandsMultiDrawIndirectCount)));
 		delete extProps;
 	}
+	if (extensionSupported("VK_EXT_ray_tracing_invocation_reorder")) {
+		const char* extension("VK_EXT_ray_tracing_invocation_reorder");
+		VkPhysicalDeviceRayTracingInvocationReorderPropertiesEXT* extProps = new VkPhysicalDeviceRayTracingInvocationReorderPropertiesEXT{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_PROPERTIES_EXT;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "rayTracingInvocationReorderReorderingHint", QVariant(extProps->rayTracingInvocationReorderReorderingHint));
+		pushProperty2(extension, "maxShaderBindingTableRecordIndex", QVariant(extProps->maxShaderBindingTableRecordIndex));
+		delete extProps;
+	}
 	if (extensionSupported("VK_EXT_fragment_density_map_offset")) {
 		const char* extension("VK_EXT_fragment_density_map_offset");
 		VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT* extProps = new VkPhysicalDeviceFragmentDensityMapOffsetPropertiesEXT{};
@@ -2569,6 +2579,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "dynamicGeneratedPipelineLayout", extFeatures->dynamicGeneratedPipelineLayout);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_ray_tracing_invocation_reorder")) {
+		const char* extension("VK_EXT_ray_tracing_invocation_reorder");
+		VkPhysicalDeviceRayTracingInvocationReorderFeaturesEXT* extFeatures = new VkPhysicalDeviceRayTracingInvocationReorderFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_INVOCATION_REORDER_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "rayTracingInvocationReorder", extFeatures->rayTracingInvocationReorder);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_EXT_depth_clamp_control")) {
 		const char* extension("VK_EXT_depth_clamp_control");
 		VkPhysicalDeviceDepthClampControlFeaturesEXT* extFeatures = new VkPhysicalDeviceDepthClampControlFeaturesEXT{};
@@ -2612,6 +2631,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shader64BitIndexing", extFeatures->shader64BitIndexing);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_custom_resolve")) {
+		const char* extension("VK_EXT_custom_resolve");
+		VkPhysicalDeviceCustomResolveFeaturesEXT* extFeatures = new VkPhysicalDeviceCustomResolveFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_CUSTOM_RESOLVE_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "customResolve", extFeatures->customResolve);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_EXT_shader_uniform_buffer_unsized_array")) {
@@ -3907,6 +3935,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "tileMemoryHeap", extFeatures->tileMemoryHeap);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_QCOM_data_graph_model")) {
+		const char* extension("VK_QCOM_data_graph_model");
+		VkPhysicalDeviceDataGraphModelFeaturesQCOM* extFeatures = new VkPhysicalDeviceDataGraphModelFeaturesQCOM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_MODEL_FEATURES_QCOM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "dataGraphModel", extFeatures->dataGraphModel);
 		delete extFeatures;
 	}
 }

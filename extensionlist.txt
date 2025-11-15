@@ -116,11 +116,13 @@ VK_EXT_memory_decompression
 VK_EXT_shader_replicated_composites
 VK_EXT_shader_float8
 VK_EXT_device_generated_commands
+VK_EXT_ray_tracing_invocation_reorder
 VK_EXT_depth_clamp_control
 VK_EXT_vertex_attribute_robustness
 VK_EXT_fragment_density_map_offset
 VK_EXT_zero_initialize_device_memory
 VK_EXT_shader_64bit_indexing
+VK_EXT_custom_resolve
 VK_EXT_shader_uniform_buffer_unsized_array
 HUAWEI
 VK_HUAWEI_subpass_shading
@@ -276,6 +278,7 @@ VK_QCOM_filter_cubic_weights
 VK_QCOM_ycbcr_degamma
 VK_QCOM_filter_cubic_clamp
 VK_QCOM_tile_memory_heap
+VK_QCOM_data_graph_model
 QNX
 VK_QNX_external_memory_screen_buffer
 SEC
