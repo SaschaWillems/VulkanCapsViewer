@@ -55,11 +55,11 @@ bool VulkanDatabase::checkServerConnection(QString& message)
 /// </summary>
 /// <param name="url">url for the http get request</param>
 /// <returns>string of the http get request or empty string in case of failure</returns>
-string VulkanDatabase::httpGet(string url)
+QString VulkanDatabase::httpGet(QString url)
 {
 	manager = new QNetworkAccessManager(NULL);
 
-	QUrl qurl(QString::fromStdString(url));
+	QUrl qurl(url);
 
     if (username != "" && password != "")
     {
@@ -78,7 +78,7 @@ string VulkanDatabase::httpGet(string url)
 		QByteArray bytes = reply->readAll();
 		QString replyStr(bytes);
 		delete(manager);
-		return replyStr.toStdString();
+		return replyStr;
 	}
 	else
 	{
@@ -96,32 +96,29 @@ string VulkanDatabase::httpGet(string url)
 /// </summary>
 /// <param name="url">Url (or string) to be encoded</param>
 /// <returns></returns>
-string VulkanDatabase::encodeUrl(string url)
-{
-	QString urlStr(QString::fromStdString(url));
-	urlStr.replace("+", "%2B"); 
-	return urlStr.toStdString();
+QString VulkanDatabase::encodeUrl(QString url)
+{	
+	return url.replace("+", "%2B");
 }
 
 int VulkanDatabase::getReportId(VulkanDeviceInfo device)
 {
-	string reply;
-	stringstream urlss;
-	urlss << databaseUrl.toStdString() << "api/v3/getreportid.php?"
-		<< "devicename=" << device.props.deviceName
-        << "&driverversion=" << device.getDriverVersion()
-		<< "&osname=" << device.os.name
-		<< "&osversion=" << device.os.version
-        << "&osarchitecture=" << device.os.architecture
-        << "&apiversion=" << vulkanResources::versionToString(device.props.apiVersion);
+	QString reply;
+	QString url = databaseUrl + "api/v3/getreportid.php?"
+		+ "devicename=" + QString::fromUtf8(device.props.deviceName)
+        + "&driverversion=" + QString::fromStdString(device.getDriverVersion())
+		+ "&osname=" + QString::fromStdString(device.os.name)
+		+ "&osversion=" + QString::fromStdString(device.os.version)
+        + "&osarchitecture=" + QString::fromStdString(device.os.architecture)
+        + "&apiversion=" + QString::fromStdString(vulkanResources::versionToString(device.props.apiVersion));
 #ifdef __ANDROID__
 	// Compare against platform info on Android, as driver version and device name (which is just the GPU name on android) are not sufficient to identify a single report
-	urlss << "&androidproductmodel=" << device.platformdetails["android.ProductModel"];
-	urlss << "&androidproductmanufacturer=" << device.platformdetails["android.ProductManufacturer"];
+	url += "&androidproductmodel=" + QString::fromStdString(device.platformdetails["android.ProductModel"]);
+	url += "&androidproductmanufacturer=" + QString::fromStdString(device.platformdetails["android.ProductManufacturer"]);
 #endif
-	string url = encodeUrl(urlss.str());
+	url = encodeUrl(url);
 	reply = httpGet(url);
-	return (!reply.empty()) ? atoi(reply.c_str()) : -1;
+	return (!reply.isEmpty()) ? reply.toInt() : -1;
 }
 
 /// Checks if the report is present in the online database
