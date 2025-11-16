@@ -339,7 +339,7 @@ class CppBuilder
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
                 }
                 if ($ext_group == 'ANDROID') {
-                    $cpp_features_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
+                    $cpp_features_block .= "#if defined(VK_USE_PLATFORM_ANDROID_KHR)\n";
                 }                
                 if ($ext_group == 'OHOS') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";

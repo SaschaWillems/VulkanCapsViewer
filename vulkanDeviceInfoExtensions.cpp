@@ -93,16 +93,7 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_AMDX() {
 }
 void VulkanDeviceInfoExtensions::readPhysicalProperties_ANDROID() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
-#if defined(VK_USE_PLATFORM_ANDROID)
-	if (extensionSupported("VK_ANDROID_native_buffer")) {
-		const char* extension("VK_ANDROID_native_buffer");
-		VkPhysicalDevicePresentationPropertiesANDROID* extProps = new VkPhysicalDevicePresentationPropertiesANDROID{};
-		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENTATION_PROPERTIES_ANDROID;
-		deviceProps2 = initDeviceProperties2(extProps);
-		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-		pushProperty2(extension, "sharedImage", QVariant(bool(extProps->sharedImage)));
-		delete extProps;
-	}
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
 		VkPhysicalDeviceExternalFormatResolvePropertiesANDROID* extProps = new VkPhysicalDeviceExternalFormatResolvePropertiesANDROID{};
