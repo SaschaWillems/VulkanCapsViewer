@@ -32,8 +32,6 @@
 
 #include "vulkanDeviceInfo.h"
 
-using namespace std;
-
 class VulkanDatabase :
 	public QObject
 {
