@@ -8,7 +8,6 @@ AMDX
 VK_AMDX_shader_enqueue
 VK_AMDX_dense_geometry_format
 ANDROID
-VK_ANDROID_native_buffer
 VK_ANDROID_external_format_resolve
 ARM
 VK_ARM_rasterization_order_attachment_access

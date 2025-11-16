@@ -118,8 +118,8 @@ class ExtensionContainer
     function __construct($xml, $typecontainer)
     {
         foreach ($xml->extensions->extension as $ext_node) {
-            // Skip Vulkan SC only extensions
-            if ($ext_node['supported'] == 'vulkansc') {
+            // Skip Vulkan SC only and disabled extensions
+            if (($ext_node['supported'] == 'vulkansc') || ($ext_node['supported'] == 'disabled')) {
                 continue;
             }
             $features2_node = null;
@@ -363,7 +363,7 @@ class CppBuilder
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
                 }
                 if ($ext_group == 'ANDROID') {
-                    $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_ANDROID)\n";
+                    $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_ANDROID_KHR)\n";
                 }
                 if ($ext_group == 'OHOS') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";
