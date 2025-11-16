@@ -75,8 +75,6 @@ extern "C" void *makeViewMetalCompatible(void* handle);
 #endif
 #endif
 
-using std::to_string;
-
 const QString VulkanCapsViewer::version = "4.10";
 const QString VulkanCapsViewer::reportVersion = "4.1";
 
@@ -350,7 +348,7 @@ void VulkanCapsViewer::slotDisplayOnlineReport()
 
 std::string apiVersionText(uint32_t apiVersion)
 {
-    return to_string(VK_VERSION_MAJOR(apiVersion)) + "." + to_string(VK_VERSION_MINOR(apiVersion)) + "." + to_string(VK_VERSION_PATCH(apiVersion));
+    return std::to_string(VK_VERSION_MAJOR(apiVersion)) + "." + std::to_string(VK_VERSION_MINOR(apiVersion)) + "." + std::to_string(VK_VERSION_PATCH(apiVersion));
 }
 
 void VulkanCapsViewer::slotAbout()
@@ -362,7 +360,7 @@ void VulkanCapsViewer::slotAbout()
         "For usage and distribution details refer to the readme<br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
         "Vulkan instance API version: " + apiVersionText(instanceApiVersion) + "<br/>"
-        "Compiled against Vulkan header version: " + to_string(VK_HEADER_VERSION) + "<br/><br/>";
+        "Compiled against Vulkan header version: " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>";
     aboutText << "</p>";
     QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
@@ -1052,7 +1050,7 @@ void VulkanCapsViewer::getGPUs()
     ui.comboBoxGPU->clear();
     for (auto& GPU : vulkanGPUs)
     {
-        QString deviceName = QString::fromStdString("[GPU" + to_string(GPU.id) + "] " + GPU.props.deviceName);
+        QString deviceName = QString::fromStdString("[GPU" + std::to_string(GPU.id) + "] " + GPU.props.deviceName);
         ui.comboBoxGPU->addItem(deviceName);
     }
 
@@ -1531,7 +1529,7 @@ void VulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
         memoryHeapItem->setFont(0, boldFont);
 
         const VkMemoryHeap heapType = device->memoryProperties.memoryHeaps[i];
-        addTreeItem(memoryHeapItem, "Device size", to_string(heapType.size));
+        addTreeItem(memoryHeapItem, "Device size", std::to_string(heapType.size));
         addTreeItemFlags(memoryHeapItem, "Flags", heapType.flags, memoryHeapBitString)->setExpanded(true);
 
         // Add memory types belonging to this heap
@@ -1670,7 +1668,7 @@ void VulkanCapsViewer::displayInstanceLayers()
         treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
         treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
         treeItem->setText(2, QString::fromStdString(vulkanResources::revisionToString(layer.properties.implementationVersion)));
-        treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
+        treeItem->setText(3, QString::fromStdString(std::to_string(layer.extensions.size())));
         treeItem->setText(4, layer.properties.description);
         for (auto& layerExt : layer.extensions) {
             addTreeItem(treeItem, layerExt.extensionName, vulkanResources::revisionToString(layerExt.specVersion));
@@ -1870,11 +1868,11 @@ void VulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
         // Support flags
         addTreeItemFlags(queueItem, "Flags", queueFamily.properties.queueFlags, vulkanResources::queueBitString)->setExpanded(true);
         // Queue properties
-        addTreeItem(queueItem, "queueCount", to_string(queueFamily.properties.queueCount));
-        addTreeItem(queueItem, "timestampValidBits", to_string(queueFamily.properties.timestampValidBits));
-        addTreeItem(queueItem, "minImageTransferGranularity.width", to_string(queueFamily.properties.minImageTransferGranularity.width));
-        addTreeItem(queueItem, "minImageTransferGranularity.height", to_string(queueFamily.properties.minImageTransferGranularity.height));
-        addTreeItem(queueItem, "minImageTransferGranularity.depth", to_string(queueFamily.properties.minImageTransferGranularity.depth));
+        addTreeItem(queueItem, "queueCount", std::to_string(queueFamily.properties.queueCount));
+        addTreeItem(queueItem, "timestampValidBits", std::to_string(queueFamily.properties.timestampValidBits));
+        addTreeItem(queueItem, "minImageTransferGranularity.width", std::to_string(queueFamily.properties.minImageTransferGranularity.width));
+        addTreeItem(queueItem, "minImageTransferGranularity.height", std::to_string(queueFamily.properties.minImageTransferGranularity.height));
+        addTreeItem(queueItem, "minImageTransferGranularity.depth", std::to_string(queueFamily.properties.minImageTransferGranularity.depth));
         addTreeItemVkBool32(queueItem, "Supports presentation", queueFamily.supportsPresent);
         queueItem->setExpanded(true);
     }
@@ -1905,9 +1903,9 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     surfaceCapsItem->setFont(0, boldFont);
 
     VkSurfaceCapabilitiesKHR surfaceCaps = device.surfaceInfo.capabilities;
-    addTreeItem(surfaceCapsItem, "minImageCount", to_string(surfaceCaps.minImageCount));
-    addTreeItem(surfaceCapsItem, "maxImageCount", to_string(surfaceCaps.maxImageCount));
-    addTreeItem(surfaceCapsItem, "maxImageArrayLayers", to_string(surfaceCaps.maxImageArrayLayers));
+    addTreeItem(surfaceCapsItem, "minImageCount", std::to_string(surfaceCaps.minImageCount));
+    addTreeItem(surfaceCapsItem, "maxImageCount", std::to_string(surfaceCaps.maxImageCount));
+    addTreeItem(surfaceCapsItem, "maxImageArrayLayers", std::to_string(surfaceCaps.maxImageArrayLayers));
     addTreeItemFlags(surfaceCapsItem, "Supported usage flags", surfaceCaps.supportedUsageFlags, imageUsageBitString)->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Supported transforms", surfaceCaps.supportedTransforms, surfaceTransformBitString) ->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Composite alpha flags", surfaceCaps.supportedCompositeAlpha, compositeAlphaBitString) ->setExpanded(true);

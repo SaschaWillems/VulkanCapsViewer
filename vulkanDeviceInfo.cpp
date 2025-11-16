@@ -726,7 +726,6 @@ void VulkanDeviceInfo::readPhysicalFeatures()
 void VulkanDeviceInfo::readPhysicalLimits()
 {
     qInfo() << "Reading limits";
-    using vulkanResources::toHexQString;
 
     limits.clear();
     limits["maxImageDimension1D"] = props.limits.maxImageDimension1D;
@@ -740,8 +739,8 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["maxPushConstantsSize"] = props.limits.maxPushConstantsSize;
     limits["maxMemoryAllocationCount"] = props.limits.maxMemoryAllocationCount;
     limits["maxSamplerAllocationCount"] = props.limits.maxSamplerAllocationCount;
-    limits["bufferImageGranularity"] = toHexQString(props.limits.bufferImageGranularity);
-    limits["sparseAddressSpaceSize"] = toHexQString(props.limits.sparseAddressSpaceSize);
+    limits["bufferImageGranularity"] = vulkanResources::toHexQString(props.limits.bufferImageGranularity);
+    limits["sparseAddressSpaceSize"] = vulkanResources::toHexQString(props.limits.sparseAddressSpaceSize);
     limits["maxBoundDescriptorSets"] = props.limits.maxBoundDescriptorSets;
     limits["maxPerStageDescriptorSamplers"] = props.limits.maxPerStageDescriptorSamplers;
     limits["maxPerStageDescriptorUniformBuffers"] = props.limits.maxPerStageDescriptorUniformBuffers;
@@ -795,10 +794,10 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["maxViewportDimensions"] = QVariant::fromValue(QVariantList({ props.limits.maxViewportDimensions[0], props.limits.maxViewportDimensions[1] }));
     limits["viewportBoundsRange"] = QVariant::fromValue(QVariantList({ props.limits.viewportBoundsRange[0], props.limits.viewportBoundsRange[1] }));
     limits["viewportSubPixelBits"] = props.limits.viewportSubPixelBits;
-    limits["minMemoryMapAlignment"] = toHexQString(props.limits.minMemoryMapAlignment);
-    limits["minTexelBufferOffsetAlignment"] = toHexQString(props.limits.minTexelBufferOffsetAlignment);
-    limits["minUniformBufferOffsetAlignment"] = toHexQString(props.limits.minUniformBufferOffsetAlignment);
-    limits["minStorageBufferOffsetAlignment"] = toHexQString(props.limits.minStorageBufferOffsetAlignment);
+    limits["minMemoryMapAlignment"] = vulkanResources::toHexQString(props.limits.minMemoryMapAlignment);
+    limits["minTexelBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minTexelBufferOffsetAlignment);
+    limits["minUniformBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minUniformBufferOffsetAlignment);
+    limits["minStorageBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minStorageBufferOffsetAlignment);
     limits["minTexelOffset"] = props.limits.minTexelOffset;
     limits["maxTexelOffset"] = props.limits.maxTexelOffset;
     limits["minTexelGatherOffset"] = props.limits.minTexelGatherOffset;
@@ -832,9 +831,9 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["lineWidthGranularity"] = props.limits.lineWidthGranularity;
     limits["strictLines"] = props.limits.strictLines;
     limits["standardSampleLocations"] = props.limits.standardSampleLocations;
-    limits["optimalBufferCopyOffsetAlignment"] = toHexQString(props.limits.optimalBufferCopyOffsetAlignment);
-    limits["optimalBufferCopyRowPitchAlignment"] = toHexQString(props.limits.optimalBufferCopyRowPitchAlignment);
-    limits["nonCoherentAtomSize"] = toHexQString(props.limits.nonCoherentAtomSize);
+    limits["optimalBufferCopyOffsetAlignment"] = vulkanResources::toHexQString(props.limits.optimalBufferCopyOffsetAlignment);
+    limits["optimalBufferCopyRowPitchAlignment"] = vulkanResources::toHexQString(props.limits.optimalBufferCopyRowPitchAlignment);
+    limits["nonCoherentAtomSize"] = vulkanResources::toHexQString(props.limits.nonCoherentAtomSize);
 }
 
 void VulkanDeviceInfo::readPhysicalMemoryProperties()
