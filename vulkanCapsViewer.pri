@@ -6,14 +6,12 @@ HEADERS += ./settings.h \
     $$PWD/VulkanDeviceInfoExtensions.h \
     $$PWD/appleutils.mm \
     ./treeproxyfilter.h \
-    ./vulkanLayerInfo.hpp \
-    ./vulkancapsviewer.h \
+    ./vulkanCapsViewer.h \
     ./submitDialog.h \
-    ./vulkandatabase.h \
+    ./vulkanDatabase.h \
     ./settingsDialog.h \
     $$PWD/Vulkan-Headers/include/vulkan/vulkan.h \
-    $$PWD/vulkanandroid.h \
-    $$PWD/vulkansurfaceinfo.hpp \
+    $$PWD/vulkanAndroid.h \
     $$PWD/vulkanDeviceInfo.h \
     $$PWD/VulkanContext.h
 SOURCES += ./main.cpp \
@@ -23,10 +21,10 @@ SOURCES += ./main.cpp \
     ./settingsDialog.cpp \
     ./submitDialog.cpp \
     ./treeproxyfilter.cpp \
-    ./vulkancapsviewer.cpp \
-    ./vulkandatabase.cpp \
-    $$PWD/vulkanandroid.cpp \
+    ./vulkanCapsViewer.cpp \
+    ./vulkanDatabase.cpp \
+    $$PWD/vulkanAndroid.cpp \
     $$PWD/vulkanDeviceInfo.cpp \
-    $$PWD/VulkanContext.cpp
+    $$PWD/vulkanContext.cpp
 FORMS += ./vulkancapsviewer.ui
 RESOURCES += vulkancapsviewer.qrc
