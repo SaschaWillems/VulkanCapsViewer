@@ -1555,7 +1555,7 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_AMDX() {
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_ANDROID() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
-#if defined(VK_USE_PLATFORM_ANDROID)
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
 	if (extensionSupported("VK_ANDROID_external_format_resolve")) {
 		const char* extension("VK_ANDROID_external_format_resolve");
 		VkPhysicalDeviceExternalFormatResolveFeaturesANDROID* extFeatures = new VkPhysicalDeviceExternalFormatResolveFeaturesANDROID{};

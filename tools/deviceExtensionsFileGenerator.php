@@ -127,7 +127,7 @@ class ExtensionContainer
             // We're only interested in extensions with property or feature types
             foreach ($ext_node->require as $require) {
                 foreach ($require as $requirement) {
-                    if (strcasecmp($requirement->getName(), 'type') !== null) {
+                    if (strcasecmp($requirement->getName(), 'type') !== false) {
                         $ft2 = $typecontainer->getFeatures2Type((string)$requirement['name']);
                         if (!$features2_node && $ft2) {
                             $features2_node = $ft2;
@@ -437,18 +437,18 @@ $cpp_builder->writeHeader("$output_dir/vulkanDeviceInfoExtensions.h", $output_di
 $cpp_builder->writeImplementation("$output_dir/vulkanDeviceInfoExtensions.cpp", $output_dir, $extension_container);
 
 // Output extension list for changelog
-$extenstion_list_file = $output_dir . "/extensionlist.txt";
-if (file_exists($extenstion_list_file)) {
-    unlink($extenstion_list_file);
+$extension_list_file = $output_dir . "/extensionlist.txt";
+if (file_exists($extension_list_file)) {
+    unlink($extension_list_file);
 }
 foreach ($ext_groups as $ext_group) {
     $ext_arr = array_filter($extension_container->extensions, function ($ext) use ($ext_group) {
         return ($ext->group == $ext_group && ($ext->features2 || $ext->properties2));
     });
     if (count($ext_arr) > 0) {
-        file_put_contents($extenstion_list_file, "$ext_group\n", FILE_APPEND);
+        file_put_contents($extension_list_file, "$ext_group\n", FILE_APPEND);
         foreach ($ext_arr as $ext) {
-            file_put_contents($extenstion_list_file, "$ext->name\n", FILE_APPEND);
+            file_put_contents($extension_list_file, "$ext->name\n", FILE_APPEND);
         }
     }
 }
