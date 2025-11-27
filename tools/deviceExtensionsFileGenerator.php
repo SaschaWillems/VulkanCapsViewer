@@ -3,7 +3,7 @@
 /*
  *
  * Vulkan hardware capability viewer
- * 
+ *
  * Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
  *
  * This code is free software, you can redistribute it and/or
@@ -124,10 +124,10 @@ class ExtensionContainer
             }
             $features2_node = null;
             $properties2_node = null;
-            // We're only interested in extensions with property or feature types                
+            // We're only interested in extensions with property or feature types
             foreach ($ext_node->require as $require) {
                 foreach ($require as $requirement) {
-                    if (strcasecmp($requirement->getName, 'type')) {
+                    if (strcasecmp($requirement->getName(), 'type') !== null) {
                         $ft2 = $typecontainer->getFeatures2Type((string)$requirement['name']);
                         if (!$features2_node && $ft2) {
                             $features2_node = $ft2;
@@ -167,7 +167,7 @@ class CppBuilder
         $sType = TypeContainer::getsType($extension->features2);
         $res = "\tif (extensionSupported(\"{$extension->name}\")) {\n";
         $res .= "\t\tconst char* extension(\"{$extension->name}\");\n";
-        $res .= "\t\t{$extension->features2['name']}* extFeatures = new {$extension->features2['name']}{};\n";        
+        $res .= "\t\t{$extension->features2['name']}* extFeatures = new {$extension->features2['name']}{};\n";
         $res .= "\t\textFeatures->sType = $sType;\n";
         $res .= "\t\tdeviceFeatures2 = initDeviceFeatures2(extFeatures);\n";
         $res .= "\t\tvulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);\n";
@@ -180,7 +180,7 @@ class CppBuilder
             $name = (string)$member->name;
             $res .= "\t\tpushFeature2(extension, \"$name\", extFeatures->$name);\n";
         }
-        $res .= "\t\tdelete extFeatures;\n";        
+        $res .= "\t\tdelete extFeatures;\n";
         $res .= "\t}\n";
         return $res;
     }
@@ -225,7 +225,7 @@ class CppBuilder
                             $enum_dim = 16;
                             break;
                         case 'VK_LUID_SIZE':
-                        case 'VK_LUID_SIZE_HR':
+                        case 'VK_LUID_SIZE_KHR':
                             $enum_dim = 8;
                             break;
                     }
@@ -268,7 +268,7 @@ class CppBuilder
                 $res .= "\t\tpushProperty2(extension, \"$name\", QVariant::fromValue(QVariantList({ $qlist })));\n";
             }
         }
-        $res .= "\t\tdelete extProps;\n";        
+        $res .= "\t\tdelete extProps;\n";
         $res .= "\t}\n";
         return $res;
     }
@@ -340,10 +340,10 @@ class CppBuilder
                 }
                 if ($ext_group == 'ANDROID') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_ANDROID_KHR)\n";
-                }                
+                }
                 if ($ext_group == 'OHOS') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";
-                }                
+                }
                 foreach ($ext_arr as $extension) {
                     $cpp_features_block .= $this->generateFeatures2CodeBlock($extension);
                 }
@@ -367,13 +367,13 @@ class CppBuilder
                 }
                 if ($ext_group == 'OHOS') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_OHOS)\n";
-                }                
+                }
                 foreach ($ext_arr as $extension) {
                     $cpp_properties_block .= $this->generateProperties2CodeBlock($extension);
                 }
                 if (in_array($ext_group, ['QNX', 'ANDROID', 'OHOS']) != false) {
                     $cpp_properties_block .= "#endif\n";
-                }                
+                }
                 $cpp_properties_block .= "}\n";
             }
         }
