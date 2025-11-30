@@ -36,6 +36,7 @@ VK_EXT_blend_operation_advanced
 VK_EXT_descriptor_indexing
 VK_EXT_external_memory_host
 VK_EXT_vertex_attribute_divisor
+VK_EXT_present_timing
 VK_EXT_pci_bus_info
 VK_EXT_fragment_density_map
 VK_EXT_scalar_block_layout

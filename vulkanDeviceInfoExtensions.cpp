@@ -1777,6 +1777,17 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		pushFeature2(extension, "vertexAttributeInstanceRateZeroDivisor", extFeatures->vertexAttributeInstanceRateZeroDivisor);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_EXT_present_timing")) {
+		const char* extension("VK_EXT_present_timing");
+		VkPhysicalDevicePresentTimingFeaturesEXT* extFeatures = new VkPhysicalDevicePresentTimingFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRESENT_TIMING_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "presentTiming", extFeatures->presentTiming);
+		pushFeature2(extension, "presentAtAbsoluteTime", extFeatures->presentAtAbsoluteTime);
+		pushFeature2(extension, "presentAtRelativeTime", extFeatures->presentAtRelativeTime);
+		delete extFeatures;
+	}
 	if (extensionSupported("VK_EXT_fragment_density_map")) {
 		const char* extension("VK_EXT_fragment_density_map");
 		VkPhysicalDeviceFragmentDensityMapFeaturesEXT* extFeatures = new VkPhysicalDeviceFragmentDensityMapFeaturesEXT{};
