@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     QCommandLineOption optionUploadReportComment("comment", "Set optional comment for report upload", "comment", "");
     QCommandLineOption optionDBConnection("d", "Load database connection information from an .ini file", "db.ini", "");
     QCommandLineOption optionLogFile("log", "Write log messages to a text file for debugging (log.txt)");
-    QCommandLineOption optionDisableProxy("noproxy", "Run withouth proxy (overrides setting)");
+    QCommandLineOption optionDisableProxy("noproxy", "Run without proxy (overrides setting)");
 
     parser.setApplicationDescription("Vulkan Hardware Capability Viewer");
     parser.addHelpOption();
