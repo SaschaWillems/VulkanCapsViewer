@@ -305,8 +305,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core11Properties["maxMultiviewInstanceIndex"] = coreProps11.maxMultiviewInstanceIndex;
             core11Properties["protectedNoFault"] = coreProps11.protectedNoFault;
             core11Properties["maxPerSetDescriptors"] = coreProps11.maxPerSetDescriptors;
-            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(coreProps11.maxMemoryAllocationSize);
-
+            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(QString::number(coreProps11.maxMemoryAllocationSize));
 
             // Core 1.2
             qInfo() << "Reading Vulkan 1.2 core properties";
