@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -33,11 +33,9 @@
 #include <vector>
 
 #include "vulkanDeviceInfo.h"
-#include "vulkanLayerInfo.hpp"
-#include "vulkansurfaceinfo.hpp"
-#include "vulkandatabase.h"
-#include "vulkanandroid.h"
-#include "VulkanContext.h"
+#include "vulkanDatabase.h"
+#include "vulkanAndroid.h"
+#include "vulkanContext.h"
 #include "CustomFilterProxyModel.h"
 
 #include "vulkan/vulkan.h"

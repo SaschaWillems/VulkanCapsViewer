@@ -27,12 +27,12 @@
 #include <QVariant>
 
 #include "vulkan/vulkan.h"
-#include "VulkanContext.h"
-#include "vulkanresources.h"
+#include "vulkanContext.h"
+#include "vulkanResources.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 #endif
 
 struct Feature2 {

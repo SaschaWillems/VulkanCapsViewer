@@ -461,6 +461,7 @@ namespace vulkanResources {
 			STR(FIFO_RELAXED);
 			STR(SHARED_DEMAND_REFRESH);
 			STR(SHARED_CONTINUOUS_REFRESH);
+			STR(FIFO_LATEST_READY);
 #undef STR
 		default: return "UNKNOWN_ENUM (" + toHexString(presentMode) + ")";
 		}
@@ -603,6 +604,7 @@ namespace vulkanResources {
 			STR(VIDEO_DECODE_BIT_KHR);
 			STR(VIDEO_ENCODE_BIT_KHR);
 			STR(OPTICAL_FLOW_BIT_NV);
+			STR(DATA_GRAPH_BIT_ARM);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
 		};
@@ -621,6 +623,8 @@ namespace vulkanResources {
 			STR(CLUSTERED_BIT);
 			STR(QUAD_BIT);
 			STR(PARTITIONED_BIT_NV);
+			STR(ROTATE_BIT);
+			STR(ROTATE_CLUSTERED_BIT);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(subgroupBit) + ")";
 		};

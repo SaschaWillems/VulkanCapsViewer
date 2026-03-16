@@ -19,7 +19,7 @@
 * PURPOSE.  See the GNU LGPL 3.0 for more details.
 */
 
-#include "VulkanDeviceInfoExtensions.h"
+#include "vulkanDeviceInfoExtensions.h"
 
 bool VulkanDeviceInfoExtensions::extensionSupported(const char* extensionName)
 {

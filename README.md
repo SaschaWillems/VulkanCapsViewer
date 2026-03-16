@@ -29,20 +29,23 @@ When building for Linux, specify the desired windowing system to enable its supp
 
 X11 support
 ```
-qmake5 -config release DEFINES+=X11
+qmake -config release DEFINES+=X11
 ```  
 
 Wayland support
 ```
-qmake5 -config release DEFINES+=WAYLAND
+qmake -config release DEFINES+=WAYLAND
 ```
 
 Note: Do not enable both flags simultaneously.
 
+## Android
+
+The Android apk needs to be built from Qt Creator and requires Android SDK and Android NDK. Due to issues with widget rendering in certain Qt6 versions, Android builds should use Qt 6.9.2 or newer.
 
 # Releases
 Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](https://vulkan.gpuinfo.org/download.php).
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-- [Qt 5.15](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
+- [Qt 6.8.3](https://www.qt.io/developers/) - Older versions may not work due to missing functionality

@@ -43,14 +43,13 @@ linux:!android {
     icon.files = vulkanCapsViewer.png
     icon.path = /usr/share/icons/hicolor/256x256/apps/
     INSTALLS += desktop icon
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 android {
+    QT += core-private
+    LIBS += -landroid
     DEFINES += VK_NO_PROTOTYPES
     DEFINES += VK_USE_PLATFORM_ANDROID_KHR
-    QT += androidextras
-    CONFIG += mobility
-    MOBILITY =
-    LIBS += -landroid
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
     DISTFILES += \
@@ -64,6 +63,7 @@ macx {
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 ios {
     TARGET = "Vulkan Caps Viewer"
@@ -77,8 +77,13 @@ ios {
     }
 
 DEPENDPATH += .
-MOC_DIR += ./GeneratedFiles/release
-OBJECTS_DIR += release
+android {
+    MOC_DIR = ./GeneratedFiles/release_$${QT_ARCH}
+    OBJECTS_DIR = release_$${QT_ARCH}
+} else {
+    MOC_DIR = ./GeneratedFiles/release
+    OBJECTS_DIR = release
+}
 UI_DIR += ./GeneratedFiles
 RCC_DIR += ./GeneratedFiles
 include(vulkanCapsViewer.pri)
@@ -96,7 +101,8 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/res/xml/qtprovider_paths.xml
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_EXTRA_LIBS = \

@@ -28,7 +28,7 @@ class settingsDialog : public QDialog
 private:
 	Settings appSettings;
 public:
-    settingsDialog(Settings appSet);
+    settingsDialog(QWidget *parent, Settings appSet);
 	~settingsDialog();
 private Q_SLOTS:
 	void slotAccept();

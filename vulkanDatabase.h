@@ -32,8 +32,6 @@
 
 #include "vulkanDeviceInfo.h"
 
-using namespace std;
-
 class VulkanDatabase :
 	public QObject
 {
@@ -41,8 +39,8 @@ class VulkanDatabase :
 private:
 	QNetworkProxy *proxy;
 	QNetworkAccessManager *manager;
-	string httpGet(string url);
-	string encodeUrl(string url);
+	QString httpGet(QString url);
+	QString encodeUrl(QString url);
 public:
     static QString username;
     static QString password;
