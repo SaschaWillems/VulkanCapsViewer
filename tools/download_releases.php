@@ -10,7 +10,7 @@ function download($remote, $local) {
     }
 }
 
-$version = "4.10";
+$version = "4.11";
 $name_template = "vulkancapsviewer_".$version."_%s";
 
 echo "Starting downloads for $name_template ...".PHP_EOL;
@@ -18,8 +18,8 @@ echo "Starting downloads for $name_template ...".PHP_EOL;
 # Windows 64 bit
 download('Vulkan_Caps_Viewer-windows.zip', sprintf($name_template, 'win64.zip'));
 
-# Windows 32 bit
-download('Vulkan_Caps_Viewer-windows_x86.zip', sprintf($name_template, 'winx86.zip'));
+# Windows 32 bit (deprecated with Qt6)
+# download('Vulkan_Caps_Viewer-windows_x86.zip', sprintf($name_template, 'winx86.zip'));
 
 # Linux X11
 download('Vulkan_Caps_Viewer-X11-x86_64.AppImage', sprintf($name_template, 'linux64.AppImage'));
