@@ -4,7 +4,7 @@
  *
  * Vulkan hardware capability viewer
  *
- * Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
+ * Copyright (C) 2016-2026 by Sascha Willems (www.saschawillems.de)
  *
  * This code is free software, you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -333,7 +333,7 @@ class CppBuilder
                 return ($ext->group == $ext_group && $ext->features2);
             });
             if (count($ext_arr) > 0) {
-                $cpp_features_block .= "void vulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
+                $cpp_features_block .= "void VulkanDeviceInfoExtensions::readPhysicalFeatures_$ext_group() {\n";
                 $cpp_features_block .= "\tVkPhysicalDeviceFeatures2 deviceFeatures2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_features_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
@@ -357,7 +357,7 @@ class CppBuilder
                 return ($ext->group == $ext_group && $ext->properties2);
             });
             if (count($ext_arr) > 0) {
-                $cpp_properties_block .= "void vulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
+                $cpp_properties_block .= "void VulkanDeviceInfoExtensions::readPhysicalProperties_$ext_group() {\n";
                 $cpp_properties_block .= "\tVkPhysicalDeviceProperties2 deviceProps2{};\n";
                 if ($ext_group == 'QNX') {
                     $cpp_properties_block .= "#if defined(VK_USE_PLATFORM_SCREEN_QNX)\n";
