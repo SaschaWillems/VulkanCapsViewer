@@ -1089,11 +1089,12 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 			vulkanContext.vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR(device, &propCount, props.data());
 			// The structure is flattened to an array without property names due to database column size limits
 			QVariantList qvl{};
+			auto i = 0;
 			for (auto& prop : props) {
-				auto value = QVariantList({ prop.MSize, prop.NSize, prop.KSize, prop.AType, prop.BType, prop.CType, prop.ResultType, prop.saturatingAccumulation, prop.scope});
-				qvl.push_back(value);
+				auto value = QVariantList({  prop.MSize, prop.NSize, prop.KSize, prop.AType, prop.BType, prop.CType, prop.ResultType, prop.saturatingAccumulation, prop.scope});
+				pushProperty2(extension, "cooperativeMatrixProperties[" + std::to_string(i) + "]", value);
+				i++;
 			}
-			pushProperty2(extension, "cooperativeMatrixProperties", qvl);
 		};
 		delete extProps;
 	}

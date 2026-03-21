@@ -698,6 +698,11 @@ namespace vulkanResources {
 			STR(UINT16_KHR);
 			STR(UINT32_KHR);
 			STR(UINT64_KHR);
+			STR(BFLOAT16_KHR);
+			STR(SINT8_PACKED_NV);
+			STR(UINT8_PACKED_NV);
+			STR(FLOAT8_E4M3_EXT);
+			STR(FLOAT8_E5M2_EXT);
 #undef STR
 		default: QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
 		};

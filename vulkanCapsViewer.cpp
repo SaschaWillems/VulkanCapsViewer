@@ -1374,27 +1374,22 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
                 propertyItem.first()->appendRow(formatItem);
             }
         }
-        if ((strcmp(property.extension, VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME) == 0) && (property.name == "cooperativeMatrixProperties")) {
-            QList<QVariant> list = property.value.toList();
-            for (auto i = 0; i < list.size(); i++) {
-                QStandardItem* entryItem = new QStandardItem();
-                QVariantList value = list[i].toList();
-                entryItem->setText("[" + QString::number(i) + "]");
-                addCaptionedRow(entryItem, "MSize", value[0].toString());
-                addCaptionedRow(entryItem, "NSize", value[1].toString());
-                addCaptionedRow(entryItem, "KSize", value[2].toString());
-                addCaptionedRow(entryItem, "AType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)value[3].toInt()));
-                addCaptionedRow(entryItem, "BType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)value[4].toInt()));
-                addCaptionedRow(entryItem, "CType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)value[5].toInt()));
-                addCaptionedRow(entryItem, "ResultType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)value[6].toInt()));
-                addVkBool32Item(entryItem,"saturatingAccumulation", value[7].toBool());
-                addCaptionedRow(entryItem, "scope", vulkanResources::VkScopeKHRString((VkScopeKHR)value[8].toInt()));
-                propertyItem.first()->appendRow(entryItem);
+        if ((strcmp(property.extension, VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME) == 0) && (property.name._Starts_with("cooperativeMatrixProperties"))) {
+            QList<QVariant> values = property.value.toList();
+            if (values.size() == 9) {
+                addCaptionedRow(propertyItem[0], "MSize", values[0].toString());
+                addCaptionedRow(propertyItem[0], "NSize", values[1].toString());
+                addCaptionedRow(propertyItem[0], "KSize", values[2].toString());
+                addCaptionedRow(propertyItem[0], "AType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[3].toInt()));
+                addCaptionedRow(propertyItem[0], "BType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[4].toInt()));
+                addCaptionedRow(propertyItem[0], "CType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[5].toInt()));
+                addCaptionedRow(propertyItem[0], "ResultType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[6].toInt()));
+                addVkBool32Item(propertyItem[0], "saturatingAccumulation", values[7].toBool());
+                addCaptionedRow(propertyItem[0], "scope", vulkanResources::VkScopeKHRString((VkScopeKHR)values[8].toInt()));
             }
-            displayRawValue = false;
-        }
-        if (displayRawValue) {
-            propertyItem << new QStandardItem(arrayToStr(property.value));
+            else {
+                qDebug() << "Array for cooperative matrix properties does not match required size";
+            }
         }
     }
     else {
