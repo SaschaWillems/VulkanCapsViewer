@@ -1374,7 +1374,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
                 propertyItem.first()->appendRow(formatItem);
             }
         }
-        if ((strcmp(property.extension, VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME) == 0) && (property.name._Starts_with("cooperativeMatrixProperties"))) {
+        if ((strcmp(property.extension, VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME) == 0) && (property.name.starts_with("cooperativeMatrixProperties"))) {
             QList<QVariant> values = property.value.toList();
             if (values.size() == 9) {
                 addCaptionedRow(propertyItem[0], "MSize", values[0].toString());
