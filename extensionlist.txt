@@ -19,6 +19,7 @@ VK_ARM_shader_core_builtins
 VK_ARM_data_graph
 VK_ARM_pipeline_opacity_micromap
 VK_ARM_performance_counters_by_region
+VK_ARM_shader_instrumentation
 VK_ARM_format_pack
 EXT
 VK_EXT_transform_feedback
@@ -169,7 +170,9 @@ VK_KHR_timeline_semaphore
 VK_KHR_vulkan_memory_model
 VK_KHR_shader_terminate_invocation
 VK_KHR_fragment_shading_rate
+VK_KHR_shader_constant_data
 VK_KHR_dynamic_rendering_local_read
+VK_KHR_shader_abort
 VK_KHR_shader_quad_control
 VK_KHR_separate_depth_stencil_layouts
 VK_KHR_present_wait
@@ -179,6 +182,7 @@ VK_KHR_pipeline_executable_properties
 VK_KHR_shader_integer_dot_product
 VK_KHR_present_id
 VK_KHR_synchronization2
+VK_KHR_device_address_commands
 VK_KHR_fragment_shader_barycentric
 VK_KHR_shader_subgroup_uniform_control_flow
 VK_KHR_zero_initialize_workgroup_memory
@@ -212,6 +216,7 @@ VK_KHR_video_encode_intra_refresh
 VK_KHR_video_encode_quantization_map
 VK_KHR_shader_relaxed_extended_instruction
 VK_KHR_maintenance7
+VK_KHR_device_fault
 VK_KHR_maintenance8
 VK_KHR_shader_fma
 VK_KHR_maintenance9
@@ -274,6 +279,7 @@ VK_NVX_multiview_per_view_attributes
 OHOS
 VK_OHOS_native_buffer
 QCOM
+VK_QCOM_cooperative_matrix_conversion
 VK_QCOM_tile_shading
 VK_QCOM_fragment_density_map_offset
 VK_QCOM_image_processing
@@ -296,3 +302,4 @@ VK_VALVE_mutable_descriptor_type
 VK_VALVE_video_encode_rgb_conversion
 VK_VALVE_descriptor_set_host_mapping
 VK_VALVE_fragment_density_map_layered
+VK_VALVE_shader_mixed_float_dot_product
