@@ -737,6 +737,8 @@ bool VulkanCapsViewer::initVulkan()
             deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
         }
+        // These are optional and only required for certain extensions
+        vulkanContext.vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceCooperativeMatrixPropertiesKHR"));
     }
 
     vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
@@ -1127,6 +1129,15 @@ void addVkBool32Item(QStandardItem* parent, const QVariantMap::const_iterator& i
     parent->appendRow(item);
 }
 
+void addVkBool32Item(QStandardItem* parent, const QString& name, const bool value)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(name);
+    item << new QStandardItem(value ? "true" : "false");
+    item[1]->setForeground(value ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
+    parent->appendRow(item);
+}
+
 void addVkSampleCountFlagsItem(QStandardItem* parent, const QVariantMap::const_iterator& iterator)
 {
     const auto samples = static_cast<VkSampleCountFlags>(iterator.value().toUInt());
@@ -1185,6 +1196,13 @@ void addHexItem(QStandardItem* parent, const QVariantMap::const_iterator& iterat
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
     item << new QStandardItem(vulkanResources::toHexQString(iterator.value().toULongLong()));
+    parent->appendRow(item);
+}
+
+void addCaptionedRow(QStandardItem* parent, QString caption, QString value) {
+    QList<QStandardItem*> item;
+    item << new QStandardItem(caption);
+    item << new QStandardItem(value);
     parent->appendRow(item);
 }
 
@@ -1356,7 +1374,23 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
                 propertyItem.first()->appendRow(formatItem);
             }
         }
-        propertyItem << new QStandardItem(arrayToStr(property.value));
+        if ((strcmp(property.extension, VK_KHR_COOPERATIVE_MATRIX_EXTENSION_NAME) == 0) && (property.name.starts_with("cooperativeMatrixProperties"))) {
+            QList<QVariant> values = property.value.toList();
+            if (values.size() == 9) {
+                addCaptionedRow(propertyItem[0], "MSize", values[0].toString());
+                addCaptionedRow(propertyItem[0], "NSize", values[1].toString());
+                addCaptionedRow(propertyItem[0], "KSize", values[2].toString());
+                addCaptionedRow(propertyItem[0], "AType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[3].toInt()));
+                addCaptionedRow(propertyItem[0], "BType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[4].toInt()));
+                addCaptionedRow(propertyItem[0], "CType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[5].toInt()));
+                addCaptionedRow(propertyItem[0], "ResultType", vulkanResources::VkComponentTypeKHRString((VkComponentTypeKHR)values[6].toInt()));
+                addVkBool32Item(propertyItem[0], "saturatingAccumulation", values[7].toBool());
+                addCaptionedRow(propertyItem[0], "scope", vulkanResources::VkScopeKHRString((VkScopeKHR)values[8].toInt()));
+            }
+            else {
+                qDebug() << "Array for cooperative matrix properties does not match required size";
+            }
+        }
     }
     else {
         switch (property.value.metaType().id()) {
