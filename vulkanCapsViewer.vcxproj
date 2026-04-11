@@ -157,7 +157,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level3</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>C:\VulkanSDK\1.4.335.0\Lib\vulkan-1.lib;Advapi32.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
