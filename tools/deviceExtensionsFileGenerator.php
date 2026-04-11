@@ -437,20 +437,25 @@ $cpp_builder->writeHeader("$output_dir/vulkanDeviceInfoExtensions.h", $output_di
 $cpp_builder->writeImplementation("$output_dir/vulkanDeviceInfoExtensions.cpp", $output_dir, $extension_container);
 
 // Output extension list for changelog
-$extension_list_file = $output_dir . "/extensionlist.txt";
+$extension_list_file = $output_dir . "/extensionlist.md";
 if (file_exists($extension_list_file)) {
     unlink($extension_list_file);
 }
+$ex_total_count = 0;
 foreach ($ext_groups as $ext_group) {
     $ext_arr = array_filter($extension_container->extensions, function ($ext) use ($ext_group) {
         return ($ext->group == $ext_group && ($ext->features2 || $ext->properties2));
     });
     if (count($ext_arr) > 0) {
-        file_put_contents($extension_list_file, "$ext_group\n", FILE_APPEND);
+        file_put_contents($extension_list_file, "# $ext_group (".sizeof($ext_arr).")\n", FILE_APPEND);
+        file_put_contents($extension_list_file, "\n", FILE_APPEND);
         foreach ($ext_arr as $ext) {
-            file_put_contents($extension_list_file, "$ext->name\n", FILE_APPEND);
+            file_put_contents($extension_list_file, "* $ext->name\n", FILE_APPEND);
+            $ex_total_count++;
         }
+        file_put_contents($extension_list_file, "\n", FILE_APPEND);
     }
 }
+file_put_contents($extension_list_file, "Total: $ex_total_count extensions", FILE_APPEND);
 
 echo "C++ files written to $output_dir";
