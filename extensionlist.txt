@@ -21,6 +21,7 @@ VK_ARM_pipeline_opacity_micromap
 VK_ARM_performance_counters_by_region
 VK_ARM_shader_instrumentation
 VK_ARM_format_pack
+VK_ARM_data_graph_optical_flow
 EXT
 VK_EXT_transform_feedback
 VK_EXT_texture_compression_astc_hdr
@@ -129,6 +130,7 @@ VK_EXT_custom_resolve
 VK_EXT_shader_long_vector
 VK_EXT_shader_uniform_buffer_unsized_array
 VK_EXT_shader_subgroup_partitioned
+VK_EXT_primitive_restart_index
 HUAWEI
 VK_HUAWEI_subpass_shading
 VK_HUAWEI_invocation_mask
@@ -280,6 +282,7 @@ OHOS
 VK_OHOS_native_buffer
 QCOM
 VK_QCOM_cooperative_matrix_conversion
+VK_QCOM_queue_perf_hint
 VK_QCOM_tile_shading
 VK_QCOM_fragment_density_map_offset
 VK_QCOM_image_processing

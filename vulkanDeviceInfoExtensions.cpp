@@ -1746,6 +1746,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		pushFeature2(extension, "formatPack", extFeatures->formatPack);
 		delete extFeatures;
 	}
+	if (extensionSupported("VK_ARM_data_graph_optical_flow")) {
+		const char* extension("VK_ARM_data_graph_optical_flow");
+		VkPhysicalDeviceDataGraphOpticalFlowFeaturesARM* extFeatures = new VkPhysicalDeviceDataGraphOpticalFlowFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DATA_GRAPH_OPTICAL_FLOW_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "dataGraphOpticalFlow", extFeatures->dataGraphOpticalFlow);
+		delete extFeatures;
+	}
 }
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
@@ -2773,6 +2782,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "shaderSubgroupPartitioned", extFeatures->shaderSubgroupPartitioned);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_EXT_primitive_restart_index")) {
+		const char* extension("VK_EXT_primitive_restart_index");
+		VkPhysicalDevicePrimitiveRestartIndexFeaturesEXT* extFeatures = new VkPhysicalDevicePrimitiveRestartIndexFeaturesEXT{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PRIMITIVE_RESTART_INDEX_FEATURES_EXT;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "primitiveRestartIndex", extFeatures->primitiveRestartIndex);
 		delete extFeatures;
 	}
 }
@@ -4020,6 +4038,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_QCOM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "cooperativeMatrixConversion", extFeatures->cooperativeMatrixConversion);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_QCOM_queue_perf_hint")) {
+		const char* extension("VK_QCOM_queue_perf_hint");
+		VkPhysicalDeviceQueuePerfHintFeaturesQCOM* extFeatures = new VkPhysicalDeviceQueuePerfHintFeaturesQCOM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_QUEUE_PERF_HINT_FEATURES_QCOM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "queuePerfHint", extFeatures->queuePerfHint);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_QCOM_tile_shading")) {
