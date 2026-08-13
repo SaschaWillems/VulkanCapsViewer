@@ -38,16 +38,21 @@ extern "C" void *makeViewMetalCompatible(void* handle)
 #if TARGET_OS_IPHONE
     UIView* view = (__bridge UIView*)handle;
     assert([view isKindOfClass:[UIView class]]);
-
-    void *pLayer =(__bridge void*)view.layer;
-    return pLayer;
 #else
     NSView* view = (__bridge NSView*)handle;
     assert([view isKindOfClass:[NSView class]]);
-
-    void *pLayer = (__bridge void *)view.layer;
-    return pLayer;
 #endif
+
+    CALayer* layer = view.layer;
+    if (![layer isKindOfClass:[CAMetalLayer class]] && [layer respondsToSelector:@selector(contentLayer)]) {
+        // In Qt 6.10+, the window has an intermediate QContainerLayer in which
+        // the actual CAMetalLayer is nested.
+        // https://github.com/qt/qtbase/commit/0bdbf4688e4265a1ddf42efbe4c780770809d365
+        layer = [layer contentLayer];
+    }
+    assert([layer isKindOfClass:[CAMetalLayer class]]);
+
+    return (__bridge void*)layer;
 }
 
 #endif
