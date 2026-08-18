@@ -1,7 +1,17 @@
-#ifdef VK_USE_PLATFORM_IOS_MVK
-// iOS Utility Functions
-#import <UIKit/UIKit.h>
+#ifdef VK_USE_PLATFORM_METAL_EXT
 
+#import <Foundation/Foundation.h>
+#import <QuartzCore/CAMetalLayer.h>
+#include <TargetConditionals.h>
+
+#if TARGET_OS_IPHONE
+#include <UIKit/UIView.h>
+#else
+#import <AppKit/AppKit.h>
+#endif
+
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 
 extern "C" void setWorkingFolderForiOS(void)
 {
@@ -20,6 +30,29 @@ extern "C" const char *getWorkingFolderForiOS(void)
     strncpy(cWorkingFolder, [myPath UTF8String], 512);
 
     return cWorkingFolder;
+}
+
+
+extern "C" void *makeViewMetalCompatible(void* handle)
+{
+#if TARGET_OS_IPHONE
+    UIView* view = (__bridge UIView*)handle;
+    assert([view isKindOfClass:[UIView class]]);
+#else
+    NSView* view = (__bridge NSView*)handle;
+    assert([view isKindOfClass:[NSView class]]);
+#endif
+
+    CALayer* layer = view.layer;
+    if (![layer isKindOfClass:[CAMetalLayer class]] && [layer respondsToSelector:@selector(contentLayer)]) {
+        // In Qt 6.10+, the window has an intermediate QContainerLayer in which
+        // the actual CAMetalLayer is nested.
+        // https://github.com/qt/qtbase/commit/0bdbf4688e4265a1ddf42efbe4c780770809d365
+        layer = [layer contentLayer];
+    }
+    assert([layer isKindOfClass:[CAMetalLayer class]]);
+
+    return (__bridge void*)layer;
 }
 
 #endif

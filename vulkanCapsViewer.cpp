@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -18,9 +18,8 @@
 *
 */
 
-#include "vulkancapsviewer.h"
-#include "vulkanresources.h"
-#include "vulkansurfaceinfo.hpp"
+#include "vulkanCapsViewer.h"
+#include "vulkanResources.h"
 #include <typeinfo>
 #include <sstream>
 #include <iomanip>
@@ -43,6 +42,12 @@
 #include <QSet>
 #include <QWindow>
 #include <QApplication>
+#if defined(VK_USE_PLATFORM_ANDROID_KHR)
+#include <QJniEnvironment>
+#include <android/native_window.h>
+#include <android/native_window_jni.h>
+#include <QtCore/private/qandroidextras_p.h>
+#endif
 #include <qnamespace.h>
 #include <assert.h>
 #include <unordered_map>
@@ -57,33 +62,22 @@
 #include <sys/utsname.h>
 #endif
 
-#ifdef VK_USE_PLATFORM_XCB_KHR
-#include <QX11Info>
-#endif
-
 #ifdef VK_USE_PLATFORM_WAYLAND_KHR
 #include <wayland-client.h>
-#endif
-
-#ifdef VK_USE_PLATFORM_ANDROID_KHR
-#include <QtAndroid>
-#include <QAndroidJniEnvironment>
-#include <android/native_window.h>
-#include <android/native_window_jni.h>
 #endif
 
 #ifdef __APPLE__
 #include <vulkan/vulkan_metal.h>
 
-#ifdef VK_USE_PLATFORM_IOS_MVK
+
+#ifdef VK_USE_PLATFORM_METAL_EXT
 extern "C" const char *getWorkingFolderForiOS(void);
+extern "C" void *makeViewMetalCompatible(void* handle);
 #endif
 #endif
 
-using std::to_string;
-
-const QString VulkanCapsViewer::version = "3.50";
-const QString VulkanCapsViewer::reportVersion = "3.3";
+const QString VulkanCapsViewer::version = "4.11";
+const QString VulkanCapsViewer::reportVersion = "4.1";
 
 OSInfo getOperatingSystem()
 {
@@ -100,7 +94,7 @@ OSInfo getOperatingSystem()
         RtlGetVersionFN RtlGetVersion = reinterpret_cast<RtlGetVersionFN>(GetProcAddress(hModule, "RtlGetVersion"));
         if (RtlGetVersion) {
             RTL_OSVERSIONINFOW osVersionInfo = { 0 };
-            osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEXW);
+            osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
             if (RtlGetVersion(&osVersionInfo) == S_OK) {
                 if (osVersionInfo.dwBuildNumber >= 22000) {
                     osInfo.version = "11";
@@ -114,17 +108,14 @@ OSInfo getOperatingSystem()
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
     osInfo.type = 0;
 #endif
-#if defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_)
+#if defined(VK_USE_PLATFORM_WAYLAND_KHR) || defined(VK_USE_PLATFORM_XCB_KHR) || defined(VK_USE_PLATFORM_XLIB_KHR)
     osInfo.type = 1;
 #endif
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
     osInfo.type = 2;
 #endif
-#if defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     osInfo.type = 3;
-#endif
-#if defined(VK_USE_PLATFORM_IOS_MVK)
-    osInfo.type = 4;
 #endif
 
     return osInfo;
@@ -167,7 +158,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     : QMainWindow(parent)
 {
     // Set current working directory to writable document folder
-#if defined(VK_USE_PLATFOROM_IOS_MVK)
+#if defined(VK_USE_PLATFROM_IOS_MVK)
     setWorkingFolderForiOS();
 #endif
 
@@ -184,6 +175,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     connect(ui.toolButtonSettings, SIGNAL(pressed()), this, SLOT(slotSettings()), Qt::QueuedConnection);
     connect(ui.comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotComboTabChanged(int)), Qt::QueuedConnection);
 
+    QPalette palette;
+    palette.setColor(QPalette::Highlight, QColor(0, 120, 215));
+    palette.setColor(QPalette::Link, QColor(0, 120, 215));
+    qApp->setPalette(palette);
     qApp->setStyle(QStyleFactory::create("Fusion"));
     boldFont.setBold(true);
 
@@ -227,7 +222,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 
     // No identation
     for (int i = 0; i < ui.tabWidgetDevice->count(); i++) {
-        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
+//        ui.tabWidgetDevice->widget(i)->layout()->setMargin(0);
     }
 
     QTabBar *tabBar = ui.tabWidgetDevice->findChild<QTabBar *>();
@@ -265,6 +260,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.treeViewDevicePropertiesCore13->setModel(&filterProxies.propertiesCore13);
     connectFilterAndModel(models.propertiesCore13, filterProxies.propertiesCore13);
     connect(ui.filterLineEditPropertiesCore13, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore13(QString)));
+    // Core 1.4 properties
+    ui.treeViewDevicePropertiesCore14->setModel(&filterProxies.propertiesCore14);
+    connectFilterAndModel(models.propertiesCore14, filterProxies.propertiesCore14);
+    connect(ui.filterLineEditPropertiesCore14, SIGNAL(textChanged(QString)), this, SLOT(slotFilterPropertiesCore14(QString)));
     // Extension properties
     ui.treeViewDevicePropertiesExtensions->setModel(&filterProxies.propertiesExtensions);
     connectFilterAndModel(models.propertiesExtensions, filterProxies.propertiesExtensions);
@@ -285,6 +284,10 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
     ui.treeViewDeviceFeaturesCore13->setModel(&filterProxies.featuresCore13);
     connectFilterAndModel(models.featuresCore13, filterProxies.featuresCore13);
     connect(ui.filterLineEditFeaturesCore13, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore13(QString)));
+    // Core 1.4 features
+    ui.treeViewDeviceFeaturesCore14->setModel(&filterProxies.featuresCore14);
+    connectFilterAndModel(models.featuresCore14, filterProxies.featuresCore14);
+    connect(ui.filterLineEditFeaturesCore14, SIGNAL(textChanged(QString)), this, SLOT(slotFilterFeaturesCore14(QString)));
     // Extension features
     ui.treeViewDeviceFeaturesExtensions->setModel(&filterProxies.featuresExtensions);
     connectFilterAndModel(models.featuresExtensions, filterProxies.featuresExtensions);
@@ -308,7 +311,7 @@ VulkanCapsViewer::VulkanCapsViewer(QWidget *parent)
 VulkanCapsViewer::~VulkanCapsViewer()
 {    
     // Free up hidden window used on Apple platforms
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     if(pMetalSurrogate != nullptr)
         delete pMetalSurrogate;
 #endif
@@ -346,19 +349,19 @@ void VulkanCapsViewer::slotDisplayOnlineReport()
 
 std::string apiVersionText(uint32_t apiVersion)
 {
-    return to_string(VK_VERSION_MAJOR(apiVersion)) + "." + to_string(VK_VERSION_MINOR(apiVersion)) + "." + to_string(VK_VERSION_PATCH(apiVersion));
+    return std::to_string(VK_VERSION_MAJOR(apiVersion)) + "." + std::to_string(VK_VERSION_MINOR(apiVersion)) + "." + std::to_string(VK_VERSION_PATCH(apiVersion));
 }
 
 void VulkanCapsViewer::slotAbout()
 {
     std::stringstream aboutText;
     aboutText << "<p>Vulkan Hardware Capability Viewer " << version.toStdString() << "<br/><br/>"
-        "Copyright (c) 2016-2024 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
+        "Copyright (c) 2016-2025 by <a href='https://www.saschawillems.de'>Sascha Willems</a><br/><br/>"
         "This tool is <b>Free Open Source Software</b><br/><br/>"
         "For usage and distribution details refer to the readme<br/><br/>"
         "<a href='https://www.gpuinfo.org'>https://www.gpuinfo.org</a><br><br>"
         "Vulkan instance API version: " + apiVersionText(instanceApiVersion) + "<br/>"
-        "Compiled against Vulkan header version: " + to_string(VK_HEADER_VERSION) + "<br/><br/>";
+        "Compiled against Vulkan header version: " + std::to_string(VK_HEADER_VERSION) + "<br/><br/>";
     aboutText << "</p>";
     QMessageBox::about(this, tr("About the Vulkan Hardware Capability Viewer"), QString::fromStdString(aboutText.str()));
 }
@@ -419,7 +422,7 @@ void VulkanCapsViewer::slotUploadReport()
     }
     // Upload new report
     if (reportState == ReportState::not_present) {
-        SubmitDialog dialog(settings.submitterName, "Submit new report");
+        SubmitDialog dialog(this, settings.submitterName, "Submit new report");
         if (dialog.exec() == QDialog::Accepted) {
             QString message;
             QJsonObject reportJson;
@@ -439,7 +442,7 @@ void VulkanCapsViewer::slotUploadReport()
 
     // Update existing report
     if (reportState == ReportState::is_updatable) {
-        SubmitDialog dialog(settings.submitterName, "Update existing report");
+        SubmitDialog dialog(this, settings.submitterName, "Update existing report");
         if (dialog.exec() == QDialog::Accepted) {
             int reportId = database.getReportId(device);
             QApplication::setOverrideCursor(Qt::WaitCursor);
@@ -475,7 +478,7 @@ void VulkanCapsViewer::slotUploadReport()
 
 void VulkanCapsViewer::slotSettings()
 {
-    settingsDialog dialog(settings);
+    settingsDialog dialog(this, settings);
     dialog.setModal(true);
     dialog.exec();
     settings.restore();
@@ -484,80 +487,92 @@ void VulkanCapsViewer::slotSettings()
 
 void VulkanCapsViewer::slotFilterPropertiesCore10(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore13.setFilterRegularExpression(regExp);
+}
+
+void VulkanCapsViewer::slotFilterPropertiesCore14(QString text)
+{
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterPropertiesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.propertiesExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.propertiesExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeatures(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore10.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore10.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore11(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore11.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore11.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore12(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore12.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore12.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesCore13(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresCore13.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore13.setFilterRegularExpression(regExp);
+}
+
+void VulkanCapsViewer::slotFilterFeaturesCore14(QString text)
+{
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresCore14.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFeaturesExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.featuresExtensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.featuresExtensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterExtensions(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.extensions.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.extensions.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterFormats(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.formats.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.formats.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotFilterProfiles(QString text)
 {
-    QRegExp regExp(text, Qt::CaseInsensitive, QRegExp::RegExp);
-    filterProxies.profiles.setFilterRegExp(regExp);
+    QRegularExpression regExp(text, QRegularExpression::CaseInsensitiveOption);
+    filterProxies.profiles.setFilterRegularExpression(regExp);
 }
 
 void VulkanCapsViewer::slotComboTabChanged(int index)
@@ -624,13 +639,9 @@ bool VulkanCapsViewer::initVulkan()
       VK_KHR_XCB_SURFACE_EXTENSION_NAME,
 #endif
         
-//#if defined(VK_USE_PLATFORM_MACOS_MVK)
-//    VK_MVK_MACOS_SURFACE_EXTENSION_NAME,
-//#endif
-//
-//#if defined(VK_USE_PLATFORM_IOS_MVK)
-//   VK_MVK_IOS_SURFACE_EXTENSION_NAME,
-//#endif
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+    VK_EXT_METAL_SURFACE_EXTENSION_NAME,
+#endif
     };
 
     std::vector<const char*> enabledExtensions = {};
@@ -644,9 +655,6 @@ bool VulkanCapsViewer::initVulkan()
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     }
     
-#if __APPLE__
-    enabledExtensions.push_back("VK_EXT_metal_surface");
-#endif
 
     std::vector<std::string> surfaceExtensionsAvailable = {};
 
@@ -684,13 +692,15 @@ bool VulkanCapsViewer::initVulkan()
         if (strcmp(ext.extensionName, VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME) == 0) {
             enabledExtensions.push_back(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
         }
-    }
 
-#if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
-    instanceCreateInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
-    enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+// IF the portability extension is available, enable it here.
+#if VK_HEADER_VERSION >= 216
+        if(strcmp(ext.extensionName, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) == 0) {
+            instanceCreateInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+            enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+        }
 #endif
+    }
 
     instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
     instanceCreateInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
@@ -739,101 +749,180 @@ bool VulkanCapsViewer::initVulkan()
     vulkanContext.vkGetPhysicalDeviceSurfaceSupportKHR = reinterpret_cast<PFN_vkGetPhysicalDeviceSurfaceSupportKHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceSurfaceSupportKHR"));
 
     // Create a surface
-    for (auto surface_extension : surfaceExtensionsAvailable) {
-        VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
+    VkResult surfaceResult = VK_ERROR_INITIALIZATION_FAILED;
 
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
-        if (surface_extension == VK_KHR_WIN32_SURFACE_EXTENSION_NAME) {
-            VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
-            surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
-            surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-        }
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_WIN32_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_WIN32_SURFACE_EXTENSION_NAME;
+
+        VkWin32SurfaceCreateInfoKHR surfaceCreateInfo = {};
+        surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+        surfaceCreateInfo.hinstance = GetModuleHandle(nullptr);
+        surfaceCreateInfo.hwnd = reinterpret_cast<HWND>(this->winId());
+        surfaceResult = vkCreateWin32SurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+    }
 #endif
 
 #if defined(VK_USE_PLATFORM_ANDROID_KHR)
-        if (surface_extension == VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) {
+    if (!vulkanContext.surface && std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),VK_KHR_ANDROID_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable)) {
+        vulkanContext.surfaceExtension = VK_KHR_ANDROID_SURFACE_EXTENSION_NAME;
 
-            // Get a native window via JNI
-            // Qt doesn't offer access to this, so we have to do this manually
-            // Note: Purely based on countless hours of trial-and-error, need to check on other devices
-            // todo: cleanup, error checking
+        // Get a native window via JNI
+        // Qt6 does have it's own Vulkan classes, but they don't work reliable enough
+        // Note: Purely based on countless hours of trial-and-error, need to check on other devices
 
-            // Get window
-            QAndroidJniObject activity = QtAndroid::androidActivity();
-            QAndroidJniObject window;
-            if (activity.isValid())
+        // Get window
+        QJniObject activity = QNativeInterface::QAndroidApplication::context();
+        QJniObject window;
+        if (activity.isValid())
+        {
+            window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
+        }
+
+        if (window.isValid())
+        {
+            // Get a surface texture
+            QJniObject surfaceTexture = QJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
+            qDebug() << surfaceTexture.isValid();
+
+            // Get a surface based on the texture
+            QJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
+            qDebug() << surface.isValid();
+
+            if (surfaceTexture.isValid())
             {
-                window = activity.callObjectMethod("getWindow", "()Landroid/view/Window;");
-            }
-
-            if (window.isValid())
-            {
-
-                // Get a surface texture
-                QAndroidJniObject surfaceTexture = QAndroidJniObject("android/graphics/SurfaceTexture", "(I)V", jint(0));
-                qDebug() << surfaceTexture.isValid();
-
-                // Get a surface based on the texture
-                QAndroidJniObject surface("android/view/Surface", "(Landroid/graphics/SurfaceTexture;)V", surfaceTexture.object());
-                qDebug() << surface.isValid();
-
-                if (surfaceTexture.isValid())
-                {
-                    // Create a native window from our surface that can be used to create the Vulkan surface
-                    QAndroidJniEnvironment qjniEnv;
-                    nativeWindow = ANativeWindow_fromSurface(qjniEnv, surface.object());
-                }
-            }
-
-            if (nativeWindow)
-            {
-                VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
-                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
-                surfaceCreateInfo.window = nativeWindow;
-                surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
+                // Create a native window from our surface that can be used to create the Vulkan surface
+                QJniEnvironment qjniEnv;
+                nativeWindow = ANativeWindow_fromSurface(qjniEnv.jniEnv(), surface.object());
             }
         }
+
+        if (nativeWindow)
+        {
+            VkAndroidSurfaceCreateInfoKHR surfaceCreateInfo = {};
+            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR;
+            surfaceCreateInfo.window = nativeWindow;
+            surfaceResult = vkCreateAndroidSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, NULL, &vulkanContext.surface);
+        }
+
+
+        //QVulkanInstance instance;
+        //instance.setVkInstance(vulkanContext.instance);
+        //instance.create();
+//        QVulkanWindow* vWindow = new QVulkanWindow;
+//        vWindow->setVulkanInstance(&instance);
+        //QWindow* win = this->windowHandle();
+        //vWindow->showMinimized();
+//        vulkanContext.surface = QVulkanInstance::surfaceForWindow(vWindow);
+        //vulkanContext.surface = QVulkanInstance::surfaceForWindow(win);
+        if (vulkanContext.surface == VK_NULL_HANDLE) {
+            qFatal() << "Could not get a valid surface!";
+        }
+        surfaceResult = vulkanContext.surface != VK_NULL_HANDLE ? VK_SUCCESS : VK_ERROR_INITIALIZATION_FAILED;
+    }
 #endif
 
 #if defined(VK_USE_PLATFORM_WAYLAND_KHR)
-        if (surface_extension == VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) {
-            VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
-            surfaceCreateInfo.pNext = nullptr;
-            surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.display = wl_display_connect(NULL);
-            surfaceCreateInfo.surface = nullptr;
-            surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
-        }
-#endif
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME;
 
+        static const wl_registry_listener WAYLAND_LISTENER {
+            .global = [](void *data, wl_registry*, uint32_t name, const char* interface, uint32_t){
+                if (!strcmp(interface, wl_compositor_interface.name)) {
+                    *static_cast<uint32_t *>(data) = name;
+                }
+            },
+            .global_remove = [](void*, wl_registry*, uint32_t){
+
+            }
+        };
+
+        const auto wayland_display = wl_display_connect(nullptr);
+        if (wayland_display) {
+            const auto wayland_registry = wl_display_get_registry(wayland_display);
+            uint32_t wayland_compositor_name = 0;
+            wl_registry_add_listener(wayland_registry, &WAYLAND_LISTENER, &wayland_compositor_name);
+            wl_display_roundtrip(wayland_display);
+
+            if (wayland_compositor_name > 0) {
+                const auto wayland_compositor = static_cast<wl_compositor *>(
+                    wl_registry_bind(wayland_registry, wayland_compositor_name, &wl_compositor_interface, 1)
+                );
+                const auto wayland_surface = wl_compositor_create_surface(wayland_compositor);
+                VkWaylandSurfaceCreateInfoKHR surfaceCreateInfo = {};
+                surfaceCreateInfo.pNext = nullptr;
+                surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR;
+                surfaceCreateInfo.display = wayland_display;
+                surfaceCreateInfo.surface = wayland_surface;
+                surfaceResult = vkCreateWaylandSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
+            }
+        }
+    }
+#endif
 #if defined(VK_USE_PLATFORM_XCB_KHR)
-        if (surface_extension == VK_KHR_XCB_SURFACE_EXTENSION_NAME) {
+    if (!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_KHR_XCB_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_KHR_XCB_SURFACE_EXTENSION_NAME;
+
+        int xcb_screen_idx;
+        const auto xcb_connection = xcb_connect(nullptr, &xcb_screen_idx);
+
+        if (!xcb_connection_has_error(xcb_connection)) {
+            const auto xcb_setup = xcb_get_setup(xcb_connection);
+            auto xcb_screen = xcb_setup_roots_iterator(xcb_setup);
+            for (int i = 0; i < xcb_screen_idx; ++i) {
+                xcb_screen_next(&xcb_screen);
+            }
+            const auto xcb_window = xcb_generate_id(xcb_connection);
+            xcb_create_window(
+                xcb_connection,
+                xcb_screen.data->root_depth,
+                xcb_window,
+                xcb_screen.data->root,
+                0, 0,
+                800, 600, 0,
+                XCB_WINDOW_CLASS_INPUT_OUTPUT,
+                xcb_screen.data->root_visual,
+                0, nullptr);
+
             VkXcbSurfaceCreateInfoKHR surfaceCreateInfo = {};
             surfaceCreateInfo.sType = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
-            surfaceCreateInfo.connection = QX11Info::connection();
-            surfaceCreateInfo.window = static_cast<xcb_window_t>(this->winId());
+            surfaceCreateInfo.connection = xcb_connection;
+            surfaceCreateInfo.window = xcb_window;
             surfaceResult = vkCreateXcbSurfaceKHR(vulkanContext.instance, &surfaceCreateInfo, nullptr, &vulkanContext.surface);
         }
+    }
 #endif
 
 // This works for deskop and iOS devices
-#if __APPLE__
+#if defined(VK_USE_PLATFORM_METAL_EXT)
+    if(!vulkanContext.surface &&
+        std::find(surfaceExtensionsAvailable.begin(), surfaceExtensionsAvailable.end(),
+                  VK_EXT_METAL_SURFACE_EXTENSION_NAME) != std::end(surfaceExtensionsAvailable))
+    {
+        vulkanContext.surfaceExtension = VK_EXT_METAL_SURFACE_EXTENSION_NAME;
+
+        pMetalSurrogate = new QVukanSurrogate;
         VkMetalSurfaceCreateInfoEXT info = {};
         info.sType = VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT;
         info.pNext = nullptr;
-        info.pLayer = (void*)pMetalSurrogate->winId();
+        info.pLayer = (void*)makeViewMetalCompatible((void*)pMetalSurrogate->winId());
         info.flags = 0;
-        vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
+        surfaceResult = vkCreateMetalSurfaceEXT(vulkanContext.instance, &info, nullptr, &vulkanContext.surface);
+    }
 #endif
 
-        if (surfaceResult == VK_SUCCESS) {
-            vulkanContext.surfaceExtension = surface_extension;
-            break;
-        } else {
-            vulkanContext.surface = VK_NULL_HANDLE;
-        }
+    if (surfaceResult != VK_SUCCESS) {
+        vulkanContext.surface = VK_NULL_HANDLE;
+        vulkanContext.surfaceExtension = "" ;
     }
 
     displayInstanceLayers();
@@ -872,8 +961,22 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     }
 
     std::vector<const char*> enabledExtensions;
-#if defined(VK_USE_PLATFORM_MACOS_MVK) && (VK_HEADER_VERSION >= 216)
-    enabledExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
+#if defined(__APPLE__) && (VK_HEADER_VERSION >= 216)
+    // Enable the portability extension at the device level, but only if the device uses it
+    // For example, MoltenVK does, while lavapipe and KosmicKrisp do not.
+
+    // Get the list of device extensions
+    uint32_t extensionCount = 0;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount,nullptr);
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+
+    vkEnumerateDeviceExtensionProperties(
+        device, nullptr, &extensionCount, availableExtensions.data());
+
+    // Loop through the extensions and enable any portability devices
+    for(int i = 0; i < extensionCount; i++)
+        if(strcmp(availableExtensions[i].extensionName, VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME) == 0)
+            enabledExtensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
 #endif
 
     // Init device
@@ -909,10 +1012,10 @@ void VulkanCapsViewer::getGPUinfo(VulkanDeviceInfo *GPU, uint32_t id, VkPhysical
     vkGetPhysicalDeviceToolPropertiesEXT = reinterpret_cast<PFN_vkGetPhysicalDeviceToolPropertiesEXT>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceToolPropertiesEXT"));
     if (vkGetPhysicalDeviceToolPropertiesEXT) {
         uint32_t numTools;
-        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, nullptr);
+        vkGetPhysicalDeviceToolPropertiesEXT(GPU->device, &numTools, nullptr);
         std::vector<VkPhysicalDeviceToolPropertiesEXT> toolProperties{};
         toolProperties.resize(numTools);
-        vkGetPhysicalDeviceToolPropertiesEXT(vulkanGPUs[0].device, &numTools, toolProperties.data());
+        vkGetPhysicalDeviceToolPropertiesEXT(GPU->device, &numTools, toolProperties.data());
         for (auto& toolProps : toolProperties) {
             if (toolProps.purposes & VK_TOOL_PURPOSE_MODIFYING_FEATURES_BIT_EXT) {
                 qWarning().nospace() << "Found feature modifying tool \"" << toolProps.description << "\" for \"" << GPU->props.deviceName << "\", uploads for this device will be disabled";
@@ -954,7 +1057,7 @@ void VulkanCapsViewer::getGPUs()
     ui.comboBoxGPU->clear();
     for (auto& GPU : vulkanGPUs)
     {
-        QString deviceName = QString::fromStdString("[GPU" + to_string(GPU.id) + "] " + GPU.props.deviceName);
+        QString deviceName = QString::fromStdString("[GPU" + std::to_string(GPU.id) + "] " + GPU.props.deviceName);
         ui.comboBoxGPU->addItem(deviceName);
     }
 
@@ -1097,6 +1200,22 @@ void addVariantListItem(QStandardItem* parent, const QVariantMap::const_iterator
     QList<QStandardItem*> item;
     item << new QStandardItem(iterator.key());
     item << new QStandardItem(arrayToStr(iterator.value()));
+    if ((iterator.key() == "pCopySrcLayouts") || (iterator.key() == "pCopyDstLayouts")) {
+        QList<QVariant> list = iterator.value().toList();
+        for (auto i = 0; i < list.size(); i++) {
+            QStandardItem* formatItem = new QStandardItem();
+            formatItem->setText(vulkanResources::imageLayoutString((VkImageLayout)list[i].toInt()));
+            item.first()->appendRow(formatItem);
+        }
+    }
+    parent->appendRow(item);
+}
+
+void addTextItem(QStandardItem* parent, const QString& key, const QString& value)
+{
+    QList<QStandardItem*> item;
+    item << new QStandardItem(key);
+    item << new QStandardItem(value);
     parent->appendRow(item);
 }
 
@@ -1160,10 +1279,28 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
         addHexItem(parent, iterator);
         return;
     }
-    if (iterator.value().canConvert(QVariant::List)) {
-        addVariantListItem(parent, iterator);
-        return;
-    }
+
+    // This is marked deprecated in Qt6 and was causing all sorts of problems
+    // if (iterator.value().canConvert(QVariant::List)) {
+    //     addVariantListItem(parent, iterator);
+    //     return;
+    // }
+    // In theory, the above could/should be replaced with this. However,
+    // Qt6 seems ot have some stricker type rules, and this is turning QStrings
+    // into lists. String is the fallthrough, at the bottom, and most things
+    // can be turned into strings. Simply removing this fixes the string parsing
+    // issue (many strings showing up as lists with comma's between each character.
+    // Also... it appears to do no harm. The outuput is the same as with HWCaps viewer
+    // build with Qt5. I'm leving this comment here for "posterity", and just in case
+    // it turns out to be important down the road.
+    // "The Road to Hell is Paved with Good Intentions" ;-)
+    //if (iterator.value().canConvert<QVariantList>()) {
+    //    addVariantListItem(parent, iterator);
+    //    return;
+    //}
+
+
+
     if (key == "subgroupSupportedOperations") {
         const VkSubgroupFeatureFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::subgroupFeatureBitString);
@@ -1172,6 +1309,14 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
     if (key == "subgroupSupportedStages") {
         const VkShaderStageFlags flags = iterator.value().toUInt();
         addBitFlagsItem(parent, iterator.key(), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }
+    if ((key == "defaultRobustnessStorageBuffers") || (key  == "defaultRobustnessUniformBuffers") || (key == "defaultRobustnessVertexInputs")) {        
+        addTextItem(parent, iterator.key(), vulkanResources::pipelineRobustnessBufferBehaviorString((VkPipelineRobustnessBufferBehavior)iterator.value().toUInt()));
+        return;
+    }
+    if (key == "defaultRobustnessImages") {
+        addTextItem(parent, iterator.key(), vulkanResources::pipelineRobustnessImageBehaviorString((VkPipelineRobustnessImageBehavior)iterator.value().toUInt()));
         return;
     }
 
@@ -1187,6 +1332,12 @@ void addPropertiesRow(QStandardItem* parent, const QVariantMap::const_iterator& 
 
 void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
 {
+    if (vulkanResources::shaderStageValueNames.contains(QString::fromStdString(property.name))) {
+        const VkSubgroupFeatureFlags flags = property.value.toUInt();
+        addBitFlagsItem(item[0], QString::fromStdString(property.name), flags, vulkanResources::shaderStagesBitString);
+        return;
+    }
+
     QList<QStandardItem*> propertyItem;
     propertyItem << new QStandardItem(QString::fromStdString(property.name));
 
@@ -1203,7 +1354,7 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         return;
     }
 
-    if (property.value.canConvert(QVariant::List)) {
+    if ((property.value.metaType().id() != QMetaType::QString) && property.value.canConvert<QVariantList>()) {
         if ((strcmp(property.extension, VK_EXT_HOST_IMAGE_COPY_EXTENSION_NAME) == 0) && ((property.name == "pCopySrcLayouts") || (property.name == "pCopyDstLayouts"))) {
             QList<QVariant> list = property.value.toList();
             for (auto i = 0; i < list.size(); i++) {
@@ -1215,8 +1366,8 @@ void addExtensionPropertiesRow(QList<QStandardItem*> item, Property2 property)
         propertyItem << new QStandardItem(arrayToStr(property.value));
     }
     else {
-        switch (property.value.type()) {
-        case QVariant::Bool: {
+        switch (property.value.metaType().id()) {
+        case QMetaType::Bool: {
             bool boolVal = property.value.toBool();
             propertyItem << new QStandardItem(boolVal ? "true" : "false");
             propertyItem[1]->setForeground(boolVal ? QColor::fromRgb(0, 128, 0) : QColor::fromRgb(255, 0, 0));
@@ -1325,10 +1476,25 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.tabWidgetProperties->setTabEnabled(3, false);
     }
 
+    // Core 1.4
+    models.propertiesCore14.clear();
+    if (!(device->core14Properties.empty())) {
+        ui.tabWidgetProperties->setTabEnabled(4, true);
+        QStandardItem* rootItem = models.propertiesCore14.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core14Properties.begin(); iter != device->core14Properties.end(); ++iter) {
+            addPropertiesRow(rootItem, iter);
+        }
+        ui.treeViewDevicePropertiesCore14->expandAll();
+        ui.treeViewDevicePropertiesCore14->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetProperties->setTabEnabled(4, false);
+    }
+
     // Extensions
     models.propertiesExtensions.clear();
     if (!(device->properties2.empty())) {
-        ui.tabWidgetProperties->setTabEnabled(4, true);
+        ui.tabWidgetProperties->setTabEnabled(5, true);
         QStandardItem* rootItem = models.propertiesExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasProperties = false;
@@ -1352,7 +1518,7 @@ void VulkanCapsViewer::displayDeviceProperties(VulkanDeviceInfo *device)
         ui.treeViewDevicePropertiesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
     else {
-        ui.tabWidgetProperties->setTabEnabled(4, false);
+        ui.tabWidgetProperties->setTabEnabled(5, false);
     }
 }
 
@@ -1370,7 +1536,7 @@ void VulkanCapsViewer::displayDeviceMemoryProperties(VulkanDeviceInfo *device)
         memoryHeapItem->setFont(0, boldFont);
 
         const VkMemoryHeap heapType = device->memoryProperties.memoryHeaps[i];
-        addTreeItem(memoryHeapItem, "Device size", to_string(heapType.size));
+        addTreeItem(memoryHeapItem, "Device size", std::to_string(heapType.size));
         addTreeItemFlags(memoryHeapItem, "Flags", heapType.flags, memoryHeapBitString)->setExpanded(true);
 
         // Add memory types belonging to this heap
@@ -1450,10 +1616,25 @@ void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.tabWidgetFeatures->setTabEnabled(3, false);
     }
 
+    // Core 1.4
+    models.featuresCore14.clear();
+    if (!(device->core14Features.empty())) {
+        ui.tabWidgetFeatures->setTabEnabled(4, true);
+        QStandardItem* rootItem = models.featuresCore14.invisibleRootItem();
+        for (QVariantMap::const_iterator iter = device->core14Features.begin(); iter != device->core14Features.end(); ++iter) {
+            addVkBool32Item(rootItem, iter);
+        }
+        ui.treeViewDeviceFeaturesCore14->expandAll();
+        ui.treeViewDeviceFeaturesCore14->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    }
+    else {
+        ui.tabWidgetFeatures->setTabEnabled(4, false);
+    }
+
     // Extensions
     models.featuresExtensions.clear();
     if (!(device->features2.empty())) {
-        ui.tabWidgetFeatures->setTabEnabled(4, true);
+        ui.tabWidgetFeatures->setTabEnabled(5, true);
         QStandardItem* rootItem = models.featuresExtensions.invisibleRootItem();
         for (auto& extension : device->extensions) {
             bool hasFeatures = false;
@@ -1481,7 +1662,7 @@ void VulkanCapsViewer::displayDeviceFeatures(VulkanDeviceInfo *device)
         ui.treeViewDeviceFeaturesExtensions->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     }
     else {
-        ui.tabWidgetFeatures->setTabEnabled(4, false);
+        ui.tabWidgetFeatures->setTabEnabled(5, false);
     }
 
 }
@@ -1494,7 +1675,7 @@ void VulkanCapsViewer::displayInstanceLayers()
         treeItem->setText(0, QString::fromUtf8(layer.properties.layerName));
         treeItem->setText(1, QString::fromStdString(vulkanResources::versionToString(layer.properties.specVersion)));
         treeItem->setText(2, QString::fromStdString(vulkanResources::revisionToString(layer.properties.implementationVersion)));
-        treeItem->setText(3, QString::fromStdString(to_string(layer.extensions.size())));
+        treeItem->setText(3, QString::fromStdString(std::to_string(layer.extensions.size())));
         treeItem->setText(4, layer.properties.description);
         for (auto& layerExt : layer.extensions) {
             addTreeItem(treeItem, layerExt.extensionName, vulkanResources::revisionToString(layerExt.specVersion));
@@ -1647,11 +1828,11 @@ void VulkanCapsViewer::displayDeviceQueues(VulkanDeviceInfo *device)
         // Support flags
         addTreeItemFlags(queueItem, "Flags", queueFamily.properties.queueFlags, vulkanResources::queueBitString)->setExpanded(true);
         // Queue properties
-        addTreeItem(queueItem, "queueCount", to_string(queueFamily.properties.queueCount));
-        addTreeItem(queueItem, "timestampValidBits", to_string(queueFamily.properties.timestampValidBits));
-        addTreeItem(queueItem, "minImageTransferGranularity.width", to_string(queueFamily.properties.minImageTransferGranularity.width));
-        addTreeItem(queueItem, "minImageTransferGranularity.height", to_string(queueFamily.properties.minImageTransferGranularity.height));
-        addTreeItem(queueItem, "minImageTransferGranularity.depth", to_string(queueFamily.properties.minImageTransferGranularity.depth));
+        addTreeItem(queueItem, "queueCount", std::to_string(queueFamily.properties.queueCount));
+        addTreeItem(queueItem, "timestampValidBits", std::to_string(queueFamily.properties.timestampValidBits));
+        addTreeItem(queueItem, "minImageTransferGranularity.width", std::to_string(queueFamily.properties.minImageTransferGranularity.width));
+        addTreeItem(queueItem, "minImageTransferGranularity.height", std::to_string(queueFamily.properties.minImageTransferGranularity.height));
+        addTreeItem(queueItem, "minImageTransferGranularity.depth", std::to_string(queueFamily.properties.minImageTransferGranularity.depth));
         addTreeItemVkBool32(queueItem, "Supports presentation", queueFamily.supportsPresent);
         queueItem->setExpanded(true);
     }
@@ -1682,9 +1863,9 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     surfaceCapsItem->setFont(0, boldFont);
 
     VkSurfaceCapabilitiesKHR surfaceCaps = device.surfaceInfo.capabilities;
-    addTreeItem(surfaceCapsItem, "minImageCount", to_string(surfaceCaps.minImageCount));
-    addTreeItem(surfaceCapsItem, "maxImageCount", to_string(surfaceCaps.maxImageCount));
-    addTreeItem(surfaceCapsItem, "maxImageArrayLayers", to_string(surfaceCaps.maxImageArrayLayers));
+    addTreeItem(surfaceCapsItem, "minImageCount", std::to_string(surfaceCaps.minImageCount));
+    addTreeItem(surfaceCapsItem, "maxImageCount", std::to_string(surfaceCaps.maxImageCount));
+    addTreeItem(surfaceCapsItem, "maxImageArrayLayers", std::to_string(surfaceCaps.maxImageArrayLayers));
     addTreeItemFlags(surfaceCapsItem, "Supported usage flags", surfaceCaps.supportedUsageFlags, imageUsageBitString)->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Supported transforms", surfaceCaps.supportedTransforms, surfaceTransformBitString) ->setExpanded(true);
     addTreeItemFlags(surfaceCapsItem, "Composite alpha flags", surfaceCaps.supportedCompositeAlpha, compositeAlphaBitString) ->setExpanded(true);
@@ -1709,7 +1890,7 @@ void VulkanCapsViewer::displayDeviceSurfaceInfo(VulkanDeviceInfo &device)
     if (!device.surfaceInfo.formats.empty())
     {
         uint32_t index = 0;
-        for (auto surfaceFormat : device.surfaceInfo.formats)
+        for (auto& surfaceFormat : device.surfaceInfo.formats)
         {
             QTreeWidgetItem *formatItem = addTreeItem(formatsItem, "Surface format " + std::to_string(index), "");
             addTreeItem(formatItem, "Format", (formatString(surfaceFormat.format)));

@@ -4,7 +4,7 @@
 *
 * Helpers converting Vulkan entities to strings
 *
-* Copyright (C) 2015-2023 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2015-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -515,6 +515,7 @@ namespace vulkanResources {
 			STR(FIFO_RELAXED);
 			STR(SHARED_DEMAND_REFRESH);
 			STR(SHARED_CONTINUOUS_REFRESH);
+			STR(FIFO_LATEST_READY);
 #undef STR
 		default: return "UNKNOWN_ENUM (" + toHexString(presentMode) + ")";
 		}
@@ -657,6 +658,7 @@ namespace vulkanResources {
 			STR(VIDEO_DECODE_BIT_KHR);
 			STR(VIDEO_ENCODE_BIT_KHR);
 			STR(OPTICAL_FLOW_BIT_NV);
+			STR(DATA_GRAPH_BIT_ARM);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(queueBit) + ")";
 		};
@@ -675,6 +677,8 @@ namespace vulkanResources {
 			STR(CLUSTERED_BIT);
 			STR(QUAD_BIT);
 			STR(PARTITIONED_BIT_NV);
+			STR(ROTATE_BIT);
+			STR(ROTATE_CLUSTERED_BIT);
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(subgroupBit) + ")";
 		};
@@ -702,6 +706,34 @@ namespace vulkanResources {
 			STR(ALL); // technically not a single bit, but it should work here
 #undef STR
 		default: return "UNKNOWN_FLAG (" + toHexString(stageBit) + ")";
+		};
+	}
+
+	inline QString pipelineRobustnessBufferBehaviorString(const VkPipelineRobustnessBufferBehavior value)
+	{
+		switch (value) {
+#define STR(r) case VK_PIPELINE_ROBUSTNESS_BUFFER_BEHAVIOR_##r: return #r
+
+			STR(DEVICE_DEFAULT);
+			STR(DISABLED);
+			STR(ROBUST_BUFFER_ACCESS);
+			STR(ROBUST_BUFFER_ACCESS_2);
+#undef STR
+		default: return QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
+		};
+	}
+
+	inline QString pipelineRobustnessImageBehaviorString(const VkPipelineRobustnessImageBehavior value)
+	{
+		switch (value) {
+#define STR(r) case VK_PIPELINE_ROBUSTNESS_IMAGE_BEHAVIOR_##r: return #r
+
+			STR(DEVICE_DEFAULT);
+			STR(DISABLED);
+			STR(ROBUST_IMAGE_ACCESS);
+			STR(ROBUST_IMAGE_ACCESS_2);
+#undef STR
+		default: return QString::fromStdString("UNKNOWN_ENUM (" + toHexString(value) + ")");
 		};
 	}
 
@@ -811,7 +843,20 @@ namespace vulkanResources {
 		"integerDotProductAccumulatingSaturating64BitUnsignedAccelerated",
 		"integerDotProductAccumulatingSaturating8BitMixedSignednessAccelerated",
 		"integerDotProductAccumulatingSaturating8BitSignedAccelerated",
-		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated"
+		"integerDotProductAccumulatingSaturating8BitUnsignedAccelerated",
+		// Core 1.4
+		"blockTexelViewCompatibleMultipleLayers",
+		"depthStencilSwizzleOneSupport",
+		"dynamicRenderingLocalReadDepthStencilAttachments",
+		"dynamicRenderingLocalReadMultisampledAttachments",
+		"earlyFragmentMultisampleCoverageAfterSampleCounting",
+		"earlyFragmentSampleMaskTestBeforeSampleCounting",
+		"fragmentShadingRateClampCombinerInputs",
+		"identicalMemoryTypeRequirements",
+		"nonStrictSinglePixelWideLinesUseParallelogram",
+		"nonStrictWideLinesUseParallelogram",
+		"polygonModePointSize",
+		"supportsNonZeroFirstInstance"
 	};
 
 	// Values to be displayed as UUIDs
@@ -835,6 +880,12 @@ namespace vulkanResources {
 	const QSet<QString> hexValueNames = {
 		"vendorID",
 		"deviceID"
+	};
+
+	// Values to be displayed as shader stages
+	const QSet<QString> shaderStageValueNames = {
+		"cooperativeVectorSupportedStages",
+		"cooperativeMatrixSupportedStages"
 	};
 
 	// Values not to be displayd

@@ -32,7 +32,7 @@
 #define VULKANANDROID_HPP
 
 #include "vulkan/vulkan.h"
-#include "VulkanContext.h"
+#include "vulkanContext.h"
 #include <sstream>
 
 #ifdef ANDROID

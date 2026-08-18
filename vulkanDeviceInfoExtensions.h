@@ -27,12 +27,12 @@
 #include <QVariant>
 
 #include "vulkan/vulkan.h"
-#include "VulkanContext.h"
-#include "vulkanresources.h"
+#include "vulkanContext.h"
+#include "vulkanResources.h"
 
 #ifdef __ANDROID__
 #include <sys/system_properties.h>
-#include "vulkanandroid.h"
+#include "vulkanAndroid.h"
 #endif
 
 struct Feature2 {
@@ -58,14 +58,6 @@ private:
     void pushProperty2(const char* extension, std::string name, T value) {
         properties2.push_back(Property2(name, QVariant(value), extension));
     };
-    template<typename T>
-    QVariantList arrayToQVariantList(T array, size_t size) {
-        QVariantList res;
-        for (size_t i = 0; i < size; i++) {
-            res.push_back(QVariant(array[i]));            
-        }
-        return res;
-    };
     void pushFeature2(const char* extension, std::string name, bool supported);
     bool extensionSupported(const char* extensionName);
     void readPhysicalFeatures_AMD();
@@ -90,20 +82,30 @@ private:
     void readPhysicalFeatures_NV();
     void readPhysicalProperties_NV();
     void readPhysicalProperties_NVX();
+    void readPhysicalProperties_OHOS();
     void readPhysicalFeatures_QCOM();
     void readPhysicalProperties_QCOM();
     void readPhysicalFeatures_QNX();
     void readPhysicalFeatures_SEC();
     void readPhysicalFeatures_VALVE();
+    void readPhysicalProperties_VALVE();
 
 public:
-    const uint32_t vkHeaderVersion = 289;
+    const uint32_t vkHeaderVersion = 357;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;
     VkPhysicalDevice device;
     void readExtendedFeatures();
     void readExtendedProperties();
+    template<typename T>
+    QVariantList arrayToQVariantList(T array, size_t size) {
+        QVariantList res;
+        for (size_t i = 0; i < size; i++) {
+            res.push_back(QVariant(array[i]));
+        }
+        return res;
+    };
 };
 
 #endif // VULKANDEVICEINFOEXTENSIONS_H

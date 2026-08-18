@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2022 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -33,11 +33,9 @@
 #include <vector>
 
 #include "vulkanDeviceInfo.h"
-#include "vulkanLayerInfo.hpp"
-#include "vulkansurfaceinfo.hpp"
-#include "vulkandatabase.h"
-#include "vulkanandroid.h"
-#include "VulkanContext.h"
+#include "vulkanDatabase.h"
+#include "vulkanAndroid.h"
+#include "vulkanContext.h"
 #include "CustomFilterProxyModel.h"
 
 #include "vulkan/vulkan.h"
@@ -48,7 +46,7 @@
     extern "C" void setWorkingFolderForiOS(void);
 #endif
 
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
 // An unseen window for macOS and iOS that has a Metal surface
 // attached.
 class QVukanSurrogate: public QWindow
@@ -86,7 +84,7 @@ public:
 private:
     uint32_t instanceApiVersion;
     int selectedDeviceIndex = 0;
-#if defined(VK_USE_PLATFORM_IOS_MVK) || defined(VK_USE_PLATFORM_MACOS_MVK)
+#if defined(VK_USE_PLATFORM_METAL_EXT)
     QVukanSurrogate *pMetalSurrogate = nullptr;
 #endif    
     Ui::vulkanCapsViewerClass ui;
@@ -95,11 +93,13 @@ private:
         CustomFilterProxyModel propertiesCore11;
         CustomFilterProxyModel propertiesCore12;
         CustomFilterProxyModel propertiesCore13;
+        CustomFilterProxyModel propertiesCore14;
         CustomFilterProxyModel propertiesExtensions;
         CustomFilterProxyModel featuresCore10;
         CustomFilterProxyModel featuresCore11;
         CustomFilterProxyModel featuresCore12;
         CustomFilterProxyModel featuresCore13;
+        CustomFilterProxyModel featuresCore14;
         CustomFilterProxyModel featuresExtensions;
         CustomFilterProxyModel formats;
         CustomFilterProxyModel extensions;
@@ -110,11 +110,13 @@ private:
         QStandardItemModel propertiesCore11;
         QStandardItemModel propertiesCore12;
         QStandardItemModel propertiesCore13;
+        QStandardItemModel propertiesCore14;
         QStandardItemModel propertiesExtensions;
         QStandardItemModel featuresCore10;
         QStandardItemModel featuresCore11;
         QStandardItemModel featuresCore12;
         QStandardItemModel featuresCore13;
+        QStandardItemModel featuresCore14;
         QStandardItemModel featuresExtensions;
         QStandardItemModel formats;
         QStandardItemModel extensions;
@@ -154,11 +156,13 @@ private Q_SLOTS:
     void slotFilterPropertiesCore11(QString text);
     void slotFilterPropertiesCore12(QString text);
     void slotFilterPropertiesCore13(QString text);
+    void slotFilterPropertiesCore14(QString text);
     void slotFilterPropertiesExtensions(QString text);
     void slotFilterFeatures(QString text);
     void slotFilterFeaturesCore11(QString text);
     void slotFilterFeaturesCore12(QString text);
     void slotFilterFeaturesCore13(QString text);
+    void slotFilterFeaturesCore14(QString text);
     void slotFilterFeaturesExtensions(QString text);
     void slotFilterExtensions(QString text);
     void slotFilterFormats(QString text);

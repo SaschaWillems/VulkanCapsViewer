@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2024 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -25,6 +25,34 @@
 std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
 {
     return layers;
+}
+
+void VulkanSurfaceInfo::get(VkPhysicalDevice device, VkSurfaceKHR surface)
+{
+    if (!validSurface) {
+        return;
+    }
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &capabilities);
+    // Present modes
+    uint32_t presentModeCount;
+    if (vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr) == VK_SUCCESS)
+    {
+        presentModes.resize(presentModeCount);
+        if (presentModeCount > 0)
+        {
+            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, presentModes.data());
+        }
+    }
+    // Surface formats
+    uint32_t surfaceFormatCount;
+    if (vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, nullptr) == VK_SUCCESS)
+    {
+        formats.resize(surfaceFormatCount);
+        if (surfaceFormatCount > 0)
+        {
+            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &surfaceFormatCount, formats.data());
+        }
+    }
 }
 
 void VulkanDeviceInfo::readExtensions()
@@ -215,7 +243,6 @@ std::string VulkanDeviceInfo::getDriverVersion()
     }
     else
     {
-       // todo : Add mappings for other vendors
        return vulkanResources::versionToString(props.driverVersion);
     }
 }
@@ -246,7 +273,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
     qInfo().nospace() << "Device \"" << props.deviceName << "\"";
 
     properties.clear();
-    properties["deviceName"] = props.deviceName;
+    properties["deviceName"] = QString::fromStdString(props.deviceName);
     properties["driverVersion"] = props.driverVersion;
     properties["driverVersionText"] = QString::fromStdString(getDriverVersion());
     properties["apiVersion"] = props.apiVersion;
@@ -284,18 +311,6 @@ void VulkanDeviceInfo::readPhysicalProperties()
             subgroupProperties["supportedStages"] = extProps.supportedStages;
             subgroupProperties["supportedOperations"] = extProps.supportedOperations;
             subgroupProperties["quadOperationsInAllStages"] = QVariant(bool(extProps.quadOperationsInAllStages));
-            // VK_KHR_maintenance3
-            if (extensionSupported(VK_KHR_MAINTENANCE3_EXTENSION_NAME)) {
-                const char* extName(VK_KHR_MAINTENANCE3_EXTENSION_NAME);
-                VkPhysicalDeviceProperties2KHR deviceProps2{};
-                VkPhysicalDeviceMaintenance3Properties extProps{};
-                extProps.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES;
-                deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
-                deviceProps2.pNext = &extProps;
-                vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
-                properties2.push_back(Property2("maxPerSetDescriptors", QVariant::fromValue(extProps.maxPerSetDescriptors), extName));
-                properties2.push_back(Property2("maxMemoryAllocationSize", QVariant::fromValue(extProps.maxMemoryAllocationSize), extName));
-            }
         }
 
         // VK 1.2 core
@@ -329,8 +344,7 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core11Properties["maxMultiviewInstanceIndex"] = coreProps11.maxMultiviewInstanceIndex;
             core11Properties["protectedNoFault"] = coreProps11.protectedNoFault;
             core11Properties["maxPerSetDescriptors"] = coreProps11.maxPerSetDescriptors;
-            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(coreProps11.maxMemoryAllocationSize);
-
+            core11Properties["maxMemoryAllocationSize"] = QVariant::fromValue(QString::number(coreProps11.maxMemoryAllocationSize));
 
             // Core 1.2
             qInfo() << "Reading Vulkan 1.2 core properties";
@@ -342,8 +356,8 @@ void VulkanDeviceInfo::readPhysicalProperties()
 
             core12Properties.clear();
             core12Properties["driverID"] = coreProps12.driverID;
-            core12Properties["driverName"] = QString(coreProps12.driverName);
-            core12Properties["driverInfo"] = QString(coreProps12.driverInfo);
+            core12Properties["driverName"] = QString::fromStdString(coreProps12.driverName);
+            core12Properties["driverInfo"] = QString::fromStdString(coreProps12.driverInfo);
             core12Properties["conformanceVersion"] =  QString::fromStdString(vulkanResources::conformanceVersionKHRString(coreProps12.conformanceVersion));
             core12Properties["denormBehaviorIndependence"] = coreProps12.denormBehaviorIndependence;
             core12Properties["roundingModeIndependence"] = coreProps12.roundingModeIndependence;
@@ -455,6 +469,53 @@ void VulkanDeviceInfo::readPhysicalProperties()
             core13Properties["uniformTexelBufferOffsetAlignmentBytes"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetAlignmentBytes);
             core13Properties["uniformTexelBufferOffsetSingleTexelAlignment"] = QVariant::fromValue(coreProps13.uniformTexelBufferOffsetSingleTexelAlignment);
             core13Properties["maxBufferSize"] = QVariant::fromValue(coreProps13.maxBufferSize).toString();
+        }
+
+        // Vulkan 1.4
+        if (vulkanVersionSupported(1, 4)) {
+            qInfo() << "Reading Vulkan 1.4 core properties";
+
+            VkPhysicalDeviceProperties2KHR deviceProps2{};
+            deviceProps2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2_KHR;
+
+            VkPhysicalDeviceVulkan14Properties coreProps14{};
+            coreProps14.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_PROPERTIES;
+            deviceProps2.pNext = &coreProps14;
+            // 1: Get dimensions for pCopySrcLayouts and pCopyDstLayouts 
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+            // 2: Get with properly sized arrays
+            std::vector<VkImageLayout> copySrcLayouts(coreProps14.copySrcLayoutCount);
+            std::vector<VkImageLayout> copyDstLayouts(coreProps14.copyDstLayoutCount);
+            coreProps14.pCopySrcLayouts = copySrcLayouts.data();
+            coreProps14.pCopyDstLayouts = copyDstLayouts.data();
+            vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+
+            core14Properties.clear();
+            core14Properties["lineSubPixelPrecisionBits"] = coreProps14.lineSubPixelPrecisionBits;
+            core14Properties["maxVertexAttribDivisor"] = coreProps14.maxVertexAttribDivisor;
+            core14Properties["supportsNonZeroFirstInstance"] = coreProps14.supportsNonZeroFirstInstance;
+            core14Properties["maxPushDescriptors"] = coreProps14.maxPushDescriptors;
+            core14Properties["dynamicRenderingLocalReadDepthStencilAttachments"] = coreProps14.dynamicRenderingLocalReadDepthStencilAttachments;
+            core14Properties["dynamicRenderingLocalReadMultisampledAttachments"] = coreProps14.dynamicRenderingLocalReadMultisampledAttachments;
+            core14Properties["earlyFragmentMultisampleCoverageAfterSampleCounting"] = coreProps14.earlyFragmentMultisampleCoverageAfterSampleCounting;
+            core14Properties["earlyFragmentSampleMaskTestBeforeSampleCounting"] = coreProps14.earlyFragmentSampleMaskTestBeforeSampleCounting;
+            core14Properties["depthStencilSwizzleOneSupport"] = coreProps14.depthStencilSwizzleOneSupport;
+            core14Properties["polygonModePointSize"] = coreProps14.polygonModePointSize;
+            core14Properties["nonStrictSinglePixelWideLinesUseParallelogram"] = coreProps14.nonStrictSinglePixelWideLinesUseParallelogram;
+            core14Properties["nonStrictWideLinesUseParallelogram"] = coreProps14.nonStrictWideLinesUseParallelogram;
+            core14Properties["blockTexelViewCompatibleMultipleLayers"] = coreProps14.blockTexelViewCompatibleMultipleLayers;
+            core14Properties["maxCombinedImageSamplerDescriptorCount"] = coreProps14.maxCombinedImageSamplerDescriptorCount;
+            core14Properties["fragmentShadingRateClampCombinerInputs"] = coreProps14.fragmentShadingRateClampCombinerInputs;
+            core14Properties["defaultRobustnessStorageBuffers"] = coreProps14.defaultRobustnessStorageBuffers;
+            core14Properties["defaultRobustnessUniformBuffers"] = coreProps14.defaultRobustnessUniformBuffers;
+            core14Properties["defaultRobustnessVertexInputs"] = coreProps14.defaultRobustnessVertexInputs;
+            core14Properties["defaultRobustnessImages"] = coreProps14.defaultRobustnessImages;
+            core14Properties["copySrcLayoutCount"] = coreProps14.copySrcLayoutCount;
+            core14Properties["pCopySrcLayouts"] = QVariant::fromValue(arrayToQVariantList(coreProps14.pCopySrcLayouts, coreProps14.copySrcLayoutCount));
+            core14Properties["copyDstLayoutCount"] = coreProps14.copyDstLayoutCount;
+            core14Properties["pCopyDstLayouts"] = QVariant::fromValue(arrayToQVariantList(coreProps14.pCopyDstLayouts, coreProps14.copyDstLayoutCount));
+            core14Properties["optimalTilingLayoutUUID"] = UUIDToJson(coreProps14.optimalTilingLayoutUUID);
+            core14Properties["identicalMemoryTypeRequirements"] = coreProps14.identicalMemoryTypeRequirements;
         }
     }
 
@@ -668,13 +729,48 @@ void VulkanDeviceInfo::readPhysicalFeatures()
             core13Features["maintenance4"] = coreFeatures13.maintenance4;
         }
 
+        // Vulkan 1.4
+        if (vulkanVersionSupported(1, 4)) {
+            qInfo() << "Reading Vulkan 1.4 core features";
+
+            VkPhysicalDeviceFeatures2KHR deviceFeatures2{};
+            deviceFeatures2.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2_KHR;
+
+            VkPhysicalDeviceVulkan14Features coreFeatures14{};
+            coreFeatures14.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES;
+            deviceFeatures2.pNext = &coreFeatures14;
+            vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+
+            core14Features.clear();
+            core14Features["globalPriorityQuery"] = coreFeatures14.globalPriorityQuery;
+            core14Features["shaderSubgroupRotate"] = coreFeatures14.shaderSubgroupRotate;
+            core14Features["shaderSubgroupRotateClustered"] = coreFeatures14.shaderSubgroupRotateClustered;
+            core14Features["shaderFloatControls2"] = coreFeatures14.shaderFloatControls2;
+            core14Features["shaderExpectAssume"] = coreFeatures14.shaderExpectAssume;
+            core14Features["rectangularLines"] = coreFeatures14.rectangularLines;
+            core14Features["bresenhamLines"] = coreFeatures14.bresenhamLines;
+            core14Features["smoothLines"] = coreFeatures14.smoothLines;
+            core14Features["stippledRectangularLines"] = coreFeatures14.stippledRectangularLines;
+            core14Features["stippledBresenhamLines"] = coreFeatures14.stippledBresenhamLines;
+            core14Features["stippledSmoothLines"] = coreFeatures14.stippledSmoothLines;
+            core14Features["vertexAttributeInstanceRateDivisor"] = coreFeatures14.vertexAttributeInstanceRateDivisor;
+            core14Features["vertexAttributeInstanceRateZeroDivisor"] = coreFeatures14.vertexAttributeInstanceRateZeroDivisor;
+            core14Features["indexTypeUint8"] = coreFeatures14.indexTypeUint8;
+            core14Features["dynamicRenderingLocalRead"] = coreFeatures14.dynamicRenderingLocalRead;
+            core14Features["maintenance5"] = coreFeatures14.maintenance5;
+            core14Features["maintenance6"] = coreFeatures14.maintenance6;
+            core14Features["pipelineProtectedAccess"] = coreFeatures14.pipelineProtectedAccess;
+            core14Features["pipelineRobustness"] = coreFeatures14.pipelineRobustness;
+            core14Features["hostImageCopy"] = coreFeatures14.hostImageCopy;
+            core14Features["pushDescriptor"] = coreFeatures14.pushDescriptor;
+        }
+
     }
 }
 
 void VulkanDeviceInfo::readPhysicalLimits()
 {
     qInfo() << "Reading limits";
-    using vulkanResources::toHexQString;
 
     limits.clear();
     limits["maxImageDimension1D"] = props.limits.maxImageDimension1D;
@@ -688,8 +784,8 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["maxPushConstantsSize"] = props.limits.maxPushConstantsSize;
     limits["maxMemoryAllocationCount"] = props.limits.maxMemoryAllocationCount;
     limits["maxSamplerAllocationCount"] = props.limits.maxSamplerAllocationCount;
-    limits["bufferImageGranularity"] = toHexQString(props.limits.bufferImageGranularity);
-    limits["sparseAddressSpaceSize"] = toHexQString(props.limits.sparseAddressSpaceSize);
+    limits["bufferImageGranularity"] = vulkanResources::toHexQString(props.limits.bufferImageGranularity);
+    limits["sparseAddressSpaceSize"] = vulkanResources::toHexQString(props.limits.sparseAddressSpaceSize);
     limits["maxBoundDescriptorSets"] = props.limits.maxBoundDescriptorSets;
     limits["maxPerStageDescriptorSamplers"] = props.limits.maxPerStageDescriptorSamplers;
     limits["maxPerStageDescriptorUniformBuffers"] = props.limits.maxPerStageDescriptorUniformBuffers;
@@ -743,10 +839,10 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["maxViewportDimensions"] = QVariant::fromValue(QVariantList({ props.limits.maxViewportDimensions[0], props.limits.maxViewportDimensions[1] }));
     limits["viewportBoundsRange"] = QVariant::fromValue(QVariantList({ props.limits.viewportBoundsRange[0], props.limits.viewportBoundsRange[1] }));
     limits["viewportSubPixelBits"] = props.limits.viewportSubPixelBits;
-    limits["minMemoryMapAlignment"] = toHexQString(props.limits.minMemoryMapAlignment);
-    limits["minTexelBufferOffsetAlignment"] = toHexQString(props.limits.minTexelBufferOffsetAlignment);
-    limits["minUniformBufferOffsetAlignment"] = toHexQString(props.limits.minUniformBufferOffsetAlignment);
-    limits["minStorageBufferOffsetAlignment"] = toHexQString(props.limits.minStorageBufferOffsetAlignment);
+    limits["minMemoryMapAlignment"] = vulkanResources::toHexQString(props.limits.minMemoryMapAlignment);
+    limits["minTexelBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minTexelBufferOffsetAlignment);
+    limits["minUniformBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minUniformBufferOffsetAlignment);
+    limits["minStorageBufferOffsetAlignment"] = vulkanResources::toHexQString(props.limits.minStorageBufferOffsetAlignment);
     limits["minTexelOffset"] = props.limits.minTexelOffset;
     limits["maxTexelOffset"] = props.limits.maxTexelOffset;
     limits["minTexelGatherOffset"] = props.limits.minTexelGatherOffset;
@@ -780,9 +876,9 @@ void VulkanDeviceInfo::readPhysicalLimits()
     limits["lineWidthGranularity"] = props.limits.lineWidthGranularity;
     limits["strictLines"] = props.limits.strictLines;
     limits["standardSampleLocations"] = props.limits.standardSampleLocations;
-    limits["optimalBufferCopyOffsetAlignment"] = toHexQString(props.limits.optimalBufferCopyOffsetAlignment);
-    limits["optimalBufferCopyRowPitchAlignment"] = toHexQString(props.limits.optimalBufferCopyRowPitchAlignment);
-    limits["nonCoherentAtomSize"] = toHexQString(props.limits.nonCoherentAtomSize);
+    limits["optimalBufferCopyOffsetAlignment"] = vulkanResources::toHexQString(props.limits.optimalBufferCopyOffsetAlignment);
+    limits["optimalBufferCopyRowPitchAlignment"] = vulkanResources::toHexQString(props.limits.optimalBufferCopyRowPitchAlignment);
+    limits["nonCoherentAtomSize"] = vulkanResources::toHexQString(props.limits.nonCoherentAtomSize);
 }
 
 void VulkanDeviceInfo::readPhysicalMemoryProperties()
@@ -913,6 +1009,18 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
             jsonCore13["features"] = QJsonObject::fromVariantMap(core13Features);
         }
         root["core13"] = jsonCore13;
+    }
+
+    // Core 1.4
+    if ((!core14Properties.empty()) || (!core14Features.empty())) {
+        QJsonObject jsonCore14;
+        if (!core14Properties.empty()) {
+            jsonCore14["properties"] = QJsonObject::fromVariantMap(core14Properties);
+        }
+        if (!core14Features.empty()) {
+            jsonCore14["features"] = QJsonObject::fromVariantMap(core14Features);
+        }
+        root["core14"] = jsonCore14;
     }
 
     // Extensions
@@ -1088,8 +1196,9 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     for (auto& property2 : properties2) {
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
-        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);        
-        if (property2.value.canConvert(QMetaType::QVariantList)) {
+        jsonProperty2["extension"] = QString::fromUtf8(property2.extension);
+        // This fixes the one remaining problem in the report .json
+        if (property2.value.metaType().id() == QMetaType::QVariantList) {
             jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
         } else {
             jsonProperty2["value"] = property2.value.toString();

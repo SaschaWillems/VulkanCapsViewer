@@ -5,7 +5,7 @@
 TEMPLATE = app
 TARGET = vulkanCapsViewer
 QT += core network widgets gui
-CONFIG += c++17
+CONFIG += c++20
 #CONFIG += release bad for debugging
 DEFINES += QT_DLL QT_NETWORK_LIB QT_WIDGETS_LIB VK_ENABLE_BETA_EXTENSIONS
 INCLUDEPATH += ./GeneratedFiles \
@@ -27,12 +27,12 @@ linux:!android {
     LIBS += -lvulkan
     contains(DEFINES, X11) {
         message("Building for X11")
-        QT += x11extras
+        LIBS += -lxcb
         DEFINES += VK_USE_PLATFORM_XCB_KHR
     }
     contains(DEFINES, WAYLAND) {
         message("Building for Wayland")
-        QT += waylandclient
+        LIBS += -lwayland-client
         DEFINES += VK_USE_PLATFORM_WAYLAND_KHR
     }
     target.path = /usr/bin
@@ -43,14 +43,13 @@ linux:!android {
     icon.files = vulkanCapsViewer.png
     icon.path = /usr/share/icons/hicolor/256x256/apps/
     INSTALLS += desktop icon
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 android {
+    QT += core-private
+    LIBS += -landroid
     DEFINES += VK_NO_PROTOTYPES
     DEFINES += VK_USE_PLATFORM_ANDROID_KHR
-    QT += androidextras
-    CONFIG += mobility
-    MOBILITY =
-    LIBS += -landroid
     ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
     DISTFILES += \
@@ -59,25 +58,32 @@ android {
         android/res/values/libs.xml
 }
 macx {
-    DEFINES += VK_USE_PLATFORM_MACOS_MVK
+    DEFINES += VK_USE_PLATFORM_METAL_EXT
     VULKAN_DYLIB = $(VULKAN_SDK)/lib/libvulkan.dylib
     LIBS += $$VULKAN_DYLIB -framework Cocoa -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/vulkanCapsViewer.icns
+    QMAKE_CXXFLAGS += -Wno-missing-field-initializers
 }
 ios {
     TARGET = "Vulkan Caps Viewer"
     QMAKE_INFO_PLIST = iOS/Info.plist
-    DEFINES += VK_USE_PLATFORM_IOS_MVK
-    LIBS += /Users/lunarg/dev/VulkanSDK/MoltenVK/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
+    DEFINES += VK_USE_PLATFORM_METAL_EXT
+    DEFINES += VK_USE_PLATFORM_MACOS_MVK
+    LIBS += $(VULKAN_SDK)/lib/MoltenVk.xcframework/ios-arm64/libMoltenVK.a
     LIBS += -framework QuartzCore
     OBJECTIVE_SOURCES += appleutils.mm
     ICON = $${PWD}/iOS/vulkanCapsViewer.png
     }
 
 DEPENDPATH += .
-MOC_DIR += ./GeneratedFiles/release
-OBJECTS_DIR += release
+android {
+    MOC_DIR = ./GeneratedFiles/release_$${QT_ARCH}
+    OBJECTS_DIR = release_$${QT_ARCH}
+} else {
+    MOC_DIR = ./GeneratedFiles/release
+    OBJECTS_DIR = release
+}
 UI_DIR += ./GeneratedFiles
 RCC_DIR += ./GeneratedFiles
 include(vulkanCapsViewer.pri)
@@ -95,7 +101,8 @@ DISTFILES += \
     android/res/values/libs.xml \
     android/build.gradle \
     android/gradle/wrapper/gradle-wrapper.properties \
-    android/gradlew.bat
+    android/gradlew.bat \
+    android/res/xml/qtprovider_paths.xml
 
 contains(ANDROID_TARGET_ARCH,x86) {
     ANDROID_EXTRA_LIBS = \
