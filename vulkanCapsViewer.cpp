@@ -75,8 +75,8 @@ extern "C" void *makeViewMetalCompatible(void* handle);
 #endif
 #endif
 
-const QString VulkanCapsViewer::version = "4.11";
-const QString VulkanCapsViewer::reportVersion = "4.1";
+const QString VulkanCapsViewer::version = "4.12";
+const QString VulkanCapsViewer::reportVersion = "4.2";
 
 OSInfo getOperatingSystem()
 {
@@ -685,7 +685,9 @@ bool VulkanCapsViewer::initVulkan()
     for (auto& ext : instanceExtensions) {
         if (strcmp(ext.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
             deviceProperties2Available = true;
+            deviceFormatProperties2Available = true;
             enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
+            qInfo() << "Found " << VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME << ", new device and format properties will be read";
         }
         // (On Android) enable color space extensions so we also get wide color gamut surface formats
         if (strcmp(ext.extensionName, VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME) == 0) {
@@ -736,6 +738,11 @@ bool VulkanCapsViewer::initVulkan()
         if (!vulkanContext.vkGetPhysicalDeviceProperties2KHR) {
             deviceProperties2Available = false;
             QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceProperties2KHR (even though extension is enabled!)\nNew features and properties won't be displayed!");
+        }
+        vulkanContext.vkGetPhysicalDeviceFormatProperties2KHR = reinterpret_cast<PFN_vkGetPhysicalDeviceFormatProperties2KHR>(vkGetInstanceProcAddr(vulkanContext.instance, "vkGetPhysicalDeviceFormatProperties2KHR"));
+        if (!vulkanContext.vkGetPhysicalDeviceFormatProperties2KHR) {
+            deviceFormatProperties2Available = false;
+            QMessageBox::warning(this, tr("Error"), "Could not get function pointer for vkGetPhysicalDeviceFormatProperties2KHR (even though extension is enabled!)\nNew format properties won't be displayed!");
         }
     }
 
@@ -1719,16 +1726,6 @@ void VulkanCapsViewer::displayOSInfo(VulkanDeviceInfo& device)
     }
 }
 
-void addFlagModelItem(QStandardItem *parent, QString flagName, bool flag)
-{
-    if (flag)
-    {
-        QList<QStandardItem *> flagItems;
-        flagItems << new QStandardItem(flagName);
-        parent->appendRow(flagItems);
-    }
-}
-
 void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 {
     models.formats.clear();
@@ -1738,7 +1735,7 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
         QList<QStandardItem *> rowItems;
         rowItems << new QStandardItem(QString::fromStdString(vulkanResources::formatString(format.format)));
 
-        std::vector<VkFormatFeatureFlags> featureFlags =
+        std::vector<uint64_t> featureFlags =
         {
             format.properties.linearTilingFeatures,
             format.properties.optimalTilingFeatures,
@@ -1757,72 +1754,40 @@ void VulkanCapsViewer::displayDeviceFormats(VulkanDeviceInfo *device)
 
         struct featureSet {
             std::string name;
-            VkFlags flags;
+            uint64_t flags;
         };
-        std::vector<featureSet> featureSets =
-        {
+        std::unordered_map<std::string, uint64_t> featureSets = {
             { "Linear tiling flags", format.properties.linearTilingFeatures },
             { "Optimal tiling flags", format.properties.optimalTilingFeatures },
             { "Buffer features flags", format.properties.bufferFeatures }
         };
 
-        if (format.supported)
+        // Always use feature2 enums, as they contain all initial enums
+        for (auto& featureSet : featureSets)
         {
-            for (auto& featureSet : featureSets)
+            QList<QStandardItem*> flagItems;
+            flagItems << new QStandardItem(QString::fromStdString(featureSet.first));
+
+            if (featureSet.second == 0)
             {
-                QList<QStandardItem *> flagItems;
-                flagItems << new QStandardItem(QString::fromStdString(featureSet.name));
-
-                if (featureSet.flags == 0)
-                {
-                    QList<QStandardItem *> flagItem;
-                    flagItem << new QStandardItem("none");
-                    flagItems[0]->appendRow(flagItem);
-                }
-                else
-                {
-                #define ADD_FLAG(flag) \
-                    if (featureSet.flags & flag) \
-                    { \
-                        QList<QStandardItem *> flagItem; \
-                        QString flagname(#flag); \
-                        flagname = flagname.replace("VK_FORMAT_FEATURE_", ""); \
-                        flagItem << new QStandardItem(flagname); \
-                        flagItems[0]->appendRow(flagItem); \
-                    }
-
-                    // Core
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_IMAGE_ATOMIC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_UNIFORM_TEXEL_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_STORAGE_TEXEL_BUFFER_ATOMIC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_VERTEX_BUFFER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BLEND_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_SRC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_BLIT_DST_BIT)
-                    // 1.1
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_SRC_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_TRANSFER_DST_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_MIDPOINT_CHROMA_SAMPLES_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_SEPARATE_RECONSTRUCTION_FILTER_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_CHROMA_RECONSTRUCTION_EXPLICIT_FORCEABLE_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_DISJOINT_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_COSITED_CHROMA_SAMPLES_BIT)
-
-                    // EXT
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)
-                    ADD_FLAG(VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_CUBIC_BIT_IMG)
-                }
-
-                rowItems[0]->appendRow(flagItems);
-
+                QList<QStandardItem*> flagItem;
+                flagItem << new QStandardItem("none");
+                flagItems[0]->appendRow(flagItem);
             }
+            else
+            {
+                for (auto& formatFlag : vulkanResources::formatFeatureFlags2) {
+                    if (featureSet.second & formatFlag) {
+                        QList<QStandardItem*> flagItem;
+                        QString flagname = vulkanResources::formatFeature2String(formatFlag);
+                        flagname = flagname.replace("VK_FORMAT_FEATURE_2_", "");
+                        flagItem << new QStandardItem(flagname);
+                        flagItems[0]->appendRow(flagItem);
+                    }
+                }
+            }
+
+            rowItems[0]->appendRow(flagItems);
         }
     }
 
