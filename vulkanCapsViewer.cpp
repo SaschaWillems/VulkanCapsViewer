@@ -654,7 +654,6 @@ bool VulkanCapsViewer::initVulkan()
         enabledExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
     }
     
-
     std::vector<std::string> surfaceExtensionsAvailable = {};
 
     for (const std::string& possibleExtension : possibleSurfaceExtensions) {
@@ -681,26 +680,42 @@ bool VulkanCapsViewer::initVulkan()
     } while (vkRes == VK_INCOMPLETE);
 
     // Check support for new property and feature queries
+    // Some device extensions require specific instance extensions to be available (as per spec), so we enable them when present
+    const std::vector<const char*> reqInstanceExtensions{
+        VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME,
+        VK_KHR_GET_SURFACE_CAPABILITIES_2_EXTENSION_NAME,
+        VK_EXT_DIRECT_MODE_DISPLAY_EXTENSION_NAME,
+        VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
+        VK_EXT_DEBUG_UTILS_EXTENSION_NAME,
+        VK_KHR_DISPLAY_EXTENSION_NAME,
+        VK_EXT_DISPLAY_SURFACE_COUNTER_EXTENSION_NAME,
+        VK_KHR_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
+        VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME,
+        VK_KHR_DEVICE_GROUP_CREATION_EXTENSION_NAME,
+        VK_KHR_EXTERNAL_FENCE_CAPABILITIES_EXTENSION_NAME,
+        VK_KHR_SURFACE_MAINTENANCE_1_EXTENSION_NAME,
+        VK_KHR_GET_DISPLAY_PROPERTIES_2_EXTENSION_NAME,
+        VK_NV_EXTERNAL_MEMORY_CAPABILITIES_EXTENSION_NAME,
+    };
     deviceProperties2Available = false;
     for (auto& ext : instanceExtensions) {
         if (strcmp(ext.extensionName, VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME) == 0) {
             deviceProperties2Available = true;
             deviceFormatProperties2Available = true;
             enabledExtensions.push_back(VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME);
-            qInfo() << "Found " << VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME << ", new device and format properties will be read";
         }
-        // (On Android) enable color space extensions so we also get wide color gamut surface formats
-        if (strcmp(ext.extensionName, VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME) == 0) {
-            enabledExtensions.push_back(VK_EXT_SWAPCHAIN_COLOR_SPACE_EXTENSION_NAME);
+        for (auto& reqExt : reqInstanceExtensions) {
+            if (strcmp(ext.extensionName, reqExt) == 0) {
+                enabledExtensions.push_back(reqExt);
+                break;
+            }
         }
 
-// IF the portability extension is available, enable it here.
-#if VK_HEADER_VERSION >= 216
+        // IF the portability extension is available, enable it here.
         if(strcmp(ext.extensionName, VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME) == 0) {
             instanceCreateInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
             enabledExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
         }
-#endif
     }
 
     instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
