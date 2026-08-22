@@ -1,10 +1,10 @@
-<?xml version="1.0"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="4.13" android:versionCode="48" android:installLocation="auto" package="de.saschawillems.vulkancapsviewer">
+<?xml version='1.0'?>
+<manifest android:installLocation="auto" android:versionCode="48" android:versionName="4.13" package="de.saschawillems.vulkancapsviewer" xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- %%INSERT_PERMISSIONS -->
-    <!-- %%INSERT_FEATURES -->
     <supports-screens android:anyDensity="true" android:largeScreens="true" android:normalScreens="true" android:smallScreens="true"/>
-    <application android:name="org.qtproject.qt.android.bindings.QtApplication" android:hardwareAccelerated="true" android:label="Vulkan Caps Viewer" android:roundIcon="@mipmap/ic_launcher" android:icon="@drawable/icon" android:requestLegacyExternalStorage="true" android:allowBackup="true" android:fullBackupOnly="false">
-        <activity android:name="org.qtproject.qt.android.bindings.QtActivity" android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:label="Vulkan Caps Viewer" android:launchMode="singleTop" android:screenOrientation="unspecified" android:exported="true">
+    <!--%%INSERT_FEATURES-->
+    <application android:allowBackup="true" android:fullBackupOnly="false" android:hardwareAccelerated="true" android:icon="@drawable/icon" android:label="Vulkan Caps Viewer" android:name="org.qtproject.qt.android.bindings.QtApplication" android:requestLegacyExternalStorage="true" android:roundIcon="@mipmap/ic_launcher">
+        <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density" android:exported="true" android:label="Vulkan Caps Viewer" android:launchMode="singleTop" android:name="org.qtproject.qt.android.bindings.QtActivity" android:screenOrientation="unspecified">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -12,8 +12,7 @@
             <meta-data android:name="android.app.lib_name" android:value="-- %%INSERT_APP_LIB_NAME%% --"/>
             <meta-data android:name="android.app.arguments" android:value="-- %%INSERT_APP_ARGUMENTS%% --"/>
         </activity>
-
-        <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true">
+        <provider android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true" android:name="androidx.core.content.FileProvider">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/qtprovider_paths"/>
         </provider>
     </application>
