@@ -10,7 +10,7 @@ function download($remote, $local) {
     }
 }
 
-$version = "4.11";
+$version = "4.13";
 $name_template = "vulkancapsviewer_".$version."_%s";
 
 echo "Starting downloads for $name_template ...".PHP_EOL;
