@@ -230,3 +230,5 @@ redist/*.zip
 
 devdatabase.ini
 /db.ini
+android-build/**
+.qtc_clangd/**

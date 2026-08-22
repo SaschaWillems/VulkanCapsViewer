@@ -2,7 +2,7 @@
 *
 * Vulkan hardware capability viewer
 *
-* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2026 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -73,6 +73,7 @@ public:
     std::vector<VulkanLayerInfo> instanceLayers;
     std::vector<VkExtensionProperties> instanceExtensions;
     bool deviceProperties2Available = false;
+    bool deviceFormatProperties2Available = false;
     VulkanDatabase database;
     void checkReportDatabaseState();
     VulkanCapsViewer(QWidget *parent = 0);

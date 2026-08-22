@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2026 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -83,7 +83,11 @@ struct VulkanLayerInfo
 struct VulkanFormatInfo
 {
     VkFormat format;
-    VkFormatProperties properties;
+    struct Properties {
+        uint64_t linearTilingFeatures;
+        uint64_t optimalTilingFeatures;
+        uint64_t bufferFeatures;
+    } properties;
     bool supported;
 };
 
@@ -123,6 +127,7 @@ public:
     QVariantMap core14Features;
     bool hasSubgroupProperties = false;
     bool hasFeaturModifyingTool = false;
+    bool hasFormatFeatureFlags2 = false;
     QVariantMap subgroupProperties;
     QVariantMap core11Properties;
     QVariantMap core12Properties;
