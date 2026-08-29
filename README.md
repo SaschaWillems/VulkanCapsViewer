@@ -21,8 +21,13 @@ The hardware reports can be submitted to a public [online database](https://vulk
 
 ![Build Project](https://github.com/SaschaWillems/VulkanCapsViewer/workflows/Build%20Project/badge.svg)
 
-The repository includes a project file for the [Qt Creator IDE](https://www.qt.io/ide/) that has been tested to work with Windows, Linux and Android. This is the preferred (and easiest) way of building the application if you want to build it yourself. Using the [Qt Visual Studio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2019), it's also possible to use a current Visual Studio version.
+The repository includes a project file for the [Qt Creator IDE](https://www.qt.io/ide/) that has been tested to work with Windows, Linux and Android. This is the preferred (and easiest) way of building the application if you want to build it yourself. 
+
 Alternatively, you can simply run `qmake` followed by `make` in the source directory.
+
+## Windows
+
+Using the [Qt Visual Studio Tools](https://marketplace.visualstudio.com/items?itemName=TheQtCompany.QtVisualStudioTools2022), it's also possible to use a current Visual Studio version.
 
 ## Linux
 When building for Linux, specify the desired windowing system to enable its support.
@@ -41,11 +46,11 @@ Note: Do not enable both flags simultaneously.
 
 ## Android
 
-The Android apk needs to be built from Qt Creator and requires Android SDK and Android NDK. Due to issues with widget rendering in certain Qt6 versions, Android builds should use Qt 6.9.2 or newer.
+The Android apk needs to be built from Qt Creator and requires Android SDK and Android NDK. Due to issues with widget rendering in certain Qt6 versions.
 
 # Releases
 Current releases for all platforms will be provided on a regular basis at [vulkan.gpuinfo.org/download.php](https://vulkan.gpuinfo.org/download.php).
 
 # Dependencies
 - [Vulkan SDK](https://vulkan.lunarg.com/)
-- [Qt 6.8.3](https://www.qt.io/developers/) - Older versions may not work due to missing functionality
+- [Qt 6.9 or newer](https://www.qt.io/developers/)
