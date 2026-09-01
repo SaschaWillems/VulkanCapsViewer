@@ -115,11 +115,17 @@ class ExtensionContainer
 {
     public $extensions = [];
 
+    // Some extensions can't be easily added to the database right now (e.g. complex structs) and are ignored for header generation
+    private $ext_skiplist = ['VK_AMD_gpa_interface'];
+
     function __construct($xml, $typecontainer)
     {
         foreach ($xml->extensions->extension as $ext_node) {
             // Skip Vulkan SC only and disabled extensions
             if (($ext_node['supported'] == 'vulkansc') || ($ext_node['supported'] == 'disabled')) {
+                continue;
+            }
+            if (in_array($ext_node['name'], $this->ext_skiplist)) {
                 continue;
             }
             $features2_node = null;
