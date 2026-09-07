@@ -1,6 +1,5 @@
-# AMD (6)
+# AMD (5)
 
-* VK_AMD_gpa_interface
 * VK_AMD_shader_core_properties
 * VK_AMD_shader_core_properties2
 * VK_AMD_device_coherent_memory
@@ -32,7 +31,7 @@
 * VK_ARM_data_graph_optical_flow
 * VK_ARM_data_graph_neural_accelerator_statistics
 
-# EXT (111)
+# EXT (113)
 
 * VK_EXT_transform_feedback
 * VK_EXT_texture_compression_astc_hdr
@@ -142,9 +141,11 @@
 * VK_EXT_custom_resolve
 * VK_EXT_shader_long_vector
 * VK_EXT_shader_uniform_buffer_unsized_array
+* VK_EXT_cooperative_matrix_maintenance1
 * VK_EXT_shader_subgroup_partitioned
 * VK_EXT_shader_ocp_microscaling_types
 * VK_EXT_primitive_restart_index
+* VK_EXT_image_tiling_control
 
 # HUAWEI (4)
 
@@ -161,7 +162,7 @@
 
 * VK_INTEL_shader_integer_functions2
 
-# KHR (90)
+# KHR (91)
 
 * VK_KHR_dynamic_rendering
 * VK_KHR_multiview
@@ -251,6 +252,7 @@
 * VK_KHR_present_mode_fifo_latest_ready
 * VK_KHR_opacity_micromap
 * VK_KHR_maintenance10
+* VK_KHR_pipeline_library_group_handles
 * VK_KHR_maintenance11
 * VK_KHR_extended_flags
 
@@ -262,7 +264,7 @@
 
 * VK_MSFT_layered_driver
 
-# NV (45)
+# NV (46)
 
 * VK_NV_corner_sampled_image
 * VK_NV_shader_sm_builtins
@@ -309,6 +311,7 @@
 * VK_NV_present_metering
 * VK_NV_compute_occupancy_priority
 * VK_NV_cooperative_matrix_decode_vector
+* VK_NV_private_data_base_handle
 
 # NVX (1)
 
@@ -344,12 +347,13 @@
 * VK_SEC_pipeline_cache_incremental_mode
 * VK_SEC_throttle_hint
 
-# VALVE (5)
+# VALVE (6)
 
 * VK_VALVE_mutable_descriptor_type
 * VK_VALVE_video_encode_rgb_conversion
 * VK_VALVE_descriptor_set_host_mapping
 * VK_VALVE_fragment_density_map_layered
 * VK_VALVE_shader_mixed_float_dot_product
+* VK_VALVE_buffer_device_address_allocation_alignment
 
-Total: 303 extensions
+Total: 307 extensions

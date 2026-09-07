@@ -82,7 +82,6 @@ private:
     void readPhysicalFeatures_NV();
     void readPhysicalProperties_NV();
     void readPhysicalProperties_NVX();
-    void readPhysicalProperties_OHOS();
     void readPhysicalFeatures_QCOM();
     void readPhysicalProperties_QCOM();
     void readPhysicalFeatures_QNX();
@@ -91,7 +90,7 @@ private:
     void readPhysicalProperties_VALVE();
 
 public:
-    const uint32_t vkHeaderVersion = 357;
+    const uint32_t vkHeaderVersion = 362;
     std::vector<Feature2> features2;
     std::vector<Property2> properties2;
     std::vector<VkExtensionProperties> extensions;
