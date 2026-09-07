@@ -232,3 +232,10 @@ devdatabase.ini
 /db.ini
 android-build/**
 .qtc_clangd/**
+
+tools/*.apk
+tools/*.zip
+tools/*.AppImage
+tools/*.dmg
+
+*.args.json
