@@ -158,9 +158,10 @@
 
 * VK_IMG_relaxed_line_rasterization
 
-# INTEL (1)
+# INTEL (2)
 
 * VK_INTEL_shader_integer_functions2
+* VK_INTEL_device_info
 
 # KHR (91)
 
@@ -356,4 +357,4 @@
 * VK_VALVE_shader_mixed_float_dot_product
 * VK_VALVE_buffer_device_address_allocation_alignment
 
-Total: 307 extensions
+Total: 308 extensions

@@ -778,6 +778,20 @@ void VulkanDeviceInfoExtensions::readPhysicalProperties_HUAWEI() {
 		delete extProps;
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalProperties_INTEL() {
+	VkPhysicalDeviceProperties2 deviceProps2{};
+	if (extensionSupported("VK_INTEL_device_info")) {
+		const char* extension("VK_INTEL_device_info");
+		VkPhysicalDeviceInfoPropertiesINTEL* extProps = new VkPhysicalDeviceInfoPropertiesINTEL{};
+		extProps->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_INFO_PROPERTIES_INTEL;
+		deviceProps2 = initDeviceProperties2(extProps);
+		vulkanContext.vkGetPhysicalDeviceProperties2KHR(device, &deviceProps2);
+		pushProperty2(extension, "deviceIpVersionArch", QVariant(extProps->deviceIpVersionArch));
+		pushProperty2(extension, "deviceIpVersionRelease", QVariant(extProps->deviceIpVersionRelease));
+		pushProperty2(extension, "deviceIpVersionRevision", QVariant(extProps->deviceIpVersionRevision));
+		delete extProps;
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalProperties_KHR() {
 	VkPhysicalDeviceProperties2 deviceProps2{};
 	if (extensionSupported("VK_KHR_multiview")) {
