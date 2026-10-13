@@ -15,7 +15,7 @@
 
 * VK_ANDROID_external_format_resolve
 
-# ARM (13)
+# ARM (14)
 
 * VK_ARM_rasterization_order_attachment_access
 * VK_ARM_shader_core_properties
@@ -29,6 +29,7 @@
 * VK_ARM_shader_instrumentation
 * VK_ARM_format_pack
 * VK_ARM_data_graph_optical_flow
+* VK_ARM_cooperative_matrix_layouts
 * VK_ARM_data_graph_neural_accelerator_statistics
 
 # EXT (113)
@@ -357,4 +358,4 @@
 * VK_VALVE_shader_mixed_float_dot_product
 * VK_VALVE_buffer_device_address_allocation_alignment
 
-Total: 308 extensions
+Total: 309 extensions

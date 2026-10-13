@@ -1604,6 +1604,7 @@ void VulkanDeviceInfoExtensions::readExtendedProperties() {
     readPhysicalProperties_ARM();
     readPhysicalProperties_EXT();
     readPhysicalProperties_HUAWEI();
+    readPhysicalProperties_INTEL();
     readPhysicalProperties_KHR();
     readPhysicalProperties_MESA();
     readPhysicalProperties_MSFT();
@@ -1800,6 +1801,15 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_ARM() {
 		deviceFeatures2 = initDeviceFeatures2(extFeatures);
 		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
 		pushFeature2(extension, "dataGraphOpticalFlow", extFeatures->dataGraphOpticalFlow);
+		delete extFeatures;
+	}
+	if (extensionSupported("VK_ARM_cooperative_matrix_layouts")) {
+		const char* extension("VK_ARM_cooperative_matrix_layouts");
+		VkPhysicalDeviceCooperativeMatrixLayoutsFeaturesARM* extFeatures = new VkPhysicalDeviceCooperativeMatrixLayoutsFeaturesARM{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_COOPERATIVE_MATRIX_LAYOUTS_FEATURES_ARM;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "cooperativeMatrixArmLayouts", extFeatures->cooperativeMatrixArmLayouts);
 		delete extFeatures;
 	}
 	if (extensionSupported("VK_ARM_data_graph_neural_accelerator_statistics")) {
