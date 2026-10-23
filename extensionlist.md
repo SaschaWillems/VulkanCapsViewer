@@ -148,6 +148,10 @@
 * VK_EXT_primitive_restart_index
 * VK_EXT_image_tiling_control
 
+# GOOGLE (1)
+
+* VK_GOOGLE_hdr_smpte_st_209450_metadata
+
 # HUAWEI (4)
 
 * VK_HUAWEI_subpass_shading
@@ -358,4 +362,4 @@
 * VK_VALVE_shader_mixed_float_dot_product
 * VK_VALVE_buffer_device_address_allocation_alignment
 
-Total: 309 extensions
+Total: 310 extensions

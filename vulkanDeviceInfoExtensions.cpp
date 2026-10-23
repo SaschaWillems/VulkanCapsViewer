@@ -2912,6 +2912,18 @@ void VulkanDeviceInfoExtensions::readPhysicalFeatures_EXT() {
 		delete extFeatures;
 	}
 }
+void VulkanDeviceInfoExtensions::readPhysicalFeatures_GOOGLE() {
+	VkPhysicalDeviceFeatures2 deviceFeatures2{};
+	if (extensionSupported("VK_GOOGLE_hdr_smpte_st_209450_metadata")) {
+		const char* extension("VK_GOOGLE_hdr_smpte_st_209450_metadata");
+		VkPhysicalDeviceHdrSmpteSt209450FeaturesGOOGLE* extFeatures = new VkPhysicalDeviceHdrSmpteSt209450FeaturesGOOGLE{};
+		extFeatures->sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_HDR_SMPTE_ST_209450_FEATURES_GOOGLE;
+		deviceFeatures2 = initDeviceFeatures2(extFeatures);
+		vulkanContext.vkGetPhysicalDeviceFeatures2KHR(device, &deviceFeatures2);
+		pushFeature2(extension, "hdrSmpteSt209450", extFeatures->hdrSmpteSt209450);
+		delete extFeatures;
+	}
+}
 void VulkanDeviceInfoExtensions::readPhysicalFeatures_HUAWEI() {
 	VkPhysicalDeviceFeatures2 deviceFeatures2{};
 	if (extensionSupported("VK_HUAWEI_subpass_shading")) {
@@ -4495,6 +4507,7 @@ void VulkanDeviceInfoExtensions::readExtendedFeatures() {
     readPhysicalFeatures_ANDROID();
     readPhysicalFeatures_ARM();
     readPhysicalFeatures_EXT();
+    readPhysicalFeatures_GOOGLE();
     readPhysicalFeatures_HUAWEI();
     readPhysicalFeatures_IMG();
     readPhysicalFeatures_INTEL();
