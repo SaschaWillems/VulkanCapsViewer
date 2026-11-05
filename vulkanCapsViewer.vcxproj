@@ -225,6 +225,7 @@
     <ClInclude Include="VulkanDeviceInfoExtensions.h" />
     <ClInclude Include="makeviewmetal.mm" />
     <ClInclude Include="settings.h" />
+    <ClInclude Include="reportJson.h" />
     <QtMoc Include="settingsDialog.h">
     </QtMoc>
     <QtMoc Include="submitDialog.h">

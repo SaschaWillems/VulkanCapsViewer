@@ -101,6 +101,9 @@
     <ClInclude Include="settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="reportJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <QtMoc Include="settingsDialog.h">
       <Filter>Header Files</Filter>
     </QtMoc>
