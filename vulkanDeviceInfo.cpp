@@ -4,7 +4,7 @@
 *
 * Device information class
 *
-* Copyright (C) 2016-2025 by Sascha Willems (www.saschawillems.de)
+* Copyright (C) 2016-2026 by Sascha Willems (www.saschawillems.de)
 *
 * This code is free software, you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@
 */
 
 #include "vulkanDeviceInfo.h"
+#include "reportJson.h"
 
 std::vector<VulkanLayerInfo> VulkanDeviceInfo::getLayers()
 {
@@ -942,10 +943,10 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
 
     // Device properties
     QJsonObject jsonProperties;
-    jsonProperties = QJsonObject::fromVariantMap(properties);
-    jsonProperties["sparseProperties"] = QJsonObject::fromVariantMap(sparseProperties);
-    jsonProperties["subgroupProperties"] = QJsonObject::fromVariantMap(subgroupProperties);
-    jsonProperties["limits"] = QJsonObject::fromVariantMap(limits);
+    jsonProperties = reportJsonObject(properties);
+    jsonProperties["sparseProperties"] = reportJsonObject(sparseProperties);
+    jsonProperties["subgroupProperties"] = reportJsonObject(subgroupProperties);
+    jsonProperties["limits"] = reportJsonObject(limits);
     // Pipeline cache UUID
     QJsonArray jsonPipelineCache;
     for (uint32_t i = 0; i < VK_UUID_SIZE; i++) {
@@ -958,16 +959,16 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
 
     // Device features
     QJsonObject jsonFeatures;
-    root["features"] = QJsonObject::fromVariantMap(features);
+    root["features"] = reportJsonObject(features);
 
     // Core 1.1
     if ((!core11Properties.empty()) || (!core11Features.empty())) {
         QJsonObject jsonCore11;
         if (!core11Properties.empty()) {
-            jsonCore11["properties"] = QJsonObject::fromVariantMap(core11Properties);
+            jsonCore11["properties"] = reportJsonObject(core11Properties);
         }
         if (!core11Features.empty()) {
-            jsonCore11["features"] = QJsonObject::fromVariantMap(core11Features);
+            jsonCore11["features"] = reportJsonObject(core11Features);
         }
         root["core11"] = jsonCore11;
     }
@@ -976,10 +977,10 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     if ((!core12Properties.empty()) || (!core12Features.empty())) {
         QJsonObject jsonCore12;
         if (!core12Properties.empty()) {
-            jsonCore12["properties"] = QJsonObject::fromVariantMap(core12Properties);
+            jsonCore12["properties"] = reportJsonObject(core12Properties);
         }
         if (!core12Features.empty()) {
-            jsonCore12["features"] = QJsonObject::fromVariantMap(core12Features);
+            jsonCore12["features"] = reportJsonObject(core12Features);
         }
         root["core12"] = jsonCore12;
     }
@@ -988,10 +989,10 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     if ((!core13Properties.empty()) || (!core13Features.empty())) {
         QJsonObject jsonCore13;
         if (!core13Properties.empty()) {
-            jsonCore13["properties"] = QJsonObject::fromVariantMap(core13Properties);
+            jsonCore13["properties"] = reportJsonObject(core13Properties);
         }
         if (!core13Features.empty()) {
-            jsonCore13["features"] = QJsonObject::fromVariantMap(core13Features);
+            jsonCore13["features"] = reportJsonObject(core13Features);
         }
         root["core13"] = jsonCore13;
     }
@@ -1000,10 +1001,10 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
     if ((!core14Properties.empty()) || (!core14Features.empty())) {
         QJsonObject jsonCore14;
         if (!core14Properties.empty()) {
-            jsonCore14["properties"] = QJsonObject::fromVariantMap(core14Properties);
+            jsonCore14["properties"] = reportJsonObject(core14Properties);
         }
         if (!core14Features.empty()) {
-            jsonCore14["features"] = QJsonObject::fromVariantMap(core14Features);
+            jsonCore14["features"] = reportJsonObject(core14Features);
         }
         root["core14"] = jsonCore14;
     }
@@ -1182,9 +1183,8 @@ QJsonObject VulkanDeviceInfo::toJson(QString submitter, QString comment)
         QJsonObject jsonProperty2;
         jsonProperty2["name"] = QString::fromStdString(property2.name);
         jsonProperty2["extension"] = QString::fromUtf8(property2.extension);
-        // This fixes the one remaining problem in the report .json
         if (property2.value.metaType().id() == QMetaType::QVariantList) {
-            jsonProperty2["value"] = QJsonArray::fromVariantList(property2.value.toList());
+            jsonProperty2["value"] = reportJsonArray(property2.value.toList());
         } else {
             jsonProperty2["value"] = property2.value.toString();
         }
