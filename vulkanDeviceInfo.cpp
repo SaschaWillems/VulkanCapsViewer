@@ -913,18 +913,42 @@ void VulkanDeviceInfo::readProfiles()
 #if !defined(DISABLE_PROFILES)
     qInfo() << "Reading profiles";
 
-    std::vector<VpProfileProperties> availableProfiles{};
-    uint32_t profilesCount;
-    if (vpGetProfiles(&profilesCount, nullptr) == VK_SUCCESS) {
-        availableProfiles.resize(profilesCount);
-        vpGetProfiles(&profilesCount, availableProfiles.data());
+    profiles.clear();
+
+    // Load every Vulkan function the profiles library uses through vkGetInstanceProcAddr, so this also works
+    // when the Vulkan functions are not statically linked (VK_NO_PROTOTYPES on Android)
+    VpFunctions functionsHandle = VK_NULL_HANDLE;
+    VpFunctionsCreateInfo functionsCreateInfo{};
+    functionsCreateInfo.GetInstanceProcAddr = vkGetInstanceProcAddr;
+    vpCreateFunctions(&functionsCreateInfo, nullptr, &functionsHandle);
+    if (functionsHandle == VK_NULL_HANDLE) {
+        qWarning() << "Could not create the Vulkan profiles functions object";
+        return;
+    }
+    const std::unique_ptr<VpFunctions_T, void (*)(VpFunctions)> functions(
+        functionsHandle, [](VpFunctions handle) { vpDestroyFunctions(handle, nullptr); });
+
+    VkResult result = vpInitializeGlobalFunctions(functions.get(), vkGetInstanceProcAddr);
+    if (result == VK_SUCCESS) {
+        // The instance may be Vulkan 1.0 with VK_KHR_get_physical_device_properties2 enabled
+        result = vpInitializeInstanceFunctions(functions.get(), vulkanContext.instance, VP_INSTANCE_FUNCTIONS_LOAD_KHR_GET_PHYSICAL_DEVICE_PROPERTIES2_BIT);
+    }
+    if (result != VK_SUCCESS) {
+        qWarning() << "Could not load the Vulkan functions of the profiles library:" << result;
+        return;
     }
 
-    profiles.clear();
-    for (VpProfileProperties& profile : availableProfiles) {
+    std::vector<VpProfileProperties> availableProfiles{};
+    uint32_t profilesCount = 0;
+    if (vpGetProfiles(functions.get(), &profilesCount, nullptr) == VK_SUCCESS) {
+        availableProfiles.resize(profilesCount);
+        vpGetProfiles(functions.get(), &profilesCount, availableProfiles.data());
+    }
+
+    for (const VpProfileProperties& profile : availableProfiles) {
         qInfo() << "Reading profile" << profile.profileName;
         VkBool32 supported = VK_FALSE;
-        vpGetPhysicalDeviceProfileSupport(vulkanContext.instance, device, &profile, &supported);
+        vpGetPhysicalDeviceProfileSupport(functions.get(), vulkanContext.instance, device, &profile, &supported);
         VulkanProfileInfo profileInfo{};
         profileInfo.profileName = profile.profileName;
         profileInfo.specVersion = profile.specVersion;

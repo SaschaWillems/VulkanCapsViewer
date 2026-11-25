@@ -50,6 +50,7 @@
 
 #include "vulkanAndroid.h"
 #if !defined(DISABLE_PROFILES)
+#define VP_USE_OBJECT 1
 #include "vulkan_profiles.hpp"
 #endif
 
